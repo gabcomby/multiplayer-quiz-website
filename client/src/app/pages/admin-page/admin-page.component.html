@@ -1,1 +1,29 @@
-<p>admin-page works!</p>
+<main [ngClass]="favoriteTheme" class="mat-app-background">
+    <mat-table [dataSource]="dataSource">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.id }} </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
+        </ng-container>
+
+        <!-- Other Columns... -->
+        <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="isVisible">
+            <mat-header-cell *matHeaderCellDef> Visible </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.isVisible }} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+</main>

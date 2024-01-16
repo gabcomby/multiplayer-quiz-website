@@ -22,7 +22,7 @@
             <mat-card-content>
                 <mat-radio-group [(ngModel)]="favoriteTheme" aria-label="Choisir un thème" checked="indigo-pink-theme" #radioGroup>
                     <mat-radio-button *ngFor="let theme of themes" [value]="theme.value" checked select>
-                        {{theme.label}}
+                        {{ theme.label }}
                     </mat-radio-button>
                 </mat-radio-group>
             </mat-card-content>
@@ -54,13 +54,18 @@
                 <mat-expansion-panel expanded>
                     <mat-expansion-panel-header> Je suis perdu(e). C'est quoi Angular Material ? </mat-expansion-panel-header>
                     <p>
-                        Angular Material est une librairie d'éléments d'interface (UI) qui permet d'avoir une interface uniforme suivant la philosophie de <em>Material Design</em> de Google. La librairie est composé de plusieurs éléments différents qui peuvent être utilisés séparément ou ensemble.
+                        Angular Material est une librairie d'éléments d'interface (UI) qui permet d'avoir une interface uniforme suivant la
+                        philosophie de <em>Material Design</em> de Google. La librairie est composé de plusieurs éléments différents qui peuvent être
+                        utilisés séparément ou ensemble.
                     </p>
                 </mat-expansion-panel>
                 <mat-expansion-panel>
                     <mat-expansion-panel-header> Suis-je contraint(e) d'utiliser Angular Material ? </mat-expansion-panel-header>
                     <p>
-                        L'utilisation d'Angular Material n'est pas imposée, mais on vous le recommande pour avoir une interface uniforme. Material Design est très bien supporté par Angular et peut être utilisé avec des interfaces écrites avec du HTML et CSS de base. Vous pouvez utiliser une autre librairie d'interface (Bootstrap, Tailwind, etc.), mais évitez de les mélanger avec Material : gardez un seul choix pour votre projet.
+                        L'utilisation d'Angular Material n'est pas imposée, mais on vous le recommande pour avoir une interface uniforme. Material
+                        Design est très bien supporté par Angular et peut être utilisé avec des interfaces écrites avec du HTML et CSS de base. Vous
+                        pouvez utiliser une autre librairie d'interface (Bootstrap, Tailwind, etc.), mais évitez de les mélanger avec Material :
+                        gardez un seul choix pour votre projet.
                     </p>
                 </mat-expansion-panel>
                 <mat-expansion-panel>
@@ -68,7 +73,10 @@
                         Je peux remarquer quatre différents thèmes. Comment faire pour en choisir un ?
                     </mat-expansion-panel-header>
                     <p>
-                        Les 4 boutons en haut de la page permettent de choisir le thème CSS de la page. <br /> Consultez le code source du <em>Component</em> pour la définition des thèmes. Consultez le code source du gabarit <em>HTML</em> de la page pour voir un exemple concret des directives Angular <strong>[ngClass]</strong>, <strong>[(ngModel)]</strong> et <strong>*ngFor</strong>.
+                        Les 4 boutons en haut de la page permettent de choisir le thème CSS de la page. <br />
+                        Consultez le code source du <em>Component</em> pour la définition des thèmes. Consultez le code source du gabarit
+                        <em>HTML</em> de la page pour voir un exemple concret des directives Angular <strong>[ngClass]</strong>,
+                        <strong>[(ngModel)]</strong> et <strong>*ngFor</strong>.
                     </p>
                 </mat-expansion-panel>
             </mat-accordion>
