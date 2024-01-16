@@ -1,40 +1,18 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component } from '@angular/core';
 
 import { Game } from '@app/interfaces/game';
 
-export const MATERIAL_PREBUILT_THEMES = [
-    {
-        value: 'indigo-pink-theme',
-        label: 'Indigo & Pink',
-    },
-    {
-        value: 'deeppurple-amber-theme',
-        label: 'Deep Purple & Amber',
-    },
-    {
-        value: 'pink-bluegrey-theme',
-        label: 'Pink & Blue-grey',
-    },
-    {
-        value: 'purple-green-theme',
-        label: 'Purple & Green',
-    },
-];
-
-export const MATERIAL_DEFAULT_PREBUILT_THEME = MATERIAL_PREBUILT_THEMES[0];
-
 const FAKE_GAMES: Game[] = [
-    { id: 1, title: 'Party 1', description: 'Description of Party 1', isVisible: true },
-    { id: 2, title: 'Party 2', description: 'Description of Party 2', isVisible: true },
-    { id: 3, title: 'Party 3', description: 'Description of Party 3', isVisible: true },
-    { id: 4, title: 'Party 4', description: 'Description of Party 4', isVisible: true },
-    { id: 5, title: 'Party 5', description: 'Description of Party 5', isVisible: true },
-    { id: 6, title: 'Party 6', description: 'Description of Party 6', isVisible: true },
-    { id: 7, title: 'Party 7', description: 'Description of Party 7', isVisible: true },
-    { id: 8, title: 'Party 8', description: 'Description of Party 8', isVisible: true },
-    { id: 9, title: 'Party 9', description: 'Description of Party 9', isVisible: true },
-    { id: 10, title: 'Party 10', description: 'Description of Party 10', isVisible: true },
+    { id: 1, title: 'Party 1', description: 'Description of Party 1', isVisible: true, lastUpdate: new Date() },
+    { id: 2, title: 'Party 2', description: 'Description of Party 2', isVisible: true, lastUpdate: new Date() },
+    { id: 3, title: 'Party 3', description: 'Description of Party 3', isVisible: true, lastUpdate: new Date() },
+    { id: 4, title: 'Party 4', description: 'Description of Party 4', isVisible: true, lastUpdate: new Date() },
+    { id: 5, title: 'Party 5', description: 'Description of Party 5', isVisible: true, lastUpdate: new Date() },
+    { id: 6, title: 'Party 6', description: 'Description of Party 6', isVisible: true, lastUpdate: new Date() },
+    { id: 7, title: 'Party 7', description: 'Description of Party 7', isVisible: true, lastUpdate: new Date() },
+    { id: 8, title: 'Party 8', description: 'Description of Party 8', isVisible: true, lastUpdate: new Date() },
+    { id: 9, title: 'Party 9', description: 'Description of Party 9', isVisible: true, lastUpdate: new Date() },
+    { id: 10, title: 'Party 10', description: 'Description of Party 10', isVisible: true, lastUpdate: new Date() },
 ];
 
 @Component({
@@ -43,19 +21,31 @@ const FAKE_GAMES: Game[] = [
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent {
-    @ViewChild('merciDialogContent')
-    private readonly merciDialogContentRef: TemplateRef<HTMLElement>;
-
-    readonly themes = MATERIAL_PREBUILT_THEMES;
-
-    favoriteTheme: string = MATERIAL_DEFAULT_PREBUILT_THEME.value;
-
-    displayedColumns: string[] = ['id', 'title', 'description', 'isVisible'];
+    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
     dataSource = FAKE_GAMES;
 
-    constructor(private readonly matDialog: MatDialog) {}
+    toggleVisibility(gameId: number, isVisible: boolean): void {
+        const game = this.dataSource.find((g) => g.id === gameId);
+        if (game) {
+            game.isVisible = isVisible;
+        }
+    }
 
-    onLikeTheme(): void {
-        this.matDialog.open(this.merciDialogContentRef);
+    exportGameAsJson(game: Game): void {
+        const exportData = { id: game.id, title: game.title, description: game.description, lastUpdate: game.lastUpdate };
+
+        const dataStr = JSON.stringify(exportData);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+        const exportFileDefaultName = 'game_data.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+
+    deleteGame(gameId: number): void {
+        this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
     }
 }

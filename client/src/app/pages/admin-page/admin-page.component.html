@@ -1,4 +1,4 @@
-<main [ngClass]="favoriteTheme" class="mat-app-background">
+<main>
     <mat-table [dataSource]="dataSource">
         <!-- ID Column -->
         <ng-container matColumnDef="id">
@@ -8,19 +8,41 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
         </ng-container>
 
-        <!-- Other Columns... -->
-        <ng-container matColumnDef="description">
-            <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
-        </ng-container>
-
+        <!-- isVisible Column -->
         <ng-container matColumnDef="isVisible">
             <mat-header-cell *matHeaderCellDef> Visible </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.isVisible }} </mat-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element.id, $event.checked)"> </mat-slide-toggle>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lastUpdate">
+            <mat-header-cell *matHeaderCellDef> Dernière modification</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.lastUpdate }} </mat-cell>
+        </ng-container>
+
+        <!-- Export Column -->
+        <ng-container matColumnDef="export">
+            <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="exportGameAsJson(element)">
+                    <mat-icon>file_download</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Delete Column -->
+        <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef> Delete </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="deleteGame(element.id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

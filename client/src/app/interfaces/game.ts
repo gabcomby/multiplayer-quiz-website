@@ -3,4 +3,5 @@ export interface Game {
     title: string;
     description: string;
     isVisible: boolean;
+    lastUpdate: Date;
 }
