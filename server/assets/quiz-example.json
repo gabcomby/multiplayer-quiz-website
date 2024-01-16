@@ -28,6 +28,29 @@
             ]
         },
         {
+            "type": "QCM",
+            "text": "Parmi les villes suivantes, laquelle est la capitale des États-Unis?",
+            "points": 40,
+            "choices": [
+                {
+                    "text": "New York",
+                    "isCorrect": false
+                },
+                {
+                    "text": "Washington",
+                    "isCorrect": true
+                },
+                {
+                    "text": "San Francisco",
+                    "isCorrect": false
+                },
+                {
+                    "text": "Dallas",
+                    "isCorrect": false
+                }
+            ]
+        },
+        {
             "type": "QRL",
             "text": "Donnez la différence entre 'let' et 'var' pour la déclaration d'une variable en JS ?",
             "points": 60
