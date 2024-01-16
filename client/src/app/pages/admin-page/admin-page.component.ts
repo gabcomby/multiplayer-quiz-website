@@ -45,7 +45,40 @@ export class AdminPageComponent {
         linkElement.click();
     }
 
+    openImportDialog(): void {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.json';
+        fileInput.onchange = (e) => {
+            const target = e.target as HTMLInputElement;
+            if (target && target.files && target.files.length) {
+                this.importGamesFromFile(target.files[0]);
+            }
+        };
+        fileInput.click();
+    }
+
+    importGamesFromFile(file: File): void {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileReader = e.target;
+            if (fileReader && fileReader.result) {
+                try {
+                    const games = JSON.parse(fileReader.result as string);
+                    this.dataSource = [...this.dataSource, ...games];
+                } catch (error) {
+                    alert('Error parsing JSON');
+                }
+            }
+        };
+        reader.readAsText(file);
+    }
+
     deleteGame(gameId: number): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
+    }
+
+    createGame(): void {
+        // Implement logic to create a new game
     }
 }
