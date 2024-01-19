@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -12,6 +12,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 
 /**
@@ -30,8 +31,18 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
+        // CreateQGamePageComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
+    imports: [
+        AppMaterialModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        CreateQGamePageComponent
+    ],
     providers: [],
     bootstrap: [AppComponent],
 })

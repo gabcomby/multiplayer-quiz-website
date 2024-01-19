@@ -1,1 +1,36 @@
-<p>create-qgame-page works!</p>
+<!-- <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <label for="first-name">First Name: </label>
+    <input id="first-name" type="text" formControlName="firstName" />
+
+    <label for="last-name">Last Name: </label>
+    <input id="last-name" type="text" formControlName="lastName" />
+</form>
+
+<p>Complete the form to enable button.</p>
+<button type="submit" [disabled]="!profileForm.valid">Submit</button> -->
+<div id="title">
+    <h1> Création d'un nouveau jeu!</h1>
+</div>
+<div id="form">
+    
+    <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" class="example-form">
+        <div formGroupName="gameForm">
+            <mat-form-field class="example-full-width">
+                <mat-label>Nom</mat-label>
+                <input matInput placeholder="Entrer un nom" formControlName="name" required/>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>Temps de délai</mat-label>
+                <input matInput placeholder="Temps alloué pour répondre" formControlName="time" />
+            </mat-form-field>
+
+            <button type="submit" mat-raised-button color="accent">Ajouter question</button>
+        </div>
+    </form>
+</div>
