@@ -13,11 +13,11 @@
 </div>
 <div id="form">
     
-    <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" class="example-form">
-        <div formGroupName="gameForm">
+    <form class="example-form" >
+        <div formGroupName="gameForm" [formGroup]="gameForm">
             <mat-form-field class="example-full-width">
                 <mat-label>Nom</mat-label>
-                <input matInput placeholder="Entrer un nom" formControlName="name" required/>
+                <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required/>
             </mat-form-field>
 
             <mat-form-field class="example-full-width">

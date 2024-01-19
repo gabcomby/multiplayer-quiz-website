@@ -41,7 +41,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         FormsModule,
         HttpClientModule,
         ReactiveFormsModule,
-        CreateQGamePageComponent
+        CreateQGamePageComponent,
     ],
     providers: [],
     bootstrap: [AppComponent],
