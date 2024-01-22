@@ -2,8 +2,8 @@ div {
     position: fixed;
     bottom: 0;
     left: 0;
-    margin: 20px; /* Adjust margin as needed for spacing */
-    max-width: 400px; /* Set a maximum width for the container */
+    margin: 20px;
+    max-width: 400px;
     display: flex;
     align-items: center;
     background-color: red;
@@ -11,7 +11,7 @@ div {
 
 form.chat-textbox {
     flex: 1;
-    margin-right: 10px; /* Adjust margin as needed for spacing between form and button */
+    margin-right: 10px;
     height: 100%;
 }
 
@@ -25,5 +25,5 @@ button {
 }
 
 mat-icon {
-    font-size: 24px; /* Adjust font size as needed */
+    font-size: 24px;
 }

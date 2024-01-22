@@ -1,38 +1,7 @@
-.container {
-    height: 100%;
-    display: flex;
-    width: 100%;
-}
-
-.play-area-container {
-    overflow: auto;
-    flex: 1 1 auto;
-}
-
-.play-area {
-    display: grid;
-    outline: none;
-    height: 100vh;
-}
-
-#sidebar {
-    flex-basis: 350px;
-    min-width: 200px;
-}
-
 .question-section {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    text-align: center;
-    background-color: red;
-    width: 50%;
-    margin: auto;
-}
-
-#top-bar {
-    width: 100%;
+    align-items: center;
 }
 
 .large-bar-spacer {

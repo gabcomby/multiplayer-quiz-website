@@ -10,8 +10,8 @@
 
 .mat-chip-option {
     flex: 1;
-    margin: 8px; /* Adjust margin as needed */
-    min-width: 0; /* Ensure that the chip can shrink if needed */
+    margin: 8px;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,5 +25,6 @@
     justify-content: center;
     text-align: center;
     background-color: red;
-    width: 100%;
+    width: 50%;
+    align-self: center;
 }
