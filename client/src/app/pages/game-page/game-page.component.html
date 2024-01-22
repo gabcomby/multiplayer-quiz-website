@@ -1,4 +1,11 @@
 <div class="container">
+    <mat-toolbar color="primary" id="top-bar">
+        <span class="top-bar-text">{{ gameName }}</span>
+        <span class="large-bar-spacer"></span>
+        <span class="top-bar-text">Question {{ currentQuestion }}/{{ totalQuestions }}</span>
+        <span class="large-bar-spacer"></span>
+        <span class="top-bar-text">{{ todayDate | date: 'mediumDate' }}</span>
+    </mat-toolbar>
     <app-sidebar id="sidebar"></app-sidebar>
     <!--<section class="play-area-container">-->
     <!--<app-play-area class="play-area" tabindex="0"></app-play-area>-->

@@ -1,6 +1,7 @@
 .container {
     height: 100%;
     display: flex;
+    width: 100%;
 }
 
 .play-area-container {
@@ -28,4 +29,17 @@
     background-color: red;
     width: 50%;
     margin: auto;
+}
+
+#top-bar {
+    width: 100%;
+}
+
+.large-bar-spacer {
+    flex: 1 1 auto;
+}
+
+.top-bar-text {
+    font-size: 1.5em;
+    font-weight: bold;
 }
