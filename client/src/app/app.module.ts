@@ -13,6 +13,8 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { GameTestComponent } from './pages/game-test/game-test.component';
+import { GameWaitComponent } from './pages/game-wait/game-wait.component';
 
 /**
  * Main module that is used in main.ts.
@@ -30,6 +32,8 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
+        GameTestComponent,
+        GameWaitComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

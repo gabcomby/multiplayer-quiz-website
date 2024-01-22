@@ -1,30 +1,30 @@
 export interface Game {
+    id: string;
     name: string;
     timePerQuestions: number;
     description: string;
     visibility: boolean;
-    selected: boolean;
 }
 export const games: Game[] = [
     {
+        id: '1',
         name: 'Fortnite',
         timePerQuestions: 10,
         description: 'Its a game of war',
         visibility: true,
-        selected: false,
     },
     {
+        id: '2',
         name: 'Sims5',
         timePerQuestions: 30,
         description: 'Its a life',
         visibility: true,
-        selected: false,
     },
     {
+        id: '3',
         name: 'Call of Duty',
         timePerQuestions: 50,
         description: 'Its a game war',
         visibility: true,
-        selected: false,
     },
 ];
