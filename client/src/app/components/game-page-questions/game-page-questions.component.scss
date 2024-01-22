@@ -1,0 +1,29 @@
+.custom-chip-listbox {
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+
+    background-color: royalblue;
+}
+
+.mat-chip-option {
+    flex: 1;
+    margin: 8px; /* Adjust margin as needed */
+    min-width: 0; /* Ensure that the chip can shrink if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#question-component-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: red;
+    width: 100%;
+}
