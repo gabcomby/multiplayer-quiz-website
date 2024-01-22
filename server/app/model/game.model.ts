@@ -12,7 +12,7 @@ interface IQuestion extends Document {
     choices?: IChoice[];
 }
 
-interface IGame extends Document {
+export interface IGame extends Document {
     id: string;
     title: string;
     description: string;

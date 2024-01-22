@@ -41,7 +41,7 @@ export class AdminPageComponent implements OnInit {
         const dataStr = JSON.stringify(exportData);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
-        const exportFileDefaultName = 'game_data.json';
+        const exportFileDefaultName = 'game_data_' + game.id + '.json';
 
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
@@ -64,12 +64,23 @@ export class AdminPageComponent implements OnInit {
 
     importGamesFromFile(file: File): void {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             const fileReader = e.target;
             if (fileReader && fileReader.result) {
                 try {
-                    const games = JSON.parse(fileReader.result as string);
-                    this.dataSource = [...this.dataSource, ...games];
+                    const game = JSON.parse(fileReader.result as string);
+                    this.dataSource = [...this.dataSource, game];
+
+                    this.http.post('http://localhost:3000/api/games', game).subscribe({
+                        next: () => {
+                            alert('Game imported successfully');
+                        },
+                        error: (error) => {
+                            alert(`Error sending data to server: ${error}`);
+                        },
+                    });
+
+                    alert('Game imported successfully');
                 } catch (error) {
                     alert('Error parsing JSON');
                 }
