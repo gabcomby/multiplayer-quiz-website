@@ -1,1 +1,56 @@
-<p>admin-page works!</p>
+<main>
+    <mat-table [dataSource]="dataSource">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.id }} </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
+        </ng-container>
+
+        <!-- isVisible Column -->
+        <ng-container matColumnDef="isVisible">
+            <mat-header-cell *matHeaderCellDef> Visible </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element.id, $event.checked)"> </mat-slide-toggle>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lastUpdate">
+            <mat-header-cell *matHeaderCellDef> Dernière modification</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.lastUpdate }} </mat-cell>
+        </ng-container>
+
+        <!-- Export Column -->
+        <ng-container matColumnDef="export">
+            <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="exportGameAsJson(element)">
+                    <mat-icon>file_download</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Delete Column -->
+        <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef> Delete </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="deleteGame(element.id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+    <div class="action-buttons">
+        <button mat-raised-button (click)="createGame()">Créer un jeu</button>
+        <button mat-raised-button routerLink="/questions">Accéder à la banque de questions</button>
+        <button mat-raised-button (click)="openImportDialog()">Importer des jeux</button>
+    </div>
+</main>
