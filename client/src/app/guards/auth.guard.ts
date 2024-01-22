@@ -9,6 +9,7 @@ export const AUTH_GUARD: CanActivateFn = (): Observable<boolean | UrlTree> | Pro
     if (password === 'log2990-102') {
         return true;
     } else {
+        // remove alert
         alert('faux mot de passe');
         router.navigate(['/']);
         return false;

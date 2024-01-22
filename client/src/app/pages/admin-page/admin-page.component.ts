@@ -41,11 +41,11 @@ export class AdminPageComponent implements OnInit {
         const dataStr = JSON.stringify(exportData);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
-        const exportFileDefaultName = 'game_data_' + game.id + '.json';
+        const exportFileName = 'game_data_' + game.id + '.json';
 
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.setAttribute('download', exportFileName);
         linkElement.click();
     }
 
