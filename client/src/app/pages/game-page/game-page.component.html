@@ -1,10 +1,12 @@
 <div class="container">
     <mat-toolbar color="primary" id="top-bar">
-        <span class="top-bar-text">{{ gameName }}</span>
+        <button mat-icon-button color="white" aria-label="Example icon button with a home icon">
+            <mat-icon>home</mat-icon>
+        </button>
         <span class="large-bar-spacer"></span>
         <span class="top-bar-text">Question {{ currentQuestion }}/{{ totalQuestions }}</span>
         <span class="large-bar-spacer"></span>
-        <span class="top-bar-text">{{ todayDate | date: 'mediumDate' }}</span>
+        <span class="top-bar-text">{{ gameName }}</span>
     </mat-toolbar>
     <app-sidebar id="sidebar"></app-sidebar>
     <!--<section class="play-area-container">-->

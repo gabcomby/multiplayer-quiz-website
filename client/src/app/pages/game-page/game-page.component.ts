@@ -6,7 +6,6 @@ import { Component } from '@angular/core';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    todayDate: Date = new Date();
     questions: string[] = ['Quelle est la capitale des États-Unis?', 'Question 2'];
     totalQuestions: number = this.questions.length;
     currentQuestion: number = 1;
