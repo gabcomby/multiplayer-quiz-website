@@ -6,11 +6,9 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class AuthService {
-    private authUrl = 'http://localhost:3000/api/authenticate';
-
     constructor(private http: HttpClient) {}
 
     authenticate(password: string): Observable<boolean> {
-        return this.http.post<boolean>(this.authUrl, { password });
+        return this.http.post<boolean>('http://localhost:3000/api/authenticate', { password });
     }
 }
