@@ -8,6 +8,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class NewQuestionComponent {
     @Output() registerQuestion: EventEmitter<string> = new EventEmitter();
     question: string = '';
+    // questionId: number = 0;
+    point: number = 0;
 
     addQuestion() {
         this.registerQuestion.emit(this.question);

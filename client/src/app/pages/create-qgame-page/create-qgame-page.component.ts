@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Question } from '@app/interfaces/question';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -12,6 +13,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class CreateQGamePageComponent {
     questions: string[] = [];
+    newQuestion: Question[];
+    questionId: number = 0;
     addQuestionShown: boolean = true;
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),

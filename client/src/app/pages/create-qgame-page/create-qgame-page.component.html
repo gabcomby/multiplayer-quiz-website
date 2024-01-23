@@ -41,8 +41,8 @@
             <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
             <div>
                 <label>Liste de question:</label>
-                <div *ngFor="let question of questions">
-                    <p>{{ question }}</p>
+                <div *ngFor="let question of questions; index as questionId">
+                    <p>{{questionId+1}}. {{question}}</p>
                 </div>
             </div>
         </div>
