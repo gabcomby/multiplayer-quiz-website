@@ -1,6 +1,6 @@
 <div>
     <ng-container *ngFor="let message of messages">
-        <mat-card *ngIf="message.visible">
+        <mat-card *ngIf="message.visible" [@fade]="true">
             <mat-card-content>{{ message.text }}</mat-card-content>
         </mat-card>
     </ng-container>
