@@ -1,11 +1,11 @@
 <div>
-    <form class="chat-textbox">
+    <form class="chat-textbox" #messageForm="ngForm">
         <mat-form-field class="example-full-width">
             <mat-label>Message</mat-label>
-            <textarea matInput style="resize: none"></textarea>
+            <textarea matInput name="newMessage" [(ngModel)]="newMessage" style="resize: none"></textarea>
         </mat-form-field>
     </form>
-    <button mat-mini-fab color="primary">
+    <button mat-mini-fab color="primary" (click)="sendMessage()">
         <mat-icon>send</mat-icon>
     </button>
 </div>
