@@ -1,6 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -14,6 +17,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { NewQuestionComponent } from './components/new-question/new-question.component';
 
 /**
  * Main module that is used in main.ts.
@@ -31,6 +35,8 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
+        CreateQGamePageComponent,
+        NewQuestionComponent,
         // CreateQGamePageComponent,
     ],
     imports: [
@@ -41,7 +47,11 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         FormsModule,
         HttpClientModule,
         ReactiveFormsModule,
-        CreateQGamePageComponent,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatInputModule,
+        FormsModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

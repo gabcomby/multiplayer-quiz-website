@@ -9,28 +9,42 @@
 <p>Complete the form to enable button.</p>
 <button type="submit" [disabled]="!profileForm.valid">Submit</button> -->
 <div id="title">
-    <h1> Création d'un nouveau jeu!</h1>
+    <h1>Création d'un nouveau jeu!</h1>
 </div>
 <div id="form">
-    
-    <form class="example-form" >
-        <div formGroupName="gameForm" [formGroup]="gameForm">
-            <mat-form-field class="example-full-width">
-                <mat-label>Nom</mat-label>
-                <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required/>
+    <form [formGroup]="gameForm" class="example-form">
+        <mat-form-field class="example-full-width">
+            <mat-label>Nom</mat-label>
+            <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+            <mat-label>Temps de délai</mat-label>
+            <input matInput placeholder="Temps alloué pour répondre" formControlName="time" />
+        </mat-form-field>
+
+        <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
+
+        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
+
+        <div>
+            <!-- <mat-form-field class="example-full-width">
+                <mat-label>Question</mat-label>
+                <input formControlName="question" matInput placeholder="question" />
             </mat-form-field>
 
-            <mat-form-field class="example-full-width">
-                <mat-label>Description</mat-label>
-                <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
-            </mat-form-field>
-
-            <mat-form-field class="example-full-width">
-                <mat-label>Temps de délai</mat-label>
-                <input matInput placeholder="Temps alloué pour répondre" formControlName="time" />
-            </mat-form-field>
-
-            <button type="submit" mat-raised-button color="accent">Ajouter question</button>
+            <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
+            <div>
+                <label>Liste de question:</label>
+                <div *ngFor="let question of questions">
+                    <p>{{ question }}</p>
+                </div>
+            </div>
         </div>
     </form>
 </div>

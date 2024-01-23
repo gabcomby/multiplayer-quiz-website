@@ -1,29 +1,51 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+// import { AppModule } from '@app/app.module';
+// import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
 @Component({
-    standalone: true,
+    // standalone: true,
     selector: 'app-create-qgame-page',
     templateUrl: './create-qgame-page.component.html',
     styleUrls: ['./create-qgame-page.component.scss'],
-    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
+    // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
 export class CreateQGamePageComponent {
+    questions: string[] = [];
+    addQuestionShown: boolean = true;
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),
         description: new FormControl('', Validators.required),
         time: new FormControl(),
+        // question: new FormControl(''),
     });
+
+    // this.gameForm = new FormGroup({
+    //     newQuestion : new FormGroup({
+    //         question: new FormControl()
+    //     })
+    // });
     // delay: number;
     get name() {
         return this.gameForm.get('name');
     }
     onSubmit() {
+        // Call la fonction du service QuestionHandler pour ajouter
+        // la liste locale a la liste totale des questionnaires
         alert(this.gameForm.value);
+    }
+    toggleAddQuestion() {
+        this.addQuestionShown = !this.addQuestionShown;
+    }
+
+    addQuestion(question: string) {
+        // Ajouter des qustions a la liste locale de question
+
+        if (question) {
+            this.questions.push(question);
+        }
+        this.gameForm.reset();
+        // alert(this.gameForm.value);
     }
     //     updateName(newName) {
     //         this.profileForm.setValue(newName);
