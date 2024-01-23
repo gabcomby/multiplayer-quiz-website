@@ -10,4 +10,8 @@ export class GameService {
     async createGame(gameData: IGame): Promise<IGame> {
         return await gameModel.create(gameData);
     }
+
+    async deleteGame(gameId: string): Promise<IGame> {
+        return await gameModel.findOneAndDelete({ id: gameId });
+    }
 }

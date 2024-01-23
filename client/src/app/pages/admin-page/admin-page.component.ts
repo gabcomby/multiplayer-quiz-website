@@ -91,6 +91,14 @@ export class AdminPageComponent implements OnInit {
 
     deleteGame(gameId: string): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
+        this.http.delete(`http://localhost:3000/api/games/${gameId}`).subscribe({
+            next: () => {
+                alert('Game deleted successfully');
+            },
+            error: (error) => {
+                alert(`Error deleting game: ${error}`);
+            },
+        });
     }
 
     createGame(): void {
