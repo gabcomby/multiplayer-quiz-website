@@ -31,7 +31,7 @@ export class AuthGuard {
                                     return of(true);
                                 } else {
                                     alert('faux mot de passe');
-                                    return of(this.router.createUrlTree(['/']));
+                                    return of(this.router.createUrlTree(['/home']));
                                 }
                             }),
                         );
