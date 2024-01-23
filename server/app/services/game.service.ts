@@ -7,6 +7,10 @@ export class GameService {
         return gameModel.find();
     }
 
+    async getGame(gameId: string): Promise<IGame> {
+        return gameModel.findOne({ id: gameId });
+    }
+
     async createGame(gameData: IGame): Promise<IGame> {
         return await gameModel.create(gameData);
     }

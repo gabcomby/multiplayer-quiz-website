@@ -23,6 +23,15 @@ export class GameController {
             }
         });
 
+        this.router.get('/:id', async (req: Request, res: Response) => {
+            try {
+                const game = await this.gameService.getGame(req.params.id);
+                res.json(game);
+            } catch (error) {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching game' });
+            }
+        });
+
         this.router.post('/', async (req: Request, res: Response) => {
             try {
                 const game = await this.gameService.createGame(req.body);

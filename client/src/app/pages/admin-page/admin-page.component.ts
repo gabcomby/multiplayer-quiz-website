@@ -36,17 +36,17 @@ export class AdminPageComponent implements OnInit {
     }
 
     exportGameAsJson(game: Game): void {
-        const exportData = { id: game.id, title: game.title, description: game.description, lastUpdate: game.lastModification };
-
-        const dataStr = JSON.stringify(exportData);
-        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-        const exportFileName = 'game_data_' + game.id + '.json';
-
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileName);
-        linkElement.click();
+        this.http.get(`http://localhost:3000/api/games/${game.id}`).subscribe({
+            next: (data) => {
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)));
+                linkElement.setAttribute('download', 'game_data_' + game.id + '.json');
+                linkElement.click();
+            },
+            error: (error) => {
+                alert(`Error fetching game data: ${error}`);
+            },
+        });
     }
 
     openImportDialog(): void {
