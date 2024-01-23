@@ -14,4 +14,5 @@ export class GamePageComponent {
         ['New York', 'Pittsburgh', 'Washington', 'Las Vegas'],
         ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'],
     ];
+    questionTimer: number = 30;
 }

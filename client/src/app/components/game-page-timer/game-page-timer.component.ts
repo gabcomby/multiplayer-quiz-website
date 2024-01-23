@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 
 export enum MouseButton {
@@ -15,7 +15,7 @@ export enum MouseButton {
     styleUrls: ['./game-page-timer.component.scss'],
 })
 export class GamePageTimerComponent {
-    private readonly timer = 5;
+    @Input() gameTimer: number;
     private readonly percentage = 100;
     constructor(private readonly timeService: TimeService) {}
 
@@ -24,10 +24,10 @@ export class GamePageTimerComponent {
     }
 
     get timePercentage(): number {
-        return (this.timeService.time / this.timer) * this.percentage;
+        return (this.timeService.time / this.gameTimer) * this.percentage;
     }
 
     handleOnTimerClick(): void {
-        this.timeService.startTimer(this.timer);
+        this.timeService.startTimer(this.gameTimer);
     }
 }
