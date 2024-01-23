@@ -8,7 +8,7 @@ export interface QuestionBank {
 }
 
 const ELEMENT_DATA: QuestionBank[] = [
-    { position: 1, question: 'Question 1', date: new Date() },
+    { position: 1, question: 'Quelle est la capitale de la France?', date: new Date() },
     { position: 2, question: 'Question 2', date: new Date() },
     { position: 3, question: 'Question 3', date: new Date() },
     { position: 4, question: 'Question 4', date: new Date() },
@@ -19,7 +19,7 @@ const ELEMENT_DATA: QuestionBank[] = [
     standalone: true,
     imports: [MatTableModule],
     templateUrl: './question-bank.component.html',
-    styleUrl: './question-bank.component.scss',
+    styleUrls: ['./question-bank.component.scss'],
 })
 export class QuestionBankComponent {
     displayedColumns: string[] = ['position', 'question', 'date'];
