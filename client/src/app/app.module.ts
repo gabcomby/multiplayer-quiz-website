@@ -15,6 +15,7 @@ import { GamePageQuestionsComponent } from './components/game-page-questions/gam
 import { GamePageTimerComponent } from './components/game-page-timer/game-page-timer.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { GamePageScoresheetComponent } from './components/game-page-scoresheet/game-page-scoresheet.component';
 
 /**
  * Main module that is used in main.ts.
@@ -34,6 +35,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         NewGamePageComponent,
         GamePageQuestionsComponent,
         GamePageTimerComponent,
+        GamePageScoresheetComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
