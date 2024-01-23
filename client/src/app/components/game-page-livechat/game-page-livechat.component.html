@@ -1,4 +1,7 @@
 <div>
+    <mat-card *ngFor="let message of messages">
+        <mat-card-content>{{ message }}</mat-card-content>
+    </mat-card>
     <form class="chat-textbox" #messageForm="ngForm">
         <mat-form-field class="example-full-width">
             <mat-label>Message</mat-label>
