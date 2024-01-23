@@ -6,16 +6,29 @@ import { Component } from '@angular/core';
     styleUrls: ['./game-page-livechat.component.scss'],
 })
 export class GamePageLivechatComponent {
-    messages: string[] = [];
+    messages: { text: string; visible: boolean }[] = [];
     newMessage: string = '';
 
     sendMessage(): void {
         if (this.newMessage.trim() !== '') {
-            this.messages.push(this.newMessage);
-            alert(`Message sent: ${this.newMessage}`);
+            const message = { text: this.newMessage, visible: true };
+            this.messages.push(message);
+
+            setTimeout(() => {
+                this.hideMessage(message);
+            }, 10000);
+
             this.newMessage = '';
         } else {
             this.newMessage = '';
+        }
+    }
+
+    hideMessage(message: { text: string; visible: boolean }): void {
+        message.visible = false;
+        const index = this.messages.indexOf(message);
+        if (index !== -1) {
+            this.messages.splice(index, 1);
         }
     }
 }
