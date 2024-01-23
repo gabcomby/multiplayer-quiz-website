@@ -8,6 +8,7 @@ import { Component } from '@angular/core';
 export class GamePageLivechatComponent {
     messages: { text: string; visible: boolean }[] = [];
     newMessage: string = '';
+    private readonly messageDisappearDelay = 10000;
 
     sendMessage(): void {
         if (this.newMessage.trim() !== '') {
@@ -16,7 +17,7 @@ export class GamePageLivechatComponent {
 
             setTimeout(() => {
                 this.hideMessage(message);
-            }, 10000);
+            }, this.messageDisappearDelay);
 
             this.newMessage = '';
         } else {
