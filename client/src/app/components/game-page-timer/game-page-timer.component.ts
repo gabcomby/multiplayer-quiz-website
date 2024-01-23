@@ -19,6 +19,10 @@ export class GamePageTimerComponent {
     private readonly percentage = 100;
     constructor(private readonly timeService: TimeService) {}
 
+    get totalTime(): number {
+        return this.gameTimer;
+    }
+
     get time(): number {
         return this.timeService.time;
     }

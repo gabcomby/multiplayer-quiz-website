@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
+import { GamePageLivechatComponent } from './game-page-livechat.component';
 
-describe('SidebarComponent', () => {
-    let component: SidebarComponent;
-    let fixture: ComponentFixture<SidebarComponent>;
+describe('GamePageLivechatComponent', () => {
+    let component: GamePageLivechatComponent;
+    let fixture: ComponentFixture<GamePageLivechatComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SidebarComponent],
+            declarations: [GamePageLivechatComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SidebarComponent);
+        fixture = TestBed.createComponent(GamePageLivechatComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

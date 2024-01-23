@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
+import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -29,7 +29,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         MainPageComponent,
         MaterialPageComponent,
         PlayAreaComponent,
-        SidebarComponent,
+        GamePageLivechatComponent,
         AdminPageComponent,
         NewGamePageComponent,
         GamePageQuestionsComponent,
