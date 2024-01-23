@@ -7,7 +7,9 @@ describe('Game service', () => {
     let gameService: GameService;
     let sandbox: SinonSandbox;
     let findStub: SinonStub;
+    let findOneStub: SinonStub;
     let createStub: SinonStub;
+    let findOneAndDeleteStub: SinonStub;
 
     const gameInstance = new gameModel({
         id: '1a2b3c',
@@ -65,7 +67,9 @@ describe('Game service', () => {
         sandbox = createSandbox();
         gameService = new GameService();
         findStub = sandbox.stub(gameModel, 'find');
+        findOneStub = sandbox.stub(gameModel, 'findOne');
         createStub = sandbox.stub(gameModel, 'create');
+        findOneAndDeleteStub = sandbox.stub(gameModel, 'findOneAndDelete');
     });
 
     afterEach(() => {
@@ -86,5 +90,23 @@ describe('Game service', () => {
         const result = await gameService.createGame(gameInstance);
         expect(result).to.eql(gameInstance);
         expect(createStub.calledWith(gameInstance));
+    });
+
+    it('should retrieve a specific game', async () => {
+        const gameId = '1a2b3c';
+        findOneStub.withArgs({ id: gameId }).resolves(gameInstance);
+
+        const game = await gameService.getGame(gameId);
+        expect(game).to.eql(gameInstance);
+        expect(findOneStub.calledWith({ id: gameId }));
+    });
+
+    it('should delete a specific game', async () => {
+        const gameId = '1a2b3c';
+        findOneAndDeleteStub.withArgs({ id: gameId }).resolves(gameInstance);
+
+        const result = await gameService.deleteGame(gameId);
+        expect(result).to.eql(gameInstance);
+        expect(findOneAndDeleteStub.calledWith({ id: gameId }));
     });
 });

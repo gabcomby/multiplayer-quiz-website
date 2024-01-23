@@ -14,6 +14,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -32,6 +33,7 @@ import { QuestionsPageComponent } from './pages/questions-page/questions-page.co
         AdminPageComponent,
         NewGamePageComponent,
         QuestionsPageComponent,
+        PasswordDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

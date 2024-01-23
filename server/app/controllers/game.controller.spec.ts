@@ -94,4 +94,26 @@ describe('GameController', () => {
                 chai.expect(response.body).to.deep.equal({ error: 'Error creating game' });
             });
     });
+
+    it('should return an error status on DELETE request if service fails', async () => {
+        gameService.deleteGame.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .delete('/api/games/1a2b3c')
+            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error deleting game' });
+            });
+    });
+
+    it('should return an error status on GET request if service fails', async () => {
+        gameService.getGame.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .get('/api/games/1a2b3c')
+            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching game' });
+            });
+    });
 });
