@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
+import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
+import isValidGame from '@app/utils/is-valid-game';
+import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 @Component({
     selector: 'app-admin-page',
@@ -69,6 +72,19 @@ export class AdminPageComponent implements OnInit {
             if (fileReader && fileReader.result) {
                 try {
                     const game = JSON.parse(fileReader.result as string);
+
+                    if (!this.isGameNameUnique(game.title)) {
+                        const newName = window.prompt('This game name already exists. Please enter a new name:');
+                        if (newName) {
+                            game.title = newName;
+                        } else {
+                            alert('Import cancelled. A unique name is required.');
+                            return;
+                        }
+                    }
+
+                    this.prepareGameForImport(game);
+
                     this.dataSource = [...this.dataSource, game];
 
                     this.http.post('http://localhost:3000/api/games', game).subscribe({
@@ -103,5 +119,15 @@ export class AdminPageComponent implements OnInit {
 
     createGame(): void {
         // Implement logic to create a new game
+    }
+
+    private isGameNameUnique(name: string): boolean {
+        return !this.dataSource.some((game) => game.title === name);
+    }
+
+    private prepareGameForImport(game: Game): void {
+        removeUnrecognizedAttributes(game);
+        if (!isValidGame(game)) return;
+        assignNewGameAttributes(game);
     }
 }

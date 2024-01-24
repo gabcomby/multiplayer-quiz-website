@@ -8,12 +8,12 @@ export interface Game {
     questions: Question[];
 }
 
-interface Choice {
+export interface Choice {
     text: string;
     isCorrect?: boolean;
 }
 
-interface Question {
+export interface Question {
     type: string;
     text: string;
     points: number;
