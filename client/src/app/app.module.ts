@@ -37,7 +37,6 @@ import { NewQuestionComponent } from './components/new-question/new-question.com
         NewGamePageComponent,
         CreateQGamePageComponent,
         NewQuestionComponent,
-        // CreateQGamePageComponent,
     ],
     imports: [
         AppMaterialModule,
