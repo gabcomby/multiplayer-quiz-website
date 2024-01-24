@@ -2,8 +2,8 @@
     <h1>Création d'un nouveau jeu!</h1>
 </div>
 <div id="form">
-    <form class="example-form">
-        <div formGroupName="gameForm" [formGroup]="gameForm">
+    <form class="example-form" [formGroup]="gameForm">
+       
             <mat-form-field class="example-full-width">
                 <mat-label>Nom</mat-label>
                 <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
@@ -26,6 +26,6 @@
             <!-- <button mat-fab color="accent">
             <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
         </button> -->
-        </div>
+       
     </form>
 </div>

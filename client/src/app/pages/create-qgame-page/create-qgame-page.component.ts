@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-// import { ChoiceComponent } from '@app/components/choice/choice.component';
-
 @Component({
     selector: 'app-create-qgame-page',
     templateUrl: './create-qgame-page.component.html',
