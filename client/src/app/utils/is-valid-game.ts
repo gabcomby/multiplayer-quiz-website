@@ -47,14 +47,21 @@ const validateQuestionChoices = (question: Question, questionIndex: number, erro
         return;
     }
 
+    let hasCorrectChoice = false;
     question.choices.forEach((choice: Choice, choiceIndex: number) => {
         if (!choice.text) {
             errors.push(`Question ${questionIndex + 1}, Choice ${choiceIndex + 1}: Text is required`);
         }
         if (choice.isCorrect === undefined) {
             errors.push(`Question ${questionIndex + 1}, Choice ${choiceIndex + 1}: Correctness status is required`);
+        } else if (choice.isCorrect) {
+            hasCorrectChoice = true;
         }
     });
+
+    if (!hasCorrectChoice) {
+        errors.push(`Question ${questionIndex + 1}: At least one choice must be correct`);
+    }
 };
 
 export default isValidGame;
