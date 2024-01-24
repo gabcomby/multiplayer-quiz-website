@@ -72,9 +72,7 @@ export class AdminPageComponent implements OnInit {
             if (fileReader && fileReader.result) {
                 try {
                     const game = JSON.parse(fileReader.result as string);
-                    removeUnrecognizedAttributes(game);
-                    if (!isValidGame(game)) return;
-                    assignNewGameAttributes(game);
+                    this.prepareGameForImport(game);
 
                     this.dataSource = [...this.dataSource, game];
 
@@ -110,5 +108,11 @@ export class AdminPageComponent implements OnInit {
 
     createGame(): void {
         // Implement logic to create a new game
+    }
+
+    private prepareGameForImport(game: Game): void {
+        removeUnrecognizedAttributes(game);
+        if (!isValidGame(game)) return;
+        assignNewGameAttributes(game);
     }
 }
