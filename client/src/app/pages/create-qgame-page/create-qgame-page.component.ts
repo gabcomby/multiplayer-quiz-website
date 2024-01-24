@@ -19,8 +19,7 @@ export class CreateQGamePageComponent {
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),
         description: new FormControl('', Validators.required),
-        time: new FormControl(),
-        // question: new FormControl(''),
+        time: new FormControl('', Validators.required),
     });
 
     // this.gameForm = new FormGroup({

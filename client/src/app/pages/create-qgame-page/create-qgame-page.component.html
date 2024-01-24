@@ -1,13 +1,3 @@
-<!-- <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-    <label for="first-name">First Name: </label>
-    <input id="first-name" type="text" formControlName="firstName" />
-
-    <label for="last-name">Last Name: </label>
-    <input id="last-name" type="text" formControlName="lastName" />
-</form>
-
-<p>Complete the form to enable button.</p>
-<button type="submit" [disabled]="!profileForm.valid">Submit</button> -->
 <div id="title">
     <h1>Création d'un nouveau jeu!</h1>
 </div>
@@ -25,8 +15,8 @@
 
         <mat-form-field class="example-full-width">
             <mat-label>Temps de délai</mat-label>
-            <input matInput placeholder="Temps alloué pour répondre" formControlName="time" />
-        </mat-form-field>
+            <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
+=        </mat-form-field>
 
         <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
 
