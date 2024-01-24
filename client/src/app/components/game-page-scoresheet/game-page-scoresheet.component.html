@@ -1,1 +1,5 @@
-<p>game-page-scoresheet works!</p>
+<div>
+    <mat-card *ngFor="let score of scoreData">
+        <mat-card-content>{{ score.name }} - {{ score.score }}</mat-card-content>
+    </mat-card>
+</div>

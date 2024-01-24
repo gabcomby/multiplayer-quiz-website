@@ -1,9 +1,6 @@
-.question-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#menu-bar {
+    height: 100%;
 }
-
 .large-bar-spacer {
     flex: 1 1 auto;
 }
@@ -11,4 +8,47 @@
 .top-bar-text {
     font-size: 1.5em;
     font-weight: bold;
+}
+
+.container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    grid-template-rows: 50px 35% 65%;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        'top-bar top-bar top-bar'
+        'live-chat timer score'
+        'live-chat question score';
+}
+
+.top-bar {
+    grid-area: top-bar;
+}
+
+.live-chat {
+    grid-area: live-chat;
+    background-color: blueviolet;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer {
+    grid-area: timer;
+    background-color: red;
+    text-align: center;
+}
+
+.question {
+    display: flex;
+    grid-area: question;
+    background-color: green;
+    padding-top: 10%;
+}
+
+.score {
+    grid-area: score;
+    background-color: yellow;
 }

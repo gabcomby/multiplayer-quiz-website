@@ -1,8 +1,8 @@
-<div>
+<div class="container">
     <h2>Débutez une minuterie de 5 secondes</h2>
     <button (click)="handleOnTimerClick()">Commencer</button>
-    <p *ngIf="time">Temps restant : {{ time }}</p>
-    <p *ngIf="!time">Temps restant : {{ totalTime }}</p>
-    <mat-progress-spinner *ngIf="time" class="example-margin" color="primary" mode="determinate" [value]="timePercentage"> </mat-progress-spinner>
-    <mat-progress-spinner *ngIf="!time" class="example-margin" color="primary" mode="determinate" value="100"> </mat-progress-spinner>
+    <p *ngIf="time">{{ time }}</p>
+    <p *ngIf="!time">{{ totalTime }}</p>
+    <mat-progress-spinner *ngIf="time" color="primary" mode="determinate" [value]="timePercentage"> </mat-progress-spinner>
+    <mat-progress-spinner *ngIf="!time" color="primary" mode="determinate" value="100"> </mat-progress-spinner>
 </div>

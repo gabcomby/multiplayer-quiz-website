@@ -14,5 +14,11 @@ export class GamePageComponent {
         ['New York', 'Pittsburgh', 'Washington', 'Las Vegas'],
         ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'],
     ];
+    gameScore: { name: string; score: number }[] = [
+        { name: 'Gabriel', score: 1000 },
+        { name: 'Julie', score: 300 },
+        { name: 'Maxime', score: 0 },
+        { name: 'Alexane', score: 550 },
+    ];
     questionTimer: number = 30;
 }
