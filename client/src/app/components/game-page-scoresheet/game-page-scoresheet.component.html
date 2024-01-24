@@ -1,5 +1,8 @@
 <div>
-    <mat-card *ngFor="let score of scoreData">
-        <mat-card-content>{{ score.name }} - {{ score.score }}</mat-card-content>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Scores de la partie</mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngFor="let score of scoreData">{{ score.name }} - {{ score.score }}</mat-card-content>
     </mat-card>
 </div>
