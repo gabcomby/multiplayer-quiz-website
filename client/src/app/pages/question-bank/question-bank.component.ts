@@ -5,6 +5,7 @@ export interface QuestionBank {
     position: number;
     question: string;
     date: Date;
+    selected?: boolean;
 }
 
 const ELEMENT_DATA: QuestionBank[] = [
@@ -24,5 +25,25 @@ const ELEMENT_DATA: QuestionBank[] = [
 export class QuestionBankComponent {
     displayedColumns: string[] = ['position', 'question', 'date'];
     dataSource = ELEMENT_DATA;
-    clickedRows = new Set<QuestionBank>();
+
+    // Track the selected row
+    selectedRow: QuestionBank | null = null;
+
+    // Handle row click event
+    rowClicked(row: QuestionBank): void {
+        if (this.selectedRow === row) {
+            // Deselect the row if it's already selected
+            this.selectedRow.selected = false;
+            this.selectedRow = null;
+        } else {
+            // Deselect the currently selected row (if any)
+            if (this.selectedRow) {
+                this.selectedRow.selected = false;
+            }
+
+            // Select the clicked row
+            row.selected = true;
+            this.selectedRow = row;
+        }
+    }
 }

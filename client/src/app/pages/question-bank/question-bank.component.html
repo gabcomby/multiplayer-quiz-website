@@ -1,3 +1,7 @@
+<header>
+    <p class="title">Banque de Question</p>
+    <button class="button" routerLink="">Nouvelle Question</button>
+</header>
 <table mat-table [dataSource]="dataSource" class="questions">
     <!-- Position Column -->
     <ng-container matColumnDef="position">
@@ -18,10 +22,5 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-        mat-row
-        (click)="clickedRows.add(row)"
-        [class.demo-row-is-clicked]="clickedRows.has(row)"
-        *matRowDef="let row; columns: displayedColumns"
-    ></tr>
+    <tr mat-row (click)="rowClicked(element)" [class.demo-row-is-clicked]="element.selected" *matRowDef="let element; columns: displayedColumns"></tr>
 </table>
