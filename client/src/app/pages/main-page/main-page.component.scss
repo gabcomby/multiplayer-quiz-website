@@ -1,52 +1,84 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     min-height: 100vh;
-    height: auto;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+
+.header {
+    text-align: center;
+}
+
+.logo {
+    padding: 20px;
+    height: 100px;
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+    color: #343a40;
+}
+
+.server-message {
+    text-align: center;
+    margin: 20px 0;
 }
 
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-}
-
-.logo {
-    position:absolute;
-    top: 0;
-    left:0;
-    height: 100px;
-    width: 100px;
+    width: 100%;
 }
 
 .button {
-    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 10px 0;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.footer {
     text-align: center;
+    width: 100%;
+    margin-top: auto;
+    padding: 20px 0;
+    background-color: #343a40;
+    color: white;
 }
 
 .team-name {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-    color: green;
+    margin: 0.25em 0;
+    color: #17a2b8;
 }
 
-.header-item {
-    justify-content: center;
-    text-align: center;
+.team-members {
+    color: #6c757d;
 }
 
-.footer-item {
-    text-align: center;
+.team-members span:nth-child(odd) {
+    color: #ffc107;
 }
 
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
-.server-message {
-    justify-content: center;
-    width: 20%;
-    min-width: min-content;
+.team-members span:nth-child(even) {
+    color: #28a745;
 }
