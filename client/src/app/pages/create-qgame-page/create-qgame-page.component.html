@@ -2,30 +2,39 @@
     <h1>Création d'un nouveau jeu!</h1>
 </div>
 <div id="form">
-    <form class="example-form" [formGroup]="gameForm">
-       
-            <mat-form-field class="example-full-width">
-                <mat-label>Nom</mat-label>
-                <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
-            </mat-form-field>
+    <form [formGroup]="gameForm" class="example-form">
+        <mat-form-field class="example-full-width">
+            <mat-label>Nom</mat-label>
+            <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
+        </mat-form-field>
 
-            <mat-form-field class="example-full-width" floatLabel="always">
-                <mat-label>Temps de délai</mat-label>
-                <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
-                <!-- <span matTextPrefix>$&nbsp;</span> -->
-                <span matTextSuffix>secondes</span>
-            </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+        </mat-form-field>
 
+        <mat-form-field class="example-full-width">
+            <mat-label>Temps de délai</mat-label>
+            <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
+=        </mat-form-field>
+
+        <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
+
+        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
+
+        <div>
             <!-- <mat-form-field class="example-full-width">
-                <mat-label>Temps de délai</mat-label>
-                <input matInput placeholder="Temps alloué pour répondre" formControlName="time" />
-            </mat-form-field> -->
+                <mat-label>Question</mat-label>
+                <input formControlName="question" matInput placeholder="question" />
+            </mat-form-field>
 
-            <button type="submit" mat-raised-button id="add">Ajouter question</button>
-
-            <!-- <button mat-fab color="accent">
-            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
-        </button> -->
-       
+            <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
+            <div>
+                <label>Liste de question:</label>
+                <div *ngFor="let question of questions; index as questionId">
+                    <p>{{questionId+1}}. {{question}}</p>
+                </div>
+            </div>
+        </div>
     </form>
 </div>

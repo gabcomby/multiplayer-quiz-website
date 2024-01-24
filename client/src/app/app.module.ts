@@ -1,6 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -14,12 +17,8 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { ChoiceComponent } from './components/choice/choice.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
-
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatIconModule } from '@angular/material/icon';
-// import { MatInputModule } from '@angular/material/input';
 
 /**
  * Main module that is used in main.ts.
@@ -37,6 +36,8 @@ import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
+        CreateQGamePageComponent,
+        NewQuestionComponent,
         ChoiceComponent,
         CreateQGamePageComponent,
     ],
@@ -48,11 +49,10 @@ import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame
         BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
-        // MatFormFieldModule,
-        // MatButtonModule,
-        // MatInputModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatInputModule,
         FormsModule,
-        // MatIconModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
