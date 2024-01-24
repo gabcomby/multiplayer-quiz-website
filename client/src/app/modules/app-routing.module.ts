@@ -6,6 +6,8 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
+import { GameTestComponent } from '@app/pages/game-test/game-test.component';
+import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
 
 const routes: Routes = [
@@ -16,6 +18,8 @@ const routes: Routes = [
     { path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard] },
     { path: 'questions', component: QuestionsPageComponent },
     { path: 'new-game', component: NewGamePageComponent },
+    { path: 'testGame/:id', component: GameTestComponent },
+    { path: 'gameWait/:id', component: GameWaitComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

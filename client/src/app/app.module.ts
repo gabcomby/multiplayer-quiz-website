@@ -13,6 +13,8 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { GameTestComponent } from './pages/game-test/game-test.component';
+import { GameWaitComponent } from './pages/game-wait/game-wait.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
 
@@ -32,6 +34,8 @@ import { PasswordDialogComponent } from './components/password-dialog/password-d
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
+        GameTestComponent,
+        GameWaitComponent,
         QuestionsPageComponent,
         PasswordDialogComponent,
     ],
