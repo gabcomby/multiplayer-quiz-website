@@ -15,6 +15,8 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
+import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -34,6 +36,8 @@ import { GameWaitComponent } from './pages/game-wait/game-wait.component';
         NewGamePageComponent,
         GameTestComponent,
         GameWaitComponent,
+        QuestionsPageComponent,
+        PasswordDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

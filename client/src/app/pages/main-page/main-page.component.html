@@ -1,26 +1,16 @@
-<div class="container justified">
-    <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
-    <h1 class="header-item">hibou moche</h1>
-    <img src="../../../assets/Hibou.png" class="logo" alt="Logo Hibou" />
-    <section id="server-message" class="justified">
-        <p>Petit message du serveur : {{ message.getValue() }}</p>
-        <div class="justified">
-            <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>
-            <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
-            <button class="button" routerLink="/material">Voir la page démo Angular Material</button>
-            <button class="button">Joindre une partie</button>
-            <button class="button" routerLink="/new-game">Créer une partie</button>
-            <button class="button" routerLink="/admin">Administrer les jeux</button>
-        </div>
+<div class="container">
+    <header class="header">
+        <img src="../../../assets/Hibou.png" class="logo" alt="Logo Hibou" />
+        <h1>PolyGames</h1>
+    </header>
+    <section class="server-message justified">
+        <button class="button">Joindre une partie</button>
+        <button class="button" routerLink="/new-game">Créer une partie</button>
+        <button class="button" routerLink="/admin">Administrer les jeux</button>
+        <button class="button" routerLink="/game">Jouer!</button>
     </section>
-
-    <button class="button" routerLink="/game">Jouer!</button>
-
-    <footer class="footer-item">
+    <footer class="footer">
         <h4 class="team-name">Équipe 102</h4>
-        <p>
-            <span>Julie Bergeron 2201444</span>, <span>Gabriel Comby 2208699</span>, <span>Alexane Dion 2208835</span>, 
-            <span>Pierre-Emmanuel Goffi 2185479</span>, <span>Julianne D'Aoust 2210332</span>, <span>Maxime Savy 2201231</span>
-        </p>
+        <p class="team-members">Julie Bergeron, Gabriel Comby, Alexane Dion, Pierre-Emmanuel Goffi, Julianne D'Aoust, Maxime Savy</p>
     </footer>
 </div>
