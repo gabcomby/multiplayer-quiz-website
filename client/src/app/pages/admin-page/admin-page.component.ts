@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
+import isValidGame from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-admin-page',
@@ -69,6 +70,8 @@ export class AdminPageComponent implements OnInit {
             if (fileReader && fileReader.result) {
                 try {
                     const game = JSON.parse(fileReader.result as string);
+                    if (!isValidGame(game)) return;
+
                     this.dataSource = [...this.dataSource, game];
 
                     this.http.post('http://localhost:3000/api/games', game).subscribe({
