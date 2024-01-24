@@ -1,0 +1,26 @@
+<header>
+    <p class="title">Banque de Question</p>
+    <button class="button" routerLink="">Nouvelle Question</button>
+</header>
+<table mat-table [dataSource]="dataSource" class="questions">
+    <!-- Position Column -->
+    <ng-container matColumnDef="position">
+        <th mat-header-cell *matHeaderCellDef>No.</th>
+        <td mat-cell *matCellDef="let element">{{ element.position }}</td>
+    </ng-container>
+
+    <!-- Question Column -->
+    <ng-container matColumnDef="question">
+        <th mat-header-cell *matHeaderCellDef>Question</th>
+        <td mat-cell *matCellDef="let element">{{ element.question }}</td>
+    </ng-container>
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.date }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row (click)="rowClicked(element)" [class.demo-row-is-clicked]="element.selected" *matRowDef="let element; columns: displayedColumns"></tr>
+</table>

@@ -1,13 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
+import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -19,6 +16,13 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
+import { GamePageQuestionsComponent } from './components/game-page-questions/game-page-questions.component';
+import { GamePageTimerComponent } from './components/game-page-timer/game-page-timer.component';
+import { GamePageScoresheetComponent } from './components/game-page-scoresheet/game-page-scoresheet.component';
+import { GameTestComponent } from './pages/game-test/game-test.component';
+import { GameWaitComponent } from './pages/game-wait/game-wait.component';
+import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -33,7 +37,7 @@ import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame
         MainPageComponent,
         MaterialPageComponent,
         PlayAreaComponent,
-        SidebarComponent,
+        GamePageLivechatComponent,
         AdminPageComponent,
         NewGamePageComponent,
         CreateQGamePageComponent,
@@ -49,10 +53,14 @@ import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame
         BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
-        MatButtonModule,
-        MatInputModule,
         FormsModule,
+        GamePageQuestionsComponent,
+        GamePageTimerComponent,
+        GamePageScoresheetComponent,
+        GameTestComponent,
+        GameWaitComponent,
+        QuestionsPageComponent,
+        PasswordDialogComponent,
     ],
     providers: [],
     bootstrap: [AppComponent],

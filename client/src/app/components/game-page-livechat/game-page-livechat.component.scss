@@ -1,0 +1,28 @@
+div {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 20px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+}
+
+form.chat-textbox {
+    flex: 1;
+    margin-right: 10px;
+    height: 100%;
+}
+
+button {
+    margin: 0;
+}
+
+.mat-form-field {
+    width: 100%;
+    height: 100%;
+}
+
+mat-icon {
+    font-size: 24px;
+}
