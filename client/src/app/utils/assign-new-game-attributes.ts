@@ -4,7 +4,7 @@ import { customAlphabet } from 'nanoid';
 const ID_LENGTH = 6;
 
 const assignNewGameAttributes = (game: Game): void => {
-    game.lastModification = new Date();
+    game.lastModification = new Date().toISOString() as unknown as Date;
     game.id = generateNewId();
 };
 

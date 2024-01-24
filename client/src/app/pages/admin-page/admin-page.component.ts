@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
+import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
@@ -73,6 +74,7 @@ export class AdminPageComponent implements OnInit {
                     const game = JSON.parse(fileReader.result as string);
                     removeUnrecognizedAttributes(game);
                     if (!isValidGame(game)) return;
+                    assignNewGameAttributes(game);
 
                     this.dataSource = [...this.dataSource, game];
 
