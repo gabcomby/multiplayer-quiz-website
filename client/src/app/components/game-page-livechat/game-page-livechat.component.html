@@ -1,0 +1,16 @@
+<div>
+    <ng-container *ngFor="let message of messages">
+        <mat-card *ngIf="message.visible" [@fade]="true">
+            <mat-card-content>{{ message.text }}</mat-card-content>
+        </mat-card>
+    </ng-container>
+    <form class="chat-textbox" #messageForm="ngForm">
+        <mat-form-field class="example-full-width">
+            <mat-label>Message</mat-label>
+            <textarea matInput name="newMessage" [(ngModel)]="newMessage" style="resize: none"></textarea>
+        </mat-form-field>
+    </form>
+    <button mat-mini-fab color="primary" (click)="sendMessage()">
+        <mat-icon>send</mat-icon>
+    </button>
+</div>
