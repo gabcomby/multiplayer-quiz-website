@@ -1,6 +1,23 @@
 <div class="container">
-    <app-sidebar id="sidebar"></app-sidebar>
-    <section class="play-area-container">
-        <app-play-area class="play-area" tabindex="0"></app-play-area>
-    </section>
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+                <mat-icon>home</mat-icon>
+            </button>
+            <span class="large-bar-spacer"></span>
+            <span class="top-bar-text">Question {{ currentQuestion }}/{{ totalQuestions }}</span>
+            <span class="large-bar-spacer"></span>
+            <span class="top-bar-text">{{ gameName }}</span>
+        </mat-toolbar>
+    </div>
+    <div class="live-chat">
+        <app-game-page-livechat id="sidebar"></app-game-page-livechat>
+    </div>
+    <div class="timer"><app-game-page-timer [gameTimer]="questionTimer"></app-game-page-timer></div>
+    <div class="question">
+        <app-game-page-questions [question]="questions[0]" [answers]="answers[0]"></app-game-page-questions>
+    </div>
+    <div class="score">
+        <app-game-page-scoresheet [scoreData]="gameScore"></app-game-page-scoresheet>
+    </div>
 </div>

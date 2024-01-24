@@ -1,1 +1,9 @@
 <p>new-game-page works!</p>
+<h2>Liste des jeux</h2>
+<div *ngFor="let game of games">
+<div *ngIf = "game.visibility">
+  <p (click)="getInformations(game)" id={{game.id}}> {{ game.name }} 
+  </p>
+  <ng-container *ngIf=""></ng-container>
+</div>
+</div>

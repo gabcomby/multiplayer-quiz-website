@@ -1,7 +1,7 @@
 {
     "id": "1a2b3c",
     "title": "Questionnaire sur le JS",
-    "description" : "Questions de pratique sur le langage JavaScript",
+    "description": "Questions de pratique sur le langage JavaScript",
     "duration": 60,
     "lastModification": "2018-11-13T20:20:39+00:00",
     "questions": [
@@ -23,7 +23,8 @@
                     "isCorrect": true
                 },
                 {
-                    "text": "int"
+                    "text": "int",
+                    "isCorrect": false
                 }
             ]
         },
