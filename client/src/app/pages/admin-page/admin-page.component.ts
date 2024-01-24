@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import isValidGame from '@app/utils/is-valid-game';
+import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 @Component({
     selector: 'app-admin-page',
@@ -70,6 +71,7 @@ export class AdminPageComponent implements OnInit {
             if (fileReader && fileReader.result) {
                 try {
                     const game = JSON.parse(fileReader.result as string);
+                    removeUnrecognizedAttributes(game);
                     if (!isValidGame(game)) return;
 
                     this.dataSource = [...this.dataSource, game];
