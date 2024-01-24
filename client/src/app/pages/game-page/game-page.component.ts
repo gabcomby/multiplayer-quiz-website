@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+const QUESTION_TIMER = 30;
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -20,5 +20,5 @@ export class GamePageComponent {
         { name: 'Maxime', score: 0 },
         { name: 'Alexane', score: 550 },
     ];
-    questionTimer: number = 30;
+    questionTimer = QUESTION_TIMER;
 }

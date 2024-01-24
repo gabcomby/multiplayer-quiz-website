@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
 
+const NOT_EXIST = -1;
 @Component({
     selector: 'app-game-page-livechat',
     templateUrl: './game-page-livechat.component.html',
@@ -35,7 +36,7 @@ export class GamePageLivechatComponent {
     hideMessage(message: { text: string; visible: boolean }): void {
         message.visible = false;
         const index = this.messages.indexOf(message);
-        if (index !== -1) {
+        if (index !== NOT_EXIST) {
             this.messages.splice(index, 1);
         }
     }
