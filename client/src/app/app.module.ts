@@ -11,9 +11,15 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { ChoiceComponent } from './components/choice/choice.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
-import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
+
+// import { MatButtonModule } from '@angular/material/button';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatIconModule } from '@angular/material/icon';
+// import { MatInputModule } from '@angular/material/input';
 
 /**
  * Main module that is used in main.ts.
@@ -31,17 +37,22 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
         SidebarComponent,
         AdminPageComponent,
         NewGamePageComponent,
-        // CreateQGamePageComponent,
+        ChoiceComponent,
+        CreateQGamePageComponent,
     ],
     imports: [
         AppMaterialModule,
         AppRoutingModule,
         BrowserAnimationsModule,
-        BrowserModule,
         FormsModule,
+        BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
-        CreateQGamePageComponent,
+        // MatFormFieldModule,
+        // MatButtonModule,
+        // MatInputModule,
+        FormsModule,
+        // MatIconModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
