@@ -8,5 +8,10 @@
     >
 
     <mat-progress-spinner *ngIf="time$ | async as time" color="primary" mode="determinate" [value]="(time / totalTime) * 100"></mat-progress-spinner>
-    <mat-progress-spinner *ngIf="!(time$ | async)" color="primary" mode="determinate" value="100"></mat-progress-spinner>
+    <mat-progress-spinner
+        *ngIf="!(time$ | async) && timerIsInvisible === false"
+        color="primary"
+        mode="determinate"
+        value="100"
+    ></mat-progress-spinner>
 </div>
