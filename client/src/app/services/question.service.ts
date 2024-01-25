@@ -25,4 +25,7 @@ export class QuestionService {
         }
         console.log('changement');
     }
+    removeQuestion(question: Question) {
+        this.questions.filter((ques) => ques.id === question.id);
+    }
 }

@@ -30,4 +30,7 @@ export class ModifiedQuestionComponent implements OnInit {
         this.questionService.modifiedList(this.questionList);
         this.modifiedShown = false;
     }
+    removeQuestion(question: Question) {
+        this.questionService.removeQuestion(question);
+    }
 }

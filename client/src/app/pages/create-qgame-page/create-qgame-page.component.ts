@@ -54,9 +54,9 @@ export class CreateQGamePageComponent {
         this.gameForm.reset();
     }
 
-    removeQuestion(question: Question) {
-        this.questions.filter((ques) => ques.id === question.id);
-    }
+    // removeQuestion(question: Question) {
+    //     this.questions.filter((ques) => ques.id === question.id);
+    // }
 
 
 }
