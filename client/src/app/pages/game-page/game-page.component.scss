@@ -35,20 +35,23 @@
     align-items: center;
 }
 
-.timer {
-    grid-area: timer;
-    background-color: red;
-    text-align: center;
-}
-
 .question {
     display: flex;
     grid-area: question;
-    background-color: green;
-    padding-top: 10%;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50%;
 }
 
 .score {
     grid-area: score;
     background-color: yellow;
+}
+
+.timer {
+    grid-area: timer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
