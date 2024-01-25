@@ -15,7 +15,11 @@
     </div>
     <div class="timer"><app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer></div>
     <div class="question">
-        <app-game-page-questions [question]="questions[currentQuestion - 1]" [answers]="answers[currentQuestion - 1]"></app-game-page-questions>
+        <app-game-page-questions
+            [question]="questions[currentQuestion - 1]"
+            [answers]="answers[currentQuestion - 1]"
+            [timerExpired]="questionHasExpired"
+        ></app-game-page-questions>
     </div>
     <div class="score">
         <app-game-page-scoresheet [scoreData]="gameScore"></app-game-page-scoresheet>
