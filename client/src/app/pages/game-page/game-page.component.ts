@@ -21,4 +21,10 @@ export class GamePageComponent {
         { name: 'Alexane', score: 550 },
     ];
     questionTimer = QUESTION_TIMER;
+
+    onTimerComplete(): void {
+        if (this.currentQuestion < this.totalQuestions) {
+            this.currentQuestion++;
+        }
+    }
 }

@@ -2,13 +2,11 @@
     <h2>Débutez une minuterie de 30 secondes</h2>
     <button (click)="handleOnTimerClick()">Commencer</button>
 
-    <!-- Use async pipe for subscribing to time observable -->
     <p *ngIf="time$ | async as time; else showTotalTime">{{ time }}</p>
     <ng-template #showTotalTime
         ><p>{{ totalTime }}</p></ng-template
     >
 
-    <!-- Update progress spinner with async pipe -->
     <mat-progress-spinner *ngIf="time$ | async as time" color="primary" mode="determinate" [value]="(time / totalTime) * 100"></mat-progress-spinner>
     <mat-progress-spinner *ngIf="!(time$ | async)" color="primary" mode="determinate" value="100"></mat-progress-spinner>
 </div>

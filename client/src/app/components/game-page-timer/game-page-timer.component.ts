@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TimerService } from '@app/services/timer.service';
 import { Observable } from 'rxjs';
 
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class GamePageTimerComponent implements OnInit {
     @Input() gameTimer: number;
+    @Output() timerComplete = new EventEmitter<void>();
     time$: Observable<number>;
 
     constructor(private readonly timerService: TimerService) {}
@@ -22,6 +23,10 @@ export class GamePageTimerComponent implements OnInit {
     }
 
     handleOnTimerClick(): void {
-        this.timerService.startTimer(this.gameTimer);
+        this.timerService.startTimer(this.gameTimer).subscribe({
+            complete: () => {
+                this.timerComplete.emit();
+            },
+        });
     }
 }

@@ -13,9 +13,9 @@
     <div class="live-chat">
         <app-game-page-livechat id="sidebar"></app-game-page-livechat>
     </div>
-    <div class="timer"><app-game-page-timer [gameTimer]="questionTimer"></app-game-page-timer></div>
+    <div class="timer"><app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer></div>
     <div class="question">
-        <app-game-page-questions [question]="questions[0]" [answers]="answers[0]"></app-game-page-questions>
+        <app-game-page-questions [question]="questions[currentQuestion - 1]" [answers]="answers[currentQuestion - 1]"></app-game-page-questions>
     </div>
     <div class="score">
         <app-game-page-scoresheet [scoreData]="gameScore"></app-game-page-scoresheet>
