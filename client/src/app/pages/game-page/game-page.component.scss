@@ -29,10 +29,10 @@
 
 .live-chat {
     grid-area: live-chat;
-    background-color: blueviolet;
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .question {
@@ -44,8 +44,8 @@
 }
 
 .score {
+    margin-top: 20%;
     grid-area: score;
-    background-color: yellow;
 }
 
 .timer {
