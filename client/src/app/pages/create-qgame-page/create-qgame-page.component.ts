@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
+import { QuestionService } from '@app/services/question.service';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -23,6 +24,10 @@ export class CreateQGamePageComponent {
         time: new FormControl('', Validators.required),
     });
 
+    constructor(private questionService: QuestionService) {
+        this.questions = this.questionService.getQuestion();
+    }
+
     get name() {
         return this.gameForm.get('name');
     }
@@ -42,9 +47,10 @@ export class CreateQGamePageComponent {
         // Ajouter des qustions a la liste locale de question
         this.questionId += 1;
         question.id = this.questionId;
-        if (question.text) {
-            this.questions.push(question);
-        }
+        // if (question.text) {
+        //     this.questions.push(question);
+        // }
+        this.questionService.addQuestion(question);
         this.gameForm.reset();
     }
 

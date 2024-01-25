@@ -31,5 +31,6 @@ export class ModifiedQuestionComponent implements OnInit {
             }
         }
         this.modifiedShown = false;
+        return this.questionList;
     }
 }
