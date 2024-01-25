@@ -1,1 +1,21 @@
-<p>choice works!</p>
+<div>
+    <form>
+        <div>
+            Entrer la question : 
+            <mat-form-field>
+                
+                <input matInput type="text" [(ngModel)]="questionString" name="question" >
+            </mat-form-field>
+        </div>
+        <ng-container *ngFor="let answer of answers; let i = index">
+            <div class="answer-container">
+                {{i + 1}}. 
+                <mat-form-field>
+                    <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="answers[i].isCorrect" name="correctGroup">Correct</mat-checkbox>
+            </div>
+        </ng-container>
+        <button mat-raised-button  (click)="addQuestion()"  color="accent" class="add">Ajouter</button>
+    </form>
+</div>

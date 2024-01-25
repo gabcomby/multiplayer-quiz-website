@@ -3,38 +3,40 @@
 </div>
 <div id="form">
     <form [formGroup]="gameForm" class="example-form">
-        <mat-form-field class="example-full-width">
-            <mat-label>Nom</mat-label>
-            <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
-        </mat-form-field>
+        <div class="game-information">
+            <mat-form-field class="example-full-width">
+                <mat-label>Nom</mat-label>
+                <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
+            </mat-form-field>
 
-        <mat-form-field class="example-full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
-        </mat-form-field>
+            <mat-form-field class="example-full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+            </mat-form-field>
 
-        <mat-form-field class="example-full-width">
-            <mat-label>Temps de délai</mat-label>
-            <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
-=        </mat-form-field>
-
+            <mat-form-field class="example-full-width">
+                <mat-label>Temps de délai</mat-label>
+                <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
+            </mat-form-field>
+        </div>
         <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
 
-        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
+        <!-- <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question> -->
 
-        <div>
-            <!-- <mat-form-field class="example-full-width">
+        <!-- <mat-form-field class="example-full-width">
                 <mat-label>Question</mat-label>
                 <input formControlName="question" matInput placeholder="question" />
             </mat-form-field>
 
             <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
-            <div>
+        <!-- <div>
                 <label>Liste de question:</label>
                 <div *ngFor="let question of questions; index as questionId">
                     <p>{{questionId+1}}. {{question}}</p>
                 </div>
-            </div>
+            </div> -->
+        <div class="questions">
+            <app-choice></app-choice>
         </div>
     </form>
 </div>
