@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
+import { QuestionService } from '@app/services/question.service';
 
 @Component({
     selector: 'app-modified-question',
@@ -7,13 +8,17 @@ import { Question } from '@app/interfaces/game';
     styleUrls: ['./modified-question.component.scss'],
 })
 export class ModifiedQuestionComponent implements OnInit {
-    @Input() questionList: Question[] = [];
+    // @Input() questionList: Question[] = [];
     @Input() modifiedShown: boolean;
     oldQuestionList: Question[] = [];
+    questionList: Question[] = [];
 
     // removeQuestion(){
 
     // }
+    constructor(private questionService: QuestionService) {
+        this.questionList = this.questionService.getQuestion();
+    }
     ngOnInit() {
         for (const question of this.questionList) {
             this.oldQuestionList.push({ type: question.type, text: question.text, points: question.points, id: question.id });
@@ -22,15 +27,7 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     modifiedQuestion() {
-        for (let i = 0; i < this.questionList.length; i++) {
-            if (this.questionList[i].text !== this.oldQuestionList[i].text) {
-                this.questionList[i].text = this.oldQuestionList[i].text;
-            }
-            if (this.questionList[i].points !== this.oldQuestionList[i].points) {
-                this.questionList[i].points = this.oldQuestionList[i].points;
-            }
-        }
+        this.questionService.modifiedList(this.questionList);
         this.modifiedShown = false;
-        return this.questionList;
     }
 }

@@ -1,0 +1,8 @@
+<p>game-question-list works!</p>
+
+<div id="list">
+    <label>Liste de question:</label>
+    <div *ngFor="let question of questions; index as questionId">
+        <p>{{question.id}}. {{question.text}}</p>
+    </div>
+</div>
