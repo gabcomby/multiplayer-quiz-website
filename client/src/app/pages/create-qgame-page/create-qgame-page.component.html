@@ -18,23 +18,25 @@
             <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
 =        </mat-form-field>
 
-        <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
-
+        <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button>
+        <div *ngIf="addQuestionShown === true">
         <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
-
+        </div>
         <div>
-            <!-- <mat-form-field class="example-full-width">
-                <mat-label>Question</mat-label>
-                <input formControlName="question" matInput placeholder="question" />
-            </mat-form-field>
 
-            <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
-            <div>
-                <label>Liste de question:</label>
-                <div *ngFor="let question of questions; index as questionId">
-                    <p>{{questionId+1}}. {{question}}</p>
-                </div>
-            </div>
+
+        <button type="button" (click)="toggleModifiedQuestion()" mat-raised-button color="accent">Modification des questions</button>
+        <div *ngIf="modifiedQuestion === true">
+            <app-modified-question [questionList]="questions" [modifiedShown]="modifiedQuestion"></app-modified-question>
+        </div>
         </div>
     </form>
+
+    <div id="list">
+        <label>Liste de question:</label>
+        <div *ngFor="let question of questions; index as questionId">
+            <p>{{question.id}}. {{question.text}}</p>
+        </div>
+    </div>
+
 </div>

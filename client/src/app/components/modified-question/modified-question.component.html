@@ -1,0 +1,10 @@
+<p>modified-question works!</p>
+
+
+    <div *ngFor="let question of questionList">
+        <input value="{{question.text}}"  />
+        <input  value="{{question.points}}" />
+    </div>
+    
+
+<button type="submit" (click)="modifiedQuestion()"> Enregistrer</button>

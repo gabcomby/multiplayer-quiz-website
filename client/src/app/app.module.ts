@@ -23,6 +23,7 @@ import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 
 /**
  * Main module that is used in main.ts.
@@ -51,6 +52,7 @@ import { QuestionsPageComponent } from './pages/questions-page/questions-page.co
         GameWaitComponent,
         QuestionsPageComponent,
         PasswordDialogComponent,
+        ModifiedQuestionComponent,
     ],
     imports: [
         AppMaterialModule,

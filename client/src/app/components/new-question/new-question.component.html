@@ -2,8 +2,9 @@
 
 <div id="newQuestion">
 
-    <input [(ngModel)]="question" />
-    <input [(ngModel)] = "point" min="10" max="100" step="10"/>
+    <input [(ngModel)]="question.text" />
+    <input [(ngModel)] = "question.points" min="10" max="100" step="10"/>
+    <input type="checkbox" [(ngModel)] = "addBankQuestion"/>
     <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button>
 
 
