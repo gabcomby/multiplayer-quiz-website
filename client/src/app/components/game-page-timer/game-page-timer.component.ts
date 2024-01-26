@@ -12,7 +12,7 @@ const TIME_BETWEEN_QUESTIONS = 4000;
 export class GamePageTimerComponent implements OnInit {
     @Input() gameTimer: number;
     @Output() timerComplete = new EventEmitter<void>();
-    time$: Observable<number>;
+    time: Observable<number>;
     timerIsInvisible: boolean = false;
 
     constructor(private readonly timerService: TimerService) {}
@@ -22,7 +22,7 @@ export class GamePageTimerComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.time$ = this.timerService.getCurrentTime();
+        this.time = this.timerService.getCurrentTime();
     }
 
     handleOnTimerClick(): void {
