@@ -1,8 +1,4 @@
 <div class="container">
-    <h2>Débutez une minuterie de 5 secondes</h2>
-    <button (click)="handleOnTimerClick()">Commencer</button>
-
-    <p *ngIf="time | async as time; else showTotalTime">{{ time }}</p>
     <ng-template #showTotalTime>
         <p>{{ totalTime }}</p>
     </ng-template>
@@ -17,9 +13,9 @@
         <ng-template #showIdleWheel>
             <mat-progress-spinner color="primary" mode="determinate" value="100"></mat-progress-spinner>
         </ng-template>
-        <p *ngIf="time | async as time; else showIdleTime" class="centered-text">{{ time }}</p>
+        <p *ngIf="time | async as time; else showIdleTime" class="centered-text">{{ time }} SEC</p>
         <ng-template #showIdleTime>
-            <p class="centered-text">{{ totalTime }}</p>
+            <p class="centered-text">{{ totalTime }} SEC</p>
         </ng-template>
     </div>
 </div>

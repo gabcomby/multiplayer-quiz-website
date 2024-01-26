@@ -2,8 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TimerService } from '@app/services/timer.service';
 import { Observable } from 'rxjs';
 
-const TIME_BETWEEN_QUESTIONS = 4000;
-
 @Component({
     selector: 'app-game-page-timer',
     templateUrl: './game-page-timer.component.html',
@@ -23,17 +21,5 @@ export class GamePageTimerComponent implements OnInit {
 
     ngOnInit() {
         this.time = this.timerService.getCurrentTime();
-    }
-
-    handleOnTimerClick(): void {
-        this.timerService.startTimer(this.gameTimer).subscribe({
-            complete: () => {
-                this.timerComplete.emit();
-                this.timerIsInvisible = true;
-                setTimeout(() => {
-                    this.timerIsInvisible = false;
-                }, TIME_BETWEEN_QUESTIONS);
-            },
-        });
     }
 }
