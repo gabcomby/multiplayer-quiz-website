@@ -8,7 +8,7 @@ const assignNewGameAttributes = (game: Game): void => {
     game.id = generateNewId();
 };
 
-const generateNewId = (): string => {
+export const generateNewId = (): string => {
     const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', ID_LENGTH);
     return nanoid();
 };
