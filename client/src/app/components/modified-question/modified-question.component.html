@@ -2,7 +2,7 @@
     <div *ngFor="let question of questionList">
         <input value="{{question.text}}" />
         <input  value="{{question.points}}" />
-        <!-- <button type="button" (click)="removeQuestion()"></button> -->
+        <button type="button" (click)="removeQuestion(question)"></button>
     </div>
     
 

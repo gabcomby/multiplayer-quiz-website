@@ -10,20 +10,17 @@ import { QuestionService } from '@app/services/question.service';
 export class ModifiedQuestionComponent implements OnInit {
     // @Input() questionList: Question[] = [];
     @Input() modifiedShown: boolean;
-    oldQuestionList: Question[] = [];
+    // oldQuestionList: Question[] = [];
     questionList: Question[] = [];
 
     // removeQuestion(){
 
     // }
     constructor(private questionService: QuestionService) {
-        this.questionList = this.questionService.getQuestion();
+        // this.questionList = this.questionService.getQuestion();
     }
     ngOnInit() {
-        for (const question of this.questionList) {
-            this.oldQuestionList.push({ type: question.type, text: question.text, points: question.points, id: question.id });
-        }
-        return this.oldQuestionList;
+        this.questionService.getQuestion().subscribe((list) => (this.questionList = list));
     }
 
     modifiedQuestion() {
@@ -32,5 +29,6 @@ export class ModifiedQuestionComponent implements OnInit {
     }
     removeQuestion(question: Question) {
         this.questionService.removeQuestion(question);
+        console.log(question);
     }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
@@ -12,7 +12,7 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./create-qgame-page.component.scss'],
     // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
-export class CreateQGamePageComponent {
+export class CreateQGamePageComponent implements OnInit {
     // questions: string[] = [];
     questions: Question[] = [];
     questionId: number = 0;
@@ -24,13 +24,15 @@ export class CreateQGamePageComponent {
         time: new FormControl('', Validators.required),
     });
 
-    constructor(private questionService: QuestionService) {
-        this.questions = this.questionService.getQuestion();
+    constructor(private questionService: QuestionService) {}
+
+    ngOnInit() {
+        this.questionService.getQuestion().subscribe((list) => (this.questions = list));
     }
 
-    get name() {
-        return this.gameForm.get('name');
-    }
+    // get name() {
+    //     return this.gameForm.get('name');
+    // }
     onSubmit() {
         // Call la fonction du service QuestionHandler pour ajouter
         // la liste locale a la liste totale des questionnaires
@@ -57,6 +59,4 @@ export class CreateQGamePageComponent {
     // removeQuestion(question: Question) {
     //     this.questions.filter((ques) => ques.id === question.id);
     // }
-
-
 }
