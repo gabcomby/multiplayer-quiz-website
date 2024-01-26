@@ -1,37 +1,39 @@
-import { Component, Input } from '@angular/core';
-import { TimeService } from '@app/services/time.service';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { TimerService } from '@app/services/timer.service';
+import { Observable } from 'rxjs';
 
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
+const TIME_BETWEEN_QUESTIONS = 4000;
 
 @Component({
     selector: 'app-game-page-timer',
     templateUrl: './game-page-timer.component.html',
     styleUrls: ['./game-page-timer.component.scss'],
 })
-export class GamePageTimerComponent {
+export class GamePageTimerComponent implements OnInit {
     @Input() gameTimer: number;
-    private readonly percentage = 100;
-    constructor(private readonly timeService: TimeService) {}
+    @Output() timerComplete = new EventEmitter<void>();
+    time$: Observable<number>;
+    timerIsInvisible: boolean = false;
+
+    constructor(private readonly timerService: TimerService) {}
 
     get totalTime(): number {
         return this.gameTimer;
     }
 
-    get time(): number {
-        return this.timeService.time;
-    }
-
-    get timePercentage(): number {
-        return (this.timeService.time / this.gameTimer) * this.percentage;
+    ngOnInit() {
+        this.time$ = this.timerService.getCurrentTime();
     }
 
     handleOnTimerClick(): void {
-        this.timeService.startTimer(this.gameTimer);
+        this.timerService.startTimer(this.gameTimer).subscribe({
+            complete: () => {
+                this.timerComplete.emit();
+                this.timerIsInvisible = true;
+                setTimeout(() => {
+                    this.timerIsInvisible = false;
+                }, TIME_BETWEEN_QUESTIONS);
+            },
+        });
     }
 }

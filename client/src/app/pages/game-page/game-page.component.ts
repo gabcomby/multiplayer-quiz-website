@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-const QUESTION_TIMER = 30;
+const QUESTION_TIMER = 5;
+const TIME_BETWEEN_QUESTIONS = 4000;
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -21,4 +22,15 @@ export class GamePageComponent {
         { name: 'Alexane', score: 550 },
     ];
     questionTimer = QUESTION_TIMER;
+    questionHasExpired: boolean = false;
+
+    onTimerComplete(): void {
+        this.questionHasExpired = true;
+        setTimeout(() => {
+            if (this.currentQuestion < this.totalQuestions) {
+                this.currentQuestion++;
+                this.questionHasExpired = false;
+            }
+        }, TIME_BETWEEN_QUESTIONS);
+    }
 }

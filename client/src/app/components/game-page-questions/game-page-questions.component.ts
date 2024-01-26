@@ -8,4 +8,5 @@ import { Component, Input } from '@angular/core';
 export class GamePageQuestionsComponent {
     @Input() question: string;
     @Input() answers: string[];
+    @Input() timerExpired: boolean;
 }
