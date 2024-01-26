@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Choice } from '@app/interfaces/game';
 
 @Component({
     selector: 'app-game-page-questions',
@@ -7,6 +8,6 @@ import { Component, Input } from '@angular/core';
 })
 export class GamePageQuestionsComponent {
     @Input() question: string;
-    @Input() answers: string[];
+    @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
 }

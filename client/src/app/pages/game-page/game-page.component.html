@@ -5,19 +5,21 @@
                 <mat-icon>home</mat-icon>
             </button>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">Question {{ currentQuestion }}/{{ totalQuestions }}</span>
+            <span class="top-bar-text">Question {{ currentQuestionIndex + 1 }}/{{ gameData.questions.length }}</span>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">{{ gameName }}</span>
+            <span class="top-bar-text">{{ gameData.title }}</span>
         </mat-toolbar>
     </div>
     <div class="live-chat">
         <app-game-page-livechat id="sidebar"></app-game-page-livechat>
     </div>
-    <div class="timer"><app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer></div>
-    <div class="question">
+    <div class="timer">
+        <app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer>
+    </div>
+    <div class="question" *ngIf="gameData">
         <app-game-page-questions
-            [question]="questions[currentQuestion - 1]"
-            [answers]="answers[currentQuestion - 1]"
+            [question]="getCurrentQuestion().text"
+            [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
         ></app-game-page-questions>
     </div>

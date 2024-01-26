@@ -24,6 +24,7 @@
                 },
                 {
                     "text": "int",
+                    "isCorrect": false
                 }
             ]
         },
@@ -51,11 +52,6 @@
             ]
         },
         {
-            "type": "QRL",
-            "text": "Donnez la différence entre 'let' et 'var' pour la déclaration d'une variable en JS ?",
-            "points": 60
-        },
-        {
             "type": "QCM",
             "text": "Est-ce qu'on le code suivant lance une erreur : const a = 1/NaN; ? ",
             "points": 20,
@@ -67,8 +63,7 @@
                 {
                     "text": "Oui",
                     "isCorrect": null
-                },
-                {"zizi" : "max"}
+                }
             ]
         }
     ]
