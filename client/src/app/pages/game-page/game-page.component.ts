@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from '@app/services/games.service';
+import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
 
 import type { Game, Question } from '@app/interfaces/game';
@@ -15,16 +16,12 @@ export class GamePageComponent implements OnInit {
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
 
-    gameScore: { name: string; score: number }[] = [
-        { name: 'Gabriel', score: 0 },
-        { name: 'Julie', score: 0 },
-        { name: 'Maxime', score: 0 },
-        { name: 'Alexane', score: 0 },
-    ];
+    gameScore: { name: string; score: number }[] = [];
 
     constructor(
         private timerService: TimerService,
         private gameService: GameService,
+        private playerService: PlayerService,
     ) {}
 
     get questionTimer(): number {
@@ -33,6 +30,14 @@ export class GamePageComponent implements OnInit {
 
     ngOnInit() {
         this.fetchGameData('8javry');
+        this.initializePlayerScore();
+    }
+
+    initializePlayerScore() {
+        const playerName = this.playerService.getPlayerName();
+        if (playerName) {
+            this.gameScore.push({ name: playerName, score: 0 });
+        }
     }
 
     fetchGameData(gameId: string): void {
