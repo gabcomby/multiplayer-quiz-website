@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+// import { IDGenerator } from '../utils/IDGenerator';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -53,7 +54,7 @@ export class CreateQGamePageComponent {
     addQuestion(question: Question) {
         // Ajouter des qustions a la liste locale de question
         this.questionId += 1;
-        question.id = this.questionId;
+        question.id = this.questionId
         // if (question.text) {
         //     this.questions.push(question);
         // }

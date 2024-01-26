@@ -14,12 +14,12 @@ export class QuestionService {
         this.questions.push(question);
         // this.questions.next([...actualList, question]);
     }
-    
+
     getQuestion() {
         return this.questions;
         // return this.questions.asObservable();
     }
-    modifiedList(question: Question[]) {
+    updateList(question: Question[]) {
         // for (let i = 0; i < newQuestions.length; i++) {
         //     if (this.questions[i].text !== newQuestions[i].text) {
         //         this.questions[i].text = newQuestions[i].text;
@@ -34,17 +34,14 @@ export class QuestionService {
         //     this.questions.next([...actualList]);
         // }
         this.questions = [];
-        this.questions = question;
-        console.log('changement');
-        console.log(this.questions);
+        this.questions = question.map((item) => ({ ...item }));
     }
-    removeQuestion($event: Question[]) {
-        // const actualList = this.questions.getValue();
-        // const index = actualList.indexOf(question);
-        // actualList.splice(index, 1);
-        // this.questions.next([...actualList]);
-        this.questions = [];
-        this.questions = $event;
-        console.log(this.questions);
-    }
+    // removeQuestion(question: Question[]) {
+    //     // const actualList = this.questions.getValue();
+    //     // const index = actualList.indexOf(question);
+    //     // actualList.splice(index, 1);
+    //     // this.questions.next([...actualList]);
+    //     this.questions = [];
+    //     this.questions = question.map((item) => ({ ...item }));
+    // }
 }
