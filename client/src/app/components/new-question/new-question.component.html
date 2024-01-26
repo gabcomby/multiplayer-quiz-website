@@ -1,11 +1,16 @@
 
 
 <div id="newQuestion">
+    <mat-form-field>
+    <input matInput [(ngModel)]="question.text" />
+    </mat-form-field>
+    
+    <mat-form-field>
+    <input matInput [(ngModel)] = "question.points" min="10" max="100" step="10"/>
+    </mat-form-field>
 
-    <input [(ngModel)]="question.text" />
-    <input [(ngModel)] = "question.points" min="10" max="100" step="10"/>
     <input type="checkbox" [(ngModel)] = "addBankQuestion"/>
-    <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button>
-
+    <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button>
+    
 
 </div>

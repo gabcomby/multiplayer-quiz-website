@@ -8,10 +8,9 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./modified-question.component.scss'],
 })
 export class ModifiedQuestionComponent {
-
     @Input() modifiedShown: boolean;
     questionList: Question[] = [];
-
+    modifiedDisable: boolean = true;
 
     constructor(private questionService: QuestionService) {
         // this.questionList = this.questionService.getQuestion();
@@ -20,15 +19,12 @@ export class ModifiedQuestionComponent {
     // ngOnInit() {
     //     this.questionService.getQuestion().subscribe((list) => (this.questionList = list));
     // }
-
+    modifier() {
+        this.modifiedDisable = false;
+    }
     modifiedQuestion() {
-        // this.questionService.modifiedList(this.questionList);
-        // this.modifiedShown = false;
-        // const modifQuestion = window.prompt('changer');
-        // if (modifQuestion) {
-        //     this.questionService.modifiedList(index, modifQuestion);
-        // }
         this.questionService.updateList(this.questionList);
+        this.modifiedDisable = true;
     }
     removeQuestion(question: Question) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);

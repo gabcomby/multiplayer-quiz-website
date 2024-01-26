@@ -14,7 +14,6 @@ import { QuestionService } from '@app/services/question.service';
     // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
 export class CreateQGamePageComponent {
-    // questions: string[] = [];
     questions: Question[] = [];
     questionId: number = 0;
     addQuestionShown: boolean = true;
@@ -54,15 +53,9 @@ export class CreateQGamePageComponent {
     addQuestion(question: Question) {
         // Ajouter des qustions a la liste locale de question
         this.questionId += 1;
-        question.id = this.questionId
-        // if (question.text) {
-        //     this.questions.push(question);
-        // }
+        question.id = this.questionId;
         this.questionService.addQuestion(question);
         this.gameForm.reset();
     }
 
-    // removeQuestion(question: Question) {
-    //     this.questions.filter((ques) => ques.id === question.id);
-    // }
 }

@@ -27,7 +27,7 @@
 
         <button type="button" (click)="toggleModifiedQuestion()" mat-raised-button color="accent">Modification des questions</button>
         <div *ngIf="modifiedQuestion === true">
-            <app-modified-question [modifiedShown]="modifiedQuestion"></app-modified-question>
+        <app-modified-question> </app-modified-question>
         </div>
         </div>
     </form>
