@@ -2,7 +2,7 @@
 
 <div id="list">
     <label>Liste de question:</label>
-    <div *ngFor="let question of questions; index as questionId">
-        <p>{{question.id}}. {{question.text}}</p>
+    <div *ngFor="let element of questionList; index as questionId">
+        <p>{{element.id}}. {{element.text}}</p>
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
@@ -12,7 +12,7 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./create-qgame-page.component.scss'],
     // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
-export class CreateQGamePageComponent implements OnInit {
+export class CreateQGamePageComponent {
     // questions: string[] = [];
     questions: Question[] = [];
     questionId: number = 0;
@@ -24,11 +24,16 @@ export class CreateQGamePageComponent implements OnInit {
         time: new FormControl('', Validators.required),
     });
 
-    constructor(private questionService: QuestionService) {}
-
-    ngOnInit() {
-        this.questionService.getQuestion().subscribe((list) => (this.questions = list));
+    constructor(private questionService: QuestionService) {
+        // this.questionService.getQuestion().forEach((element) => {
+        //     this.questions.push(element);
+        // });
+        this.questions = this.questionService.getQuestion();
     }
+
+    // ngOnInit() {
+    //     this.questionService.getQuestion().subscribe((list) => (this.questions = list));
+    // }
 
     // get name() {
     //     return this.gameForm.get('name');

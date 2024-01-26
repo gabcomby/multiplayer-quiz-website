@@ -1,9 +1,9 @@
+<div *ngFor="let question of questionList; index as i">
+    <input [(ngModel)]="question.text"/>
+    <p>{{ question.points }}</p>
+    <button type="button" (click)="removeQuestion(question)">supprimer</button>
+    <button type="button" (click)="modifiedQuestion()">modifier</button>
+    <p>{{ question.text }}</p>
+</div>
 
-    <div *ngFor="let question of questionList">
-        <input value="{{question.text}}" />
-        <input  value="{{question.points}}" />
-        <button type="button" (click)="removeQuestion(question)"></button>
-    </div>
-    
-
-<button type="submit" (click)="modifiedQuestion()"> Enregistrer</button>
+<!-- <button type="submit" (click)="modifiedQuestion()"> Enregistrer</button> -->
