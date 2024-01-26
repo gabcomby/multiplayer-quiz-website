@@ -1,6 +1,28 @@
-p#informations {
-    color: blueviolet;
-    font-family: math;
-    position: relative;
-    border: black;
+div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+p {
+    border: 3px solid black;
+    padding: 20px 150px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    background-color: lightgray;
+}
+
+
+h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+ng-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

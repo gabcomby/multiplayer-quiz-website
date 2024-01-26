@@ -1,9 +1,14 @@
-<p>new-game-page works!</p>
 <h2>Liste des jeux</h2>
 <div *ngFor="let game of games">
 <div *ngIf = "game.visibility">
   <p (click)="getInformations(game)" id={{game.id}}> {{ game.name }} 
   </p>
-  <ng-container *ngIf=""></ng-container>
+  <ng-container *ngIf="this.gameSelected[game.id]===true">
+    <div style="display: flex; flex-direction: column;">
+      <p>Description: {{game.description}} <br> Temps alloué par questions:  {{game.timePerQuestions}}</p>
+    </div>
+    <button [routerLink]="['/testGame', game.id]">Tester le jeu</button>
+    <button [routerLink]="['/gameWait', game.id]">Creer le jeu</button>
+  </ng-container>
 </div>
 </div>
