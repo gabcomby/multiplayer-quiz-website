@@ -7,10 +7,18 @@
         ><p>{{ totalTime }}</p></ng-template
     >
 
-    <div>
-        <mat-progress-spinner *ngIf="time$ | async as time" color="primary" mode="determinate" [value]="(time / totalTime) * 100">
-        </mat-progress-spinner>
+    <div class="spinner-container">
+        <mat-progress-spinner
+            *ngIf="time$ | async as time"
+            color="primary"
+            mode="determinate"
+            [value]="(time / totalTime) * 100"
+        ></mat-progress-spinner>
+        <p *ngIf="time$" class="centered-text">{{ time$ }}</p>
+    </div>
+    <div class="spinner-container">
         <mat-progress-spinner *ngIf="(time$ | async) === null && timerIsInvisible === false" color="primary" mode="determinate" value="100">
         </mat-progress-spinner>
+        <p *ngIf="time$" class="centered-text">{{ time$ }}</p>
     </div>
 </div>

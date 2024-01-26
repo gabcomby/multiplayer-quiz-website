@@ -1,21 +1,27 @@
-div {
+.chat-container {
     position: fixed;
     bottom: 0;
     left: 0;
-    margin: 20px;
+    margin: 40px;
     max-width: 400px;
     display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
+.messages-container {
+    width: 100%;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
 form.chat-textbox {
-    flex: 1;
-    margin-right: 10px;
-    height: 100%;
+    flex: 0;
+    width: 100%;
 }
 
 button {
-    margin: 0;
+    margin-left: 10px;
 }
 
 .mat-form-field {
@@ -25,4 +31,10 @@ button {
 
 mat-icon {
     font-size: 24px;
+}
+
+mat-card {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: gainsboro;
 }
