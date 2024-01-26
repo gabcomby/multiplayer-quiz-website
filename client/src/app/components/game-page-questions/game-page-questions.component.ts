@@ -8,6 +8,7 @@ import { Choice } from '@app/interfaces/game';
 })
 export class GamePageQuestionsComponent {
     @Input() question: string;
+    @Input() mark: number;
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
 }

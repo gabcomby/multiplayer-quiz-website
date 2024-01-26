@@ -19,6 +19,7 @@
     <div class="question" *ngIf="gameData">
         <app-game-page-questions
             [question]="getCurrentQuestion().text"
+            [mark]="getCurrentQuestion().points"
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
         ></app-game-page-questions>

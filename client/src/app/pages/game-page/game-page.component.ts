@@ -16,10 +16,10 @@ export class GamePageComponent implements OnInit {
     questionHasExpired: boolean = false;
 
     gameScore: { name: string; score: number }[] = [
-        { name: 'Gabriel', score: 1000 },
-        { name: 'Julie', score: 300 },
+        { name: 'Gabriel', score: 0 },
+        { name: 'Julie', score: 0 },
         { name: 'Maxime', score: 0 },
-        { name: 'Alexane', score: 550 },
+        { name: 'Alexane', score: 0 },
     ];
 
     constructor(
