@@ -1,0 +1,7 @@
+<div *ngFor="let question of questionList; index as i">
+    <input [(ngModel)]="question.text" disabled="{{modifiedDisable}}"/>
+    <input [(ngModel)]="question.points" disabled="{{modifiedDisable}}"/>
+    <button type="button" (click)="removeQuestion(question)">supprimer</button>
+    <button type="button" (click)="modifiedQuestion()">enregistrer</button>
+    <button type="button" (click)="modifier()">modifier</button>
+</div>

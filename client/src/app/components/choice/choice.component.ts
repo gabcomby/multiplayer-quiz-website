@@ -13,11 +13,11 @@ export class ChoiceComponent {
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
     ];
-    questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }] }];
+    questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }], id: 0 }];
     choices: { id: number; question: string; allChoices: Choice[] }[] = [];
 
     addQuestion() {
-        this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers });
+        this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers, id: 0 });
         // console.log(this.questions);
     }
 }

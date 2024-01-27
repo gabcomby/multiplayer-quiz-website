@@ -1,0 +1,12 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    <div id="list">
+        <label>Liste de question:</label>
+        <mat-list>
+            <div *ngFor="let element of questionList; let i = index" class="example-box" cdkDrag>
+                <mat-list-item>
+                    <div class="question">{{ i }}. {{ element.text }}</div>
+                </mat-list-item>
+            </div>
+        </mat-list>
+    </div>
+</div>

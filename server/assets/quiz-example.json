@@ -24,7 +24,6 @@
                 },
                 {
                     "text": "int",
-                    "isCorrect": false
                 }
             ]
         },
@@ -68,7 +67,8 @@
                 {
                     "text": "Oui",
                     "isCorrect": null
-                }
+                },
+                {"zizi" : "max"}
             ]
         }
     ]
