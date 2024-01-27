@@ -3,7 +3,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 // import { IDGenerator } from '../utils/IDGenerator';
-import { ChoiceComponent } from '@app/components/choice/choice.component';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -18,7 +17,7 @@ export class CreateQGamePageComponent {
     questions: Question[] = [];
     questionId: number = 0;
     modifiedQuestion: boolean = false;
-    addQuestionShown: boolean = true;
+    addQuestionShown: boolean = false;
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),
         description: new FormControl('', Validators.required),
@@ -57,5 +56,4 @@ export class CreateQGamePageComponent {
         question.id = this.questionId;
         this.questionService.addQuestion(question);
     }
-
 }

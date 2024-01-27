@@ -2,40 +2,34 @@
     <h1>Création d'un nouveau jeu!</h1>
 </div>
 <div id="form">
-    <form [formGroup]="gameForm" class="example-form">
-        <div class="game-information">
+        <form [formGroup]="gameForm" class="example-form">
             <mat-form-field class="example-full-width">
                 <mat-label>Nom</mat-label>
                 <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
             </mat-form-field>
+            <mat-form-field class="example-full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+                <mat-label>Temps de délai</mat-label>
+                <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
+            </mat-form-field>
+            <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
+            <button type="button"  mat-raised-button color="accent">Ajouter de la banque de question</button>
 
-        <mat-form-field class="example-full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
-        </mat-form-field>
-
-        <mat-form-field class="example-full-width">
-            <mat-label>Temps de délai</mat-label>
-            <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
-            =
-        </mat-form-field>
-
-        <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
-        <button type="button"  mat-raised-button color="accent">Ajouter de la banque de question</button>
-
-         <div *ngIf="addQuestionShown === true">
-        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
-        </div>
-        <div>
+            <div *ngIf="addQuestionShown === true">
+                <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
+            </div>
             <button type="button" (click)="toggleModifiedQuestion()" mat-raised-button color="accent">Modification des questions</button>
             <div *ngIf="modifiedQuestion === true">
-                <app-modified-question> </app-modified-question>
+                <app-modified-question></app-modified-question>
             </div>
-            
-        <div class="questions">
-            <app-choice></app-choice>
-        </div>
-    </form>
+            <div class="questions">
+                <app-choice></app-choice>
+            </div>
 
-    <app-game-question-list></app-game-question-list>
+        </form>
+            <app-game-question-list></app-game-question-list>   
+    
 </div>
