@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Choice } from '@app/interfaces/game';
+import { Choice, Question } from '@app/interfaces/game';
 @Component({
     selector: 'app-choice',
     templateUrl: './choice.component.html',
@@ -8,18 +8,16 @@ import { Choice } from '@app/interfaces/game';
 export class ChoiceComponent {
     @Input() questionString: string;
     @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
-    id: number = 0;
+    type: string = '0';
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
     ];
+    questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }] }];
     choices: { id: number; question: string; allChoices: Choice[] }[] = [];
 
     addQuestion() {
-        this.choices.push({ id: this.id, question: this.questionString, allChoices: this.answers });
-        this.id++;
-        console.log(this.choices);
+        this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers });
+        // console.log(this.questions);
     }
 }
