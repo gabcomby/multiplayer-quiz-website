@@ -3,10 +3,11 @@
 </div>
 <div id="form">
     <form [formGroup]="gameForm" class="example-form">
-        <mat-form-field class="example-full-width">
-            <mat-label>Nom</mat-label>
-            <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
-        </mat-form-field>
+        <div class="game-information">
+            <mat-form-field class="example-full-width">
+                <mat-label>Nom</mat-label>
+                <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
+            </mat-form-field>
 
         <mat-form-field class="example-full-width">
             <mat-label>Description</mat-label>
@@ -30,6 +31,9 @@
             <div *ngIf="modifiedQuestion === true">
                 <app-modified-question> </app-modified-question>
             </div>
+            
+        <div class="questions">
+            <app-choice></app-choice>
         </div>
     </form>
 
