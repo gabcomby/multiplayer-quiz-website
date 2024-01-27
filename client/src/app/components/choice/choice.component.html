@@ -1,7 +1,7 @@
-<div>
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" >
     <form>
         <ng-container *ngFor="let answer of answers; let i = index">
-            <div class="answer-container">
+            <div class="answer-container" cdkDrag>
                 {{ i + 1 }}.
                 <mat-form-field>
                     <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />

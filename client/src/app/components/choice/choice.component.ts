@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
 import { Choice, Question } from '@app/interfaces/game';
 @Component({
     selector: 'app-choice',
@@ -33,5 +35,9 @@ export class ChoiceComponent {
         } else {
             console.error('minimum 2');
         }
+    }
+
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
     }
 }
