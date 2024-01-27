@@ -16,7 +16,7 @@ import { QuestionService } from '@app/services/question.service';
 export class CreateQGamePageComponent {
     questions: Question[] = [];
     questionId: number = 0;
-    addQuestionShown: boolean = true;
+    addQuestionShown: boolean = false;
     modifiedQuestion: boolean = false;
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),
@@ -55,7 +55,5 @@ export class CreateQGamePageComponent {
         this.questionId += 1;
         question.id = this.questionId;
         this.questionService.addQuestion(question);
-        this.gameForm.reset();
     }
-
 }

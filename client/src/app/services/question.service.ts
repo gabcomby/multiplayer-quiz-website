@@ -10,9 +10,7 @@ export class QuestionService {
     // private questions = new BehaviorSubject<Question[]>([]);
     // constructor() {}
     addQuestion(question: Question) {
-        // const actualList = this.questions.getValue();
         this.questions.push(question);
-        // this.questions.next([...actualList, question]);
     }
 
     getQuestion() {
@@ -20,28 +18,19 @@ export class QuestionService {
         // return this.questions.asObservable();
     }
     updateList(question: Question[]) {
-        // for (let i = 0; i < newQuestions.length; i++) {
-        //     if (this.questions[i].text !== newQuestions[i].text) {
-        //         this.questions[i].text = newQuestions[i].text;
-        //     }
-        //     if (this.questions[i].points !== newQuestions[i].points) {
-        //         this.questions[i].points = newQuestions[i].points;
-        //     }
-        // }
-        // const actualList = this.questions.getValue();
-        // if (index >= 0 && index < actualList.length) {
-        //     actualList[index] = question;
-        //     this.questions.next([...actualList]);
-        // }
+
         this.questions = [];
+        // this.questions.length = 0;
         this.questions = question.map((item) => ({ ...item }));
+        // this.questions.push(...question);
     }
-    // removeQuestion(question: Question[]) {
-    //     // const actualList = this.questions.getValue();
-    //     // const index = actualList.indexOf(question);
-    //     // actualList.splice(index, 1);
-    //     // this.questions.next([...actualList]);
-    //     this.questions = [];
-    //     this.questions = question.map((item) => ({ ...item }));
+    // updateList(updatedQuestions: Question[]) {
+    //     // Mettez à jour les objets existants dans la liste
+    //     updatedQuestions.forEach((updatedQuestion) => {
+    //         const existingQuestion = this.questions.find((q) => q.id === updatedQuestion.id);
+    //         if (existingQuestion) {
+    //             Object.assign(existingQuestion, updatedQuestion);
+    //         }
+    //     });
     // }
 }

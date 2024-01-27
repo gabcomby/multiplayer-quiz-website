@@ -28,7 +28,9 @@ export class ModifiedQuestionComponent {
     }
     removeQuestion(question: Question) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
-
+        // this.questionList.forEach((element, index) => {
+        //     element.id = index + 1;
+        // });
         this.questionService.updateList(this.questionList);
     }
 }
