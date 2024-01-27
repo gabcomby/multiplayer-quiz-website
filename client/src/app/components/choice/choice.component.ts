@@ -12,12 +12,26 @@ export class ChoiceComponent {
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
     ];
     questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }], id: 0 }];
     choices: { id: number; question: string; allChoices: Choice[] }[] = [];
 
     addQuestion() {
-        this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers, id: 0 });
-        // console.log(this.questions);
+        if (this.answers.length >= 2 && this.answers.length < 4) {
+            this.answers.push({ text: '', isCorrect: false });
+        } else {
+            // Handle error or provide feedback to the user
+            console.error('minimum 2 choix et maximum 4');
+        }
+    }
+
+    removeQuestion(index: number) {
+        if (this.answers.length > 2) {
+            this.answers.splice(index, 1);
+        } else {
+            console.error('minimum 2');
+        }
     }
 }
