@@ -14,7 +14,7 @@ export class ModifiedQuestionComponent {
 
     constructor(private questionService: QuestionService) {
         // this.questionList = this.questionService.getQuestion();
-        this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
+        // this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
     }
     // ngOnInit() {
     //     this.questionService.getQuestion().subscribe((list) => (this.questionList = list));

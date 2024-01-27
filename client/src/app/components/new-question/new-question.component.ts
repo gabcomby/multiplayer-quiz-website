@@ -15,7 +15,7 @@ export class NewQuestionComponent {
         const newQuestion = { type: this.question.type, text: this.question.text, points: this.question.points, id: this.question.id };
         this.registerQuestion.emit(newQuestion);
         if (this.addBankQuestion) {
-            console.log('banque question'); //lier avec la banque de question
+            // console.log('banque question'); // lier avec la banque de question
         }
         this.question.text = '';
         this.question.points = 0;

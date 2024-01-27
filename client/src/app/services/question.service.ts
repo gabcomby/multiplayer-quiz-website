@@ -7,18 +7,15 @@ import { Question } from '@app/interfaces/game';
 })
 export class QuestionService {
     questions: Question[] = [];
-    // private questions = new BehaviorSubject<Question[]>([]);
-    // constructor() {}
+
     addQuestion(question: Question) {
         this.questions.push(question);
     }
 
     getQuestion() {
         return this.questions;
-        // return this.questions.asObservable();
     }
     updateList(question: Question[]) {
-
         this.questions = [];
         // this.questions.length = 0;
         this.questions = question.map((item) => ({ ...item }));

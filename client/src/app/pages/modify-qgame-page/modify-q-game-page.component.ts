@@ -15,9 +15,4 @@ export class ModifyQGamePageComponent {
     // lastModification: Date;
     // questions: Question[];
     game: Game;
-
-    constructor() {
-        // this.questionList = this.questionService.getQuestion();
-        // this.questionList = this.gameService.getQuestion().map((item) => ({ ...item }));
-    }
 }
