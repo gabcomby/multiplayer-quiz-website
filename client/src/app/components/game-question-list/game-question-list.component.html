@@ -1,8 +1,12 @@
-<p>game-question-list works!</p>
 
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
 <div id="list">
     <label>Liste de question:</label>
-    <div *ngFor="let element of questionList; index as i">
-        <p>{{i}}. {{element.text}}</p>
+    <mat-list>
+    <div *ngFor="let element of questionList; let i = index"class="example-box" cdkDrag>
+        <mat-list-item>{{ i }}. {{ element.text }}</mat-list-item>
     </div>
+    </mat-list>
 </div>
+</div>
+

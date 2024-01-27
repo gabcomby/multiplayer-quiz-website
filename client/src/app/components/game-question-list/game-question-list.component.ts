@@ -1,7 +1,7 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
-
 @Component({
     selector: 'app-game-question-list',
     templateUrl: './game-question-list.component.html',
@@ -17,6 +17,9 @@ export class GameQuestionListComponent {
     }
     get questionList() {
         return this.questionService.questions;
+    }
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);
     }
 
     // ngOnInit() {

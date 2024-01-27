@@ -19,4 +19,6 @@ export interface Question {
     points: number;
     choices?: Choice[];
     id: number;
+    previousIndex?: number;
+    currentIndex?: number;
 }
