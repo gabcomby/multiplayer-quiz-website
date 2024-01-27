@@ -1,11 +1,12 @@
-<h2>Liste des jeux</h2>
+<h2 id="title">Liste des jeux</h2>
 <div *ngFor="let game of arrayGames">
 <!--<div *ngIf = "game.isVisible">-->
-  <p (click)="getInformations(game)" id={{game.id}}> {{ game.title }} 
+  <p (click)="getInformations(game)" id={{game.id}} class="name"> {{ game.title }} 
   </p>
   <ng-container *ngIf="this.gameSelected[game.id]===true">
-    <div style="display: flex; flex-direction: column;">
-      <p id="description">Description: {{game.description}} <br> Temps alloué par questions:  {{game.duration}}</p>
+    <div style="display: flex; flex-direction: column;" class="description">
+      <p>Description: {{game.description}} <br> Temps alloué par questions:  {{game.duration}} <br> Questions: </p>
+      <p *ngFor="let question of game.questions" class="questions"> - {{question.text}}</p>
       <button [routerLink]="['/testGame', game.id]">Tester le jeu</button>
       <button [routerLink]="['/gameWait', game.id]">Creer le jeu</button>
     </div>

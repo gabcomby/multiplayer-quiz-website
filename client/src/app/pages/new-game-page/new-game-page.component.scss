@@ -1,10 +1,10 @@
-div {
+div#title {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
 }
-p {
+p.name {
     border: 3px solid black;
     padding: 20px 150px;
     width: 100px;
@@ -13,24 +13,54 @@ p {
     justify-content: center;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     background-color: lightgray;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 10px;
 
 }
-p#description{
+div.description{
     border: 3px solid black;
-    width: 100px;
+    width: 50%;
+    margin-left: 370px;
+    box-sizing: border-box;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     background-color: white;
     text-align:left;
     margin-top: 0%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 10px;
 }
 h2 {
     display: flex;
     align-items: center;
     justify-content: center;
+
 }
 
 ng-container {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: -50%;
+}
+
+p.questions{
+    margin-top: 0%;
+    margin-bottom: 0%;
+    margin-left: -20%;
 }
