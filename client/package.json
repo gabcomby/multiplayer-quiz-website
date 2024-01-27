@@ -31,7 +31,7 @@
     "zone.js": "0.13.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "16.2.11",
+    "@angular-devkit/build-angular": "^16.2.12",
     "@angular-eslint/builder": "16.1.0",
     "@angular-eslint/eslint-plugin": "16.1.0",
     "@angular-eslint/eslint-plugin-template": "16.1.0",
@@ -43,7 +43,7 @@
     "@types/node": "20.4.8",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "8.46.0",
+    "eslint": "^8.46.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-typescript": "3.5.5",
     "eslint-plugin-deprecation": "1.5.0",
@@ -51,7 +51,7 @@
     "eslint-plugin-jsdoc": "46.4.6",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-prettier": "5.0.0",
-    "eslint-plugin-unicorn": "48.0.1",
+    "eslint-plugin-unicorn": "^48.0.1",
     "jasmine-core": "5.1.0",
     "karma": "6.4.2",
     "karma-chrome-launcher": "3.2.0",

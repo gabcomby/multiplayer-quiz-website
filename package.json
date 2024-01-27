@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@angular/cli": "^17.1.0"
+    "@angular/cli": "^17.1.0",
+    "mongodb": "^6.3.0"
   }
 }
