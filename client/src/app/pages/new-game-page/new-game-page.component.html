@@ -5,10 +5,11 @@
   </p>
   <ng-container *ngIf="this.gameSelected[game.id]===true">
     <div style="display: flex; flex-direction: column;">
-      <p>Description: {{game.description}} <br> Temps alloué par questions:  {{game.timePerQuestions}}</p>
+      <p id="description">Description: {{game.description}} <br> Temps alloué par questions:  {{game.timePerQuestions}}</p>
+      <button [routerLink]="['/testGame', game.id]">Tester le jeu</button>
+      <button [routerLink]="['/gameWait', game.id]">Creer le jeu</button>
     </div>
-    <button [routerLink]="['/testGame', game.id]">Tester le jeu</button>
-    <button [routerLink]="['/gameWait', game.id]">Creer le jeu</button>
+    
   </ng-container>
 </div>
 </div>

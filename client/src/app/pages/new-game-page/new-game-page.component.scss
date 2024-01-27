@@ -2,6 +2,7 @@ div {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 p {
     border: 3px solid black;
@@ -12,9 +13,16 @@ p {
     justify-content: center;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     background-color: lightgray;
+
 }
-
-
+p#description{
+    border: 3px solid black;
+    width: 100px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    background-color: white;
+    text-align:left;
+    margin-top: 0%;
+}
 h2 {
     display: flex;
     align-items: center;
