@@ -49,7 +49,7 @@
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
     <div class="action-buttons">
-        <button mat-raised-button (click)="createGame()">Créer un jeu</button>
+        <button mat-raised-button routerLink="/create-qgame" (click)="createGame()">Créer un jeu</button>
         <button mat-raised-button routerLink="/questions">Accéder à la banque de questions</button>
         <button mat-raised-button (click)="openImportDialog()">Importer des jeux</button>
     </div>
