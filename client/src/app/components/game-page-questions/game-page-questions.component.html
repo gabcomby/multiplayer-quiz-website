@@ -1,5 +1,8 @@
 <div id="container" *ngIf="choices">
-    <h1>{{ question }} Pour: {{ mark }} points</h1>
+    <div class="question-point-div">
+        <h1>{{ question }}</h1>
+        <h2>{{ mark }} points</h2>
+    </div>
     <mat-chip-listbox aria-label="Question answers" class="custom-chip-listbox">
         <mat-chip-option *ngFor="let choice of choices" [disabled]="timerExpired">
             {{ choice.text }}

@@ -62,9 +62,9 @@ export class GamePageComponent implements OnInit {
 
     onTimerComplete(): void {
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
-            this.currentQuestionIndex++;
-            this.questionHasExpired = false;
             setTimeout(() => {
+                this.currentQuestionIndex++;
+                this.questionHasExpired = false;
                 this.startQuestionTimer();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
