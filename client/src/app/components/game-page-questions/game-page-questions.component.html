@@ -1,10 +1,6 @@
 <div id="container" *ngIf="choices">
     <div class="question-point-div">
-        <h1
-            (change)="onQuestionChange()"
-            [class.correct-answer]="timerExpired && answerGivenIsCorrect"
-            [class.wrong-answer]="timerExpired && !answerGivenIsCorrect"
-        >
+        <h1 [class.correct-answer]="timerExpired && answerGivenIsCorrect" [class.wrong-answer]="timerExpired && !answerGivenIsCorrect">
             {{ question }}
         </h1>
         <h2>{{ mark }} points</h2>
@@ -15,6 +11,7 @@
         [multiple]="checkIfMultipleChoice()"
         [(ngModel)]="selectedChoices"
         (change)="onSelectionChange()"
+        name="selectedChoices"
     >
         <mat-chip-option
             *ngFor="let choice of choices"

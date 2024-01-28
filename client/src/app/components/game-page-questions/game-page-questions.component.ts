@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 
 @Component({
@@ -15,16 +15,19 @@ export class GamePageQuestionsComponent {
     selectedChoices: Choice[];
     answerGivenIsCorrect: boolean;
 
-    ngOnInit(): void {
-        this.selectedChoices = [];
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.question || changes.choices) {
+            this.resetSelection();
+        }
     }
 
-    onQuestionChange(): void {
+    ngOnInit(): void {
         this.selectedChoices = [];
     }
 
     onSelectionChange(): void {
         this.answerGivenIsCorrect = false;
+        console.log(this.selectedChoices);
 
         for (const answer of this.selectedChoices) {
             if (answer.isCorrect) {
@@ -43,5 +46,10 @@ export class GamePageQuestionsComponent {
         }
         if (count > 1) return true;
         else return false;
+    }
+
+    private resetSelection(): void {
+        this.selectedChoices = [];
+        this.answerGivenIsCorrect = false;
     }
 }
