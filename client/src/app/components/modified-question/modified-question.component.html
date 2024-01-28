@@ -1,23 +1,37 @@
-<div cdkDropList (cdkDropListDropped)="drop($event)"> Liste de question:
+<div cdkDropList (cdkDropListDropped)="drop($event)">
+    Liste de question:
     <div *ngFor="let question of questionList; index as i" cdkDrag>
         <div class="container">
             <div *ngIf="disabled[i]">
-                {{i}}
+                {{ i }}
                 <p>Question:{{ question.text }}</p>
                 <p>Nombre de point:{{ question.points }}</p>
+                <div *ngIf="question.choices">
+                    Choix de réponse:
+                    <div *ngFor="let element of question.choices; index as j">{{ j }}-{{ element.text }}</div>
+                </div>
             </div>
             <div *ngIf="!disabled[i]" id="disabled">
                 <input [(ngModel)]="question.text" />
                 <input [(ngModel)]="question.points" />
-            </div>
-            <div *ngIf="question.choices"> Choix de réponse:
-                <div *ngFor="let element of question.choices; index as j">
-                        {{ j }}-{{element.text }}
+                Choix de réponse:
+                <div *ngFor="let element of question.choices">
+                    <input [(ngModel)]="element.text" />
                 </div>
             </div>
-            <button type="button" (click)="removeQuestion(question)">supprimer</button>
+            
+            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
+                <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
+            </button>
+            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <!-- <button type="button" (click)="removeQuestion(question)">supprimer</button> -->
             <!-- <button type="button" (click)="saveQuestion(i)">enregistrer</button> -->
-            <button type="button" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">{{ disabled[i] ? 'modifier' : 'enregistrer' }}</button>
+            <!-- <button type="button" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)"></button> -->
         </div>
     </div>
 </div>

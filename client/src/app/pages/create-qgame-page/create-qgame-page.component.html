@@ -21,7 +21,7 @@
                     <button type="button"  mat-raised-button color="accent">Ajouter de la banque de question</button>
 
                     <div *ngIf="addQuestionShown === true">
-                        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
+                        <app-new-question *ngIf="addQuestionShown"> </app-new-question>
                     </div>
                 
                 </div>

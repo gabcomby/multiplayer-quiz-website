@@ -1,11 +1,14 @@
 .container {
-
-    background-color: grey;
+    background-color: lightcoral;
     height: 100%;
     padding: 10px;
     margin-bottom: 10px;
 }
-#disabled{
-    display:flex;
+#disabled {
+    display: flex;
     flex-direction: column;
+}
+
+.buttonIcon {
+    margin: 5px;
 }

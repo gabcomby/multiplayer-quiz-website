@@ -41,7 +41,7 @@ export class CreateQGamePageComponent {
     onSubmit() {
         // Call la fonction du service QuestionHandler pour ajouter
         // la liste locale a la liste totale des questionnaires
-        alert("il faut enregistrer le jeu/vérifier le jeu");
+        alert('il faut enregistrer le jeu/vérifier le jeu');
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;
@@ -50,10 +50,10 @@ export class CreateQGamePageComponent {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
 
-    addQuestion(question: Question) {
-        // Ajouter des qustions a la liste locale de question
-        this.questionId += 1;
-        question.id = this.questionId;
-        this.questionService.addQuestion(question);
-    }
+    // addQuestion(question: Question) {
+    //     // Ajouter des qustions a la liste locale de question
+    //     // this.questionId += 1;
+
+    //     this.questionService.addQuestion(question);
+    // }
 }
