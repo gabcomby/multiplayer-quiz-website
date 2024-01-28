@@ -33,3 +33,17 @@ h1.wrong-answer {
 h1.partial-answer {
     color: #ff9800;
 }
+
+.example-button-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+}
