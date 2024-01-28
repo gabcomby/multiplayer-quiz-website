@@ -1,15 +1,20 @@
-<div cdkDropList (cdkDropListDropped)="drop($event)">
+<div cdkDropList (cdkDropListDropped)="drop($event)"> Liste de question:
     <div *ngFor="let question of questionList; index as i" cdkDrag>
         <div class="container">
             <div *ngIf="disabled[i]">
-                <p>{{question.text}}</p>
-                <p>{{question.points}}</p>
+                {{i}}
+                <p>Question:{{ question.text }}</p>
+                <p>Nombre de point:{{ question.points }}</p>
             </div>
             <div *ngIf="!disabled[i]" id="disabled">
-                <input [(ngModel)]="question.text"  />
+                <input [(ngModel)]="question.text" />
                 <input [(ngModel)]="question.points" />
             </div>
-            
+            <div *ngIf="question.choices"> Choix de réponse:
+                <div *ngFor="let element of question.choices; index as j">
+                        {{ j }}-{{element.text }}
+                </div>
+            </div>
             <button type="button" (click)="removeQuestion(question)">supprimer</button>
             <!-- <button type="button" (click)="saveQuestion(i)">enregistrer</button> -->
             <button type="button" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">{{ disabled[i] ? 'modifier' : 'enregistrer' }}</button>

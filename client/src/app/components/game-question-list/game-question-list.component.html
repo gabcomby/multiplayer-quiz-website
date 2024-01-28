@@ -7,8 +7,8 @@
                 <div class="question">
                     {{ i }}. {{ element.text }}
                     <div *ngIf="element.choices">
-                        <div *ngFor="let choice of element.choices">
-                            {{ choice.text }}
+                        <div *ngFor="let choice of element.choices; index as j">
+                             {{j}}.{{ choice.text }}
                         </div>
                     </div>
                 </div>

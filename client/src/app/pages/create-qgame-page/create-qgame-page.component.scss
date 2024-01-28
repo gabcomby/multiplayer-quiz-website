@@ -38,12 +38,14 @@
 #modifyingComponent {
     display: flex;
     flex: 1;
-    background-color: blue;
+    // background-color: blue;
 }
 #registerGame {
-    background-color: red;
+    // background-color: red;
+    display: flex;
+    justify-content: center;
 }
 #addQuestion {
-    background-color: green;
+    // background-color: green;
     flex: 1;
 }

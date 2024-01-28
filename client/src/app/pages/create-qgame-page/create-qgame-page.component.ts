@@ -41,7 +41,7 @@ export class CreateQGamePageComponent {
     onSubmit() {
         // Call la fonction du service QuestionHandler pour ajouter
         // la liste locale a la liste totale des questionnaires
-        alert(this.gameForm.value);
+        alert("il faut enregistrer le jeu/vérifier le jeu");
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;
