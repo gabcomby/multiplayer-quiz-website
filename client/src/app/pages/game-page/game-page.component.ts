@@ -18,6 +18,8 @@ export class GamePageComponent implements OnInit {
 
     gameScore: { name: string; score: number }[] = [];
 
+    playerName: string;
+
     constructor(
         private timerService: TimerService,
         private gameService: GameService,
@@ -34,9 +36,9 @@ export class GamePageComponent implements OnInit {
     }
 
     initializePlayerScore() {
-        const playerName = this.playerService.getPlayerName();
-        if (playerName) {
-            this.gameScore.push({ name: playerName, score: 0 });
+        this.playerName = this.playerService.getPlayerName();
+        if (this.playerName) {
+            this.gameScore.push({ name: this.playerName, score: 0 });
         }
     }
 

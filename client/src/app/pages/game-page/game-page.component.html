@@ -11,7 +11,7 @@
         </mat-toolbar>
     </div>
     <div class="live-chat">
-        <app-game-page-livechat id="sidebar"></app-game-page-livechat>
+        <app-game-page-livechat [playerName]="playerName" id="sidebar"></app-game-page-livechat>
     </div>
     <div class="timer">
         <app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer>

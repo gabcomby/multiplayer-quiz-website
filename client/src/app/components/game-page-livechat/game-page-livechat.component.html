@@ -2,6 +2,11 @@
     <div class="messages-container">
         <ng-container *ngFor="let message of messages">
             <mat-card *ngIf="message.visible" [@fade]="true">
+                <mat-card-header>
+                    <mat-card-title-group>
+                        <mat-card-title>{{ message.sender }}</mat-card-title>
+                    </mat-card-title-group>
+                </mat-card-header>
                 <mat-card-content>{{ message.text }}</mat-card-content>
             </mat-card>
         </ng-container>
