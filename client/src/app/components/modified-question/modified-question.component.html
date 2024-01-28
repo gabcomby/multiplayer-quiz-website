@@ -1,7 +1,18 @@
-<div *ngFor="let question of questionList; index as i">
-    <input [(ngModel)]="question.text" disabled="{{modifiedDisable}}"/>
-    <input [(ngModel)]="question.points" disabled="{{modifiedDisable}}"/>
-    <button type="button" (click)="removeQuestion(question)">supprimer</button>
-    <button type="button" (click)="modifiedQuestion()">enregistrer</button>
-    <button type="button" (click)="modifier()">modifier</button>
+<div cdkDropList (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let question of questionList; index as i" cdkDrag>
+        <div class="container">
+            <div *ngIf="disabled[i]">
+                <p>{{question.text}}</p>
+                <p>{{question.points}}</p>
+            </div>
+            <div *ngIf="!disabled[i]" id="disabled">
+                <input [(ngModel)]="question.text"  />
+                <input [(ngModel)]="question.points" />
+            </div>
+            
+            <button type="button" (click)="removeQuestion(question)">supprimer</button>
+            <!-- <button type="button" (click)="saveQuestion(i)">enregistrer</button> -->
+            <button type="button" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">{{ disabled[i] ? 'modifier' : 'enregistrer' }}</button>
+        </div>
+    </div>
 </div>

@@ -1,15 +1,48 @@
 // import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Question } from '@app/interfaces/game';
+// import { EventEmitter } from 'stream';
 // import { BehaviorSubject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class QuestionService {
-    questions: Question[] = [];
+    questions: Question[] = [
+        {
+            type: '',
+            text: 'Ceci est une question de test',
+            points: 2,
+            id: 0,
+            choices: [
+                {
+                    text: 'allo',
+                },
+                {
+                    text: 'bonjour',
+                },
+            ],
+        },
+        {
+            type: '',
+            text: 'Ceci est une question de test 2',
+            points: 3,
+            id: 1,
+            choices: [
+                {
+                    text: 'allo 2',
+                },
+                {
+                    text: 'bonjour 2',
+                },
+            ],
+        },
+    ];
+
+    onQuestionAdded: EventEmitter<Question> = new EventEmitter();
 
     addQuestion(question: Question) {
         this.questions.push(question);
+        this.onQuestionAdded.emit(question);
     }
 
     getQuestion() {
@@ -21,13 +54,4 @@ export class QuestionService {
         this.questions = question.map((item) => ({ ...item }));
         // this.questions.push(...question);
     }
-    // updateList(updatedQuestions: Question[]) {
-    //     // Mettez à jour les objets existants dans la liste
-    //     updatedQuestions.forEach((updatedQuestion) => {
-    //         const existingQuestion = this.questions.find((q) => q.id === updatedQuestion.id);
-    //         if (existingQuestion) {
-    //             Object.assign(existingQuestion, updatedQuestion);
-    //         }
-    //     });
-    // }
 }

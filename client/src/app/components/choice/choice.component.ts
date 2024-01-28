@@ -36,7 +36,11 @@ export class ChoiceComponent {
         }
     }
 
-    addQuestion() {
+    addQuestion() {}
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
+    }
+    addAnswer() {
         let goodAnswer = 0;
         for (const answer of this.answers) {
             if (answer.isCorrect) {
@@ -48,11 +52,6 @@ export class ChoiceComponent {
             alert('Au moins une bonne réponse et une mauvaise réponse');
         } else {
         }
-    }
-    drop(event: CdkDragDrop<Question[]>) {
-        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
-    }
-    addAnswer() {
         this.registerAnswer.emit(this.answers);
         this.answers.forEach((element) => {
             element.text = '';

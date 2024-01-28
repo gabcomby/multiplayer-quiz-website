@@ -21,13 +21,15 @@
             <div *ngIf="addQuestionShown === true">
                 <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
             </div>
-            <button type="button" (click)="toggleModifiedQuestion()" mat-raised-button color="accent">Modification des questions</button>
-            <div *ngIf="modifiedQuestion === true">
+            <!-- <button type="butt on" (click)="toggleModifiedQuestion()" mat-raised-button color="accent">Modification des questions</button> -->
+            <!-- <div *ngIf="modifiedQuestion === true"> -->
                 <app-modified-question></app-modified-question>
-            </div>
+            <!-- </div> -->
             <!-- <div class="questions">
                 <app-choice></app-choice>
             </div> -->
+            <button type="button" (click)="onSubmit()" mat-raised-button color="accent">Enregistrer</button>
+
 
         </form>
             <app-game-question-list></app-game-question-list>   

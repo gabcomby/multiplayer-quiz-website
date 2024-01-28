@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
@@ -10,21 +11,26 @@ import { QuestionService } from '@app/services/question.service';
 export class ModifiedQuestionComponent {
     @Input() modifiedShown: boolean;
     questionList: Question[] = [];
-    modifiedDisable: boolean = true;
+    disabled: boolean[] = [];
 
     constructor(private questionService: QuestionService) {
         // this.questionList = this.questionService.getQuestion();
         this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
+        this.disabled = this.questionService.getQuestion().map((_) => true);
+        this.questionService.onQuestionAdded.subscribe((question) => {
+            this.questionList.push(question);
+            this.disabled.push(true);
+        });
     }
     // ngOnInit() {
     //     this.questionService.getQuestion().subscribe((list) => (this.questionList = list));
     // }
-    modifier() {
-        this.modifiedDisable = false;
+    toggleModify(index: number) {
+        this.disabled[index] = false;
     }
-    modifiedQuestion() {
+    saveQuestion(index: number) {
         this.questionService.updateList(this.questionList);
-        this.modifiedDisable = true;
+        this.disabled[index] = true;
     }
     removeQuestion(question: Question) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
@@ -32,5 +38,8 @@ export class ModifiedQuestionComponent {
         //     element.id = index + 1;
         // });
         this.questionService.updateList(this.questionList);
+    }
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);
     }
 }
