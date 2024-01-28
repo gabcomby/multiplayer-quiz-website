@@ -7,7 +7,7 @@
                     <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />
                 </mat-form-field>
                 <mat-checkbox [(ngModel)]="answers[i].isCorrect" name="correctGroup">Correct</mat-checkbox>
-                <button mat-icon-button  (click)="addQuestion()" >
+                <button mat-icon-button  (click)="addChoice()" >
                     <mat-icon>add_circle_outline</mat-icon>
                   </button>
                 <button mat-icon-button  (click)="removeQuestion(i)"  >
@@ -15,6 +15,7 @@
                   </button>
             </div>
         </ng-container>
+        <button mat-raised-button color="accent"  (click)="addQuestion()"  > Ajouter la question</button>
     </form>
 </div>
 
