@@ -1,18 +1,22 @@
-<div>
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" >
     <form>
         <ng-container *ngFor="let answer of answers; let i = index">
-            <div class="answer-container">
+            <div class="answer-container" cdkDrag>
                 {{ i + 1 }}.
                 <mat-form-field>
                     <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />
                 </mat-form-field>
                 <mat-checkbox [(ngModel)]="answers[i].isCorrect" name="correctGroup">Correct</mat-checkbox>
-                <button mat-icon-button *ngIf="answers.length > 2">
+                <button mat-icon-button  (click)="addChoice()" >
+                    <mat-icon>add_circle_outline</mat-icon>
+                  </button>
+                <button mat-icon-button  (click)="removeChoice(i)"  >
                     <mat-icon>remove_circle_outline</mat-icon>
                   </button>
             </div>
         </ng-container>
+        <button mat-raised-button color="accent"id="add" (click)="addQuestion()"  > Ajouter la question</button>
     </form>
-    <button mat-raised-button (click)="addAnswer()" color="accent" class="add">Ajouter</button>
+
 </div>
 

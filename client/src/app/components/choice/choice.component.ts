@@ -1,4 +1,6 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+
 import { Choice, Question } from '@app/interfaces/game';
 @Component({
     selector: 'app-choice',
@@ -13,13 +15,42 @@ export class ChoiceComponent {
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
     ];
-    questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }], id: 0 }];
-    choices: { id: number; question: string; allChoices: Choice[] }[] = [];
+
+    addChoice() {
+        if (this.answers.length >= 2 && this.answers.length < 4) {
+            this.answers.push({ text: '', isCorrect: false });
+        } else {
+            // Handle error or provide feedback to the user
+            alert('minimum 2 choix et maximum 4');
+        }
+    }
+
+    removeChoice(index: number) {
+        if (this.answers.length > 2) {
+            this.answers.splice(index, 1);
+        } else {
+            alert('minimum 2');
+        }
+    }
 
     addQuestion() {
-        this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers, id: 0 });
-        // console.log(this.questions);
+        let goodAnswer = 0;
+        for (const answer of this.answers) {
+            if (answer.isCorrect) {
+                goodAnswer++;
+            }
+        }
+
+        if (goodAnswer < 1 || goodAnswer === this.answers.length) {
+            alert('Au moins une bonne réponse et une mauvaise réponse');
+        } else {
+        }
+    }
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
     }
     addAnswer() {
         this.registerAnswer.emit(this.answers);
