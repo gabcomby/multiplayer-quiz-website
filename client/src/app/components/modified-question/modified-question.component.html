@@ -12,14 +12,17 @@
                 </div>
             </div>
             <div *ngIf="!disabled[i]" id="disabled">
-                <input [(ngModel)]="question.text" />
-                <input [(ngModel)]="question.points" />
+                Question:<input class="input_edit" type="text" [(ngModel)]="question.text" /> Nombre de points:<input
+                    class="input_edit"
+                    type="text"
+                    [(ngModel)]="question.points"
+                />
                 Choix de réponse:
-                <div *ngFor="let element of question.choices">
-                    <input [(ngModel)]="element.text" />
+                <div *ngFor="let element of question.choices; index as j">
+                    {{ j }}-<input class="input_edit" type="text" [(ngModel)]="element.text" />
                 </div>
             </div>
-            
+
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
                 <mat-icon>delete</mat-icon>
             </button>
@@ -29,9 +32,6 @@
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
                 <mat-icon>menu</mat-icon>
             </button>
-            <!-- <button type="button" (click)="removeQuestion(question)">supprimer</button> -->
-            <!-- <button type="button" (click)="saveQuestion(i)">enregistrer</button> -->
-            <!-- <button type="button" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)"></button> -->
         </div>
     </div>
 </div>
