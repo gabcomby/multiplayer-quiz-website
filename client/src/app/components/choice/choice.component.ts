@@ -8,6 +8,7 @@ import { Choice, Question } from '@app/interfaces/game';
 export class ChoiceComponent {
     @Input() questionString: string;
     @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
+    @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
     type: string = '0';
     answers: Choice[] = [
         { text: '', isCorrect: false },
@@ -19,5 +20,12 @@ export class ChoiceComponent {
     addQuestion() {
         this.questions.push({ type: this.type, text: this.questionString, points: 0, choices: this.answers, id: 0 });
         // console.log(this.questions);
+    }
+    addAnswer() {
+        this.registerAnswer.emit(this.answers);
+        this.answers.forEach((element) => {
+            element.text = '';
+            element.isCorrect = false;
+        });
     }
 }

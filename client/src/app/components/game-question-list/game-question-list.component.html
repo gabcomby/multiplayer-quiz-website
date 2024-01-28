@@ -4,7 +4,14 @@
         <mat-list>
             <div *ngFor="let element of questionList; let i = index" class="example-box" cdkDrag>
                 <mat-list-item>
-                    <div class="question">{{ i }}. {{ element.text }}</div>
+                    <div class="question">{{ i }}. {{ element.text }} 
+                        <div *ngIf="element.choices">
+                            <div *ngFor="let choice of element.choices">
+                                {{choice.text}}
+                            </div>
+                            
+                        </div>
+                    </div>
                 </mat-list-item>
             </div>
         </mat-list>

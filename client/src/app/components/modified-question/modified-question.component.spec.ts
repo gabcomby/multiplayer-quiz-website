@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
+import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
@@ -9,7 +10,18 @@ describe('ModifiedQuestionComponent', () => {
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     beforeEach(() => {
-        questionServiceSpy = jasmine.createSpyObj('QuestionService', ['addQuestion', 'updateQuestion', 'getQuestion']);
+        questionServiceSpy = jasmine.createSpyObj('QuestionService', {
+            addQuestion: {},
+            updateQuestion: {},
+            getQuestion: [
+                {
+                    type: '',
+                    text: 'Ceci est une question de test',
+                    points: 2,
+                    id: 0,
+                } as Question,
+            ],
+        });
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({

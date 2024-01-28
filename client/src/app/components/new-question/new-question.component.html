@@ -15,7 +15,9 @@
     <label>Ajouter à la banque de question</label>
     <input type="checkbox" [(ngModel)] = "addBankQuestion"/>
     </div>
-    <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button>
+    <p>Choix de reponse:</p>
+        <app-choice (registerAnswer)="addQuestion($event)"> </app-choice> 
+    <!-- <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button> -->
     
 
 </div>
