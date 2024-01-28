@@ -45,7 +45,11 @@ export class GamePageQuestionsComponent {
                     rightAnswers++;
                 }
             }
-            const score = pointPerCorrectAnswer * rightAnswers;
+            let score = pointPerCorrectAnswer * rightAnswers;
+            if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
+                const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
+                score -= wrongAnswers * pointPerCorrectAnswer;
+            }
             if (score === this.mark) this.answerStatus = AnswerStatus.Correct;
             else if (score === 0) this.answerStatus = AnswerStatus.Wrong;
             else this.answerStatus = AnswerStatus.PartiallyCorrect;
@@ -59,6 +63,16 @@ export class GamePageQuestionsComponent {
                 // this.scoreForTheQuestion.emit(0);
             }
         }
+    }
+
+    numberOfExpectedAnswers(): number {
+        let count = 0;
+        for (const choice of this.choices) {
+            if (choice.isCorrect) {
+                count++;
+            }
+        }
+        return count;
     }
 
     toggleAnswer(index: number) {
