@@ -1,26 +1,17 @@
 <div id="container" *ngIf="choices">
     <div class="question-point-div">
-        <h1 [class.correct-answer]="timerExpired && answerGivenIsCorrect" [class.wrong-answer]="timerExpired && !answerGivenIsCorrect">
+        <h1
+            [class.correct-answer]="timerExpired && answerStatus === AnswerStatus.Correct"
+            [class.wrong-answer]="timerExpired && answerStatus === AnswerStatus.Wrong"
+            [class.partial-answer]="timerExpired && answerStatus === AnswerStatus.PartiallyCorrect"
+        >
             {{ question }}
         </h1>
         <h2>{{ mark }} points</h2>
     </div>
-    <mat-chip-listbox
-        aria-label="Question answers"
-        class="custom-chip-listbox"
-        [multiple]="checkIfMultipleChoice()"
-        [(ngModel)]="selectedChoices"
-        (change)="onSelectionChange()"
-        name="selectedChoices"
-    >
-        <mat-chip-option
-            *ngFor="let choice of choices"
-            [value]="choice"
-            [disabled]="timerExpired"
-            [class.correct-answer]="timerExpired && choice.isCorrect"
-            [class.wrong-answer]="timerExpired && !choice.isCorrect"
-        >
-            {{ choice.text }}
-        </mat-chip-option>
-    </mat-chip-listbox>
+    <div class="example-button-row">
+        <button *ngFor="let choice of choices; let i = index" mat-raised-button [color]="isSelected(i) ? 'primary' : ''" (click)="toggleAnswer(i)">
+            {{ i + 1 }}: {{ choice.text }}
+        </button>
+    </div>
 </div>
