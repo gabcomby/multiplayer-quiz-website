@@ -69,7 +69,9 @@ export class GamePageComponent implements OnInit {
                 this.startQuestionTimer();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
-            alert('Game over!');
+            setTimeout(() => {
+                alert('Game over!');
+            }, TIME_BETWEEN_QUESTIONS);
         }
     }
 

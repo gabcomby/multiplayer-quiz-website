@@ -12,6 +12,28 @@ export class GamePageQuestionsComponent {
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
 
+    selectedChoices: Choice[];
+    answerGivenIsCorrect: boolean;
+
+    ngOnInit(): void {
+        this.selectedChoices = [];
+    }
+
+    onQuestionChange(): void {
+        this.selectedChoices = [];
+    }
+
+    onSelectionChange(): void {
+        this.answerGivenIsCorrect = false;
+
+        for (const answer of this.selectedChoices) {
+            if (answer.isCorrect) {
+                this.answerGivenIsCorrect = true;
+                break;
+            }
+        }
+    }
+
     checkIfMultipleChoice(): boolean {
         let count = 0;
         for (const choice of this.choices) {
