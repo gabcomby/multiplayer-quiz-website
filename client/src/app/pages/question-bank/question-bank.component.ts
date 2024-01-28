@@ -29,7 +29,7 @@ const ELEMENT_DATA: Question[] = [
     styleUrls: ['./question-bank.component.scss'],
 })
 export class QuestionBankComponent implements OnInit {
-    displayedColumns: string[] = ['question', 'date', 'delete'];
+    displayedColumns: string[] = ['question', 'date', 'delete', 'modify'];
     dataSource = ELEMENT_DATA;
 
     // Track the selected row IDs
@@ -45,7 +45,7 @@ export class QuestionBankComponent implements OnInit {
     loadQuestions(): void {
         this.http.get<Question[]>('http://localhost:3000/api/games').subscribe({
             next: (data) => {
-                this.dataSource = data;
+                this.dataSource = data.sort((a, b) => a.lastModification.getTime() - b.lastModification.getTime());
             },
             error: (error) => {
                 alert(error);
