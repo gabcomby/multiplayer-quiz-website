@@ -11,3 +11,13 @@
     text-align: center;
     margin-bottom: 50px;
 }
+
+mat-chip-option.correct-answer {
+    background-color: #4caf50;
+    color: white;
+}
+
+mat-chip-option.wrong-answer {
+    background-color: #f44336;
+    color: white;
+}
