@@ -9,7 +9,9 @@ import { Choice, Question } from '@app/interfaces/game';
 })
 export class ChoiceComponent {
     @Input() questionString: string;
-    @Output() choiceAnswers: EventEmitter<void> = new EventEmitter<void>();
+    @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
+    @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
+    type: string = '0';
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
@@ -45,10 +47,16 @@ export class ChoiceComponent {
         if (goodAnswer < 1 || goodAnswer === this.answers.length) {
             alert('Au moins une bonne réponse et une mauvaise réponse');
         } else {
-            console.log(this.answers);
         }
     }
     drop(event: CdkDragDrop<Question[]>) {
         moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
+    }
+    addAnswer() {
+        this.registerAnswer.emit(this.answers);
+        this.answers.forEach((element) => {
+            element.text = '';
+            element.isCorrect = false;
+        });
     }
 }
