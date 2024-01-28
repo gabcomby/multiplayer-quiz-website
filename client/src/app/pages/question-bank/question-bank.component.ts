@@ -29,35 +29,17 @@ const ELEMENT_DATA: Question[] = [
     styleUrls: ['./question-bank.component.scss'],
 })
 export class QuestionBankComponent implements OnInit {
-    displayedColumns: string[] = ['question', 'date'];
+    displayedColumns: string[] = ['question', 'date', 'delete'];
     dataSource = ELEMENT_DATA;
 
-    // Track the selected row
-    selectedRow: Question | null = null;
+    // Track the selected row IDs
+    selectedRowIds: string[] = [];
 
     constructor(private http: HttpClient) {}
-    /*
-    // Handle row click event
-    rowClicked(row: Question): void {
-        if (this.selectedRow === row) {
-            // Deselect the row if it's already selected
-            this.selectedRow.selected = false;
-            this.selectedRow = null;
-        } else {
-            // Deselect the currently selected row (if any)
-            if (this.selectedRow) {
-                this.selectedRow.selected = false;
-            }
-
-            // Select the clicked row
-            row.selected = true;
-            this.selectedRow = row;
-        }
-    }
-    */
 
     ngOnInit() {
-        this.loadQuestions();
+        // this.loadQuestions();
+        void 0;
     }
 
     loadQuestions(): void {
@@ -83,7 +65,11 @@ export class QuestionBankComponent implements OnInit {
         });
     }
 
-    createGame(): void {
+    createQuestion(): void {
         // Implement logic to create a new game
+    }
+
+    modifyQuestion(): void {
+        // Implement logic to modify a question
     }
 }
