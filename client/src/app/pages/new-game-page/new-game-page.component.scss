@@ -19,16 +19,15 @@ p.name {
     align-items: center;
     margin: auto;
     margin-bottom: 10px;
-
 }
-div.description{
+div.description {
     border: 3px solid black;
-    width: 50%;
-    margin-left: 370px;
+    width: 40%;
+    margin-left: 450px;
     box-sizing: border-box;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     background-color: white;
-    text-align:left;
+    text-align: left;
     margin-top: 0%;
     display: flex;
     align-items: center;
@@ -40,7 +39,6 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
 ng-container {
@@ -49,18 +47,21 @@ ng-container {
     justify-content: center;
 }
 
-button{
+button {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: row;
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-right: -50%;
 }
 
-p.questions{
+p.questions {
     margin-top: 0%;
     margin-bottom: 0%;
-    margin-left: -20%;
+    margin-left: -2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
 }
