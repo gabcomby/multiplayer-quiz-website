@@ -9,31 +9,28 @@ import { Choice, Question } from '@app/interfaces/game';
 })
 export class ChoiceComponent {
     @Input() questionString: string;
-    @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
-    type: string = '0';
+    @Output() choiceAnswers: EventEmitter<void> = new EventEmitter<void>();
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
     ];
-    questions: Question[] = [{ type: '', text: '', points: 0, choices: [{ text: '', isCorrect: false }], id: 0 }];
-    choices: { id: number; question: string; allChoices: Choice[] }[] = [];
 
     addChoice() {
         if (this.answers.length >= 2 && this.answers.length < 4) {
             this.answers.push({ text: '', isCorrect: false });
         } else {
             // Handle error or provide feedback to the user
-            console.error('minimum 2 choix et maximum 4');
+            alert('minimum 2 choix et maximum 4');
         }
     }
 
-    removeQuestion(index: number) {
+    removeChoice(index: number) {
         if (this.answers.length > 2) {
             this.answers.splice(index, 1);
         } else {
-            console.error('minimum 2');
+            alert('minimum 2');
         }
     }
 
