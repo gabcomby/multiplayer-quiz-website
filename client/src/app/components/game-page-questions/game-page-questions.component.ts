@@ -11,4 +11,15 @@ export class GamePageQuestionsComponent {
     @Input() mark: number;
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
+
+    checkIfMultipleChoice(): boolean {
+        let count = 0;
+        for (const choice of this.choices) {
+            if (choice.isCorrect) {
+                count++;
+            }
+        }
+        if (count > 1) return true;
+        else return false;
+    }
 }

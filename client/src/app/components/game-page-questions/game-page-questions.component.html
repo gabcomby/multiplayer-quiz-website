@@ -3,7 +3,7 @@
         <h1>{{ question }}</h1>
         <h2>{{ mark }} points</h2>
     </div>
-    <mat-chip-listbox aria-label="Question answers" class="custom-chip-listbox">
+    <mat-chip-listbox aria-label="Question answers" class="custom-chip-listbox" [multiple]="checkIfMultipleChoice()">
         <mat-chip-option
             *ngFor="let choice of choices"
             [disabled]="timerExpired"
