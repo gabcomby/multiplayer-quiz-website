@@ -13,7 +13,7 @@ import { DeleteService } from '@app/services/delete.service';
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
-    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
+    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
     dataSource: Game[] = [];
 
     constructor(
@@ -24,6 +24,9 @@ export class AdminPageComponent implements OnInit {
 
     ngOnInit() {
         this.loadGames();
+        // this.gameService.getGames().then((games) => {
+        //     this.games = games;
+        // });
     }
 
     loadGames(): void {
@@ -118,6 +121,14 @@ export class AdminPageComponent implements OnInit {
         };
         reader.readAsText(file);
     }
+
+    // getGame(gameId: string): Game {
+    //     const game = this.games.find((gameSelected) => gameSelected.id === gameId);
+    //     if (!game) {
+    //         throw new Error(`Game with id ${gameId} not found`);
+    //     }
+    //     return game;
+    // }
 
     deleteGame(gameId: string): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);

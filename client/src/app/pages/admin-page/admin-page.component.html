@@ -25,7 +25,14 @@
             <mat-cell *matCellDef="let element"> {{ element.lastModification }} </mat-cell>
         </ng-container>
 
-        <!-- Export Column -->
+        <!-- Modify Column -->
+        <ng-container matColumnDef="modify">
+            <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-raised-button [routerLink]="['/modify', element.id]">Modifier le jeu</button>
+            </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="export">
             <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>
             <mat-cell *matCellDef="let element">
@@ -50,7 +57,6 @@
     </mat-table>
     <div class="action-buttons">
         <button mat-raised-button routerLink="/create-qgame" (click)="createGame()">Créer un jeu</button>
-        <button mat-raised-button>Modifier un jeu</button>
         <button mat-raised-button routerLink="/question-bank">Accéder à la banque de questions</button>
         <button mat-raised-button (click)="openImportDialog()">Importer des jeux</button>
     </div>
