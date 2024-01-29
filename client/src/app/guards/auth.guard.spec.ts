@@ -1,14 +1,36 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthGuard } from './auth.guard';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AuthService } from '@app/services/auth.service';
+import { authGuard } from './auth.guard';
 
-describe('authGuard', () => {
-    const executeGuard = AuthGuard;
+describe('AuthGuard (isolated)', () => {
+    let authServiceStub: Partial<AuthService>;
+    let stateMock: Partial<RouterStateSnapshot>;
+    let routeMock: Partial<ActivatedRouteSnapshot>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        authServiceStub = { checkAuthentication: () => true };
+
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
+            providers: [{ provide: AuthService, useValue: authServiceStub }],
+        });
     });
 
-    it('should be created', () => {
-        expect(executeGuard).toBeTruthy();
+    it('grants access when the user is logged in', async () => {
+        const result = await TestBed.runInInjectionContext(async () =>
+            authGuard(routeMock as ActivatedRouteSnapshot, stateMock as RouterStateSnapshot),
+        );
+        expect(result).toBeTrue();
+    });
+
+    it('denies access when the user is not logged in', async () => {
+        authServiceStub.checkAuthentication = () => false;
+
+        const result = await TestBed.runInInjectionContext(async () =>
+            authGuard(routeMock as ActivatedRouteSnapshot, stateMock as RouterStateSnapshot),
+        );
+        expect(result).toBeFalse();
     });
 });
