@@ -7,7 +7,7 @@ describe('GameService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule], // Import HttpClientTestingModule
+            imports: [HttpClientTestingModule],
             providers: [GameService],
         });
         service = TestBed.inject(GameService);
@@ -16,6 +16,4 @@ describe('GameService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    // Additional tests for your service methods can be added here
 });
