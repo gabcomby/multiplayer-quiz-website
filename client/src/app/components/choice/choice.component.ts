@@ -17,8 +17,6 @@ export class ChoiceComponent {
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
     ];
 
     addChoice() {
@@ -50,12 +48,21 @@ export class ChoiceComponent {
 
         if (goodAnswer < 1 || goodAnswer === this.answers.length) {
             alert('Au moins une bonne réponse et une mauvaise réponse');
-        } else {
+        } else if (this.answerValid(this.answers)) {
             this.registerAnswer.emit(this.answers);
             this.answers.forEach((element) => {
                 element.text = '';
                 element.isCorrect = false;
             });
         }
+    }
+    answerValid(answer: Choice[]) {
+        let valid = true;
+        answer.forEach((elem) => {
+            if (elem.text === '') {
+                valid = false;
+            }
+        });
+        return valid;
     }
 }
