@@ -12,7 +12,8 @@ export class QuestionService {
             type: '',
             text: 'Ceci est une question de test',
             points: 2,
-            id: 0,
+            id: '123123',
+            lastModification: new Date(),
             choices: [
                 {
                     text: 'allo',
@@ -26,7 +27,8 @@ export class QuestionService {
             type: '',
             text: 'Ceci est une question de test 2',
             points: 3,
-            id: 1,
+            id: '123123',
+            lastModification: new Date(),
             choices: [
                 {
                     text: 'allo 2',

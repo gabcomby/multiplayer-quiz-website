@@ -9,7 +9,7 @@ import { QuestionService } from '@app/services/question.service';
 })
 export class NewQuestionComponent {
     // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
-    question: Question = { type: '', text: '', points: 0, id: 0 };
+    question: Question = { type: '', text: '', points: 0, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
@@ -19,8 +19,9 @@ export class NewQuestionComponent {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,
-            id: this.questionService.getQuestion().length,
+            id: this.questionService.getQuestion().length.toString(),
             choices: newChoices,
+            lastModification: new Date(),
         };
         if (newQuestion.text !== '') {
             // this.registerQuestion.emit(newQuestion);
