@@ -69,7 +69,7 @@ export class CreateQGamePageComponent {
 
         this.gameService.createGame(newGame);
 
-        location.reload();
+        // location.reload();
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;

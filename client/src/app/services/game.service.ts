@@ -20,6 +20,9 @@ export class GameService {
         const games = await firstValueFrom(games$);
         return games;
     }
+    // createGame(game: Game): Observable<Game> {
+    //     return this.http.post<Game>(this.apiUrl, game);
+    // }
 
     async createGame(game: Game): Promise<Game> {
         const game$ = this.http.post<Game>(this.apiUrl, game);

@@ -9,7 +9,7 @@ import { QuestionService } from '@app/services/question.service';
 })
 export class NewQuestionComponent {
     // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
-    question: Question = { type: '', text: '', points: 0, id: '12312312', lastModification: new Date() };
+    question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
