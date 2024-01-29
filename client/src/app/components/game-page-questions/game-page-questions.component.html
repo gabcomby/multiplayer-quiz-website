@@ -13,12 +13,18 @@
         <button
             *ngFor="let choice of choices; let i = index"
             mat-raised-button
-            [color]="isSelected(i) ? 'primary' : ''"
+            [ngClass]="{
+                'selected-answer': !timerExpired && isSelected(i),
+                'correct-answer': timerExpired && choice.isCorrect,
+                'wrong-answer': timerExpired && !choice.isCorrect
+            }"
             (click)="toggleAnswer(i)"
-            [class.correct-answer]="timerExpired && choice.isCorrect"
-            [class.wrong-answer]="timerExpired && !choice.isCorrect"
+            [disabled]="timerExpired || answerIsLocked"
         >
             {{ i + 1 }}: {{ choice.text }}
         </button>
+    </div>
+    <div *ngIf="!answerIsLocked">
+        <button mat-raised-button color="primary" (click)="submitAnswer()">Submit</button>
     </div>
 </div>

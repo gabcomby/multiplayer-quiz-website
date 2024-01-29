@@ -35,15 +35,28 @@ h1.partial-answer {
         font-size: 16px;
         border: none;
         cursor: pointer;
+        transition:
+            background-color 0.3s,
+            color 0.3s; // Smooth transition for color changes
+
+        &.selected-answer {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        &.correct-answer {
+            background-color: green !important;
+            color: white;
+        }
+
+        &.wrong-answer {
+            background-color: red !important;
+            color: white;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     }
-}
-
-button.correct-answer {
-    background-color: green !important;
-    color: white; // Or any color that suits on green background
-}
-
-button.wrong-answer {
-    background-color: red !important;
-    color: white; // Or any color that suits on red background
 }

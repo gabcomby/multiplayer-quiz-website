@@ -28,6 +28,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     answerStatusEnum = AnswerStatusEnum;
     answerStatus: AnswerStatusEnum;
     buttonPressed: string;
+    answerIsLocked: boolean;
 
     constructor(@Inject(DOCUMENT) private document: Document) {}
 
@@ -41,9 +42,14 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         }
     }
 
+    submitAnswer(): void {
+        this.answerIsLocked = true;
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.question || changes.choices) {
             this.selectedChoices = [];
+            this.answerIsLocked = false;
         }
     }
 
