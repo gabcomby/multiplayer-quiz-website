@@ -42,10 +42,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         }
     }
 
-    submitAnswer(): void {
-        this.answerIsLocked = true;
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.question || changes.choices) {
             this.selectedChoices = [];
@@ -66,45 +62,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.document.removeEventListener('keydown', this.buttonDetect.bind(this));
     }
 
-    // TODO: Subscribe this function to the timer expired event
-    calculateScoreForTheQuestion(): void {
-        if (this.checkIfMultipleChoice()) {
-            const pointPerCorrectAnswer = this.mark / this.numberOfCorrectAnswers();
-            let rightAnswers = 0;
-            for (const index of this.selectedChoices) {
-                if (this.choices[index].isCorrect) {
-                    rightAnswers++;
-                }
-            }
-            let score = pointPerCorrectAnswer * rightAnswers;
-            if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
-                const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
-                score -= wrongAnswers * pointPerCorrectAnswer;
-            }
-            if (score === this.mark) this.answerStatus = this.answerStatusEnum.Correct;
-            else if (score === 0) this.answerStatus = this.answerStatusEnum.Wrong;
-            else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
-            // this.scoreForTheQuestion.emit(score);
-        } else {
-            this.answerStatus = this.answerStatusEnum.Wrong;
-            if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
-                this.answerStatus = this.answerStatusEnum.Correct;
-            }
-            // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
-            // this.scoreForTheQuestion.emit(score);
-        }
-    }
-
-    numberOfExpectedAnswers(): number {
-        let count = 0;
-        for (const choice of this.choices) {
-            if (choice.isCorrect) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     toggleAnswer(index: number) {
         if (this.timerExpired) return;
         const answerIdx = this.selectedChoices.indexOf(index);
@@ -122,7 +79,60 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         return this.selectedChoices.includes(index);
     }
 
-    checkIfMultipleChoice(): boolean {
+    submitAnswer(): void {
+        this.answerIsLocked = true;
+    }
+
+    calculateScoreForTheQuestion(): void {
+        if (this.checkIfMultipleChoice()) {
+            const pointPerCorrectAnswer = this.mark / this.numberOfCorrectAnswers();
+            const rightAnswers = this.calculateRightAnswers();
+            let score = pointPerCorrectAnswer * rightAnswers;
+            score = this.calculatePenaltiesAndFinalScore(score, pointPerCorrectAnswer);
+            if (score === this.mark) this.answerStatus = this.answerStatusEnum.Correct;
+            else if (score === 0) this.answerStatus = this.answerStatusEnum.Wrong;
+            else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
+            // this.scoreForTheQuestion.emit(score);
+        } else {
+            this.answerStatus = this.answerStatusEnum.Wrong;
+            if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
+                this.answerStatus = this.answerStatusEnum.Correct;
+            }
+            // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
+            // this.scoreForTheQuestion.emit(score);
+        }
+    }
+
+    private calculatePenaltiesAndFinalScore(score: number, pointPerCorrectAnswer: number): number {
+        let finalScore = score;
+        if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
+            const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
+            finalScore -= wrongAnswers * pointPerCorrectAnswer;
+        }
+        return finalScore;
+    }
+
+    private calculateRightAnswers(): number {
+        let rightAnswers = 0;
+        for (const index of this.selectedChoices) {
+            if (this.choices[index].isCorrect) {
+                rightAnswers++;
+            }
+        }
+        return rightAnswers;
+    }
+
+    private numberOfExpectedAnswers(): number {
+        let count = 0;
+        for (const choice of this.choices) {
+            if (choice.isCorrect) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private checkIfMultipleChoice(): boolean {
         let count = 0;
         for (const choice of this.choices) {
             if (choice.isCorrect) {
@@ -133,7 +143,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         else return false;
     }
 
-    numberOfCorrectAnswers(): number {
+    private numberOfCorrectAnswers(): number {
         let count = 0;
         for (const choice of this.choices) {
             if (choice.isCorrect) {
