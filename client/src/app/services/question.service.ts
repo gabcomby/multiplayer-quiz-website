@@ -1,6 +1,7 @@
-// import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Question } from '@app/interfaces/game';
+import { firstValueFrom } from 'rxjs';
 // import { EventEmitter } from 'stream';
 // import { BehaviorSubject } from 'rxjs';
 @Injectable({
@@ -42,6 +43,10 @@ export class QuestionService {
 
     onQuestionAdded: EventEmitter<Question> = new EventEmitter();
 
+    private apiUrl = 'http://localhost:3000/api/questions';
+
+    constructor(private http: HttpClient) {}
+
     addQuestion(question: Question) {
         this.questions.push(question);
         this.onQuestionAdded.emit(question);
@@ -50,6 +55,13 @@ export class QuestionService {
     getQuestion() {
         return this.questions;
     }
+
+    async getQuestions(): Promise<Question[]> {
+        const questions$ = this.http.get<Question[]>(this.apiUrl);
+        const questions = await firstValueFrom(questions$);
+        return questions;
+    }
+
     updateList(question: Question[]) {
         this.questions = [];
         // this.questions.length = 0;
