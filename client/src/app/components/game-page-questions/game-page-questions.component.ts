@@ -51,6 +51,10 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.selectedChoices = [];
             this.answerIsLocked = false;
         }
+
+        if (changes.timerExpired && changes.timerExpired.currentValue === true) {
+            this.calculateScoreForTheQuestion();
+        }
     }
 
     ngOnInit(): void {
@@ -112,9 +116,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         } else {
             this.selectedChoices.push(index);
         }
-        // TODO: Remove this line once the timer expired event is implemented
-        // TODO: Make sure that the score is calculated only when the timer expires and even if the user has not selected any answer
-        this.calculateScoreForTheQuestion();
     }
 
     isSelected(index: number): boolean {
