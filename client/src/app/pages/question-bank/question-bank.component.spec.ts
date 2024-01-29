@@ -9,8 +9,7 @@ describe('QuestionBankComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [QuestionBankComponent],
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, QuestionBankComponent],
         });
 
         fixture = TestBed.createComponent(QuestionBankComponent);
