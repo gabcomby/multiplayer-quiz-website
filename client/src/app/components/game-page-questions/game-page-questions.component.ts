@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
+import { AnswerStateService } from '../../services/answer-state.service';
 
 enum AnswerStatusEnum {
     Correct,
@@ -30,7 +31,10 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     buttonPressed: string;
     answerIsLocked: boolean;
 
-    constructor(@Inject(DOCUMENT) private document: Document) {}
+    constructor(
+        @Inject(DOCUMENT) private document: Document,
+        private answerStateService: AnswerStateService,
+    ) {}
 
     // TODO: Fix the issue where typing in chat also triggers the buttonDetect function
     @HostListener('keydown', ['$event'])
@@ -46,6 +50,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (changes.question || changes.choices) {
             this.selectedChoices = [];
             this.answerIsLocked = false;
+            this.answerStateService.lockAnswer(this.answerIsLocked);
         }
 
         if (changes.timerExpired && changes.timerExpired.currentValue === true) {
@@ -81,6 +86,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     submitAnswer(): void {
         this.answerIsLocked = true;
+        this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 
     calculateScoreForTheQuestion(): void {
