@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
-import { PlayerService } from '@app/services/player.service';
+import { PasswordDialogComponent } from '@app/components/password-dialog/password-dialog.component';
+import { AuthService } from '@app/services/auth.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'app-main-page',
@@ -11,23 +12,27 @@ import { PlayerService } from '@app/services/player.service';
 })
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
+    message: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    password: string = '';
 
     constructor(
-        public dialog: MatDialog,
-        private playerService: PlayerService,
+        private authService: AuthService,
         private router: Router,
+        public dialog: MatDialog,
     ) {}
 
-    openDialog(): void {
-        const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
-            width: '250px',
-        });
+    openAdminDialog(): void {
+        const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
 
-        // In your dialog result subscription
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                this.playerService.setPlayerName(result);
-                this.router.navigate(['/game']);
+        dialogRef.afterClosed().subscribe((password) => {
+            if (password) {
+                this.authService.authenticate(password).subscribe((authenticate) => {
+                    if (authenticate) {
+                        this.router.navigate(['/admin']);
+                    } else {
+                        alert('Mot de passe incorrect');
+                    }
+                });
             }
         });
     }

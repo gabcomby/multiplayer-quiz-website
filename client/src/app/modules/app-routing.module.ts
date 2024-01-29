@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '@app/guards/auth.guard';
+import { authGuard } from '@app/guards/auth.guard';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from '@app/pages/create-qgame-page/create-qgame-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { GameTestComponent } from '@app/pages/game-test/game-test.component';
+import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { QuestionBankComponent } from '@app/pages/question-bank/question-bank.component';
-import { GameTestComponent } from '@app/pages/game-test/game-test.component';
-import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
 
 const routes: Routes = [
@@ -17,7 +17,7 @@ const routes: Routes = [
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'material', component: MaterialPageComponent },
-    { path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard] },
+    { path: 'admin', component: AdminPageComponent, canActivate: [authGuard] },
     { path: 'questions', component: QuestionsPageComponent },
     { path: 'new-game', component: NewGamePageComponent },
     { path: 'create-qgame', component: CreateQGamePageComponent },

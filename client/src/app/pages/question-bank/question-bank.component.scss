@@ -15,3 +15,35 @@
 .demo-row-is-clicked {
     font-weight: bold;
 }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: yellow;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+.title {
+    margin-right: 20px; /* Adjust margin as needed */
+}
+
+.button {
+    margin-left: auto; /* Pushes the button to the right */
+}
+
+.mat-cell.delete-cell {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mat-cell.delete-cell button {
+    width: 80%; /* Adjust the width as needed */
+}

@@ -12,6 +12,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '12345',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,
@@ -64,6 +66,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '123',
+                    lastModification: new Date(),
                     type: '',
                     text: 'Sample Question',
                     points: 10,
@@ -85,6 +89,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '12378',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: '',
                     points: 10,
@@ -106,6 +112,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '12309',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     choices: [],
@@ -127,6 +135,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '12',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,
@@ -148,6 +158,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
+                    id: '123765',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,
