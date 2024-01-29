@@ -31,6 +31,7 @@ import { ModifyQGamePageComponent } from './pages/modify-qgame-page/modify-q-gam
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 
 /**
  * Main module that is used in main.ts.
@@ -64,6 +65,7 @@ import { QuestionsPageComponent } from './pages/questions-page/questions-page.co
         ModifyQGamePageComponent,
         PlayerNameDialogComponent,
         QuestionBankComponent,
+        NewQuestionQbankComponent,
     ],
     imports: [
         AppMaterialModule,
