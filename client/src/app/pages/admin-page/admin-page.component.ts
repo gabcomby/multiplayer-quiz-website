@@ -39,6 +39,14 @@ export class AdminPageComponent implements OnInit {
         const game = this.dataSource.find((g) => g.id === gameId);
         if (game) {
             game.isVisible = isVisible;
+            this.http.patch(`http://localhost:3000/api/games/${gameId}`, game).subscribe({
+                next: () => {
+                    alert('Game updated successfully');
+                },
+                error: (error) => {
+                    alert(`Error updating game: ${error}`);
+                },
+            });
         }
     }
 
