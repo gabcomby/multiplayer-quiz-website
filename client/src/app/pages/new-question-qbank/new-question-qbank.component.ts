@@ -7,7 +7,6 @@ import { Component } from '@angular/core';
 })
 export class NewQuestionQbankComponent {
     addQuestionShown: boolean = false;
-    addQuestionInBank: boolean = true;
     // constructor() {}
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;

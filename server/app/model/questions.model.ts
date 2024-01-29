@@ -29,3 +29,4 @@ const questionSchema: Schema = new Schema({
 });
 
 export default mongoose.model<IQuestion>('Question', questionSchema);
+// export mongoose.model<IChoice>('Choice', choiceSchema);
