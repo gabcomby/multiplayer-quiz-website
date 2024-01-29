@@ -76,13 +76,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
             // this.scoreForTheQuestion.emit(score);
         } else {
-            if (this.choices[this.selectedChoices[0]].isCorrect) {
+            this.answerStatus = this.answerStatusEnum.Wrong;
+            if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
                 this.answerStatus = this.answerStatusEnum.Correct;
-                // this.scoreForTheQuestion.emit(this.mark);
-            } else {
-                this.answerStatus = this.answerStatusEnum.Wrong;
-                // this.scoreForTheQuestion.emit(0);
             }
+            // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
+            // this.scoreForTheQuestion.emit(score);
         }
     }
 
@@ -108,6 +107,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.selectedChoices.push(index);
         }
         // TODO: Remove this line once the timer expired event is implemented
+        // TODO: Make sure that the score is calculated only when the timer expires and even if the user has not selected any answer
         this.calculateScoreForTheQuestion();
     }
 

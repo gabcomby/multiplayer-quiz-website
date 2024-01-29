@@ -12,16 +12,6 @@
     margin-bottom: 50px;
 }
 
-mat-chip-option.correct-answer {
-    background-color: #4caf50;
-    color: white;
-}
-
-mat-chip-option.wrong-answer {
-    background-color: #f44336;
-    color: white;
-}
-
 h1.correct-answer {
     color: #4caf50;
 }
@@ -34,7 +24,7 @@ h1.partial-answer {
     color: #ff9800;
 }
 
-.example-button-row {
+.button-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
@@ -46,4 +36,14 @@ h1.partial-answer {
         border: none;
         cursor: pointer;
     }
+}
+
+button.correct-answer {
+    background-color: green !important;
+    color: white; // Or any color that suits on green background
+}
+
+button.wrong-answer {
+    background-color: red !important;
+    color: white; // Or any color that suits on red background
 }

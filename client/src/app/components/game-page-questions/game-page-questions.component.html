@@ -9,8 +9,15 @@
         </h1>
         <h2>{{ mark }} points</h2>
     </div>
-    <div class="example-button-row">
-        <button *ngFor="let choice of choices; let i = index" mat-raised-button [color]="isSelected(i) ? 'primary' : ''" (click)="toggleAnswer(i)">
+    <div class="button-row">
+        <button
+            *ngFor="let choice of choices; let i = index"
+            mat-raised-button
+            [color]="isSelected(i) ? 'primary' : ''"
+            (click)="toggleAnswer(i)"
+            [class.correct-answer]="timerExpired && choice.isCorrect"
+            [class.wrong-answer]="timerExpired && !choice.isCorrect"
+        >
             {{ i + 1 }}: {{ choice.text }}
         </button>
     </div>
