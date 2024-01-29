@@ -10,6 +10,8 @@ export interface IQuestion extends Document {
     text: string;
     points: number;
     choices?: IChoice[];
+    lastModification: Date;
+    id: string;
 }
 
 const choiceSchema: Schema = new Schema({
@@ -22,6 +24,8 @@ const questionSchema: Schema = new Schema({
     text: { type: String, required: true },
     points: { type: Number, required: true },
     choices: [choiceSchema],
+    lastModification: { type: Date, required: true },
+    id: { type: String, required: true },
 });
 
 export default mongoose.model<IQuestion>('Question', questionSchema);

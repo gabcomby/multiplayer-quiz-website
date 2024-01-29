@@ -62,12 +62,14 @@ export class QuestionService {
         return questions;
     }
 
-    getQuestionById(questionId: string): Observable<Question> {
-        return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
+    async addQuestionBank(question: Question): Promise<Question> {
+        const question$ = this.http.post<Question>(this.apiUrl, question);
+        const newQuestion = await firstValueFrom(question$);
+        return newQuestion;
     }
 
-    addQuestionBank(question: Question) {
-        this.questions.push(question);
+    getQuestionById(questionId: string): Observable<Question> {
+        return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
     }
 
     updateList(question: Question[]) {

@@ -25,10 +25,19 @@ export class QuestionsController {
 
         this.router.get('/:id', async (req: Request, res: Response) => {
             try {
-                const questions = await this.questionsService.getQuestions();
-                res.json(questions);
+                const question = await this.questionsService.getQuestionById(req.params.id);
+                res.json(question);
             } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching question' });
+            }
+        });
+
+        this.router.post('/', async (req: Request, res: Response) => {
+            try {
+                const question = await this.questionsService.addQuestionBank(req.body);
+                res.json(question);
+            } catch (error) {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error creating question' });
             }
         });
     }

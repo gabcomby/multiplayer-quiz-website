@@ -11,4 +11,8 @@ export class QuestionsService {
     async getQuestionById(questionId: string): Promise<IQuestion> {
         return questionsModel.findOne({ id: questionId });
     }
+
+    async addQuestionBank(questionData: IQuestion): Promise<IQuestion> {
+        return await questionsModel.create(questionData);
+    }
 }
