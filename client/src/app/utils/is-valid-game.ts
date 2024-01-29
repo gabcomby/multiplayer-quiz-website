@@ -1,6 +1,6 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
 
-const isValidGame = (game: Game): boolean => {
+export const isValidGame = (game: Game): boolean => {
     const errors: string[] = [];
 
     validateBasicGameProperties(game, errors);
