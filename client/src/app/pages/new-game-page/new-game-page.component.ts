@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
-import { DeleteService } from '@app/services/delete.service';
 import { GameService } from '@app/services/game.service';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
     selector: 'app-new-game-page',
@@ -11,13 +11,12 @@ import { GameService } from '@app/services/game.service';
 export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
-    constructor(
-        private gameService: GameService,
-        private deleteService: DeleteService,
-    ) {
-        this.deleteService.delete$.subscribe((id) => {
-            if (this.gameSelected[id] === true) {
-                window.alert('The game that you selected has been deleted. We suggest you to select another game.');
+    socket$: WebSocketSubject<string> = webSocket('ws://localhost:3000');
+    webSocket$ = this.socket$.asObservable();
+    constructor(private gameService: GameService) {
+        this.webSocket$.subscribe((gameId: string) => {
+            if (this.gameSelected[gameId]) {
+                alert('Game ' + gameId + ' has been deleted');
             }
         });
     }

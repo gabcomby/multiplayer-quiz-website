@@ -10,6 +10,8 @@ import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
+import * as WebSocket from 'ws';
+import { ChangeStream } from 'mongodb';
 
 @Service()
 export class Application {
@@ -43,6 +45,20 @@ export class Application {
     connectToDatabase(): void {
         const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
         mongoose.connect(mongoDBUri);
+        const wss = new WebSocket.Server({ port: 3000 });
+        const db = mongoose.connection.useDb('test');
+        const gameCollection = db.collection('games');
+        const change = gameCollection.watch();
+        change.on('change', (data) => {
+            if (data.operationType === 'delete') {
+                const deleteId = data.documentKey.id;
+                wss.clients.forEach((client: WebSocket) => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(deleteId.toString());
+                    }
+                });
+            }
+        });
     }
 
     bindRoutes(): void {
