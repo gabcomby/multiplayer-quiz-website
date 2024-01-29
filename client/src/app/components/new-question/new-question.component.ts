@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 
@@ -8,12 +8,13 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./new-question.component.scss'],
 })
 export class NewQuestionComponent {
+    @Input() onlyAddQuestionBank: boolean;
     // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
     question: Question = { type: '', text: '', points: 0, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
-    addQuestion(event: Choice[]) {
+    addQuestion(event: Choice[], onlyAddQuestionBank: boolean) {
         const newChoices = event.map((item) => ({ ...item }));
         const newQuestion = {
             type: this.question.type,
@@ -25,7 +26,12 @@ export class NewQuestionComponent {
         };
         if (newQuestion.text !== '') {
             // this.registerQuestion.emit(newQuestion);
-            this.questionService.addQuestion(newQuestion);
+            if (!onlyAddQuestionBank) {
+                this.questionService.addQuestion(newQuestion);
+            } else {
+                this.questionService.addQuestionBank(newQuestion);
+            }
+
             if (this.addBankQuestion) {
                 // console.log('banque question'); // lier avec la banque de question
             }
@@ -36,6 +42,7 @@ export class NewQuestionComponent {
         this.question.choices = [];
         this.addBankQuestion = false;
     }
+
     // registerAnswer(event: Choice[]) {
     //     return event;
     // }

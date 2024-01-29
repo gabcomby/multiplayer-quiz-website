@@ -66,6 +66,10 @@ export class QuestionService {
         return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
     }
 
+    addQuestionBank(question: Question) {
+        this.questions.push(question);
+    }
+
     updateList(question: Question[]) {
         this.questions = [];
         // this.questions.length = 0;

@@ -58,4 +58,7 @@ export class ChoiceComponent {
             });
         }
     }
+    addQuestionBank() {
+        console.log('banque question');
+    }
 }

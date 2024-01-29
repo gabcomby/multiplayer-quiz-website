@@ -1,1 +1,7 @@
-<p>new-question-qbank works!</p>
+<div id="title">
+    <h1>Création d'une nouvelle question!</h1>
+</div>
+<button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
+<div *ngIf="addQuestionShown === true">
+    <app-new-question [onlyAddQuestionBank]="true" *ngIf="addQuestionShown"> </app-new-question>
+</div>
