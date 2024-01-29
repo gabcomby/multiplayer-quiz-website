@@ -1,44 +1,18 @@
-import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { PasswordDialogComponent } from '@app/components/password-dialog/password-dialog.component';
 import { AuthService } from '@app/services/auth.service';
-import { Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root',
-})
-export class AuthGuard {
-    constructor(
-        private authService: AuthService,
-        private router: Router,
-        private dialog: MatDialog,
-    ) {}
+export const authGuard: CanActivateFn = (): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
 
-    canActivate: CanActivateFn = (): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
-        return this.dialog
-            .open(PasswordDialogComponent, {
-                width: '300px',
-            })
-            .afterClosed()
-            .pipe(
-                mergeMap((password) => {
-                    if (password) {
-                        return this.authService.authenticate(password).pipe(
-                            mergeMap((isAuthenticated) => {
-                                if (isAuthenticated) {
-                                    return of(true);
-                                } else {
-                                    alert('faux mot de passe');
-                                    return of(this.router.createUrlTree(['/home']));
-                                }
-                            }),
-                        );
-                    } else {
-                        return of(false);
-                    }
-                }),
-            );
-    };
-}
+    const isAuthenticated = authService.checkAuthentication();
+
+    if (!isAuthenticated) {
+        router.createUrlTree(['home']);
+        return false;
+    }
+
+    return true;
+};
