@@ -1,5 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { PasswordDialogComponent } from '@app/components/password-dialog/password-dialog.component';
+import { AuthService } from '@app/services/auth.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { Message } from '@common/message';
 import { BehaviorSubject } from 'rxjs';
@@ -13,8 +17,14 @@ import { map } from 'rxjs/operators';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    password: string = '';
 
-    constructor(private readonly communicationService: CommunicationService) {}
+    constructor(
+        private readonly communicationService: CommunicationService,
+        private authService: AuthService,
+        private router: Router,
+        public dialog: MatDialog,
+    ) {}
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
@@ -44,5 +54,21 @@ export class MainPageComponent {
                 }),
             )
             .subscribe(this.message);
+    }
+
+    openAdminDialog(): void {
+        const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
+
+        dialogRef.afterClosed().subscribe((password) => {
+            if (password) {
+                this.authService.authenticate(password).subscribe((authenticate) => {
+                    if (authenticate) {
+                        this.router.navigate(['/admin']);
+                    } else {
+                        alert('Mot de passe incorrect');
+                    }
+                });
+            }
+        });
     }
 }
