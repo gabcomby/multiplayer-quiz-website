@@ -4,6 +4,7 @@ import { Game } from '@app/interfaces/game';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+import { DeleteService } from '@app/services/delete.service';
 
 @Component({
     selector: 'app-admin-page',
@@ -14,7 +15,10 @@ export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
     dataSource: Game[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private deleteService: DeleteService,
+    ) {}
 
     ngOnInit() {
         this.loadGames();
@@ -110,6 +114,7 @@ export class AdminPageComponent implements OnInit {
         this.http.delete(`http://localhost:3000/api/games/${gameId}`).subscribe({
             next: () => {
                 alert('Game deleted successfully');
+                this.deleteService.notifyDelete(gameId);
             },
             error: (error) => {
                 alert(`Error deleting game: ${error}`);
