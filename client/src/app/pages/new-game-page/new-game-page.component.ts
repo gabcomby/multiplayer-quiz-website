@@ -11,15 +11,12 @@ export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     constructor(private gameService: GameService) {}
-    get arrayGames(): Game[] {
-        return this.games;
-    }
     ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
         });
     }
-    getInformations(game: Game) {
+    selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
 }
