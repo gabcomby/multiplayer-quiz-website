@@ -1,16 +1,21 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { GameService } from '@app/services/games.service';
 
-import { GameService } from './games.service';
-
-describe('GamesService', () => {
+describe('GameService', () => {
     let service: GameService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule], // Import HttpClientTestingModule
+            providers: [GameService],
+        });
         service = TestBed.inject(GameService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    // Additional tests for your service methods can be added here
 });
