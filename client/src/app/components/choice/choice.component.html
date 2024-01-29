@@ -7,14 +7,15 @@
                     <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />
                 </mat-form-field>
                 <mat-checkbox [(ngModel)]="answers[i].isCorrect" name="correctGroup">Correct</mat-checkbox>
-                <button mat-icon-button (click)="addChoice()">
-                    <mat-icon>add_circle_outline</mat-icon>
-                </button>
                 <button mat-icon-button (click)="removeChoice(i)">
                     <mat-icon>remove_circle_outline</mat-icon>
                 </button>
             </div>
         </ng-container>
+
+        <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add" (click)="addChoice()">
+            <mat-icon>add</mat-icon>
+        </button>
     </form>
     <div id="addQuestionButton">
         <button mat-raised-button color="accent" id="add" (click)="addAnswer()">Ajouter la question</button>

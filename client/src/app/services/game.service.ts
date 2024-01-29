@@ -20,4 +20,8 @@ export class GameService {
         const games = await firstValueFrom(games$);
         return games;
     }
+
+    addGame(game: Game) {
+        this.http.post<Game>(`${this.apiUrl}`, game);
+    }
 }
