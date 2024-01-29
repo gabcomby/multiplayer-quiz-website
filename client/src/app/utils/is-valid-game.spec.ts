@@ -12,7 +12,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 15,
+                    id: '12345',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,
@@ -65,7 +66,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 4,
+                    id: '123',
+                    lastModification: new Date(),
                     type: '',
                     text: 'Sample Question',
                     points: 10,
@@ -87,7 +89,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 5,
+                    id: '12378',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: '',
                     points: 10,
@@ -109,7 +112,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 5,
+                    id: '12309',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     choices: [],
@@ -131,7 +135,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 5,
+                    id: '12',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,
@@ -153,7 +158,8 @@ describe('isValidGame', () => {
             lastModification: new Date(),
             questions: [
                 {
-                    id: 5,
+                    id: '123765',
+                    lastModification: new Date(),
                     type: 'QCM',
                     text: 'Sample Question',
                     points: 10,

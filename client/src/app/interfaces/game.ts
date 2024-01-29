@@ -18,7 +18,9 @@ export interface Question {
     text: string;
     points: number;
     choices?: Choice[];
-    id: number;
+    // id: number;
     previousIndex?: number;
     currentIndex?: number;
+    lastModification: Date;
+    id: string;
 }
