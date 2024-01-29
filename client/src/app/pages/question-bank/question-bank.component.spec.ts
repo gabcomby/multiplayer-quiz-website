@@ -1,19 +1,26 @@
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { QuestionBankComponent } from './question-bank.component';
 
 describe('QuestionBankComponent', () => {
     let component: QuestionBankComponent;
     let fixture: ComponentFixture<QuestionBankComponent>;
+    let httpTestingController: HttpTestingController;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [QuestionBankComponent],
-        }).compileComponents();
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [QuestionBankComponent],
+            imports: [HttpClientTestingModule],
+        });
 
         fixture = TestBed.createComponent(QuestionBankComponent);
         component = fixture.componentInstance;
+        httpTestingController = TestBed.inject(HttpTestingController);
         fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        httpTestingController.verify();
     });
 
     it('should create', () => {

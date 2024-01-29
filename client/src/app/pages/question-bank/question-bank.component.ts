@@ -55,6 +55,7 @@ export class QuestionBankComponent implements OnInit {
 
     deleteQuestion(questionId: string): void {
         this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+        /*
         this.http.delete(`http://localhost:3000/api/games/${questionId}`).subscribe({
             next: () => {
                 alert('Question deleted successfully');
@@ -63,6 +64,7 @@ export class QuestionBankComponent implements OnInit {
                 alert(`Error deleting question: ${error}`);
             },
         });
+        */
     }
 
     createQuestion(): void {
