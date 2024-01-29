@@ -1,6 +1,6 @@
 <h2 id="title">Liste des jeux</h2>
 <div *ngFor="let game of games">
-<!--<div *ngIf = "game.isVisible">-->
+<div *ngIf = "game.isVisible">-->
   <p (click)="selected(game)" id={{game.id}} class="name"> {{ game.title }} 
   </p>
   <ng-container *ngIf="this.gameSelected[game.id]===true">
@@ -12,4 +12,3 @@
     </div>
   </ng-container>
 </div>
-<!--</div>-->
