@@ -1,5 +1,4 @@
-// import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -13,6 +12,7 @@ import { isValidGame } from '@app/utils/is-valid-game';
     styleUrls: ['./create-qgame-page.component.scss'],
 })
 export class CreateQGamePageComponent {
+    @Input() game: Game;
     // game: Game = {
     //     id: '',
     //     title: '',
@@ -31,7 +31,6 @@ export class CreateQGamePageComponent {
         description: new FormControl('', Validators.required),
         time: new FormControl('', Validators.required),
     });
-
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
