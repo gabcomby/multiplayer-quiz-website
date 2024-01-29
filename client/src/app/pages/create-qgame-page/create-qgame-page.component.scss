@@ -1,9 +1,3 @@
-.example-form {
-    min-width: 150px;
-    max-width: 500px;
-    width: 100%;
-}
-
 .example-full-width {
     width: 100%;
 }
@@ -11,6 +5,7 @@
 #form {
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 #title {
@@ -18,6 +13,39 @@
     justify-content: center;
 }
 
-#add {
-    left: 75%;
+.add {
+    left: 80%;
+}
+
+#list {
+    left: 15px;
+}
+
+.questions {
+    background-color: beige;
+}
+
+.game-information {
+    background-color: azure;
+}
+#container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+#modifyingComponent {
+    display: flex;
+    flex: 1;
+    // background-color: blue;
+}
+#registerGame {
+    // background-color: red;
+    display: flex;
+    justify-content: center;
+}
+#addQuestion {
+    // background-color: green;
+    flex: 1;
 }

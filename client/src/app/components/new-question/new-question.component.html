@@ -1,10 +1,23 @@
 
 
 <div id="newQuestion">
-
-    <input [(ngModel)]="question" />
-    <input [(ngModel)] = "point" min="10" max="100" step="10"/>
-    <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button>
-
+    <p>Ajouter des questions:</p>
+    <mat-form-field>
+        <mat-label>Question</mat-label>
+    <input matInput [(ngModel)]="question.text" />
+    </mat-form-field>
+    
+    <mat-form-field>
+        <mat-label>Nombre de points</mat-label>
+    <input matInput [(ngModel)] = "question.points" min="10" max="100" step="10"/>
+    </mat-form-field>
+    <div>
+    <label>Ajouter à la banque de question</label>
+    <input type="checkbox" [(ngModel)] = "addBankQuestion"/>
+    </div>
+    <p>Choix de reponse:</p>
+        <app-choice (registerAnswer)="addQuestion($event)"> </app-choice> 
+    <!-- <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button> -->
+    
 
 </div>

@@ -2,39 +2,39 @@
     <h1>Création d'un nouveau jeu!</h1>
 </div>
 <div id="form">
-    <form [formGroup]="gameForm" class="example-form">
-        <mat-form-field class="example-full-width">
-            <mat-label>Nom</mat-label>
-            <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
-        </mat-form-field>
+        <form [formGroup]="gameForm" class="example-form">
+            <div id="container">
+                <div id="addQuestion">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Nom</mat-label>
+                        <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
+                    </mat-form-field>
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
+                    </mat-form-field>
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Temps de délai</mat-label>
+                        <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
+                    </mat-form-field>
+                    <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
+                    <button type="button"  mat-raised-button color="accent">Ajouter de la banque de question</button>
 
-        <mat-form-field class="example-full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput placeholder="Entrer une description du jeu" formControlName="description" required></textarea>
-        </mat-form-field>
-
-        <mat-form-field class="example-full-width">
-            <mat-label>Temps de délai</mat-label>
-            <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
-=        </mat-form-field>
-
-        <!-- <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter question</button> -->
-
-        <app-new-question *ngIf="addQuestionShown" (registerQuestion)="addQuestion($event)"> </app-new-question>
-
-        <div>
-            <!-- <mat-form-field class="example-full-width">
-                <mat-label>Question</mat-label>
-                <input formControlName="question" matInput placeholder="question" />
-            </mat-form-field>
-
-            <button type="submit" (click)="addQuestion()" color="accent">Ajouter</button> -->
-            <div>
-                <label>Liste de question:</label>
-                <div *ngFor="let question of questions; index as questionId">
-                    <p>{{questionId+1}}. {{question}}</p>
+                    <div *ngIf="addQuestionShown === true">
+                        <app-new-question *ngIf="addQuestionShown"> </app-new-question>
+                    </div>
+                
+                </div>
+                <div id="modifyingComponent">
+                    <app-modified-question></app-modified-question>
                 </div>
             </div>
-        </div>
-    </form>
+            <div id="registerGame">
+                <button type="button" (click)="onSubmit()" mat-raised-button color="accent">Enregistrer le jeu</button>
+            </div>
+
+
+        </form>
+            <!-- <app-game-question-list></app-game-question-list>    -->
+    
 </div>

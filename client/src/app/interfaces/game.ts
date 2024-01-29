@@ -18,6 +18,8 @@ export interface Question {
     text: string;
     points: number;
     choices?: Choice[];
+    previousIndex?: number;
+    currentIndex?: number;
     lastModification: Date;
     id: string;
 }

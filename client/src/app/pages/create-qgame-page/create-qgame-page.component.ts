@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Question } from '@app/interfaces/question';
+import { Question } from '@app/interfaces/game';
+import { QuestionService } from '@app/services/question.service';
+// import { IDGenerator } from '../utils/IDGenerator';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -12,44 +14,46 @@ import { Question } from '@app/interfaces/question';
     // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
 export class CreateQGamePageComponent {
-    questions: string[] = [];
-    newQuestion: Question[];
+    questions: Question[] = [];
     questionId: number = 0;
-    addQuestionShown: boolean = true;
+    modifiedQuestion: boolean = false;
+    addQuestionShown: boolean = false;
     gameForm = new FormGroup({
         name: new FormControl('', Validators.required),
         description: new FormControl('', Validators.required),
         time: new FormControl('', Validators.required),
     });
 
-    // this.gameForm = new FormGroup({
-    //     newQuestion : new FormGroup({
-    //         question: new FormControl()
-    //     })
-    // });
-    // delay: number;
-    get name() {
-        return this.gameForm.get('name');
+    constructor(private questionService: QuestionService) {
+        // this.questionService.getQuestion().forEach((element) => {
+        //     this.questions.push(element);
+        // });
+        this.questions = this.questionService.getQuestion();
     }
+
+    // ngOnInit() {
+    //     this.questionService.getQuestion().subscribe((list) => (this.questions = list));
+    // }
+
+    // get name() {
+    //     return this.gameForm.get('name');
+    // }
     onSubmit() {
         // Call la fonction du service QuestionHandler pour ajouter
         // la liste locale a la liste totale des questionnaires
-        alert(this.gameForm.value);
+        alert('il faut enregistrer le jeu/vérifier le jeu');
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;
     }
-
-    addQuestion(question: string) {
-        // Ajouter des qustions a la liste locale de question
-
-        if (question) {
-            this.questions.push(question);
-        }
-        this.gameForm.reset();
-        // alert(this.gameForm.value);
+    toggleModifiedQuestion() {
+        this.modifiedQuestion = !this.modifiedQuestion;
     }
-    //     updateName(newName) {
-    //         this.profileForm.setValue(newName);
-    //     }
+
+    // addQuestion(question: Question) {
+    //     // Ajouter des qustions a la liste locale de question
+    //     // this.questionId += 1;
+
+    //     this.questionService.addQuestion(question);
+    // }
 }

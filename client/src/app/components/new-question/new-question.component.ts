@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
+import { Choice, Question } from '@app/interfaces/game';
+import { QuestionService } from '@app/services/question.service';
 
 @Component({
     selector: 'app-new-question',
@@ -6,13 +8,35 @@ import { Component, EventEmitter, Output } from '@angular/core';
     styleUrls: ['./new-question.component.scss'],
 })
 export class NewQuestionComponent {
-    @Output() registerQuestion: EventEmitter<string> = new EventEmitter();
-    question: string = '';
-    // questionId: number = 0;
-    point: number = 0;
+    // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
+    question: Question = { type: '', text: '', points: 0, id: '12312312', lastModification: new Date() };
+    addBankQuestion: boolean = false;
+    constructor(private questionService: QuestionService) {}
 
-    addQuestion() {
-        this.registerQuestion.emit(this.question);
-        this.question = '';
+    addQuestion(event: Choice[]) {
+        const newChoices = event.map((item) => ({ ...item }));
+        const newQuestion = {
+            type: this.question.type,
+            text: this.question.text,
+            points: this.question.points,
+            id: this.questionService.getQuestion().length.toString(),
+            choices: newChoices,
+            lastModification: new Date(),
+        };
+        if (newQuestion.text !== '') {
+            // this.registerQuestion.emit(newQuestion);
+            this.questionService.addQuestion(newQuestion);
+            if (this.addBankQuestion) {
+                // console.log('banque question'); // lier avec la banque de question
+            }
+        }
+
+        this.question.text = '';
+        this.question.points = 0;
+        this.question.choices = [];
+        this.addBankQuestion = false;
     }
+    // registerAnswer(event: Choice[]) {
+    //     return event;
+    // }
 }
