@@ -1,18 +1,24 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
+import { Question } from '@app/interfaces/game';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
+/*
 export interface QuestionBank {
     position: number;
     question: string;
     date: Date;
     selected?: boolean;
+    id?: string;
 }
+*/
 
-const ELEMENT_DATA: QuestionBank[] = [
-    { position: 1, question: 'Quelle est la capitale de la France?', date: new Date() },
-    { position: 2, question: 'Question 2', date: new Date() },
-    { position: 3, question: 'Question 3', date: new Date() },
-    { position: 4, question: 'Question 4', date: new Date() },
+const ELEMENT_DATA: Question[] = [
+    { id: generateNewId(), type: 'QCM', text: 'Quelle est la capitale de la France?', lastModification: new Date(), points: 2 },
+    { id: generateNewId(), type: 'QCM', text: 'Quelle est la capitale de l Allemagne?', lastModification: new Date(), points: 2 },
+    { id: generateNewId(), type: 'QCM', text: 'Quelle est la capitale de l Angleterre?', lastModification: new Date(), points: 2 },
+    { id: generateNewId(), type: 'QCM', text: 'Quelle est la capitale de l Espagne?', lastModification: new Date(), points: 2 },
 ];
 
 @Component({
@@ -22,28 +28,50 @@ const ELEMENT_DATA: QuestionBank[] = [
     templateUrl: './question-bank.component.html',
     styleUrls: ['./question-bank.component.scss'],
 })
-export class QuestionBankComponent {
-    displayedColumns: string[] = ['position', 'question', 'date'];
+export class QuestionBankComponent implements OnInit {
+    displayedColumns: string[] = ['question', 'date', 'delete', 'modify'];
     dataSource = ELEMENT_DATA;
 
-    // Track the selected row
-    selectedRow: QuestionBank | null = null;
+    // Track the selected row IDs
+    selectedRowIds: string[] = [];
 
-    // Handle row click event
-    rowClicked(row: QuestionBank): void {
-        if (this.selectedRow === row) {
-            // Deselect the row if it's already selected
-            this.selectedRow.selected = false;
-            this.selectedRow = null;
-        } else {
-            // Deselect the currently selected row (if any)
-            if (this.selectedRow) {
-                this.selectedRow.selected = false;
-            }
+    constructor(private http: HttpClient) {}
 
-            // Select the clicked row
-            row.selected = true;
-            this.selectedRow = row;
-        }
+    ngOnInit() {
+        // this.loadQuestions();
+        void 0;
+    }
+
+    loadQuestions(): void {
+        this.http.get<Question[]>('http://localhost:3000/api/games').subscribe({
+            next: (data) => {
+                this.dataSource = data.sort((a, b) => a.lastModification.getTime() - b.lastModification.getTime());
+            },
+            error: (error) => {
+                alert(error);
+            },
+        });
+    }
+
+    deleteQuestion(questionId: string): void {
+        this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+        /*
+        this.http.delete(`http://localhost:3000/api/games/${questionId}`).subscribe({
+            next: () => {
+                alert('Question deleted successfully');
+            },
+            error: (error) => {
+                alert(`Error deleting question: ${error}`);
+            },
+        });
+        */
+    }
+
+    createQuestion(): void {
+        // Implement logic to create a new game
+    }
+
+    modifyQuestion(): void {
+        // Implement logic to modify a question
     }
 }
