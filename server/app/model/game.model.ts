@@ -15,6 +15,7 @@ interface IQuestion extends Document {
 export interface IGame extends Document {
     id: string;
     title: string;
+    isVisible: boolean;
     description: string;
     duration: number;
     lastModification: Date;
@@ -36,6 +37,7 @@ const questionSchema: Schema = new Schema({
 const gameSchema: Schema = new Schema({
     id: { type: String, required: true },
     title: { type: String, required: true },
+    isVisible: { type: Boolean, required: true },
     description: String,
     duration: Number,
     lastModification: Date,

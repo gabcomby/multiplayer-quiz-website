@@ -57,7 +57,7 @@ describe('NewGamePageComponent', () => {
         ];
         const gameSelectedMock = { alloBonjour: true };
         component.gameSelected = gameSelectedMock;
-        component.getInformations(gamesMock[0]);
+        component.selected(gamesMock[0]);
         expect(gameSelectedMock['alloBonjour']).toEqual(false);
     });
 
@@ -74,6 +74,6 @@ describe('NewGamePageComponent', () => {
             },
         ];
         component.games = gamesMock;
-        expect(component.arrayGames).toEqual(gamesMock);
+        expect(component.games).toEqual(gamesMock);
     });
 });
