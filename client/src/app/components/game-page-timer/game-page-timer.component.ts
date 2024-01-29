@@ -19,7 +19,7 @@ export class GamePageTimerComponent implements OnInit {
         private answerStateService: AnswerStateService,
         private readonly timerService: TimerService,
     ) {
-        this.answerStateService.answerLocked$.subscribe((isLocked) => {
+        this.answerStateService.answerLocked.subscribe((isLocked) => {
             this.answerLocked = isLocked;
         });
     }
