@@ -2,12 +2,14 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 
-enum AnswerStatus {
+enum AnswerStatusEnum {
     Correct,
     Wrong,
     Unanswered,
     PartiallyCorrect,
 }
+
+const MINUS_ONE = -1;
 
 @Component({
     selector: 'app-game-page-questions',
@@ -23,8 +25,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
-    AnswerStatus = AnswerStatus;
-    answerStatus: AnswerStatus;
+    answerStatusEnum = AnswerStatusEnum;
+    answerStatus: AnswerStatusEnum;
     buttonPressed: string;
 
     constructor(@Inject(DOCUMENT) private document: Document) {}
@@ -69,16 +71,16 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
                 const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
                 score -= wrongAnswers * pointPerCorrectAnswer;
             }
-            if (score === this.mark) this.answerStatus = AnswerStatus.Correct;
-            else if (score === 0) this.answerStatus = AnswerStatus.Wrong;
-            else this.answerStatus = AnswerStatus.PartiallyCorrect;
+            if (score === this.mark) this.answerStatus = this.answerStatusEnum.Correct;
+            else if (score === 0) this.answerStatus = this.answerStatusEnum.Wrong;
+            else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
             // this.scoreForTheQuestion.emit(score);
         } else {
             if (this.choices[this.selectedChoices[0]].isCorrect) {
-                this.answerStatus = AnswerStatus.Correct;
+                this.answerStatus = this.answerStatusEnum.Correct;
                 // this.scoreForTheQuestion.emit(this.mark);
             } else {
-                this.answerStatus = AnswerStatus.Wrong;
+                this.answerStatus = this.answerStatusEnum.Wrong;
                 // this.scoreForTheQuestion.emit(0);
             }
         }
@@ -100,7 +102,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
         }
-        if (answerIdx > -1) {
+        if (answerIdx > MINUS_ONE) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
