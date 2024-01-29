@@ -116,4 +116,17 @@ describe('GameController', () => {
                 chai.expect(response.body).to.deep.equal({ error: 'Error fetching game' });
             });
     });
+
+    it('should return an error status on PATCH request if service fails', async () => {
+        const gameId = '1a2b3c';
+        gameService.toggleVisibility.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .patch(`/api/games/${gameId}`)
+            .send({ isVisible: false })
+            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error updating game' });
+            });
+    });
 });

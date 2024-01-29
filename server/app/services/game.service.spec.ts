@@ -10,10 +10,12 @@ describe('Game service', () => {
     let findOneStub: SinonStub;
     let createStub: SinonStub;
     let findOneAndDeleteStub: SinonStub;
+    let findOneAndUpdateStub: SinonStub;
 
     const gameInstance = new gameModel({
         id: '1a2b3c',
         title: 'Questionnaire sur le JS',
+        isValid: true,
         description: 'Questions de pratique sur le langage JavaScript',
         duration: 60,
         lastModification: new Date('2018-11-13T20:20:39+00:00'),
@@ -70,6 +72,7 @@ describe('Game service', () => {
         findOneStub = sandbox.stub(gameModel, 'findOne');
         createStub = sandbox.stub(gameModel, 'create');
         findOneAndDeleteStub = sandbox.stub(gameModel, 'findOneAndDelete');
+        findOneAndUpdateStub = sandbox.stub(gameModel, 'findOneAndUpdate');
     });
 
     afterEach(() => {
@@ -108,5 +111,32 @@ describe('Game service', () => {
         const result = await gameService.deleteGame(gameId);
         expect(result).to.eql(gameInstance);
         expect(findOneAndDeleteStub.calledWith({ id: gameId }));
+    });
+
+    it('should toggle the visibility of a specific game', async () => {
+        const gameId = '1a2b3c';
+        const gameData = gameInstance;
+        const updatedGame = { ...gameInstance, isVisible: true };
+
+        findOneAndUpdateStub.withArgs({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }).resolves(updatedGame);
+
+        const result = await gameService.toggleVisibility(gameId, gameData);
+        expect(result).to.eql(updatedGame);
+        expect(findOneAndUpdateStub.calledWith({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }));
+    });
+
+    it('should throw an error if the game to toggle visibility is not found', async () => {
+        const gameId = '4d5e6f';
+        const gameData = gameInstance;
+
+        findOneAndUpdateStub.withArgs({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }).resolves(null);
+
+        try {
+            await gameService.toggleVisibility(gameId, gameData);
+            expect.fail('Expected error was not thrown');
+        } catch (e) {
+            expect(e.message).to.equal('Game not found');
+        }
+        expect(findOneAndUpdateStub.calledWith({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }));
     });
 });
