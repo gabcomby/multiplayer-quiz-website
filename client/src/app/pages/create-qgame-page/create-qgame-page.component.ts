@@ -3,16 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
-// import { generateNewId } from '@app/utils/assign-new-game-attributes';
-// import { AppModule } from '@app/app.module';
-// import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
+import { isValidGame } from '@app/utils/is-valid-game';
 
 @Component({
-    // standalone: true,
     selector: 'app-create-qgame-page',
     templateUrl: './create-qgame-page.component.html',
     styleUrls: ['./create-qgame-page.component.scss'],
-    // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
 export class CreateQGamePageComponent {
     @Input() game: Game;
@@ -26,7 +23,7 @@ export class CreateQGamePageComponent {
     //     questions: [],
     // };
     questions: Question[] = [];
-    questionId: number = 0;
+    isNotVisible: boolean = false;
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = false;
     gameForm = new FormGroup({
@@ -38,43 +35,27 @@ export class CreateQGamePageComponent {
         private questionService: QuestionService,
         private gameService: GameService,
     ) {
-        // this.questionService.getQuestion().forEach((element) => {
-        //     this.questions.push(element);
-        // });
         this.questions = this.questionService.getQuestion();
     }
 
-    // ngOnInit() {
-    //     this.gameService.getGames().then((games) => {
-    //         this.games = games;
-    //     });
-    // }
-
-    // ngOnInit() {
-    //     this.questionService.getQuestion().subscribe((list) => (this.questions = list));
-    // }
-
-    // get name() {
-    //     return this.gameForm.get('name');
-    // }
-    onSubmit(questionList: Question[], gameForm: FormGroup) {
-        // Call la fonction du service QuestionHandler pour ajouter
-        // la liste locale a la liste totale des questionnaires
-        // alert('il faut enregistrer le jeu/vérifier le jeu');
-
+    onSubmit(questionList: Question[], gameForm: FormGroup, isNotVisible: boolean) {
         const newGame: Game = {
-            id: '1j1j1j1j1',
+            id: generateNewId(),
             title: gameForm.get('name')?.value || '',
             description: gameForm.get('description')?.value || '',
-            isVisible: true,
+            isVisible: isNotVisible,
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
             questions: questionList,
         };
 
-        this.gameService.createGame(newGame);
-
-        // location.reload();
+        if (isValidGame(newGame)) {
+            this.gameService.createGame(newGame);
+            // console.log(newGame);
+            // location.reload();
+        } else {
+            // console.log(newGame);
+        }
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;
@@ -82,10 +63,4 @@ export class CreateQGamePageComponent {
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
-    // addQuestion(question: Question) {
-    //     // Ajouter des qustions a la liste locale de question
-    //     // this.questionId += 1;
-
-    //     this.questionService.addQuestion(question);
-    // }
 }
