@@ -1,9 +1,17 @@
-<div id="container">
-    <h1>{{ question }}</h1>
-    <mat-chip-listbox aria-label="Question answers" class="custom-chip-listbox">
-        <mat-chip-option>{{ answers[0] }}</mat-chip-option>
-        <mat-chip-option>{{ answers[1] }}</mat-chip-option>
-        <mat-chip-option>{{ answers[2] }}</mat-chip-option>
-        <mat-chip-option>{{ answers[3] }}</mat-chip-option>
-    </mat-chip-listbox>
+<div id="container" *ngIf="choices">
+    <div class="question-point-div">
+        <h1
+            [class.correct-answer]="timerExpired && answerStatus === answerStatusEnum.Correct"
+            [class.wrong-answer]="timerExpired && answerStatus === answerStatusEnum.Wrong"
+            [class.partial-answer]="timerExpired && answerStatus === answerStatusEnum.PartiallyCorrect"
+        >
+            {{ question }}
+        </h1>
+        <h2>{{ mark }} points</h2>
+    </div>
+    <div class="example-button-row">
+        <button *ngFor="let choice of choices; let i = index" mat-raised-button [color]="isSelected(i) ? 'primary' : ''" (click)="toggleAnswer(i)">
+            {{ i + 1 }}: {{ choice.text }}
+        </button>
+    </div>
 </div>

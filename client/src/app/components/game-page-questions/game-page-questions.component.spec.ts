@@ -13,7 +13,7 @@ describe('GamePageQuestionsComponent', () => {
         fixture = TestBed.createComponent(GamePageQuestionsComponent);
         component = fixture.componentInstance;
         component.question = 'Sample Question';
-        component.answers = ['Answer 1', 'Answer 2'];
+        // component.choices = ['Answer 1', 'Answer 2'];
         fixture.detectChanges();
     });
 

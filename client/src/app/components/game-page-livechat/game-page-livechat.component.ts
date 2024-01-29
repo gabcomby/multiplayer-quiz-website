@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 const NOT_EXIST = -1;
 const DISAPPEAR_DELAY = 10000;
@@ -16,12 +16,13 @@ const DISAPPEAR_DELAY = 10000;
     ],
 })
 export class GamePageLivechatComponent {
-    messages: { text: string; visible: boolean }[] = [];
+    @Input() playerName: string;
+    messages: { text: string; sender: string; visible: boolean }[] = [];
     newMessage: string = '';
 
     sendMessage(): void {
         if (this.newMessage.trim() !== '') {
-            const message = { text: this.newMessage, visible: true };
+            const message = { text: this.newMessage, sender: this.playerName, visible: true };
             this.messages.push(message);
 
             setTimeout(() => {
@@ -34,7 +35,7 @@ export class GamePageLivechatComponent {
         }
     }
 
-    hideMessage(message: { text: string; visible: boolean }): void {
+    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
         message.visible = false;
         const index = this.messages.indexOf(message);
         if (index !== NOT_EXIST) {

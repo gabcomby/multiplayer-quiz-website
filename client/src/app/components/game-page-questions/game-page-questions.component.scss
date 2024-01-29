@@ -1,4 +1,49 @@
 #container {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     height: 100%;
+    width: 100%;
+}
+
+.question-point-div {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+mat-chip-option.correct-answer {
+    background-color: #4caf50;
+    color: white;
+}
+
+mat-chip-option.wrong-answer {
+    background-color: #f44336;
+    color: white;
+}
+
+h1.correct-answer {
+    color: #4caf50;
+}
+
+h1.wrong-answer {
+    color: #f44336;
+}
+
+h1.partial-answer {
+    color: #ff9800;
+}
+
+.example-button-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
 }

@@ -23,6 +23,7 @@ import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 import { RouterModule } from '@angular/router';
 
 /**
@@ -52,6 +53,7 @@ import { RouterModule } from '@angular/router';
         GameWaitComponent,
         QuestionsPageComponent,
         PasswordDialogComponent,
+        PlayerNameDialogComponent,
     ],
     imports: [
         AppMaterialModule,
