@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 
 enum AnswerStatus {
@@ -13,7 +14,7 @@ enum AnswerStatus {
     templateUrl: './game-page-questions.component.html',
     styleUrls: ['./game-page-questions.component.scss'],
 })
-export class GamePageQuestionsComponent {
+export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges {
     @Input() question: string;
     @Input() mark: number;
     @Input() choices: Choice[] = [];
@@ -24,15 +25,32 @@ export class GamePageQuestionsComponent {
     answerGivenIsCorrect: boolean;
     AnswerStatus = AnswerStatus;
     answerStatus: AnswerStatus;
+    buttonPressed: string;
+
+    constructor(@Inject(DOCUMENT) private document: Document) {}
+
+    @HostListener('keydown', ['$event'])
+    buttonDetect(event: KeyboardEvent) {
+        this.buttonPressed = event.key;
+        if (!Number.isNaN(Number(this.buttonPressed))) {
+            const stringAsNumber = Number(this.buttonPressed);
+            this.toggleAnswer(stringAsNumber - 1);
+        }
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.question || changes.choices) {
-            this.resetSelection();
+            this.selectedChoices = [];
         }
     }
 
     ngOnInit(): void {
         this.selectedChoices = [];
+        this.document.addEventListener('keydown', this.buttonDetect.bind(this));
+    }
+
+    ngOnDestroy(): void {
+        this.document.removeEventListener('keydown', this.buttonDetect.bind(this));
     }
 
     // TODO: Subscribe this function to the timer expired event
@@ -76,6 +94,7 @@ export class GamePageQuestionsComponent {
     }
 
     toggleAnswer(index: number) {
+        if (this.timerExpired) return;
         const answerIdx = this.selectedChoices.indexOf(index);
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
@@ -154,9 +173,4 @@ export class GamePageQuestionsComponent {
     //         {{ choice.text }}
     //     </mat-chip-option>
     // </mat-chip-listbox>
-
-    private resetSelection(): void {
-        this.selectedChoices = [];
-        this.answerGivenIsCorrect = false;
-    }
 }
