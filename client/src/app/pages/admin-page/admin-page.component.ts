@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
@@ -14,7 +15,10 @@ export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
     dataSource: Game[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+    ) {}
 
     ngOnInit() {
         this.loadGames();
@@ -118,7 +122,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     createGame(): void {
-        // Implement logic to create a new game
+        this.router.navigate(['/create-qgame']);
     }
 
     private isGameNameUnique(name: string): boolean {
