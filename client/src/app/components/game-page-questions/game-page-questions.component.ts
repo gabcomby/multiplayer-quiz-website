@@ -142,45 +142,4 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         }
         return count;
     }
-
-    // onSelectionChange(): void {
-    //     this.answerGivenIsCorrect = false;
-    //     console.log(this.selectedChoices);
-
-    //     for (const answer of this.selectedChoices) {
-    //         if (answer.isCorrect) {
-    //             this.answerGivenIsCorrect = true;
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // checkIfMultipleChoice(): boolean {
-    //     let count = 0;
-    //     for (const choice of this.choices) {
-    //         if (choice.isCorrect) {
-    //             count++;
-    //         }
-    //     }
-    //     if (count > 1) return true;
-    //     else return false;
-    // }
-    //     <mat-chip-listbox
-    //     aria-label="Question answers"
-    //     class="custom-chip-listbox"
-    //     [multiple]="checkIfMultipleChoice()"
-    //     [(ngModel)]="selectedChoices"
-    //     (change)="onSelectionChange()"
-    //     name="selectedChoices"
-    // >
-    //     <mat-chip-option
-    //         *ngFor="let choice of choices"
-    //         [value]="choice"
-    //         [disabled]="timerExpired"
-    //         [class.correct-answer]="timerExpired && choice.isCorrect"
-    //         [class.wrong-answer]="timerExpired && !choice.isCorrect"
-    //     >
-    //         {{ choice.text }}
-    //     </mat-chip-option>
-    // </mat-chip-listbox>
 }

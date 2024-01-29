@@ -37,7 +37,8 @@ h1.partial-answer {
         cursor: pointer;
         transition:
             background-color 0.3s,
-            color 0.3s; // Smooth transition for color changes
+            color 0.3s,
+            opacity 0.3s;
 
         &.selected-answer {
             background-color: #1976d2;
