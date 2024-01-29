@@ -7,7 +7,6 @@ import { Question } from '@app/interfaces/game';
     providedIn: 'root',
 })
 export class QuestionService {
-    
     questions: Question[] = [
         {
             type: '',

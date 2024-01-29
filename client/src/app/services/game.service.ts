@@ -21,7 +21,7 @@ export class GameService {
         return games;
     }
 
-    addGame(game: Game) {
-        this.http.post<Game>(`${this.apiUrl}`, game);
+    addGame(game: Game): Observable<Game> {
+        return this.http.post<Game>(this.apiUrl, game);
     }
 }

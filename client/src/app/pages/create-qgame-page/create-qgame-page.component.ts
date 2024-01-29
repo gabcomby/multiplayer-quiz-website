@@ -1,9 +1,10 @@
+// import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
+// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 // import { AppModule } from '@app/app.module';
 // import { NewQuestionComponent } from '@app/pages/new-question/new-question.component'; // '/new-question/new-question.component';
 
@@ -36,7 +37,7 @@ export class CreateQGamePageComponent {
 
     constructor(
         private questionService: QuestionService,
-        private gameService: GameService,
+        private gameService: GameService, // private http: HttpClient,
     ) {
         // this.questionService.getQuestion().forEach((element) => {
         //     this.questions.push(element);
@@ -51,22 +52,22 @@ export class CreateQGamePageComponent {
     // get name() {
     //     return this.gameForm.get('name');
     // }
-    onSubmit(questions: Question[], gameForm: FormGroup) {
+    onSubmit(questionList: Question[], gameForm: FormGroup) {
         // Call la fonction du service QuestionHandler pour ajouter
         // la liste locale a la liste totale des questionnaires
         // alert('il faut enregistrer le jeu/vérifier le jeu');
 
         const newGame: Game = {
-            id: generateNewId(),
+            id: '1j1j1j1j1',
             title: gameForm.get('name')?.value || '',
             description: gameForm.get('description')?.value || '',
             isVisible: true,
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
-            questions,
+            questions: questionList,
         };
 
-        this.gameService.addGame(newGame);
+        location.reload();
     }
     toggleAddQuestion() {
         this.addQuestionShown = !this.addQuestionShown;
@@ -74,7 +75,6 @@ export class CreateQGamePageComponent {
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
-
     // addQuestion(question: Question) {
     //     // Ajouter des qustions a la liste locale de question
     //     // this.questionId += 1;
