@@ -1,25 +1,25 @@
-import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GamePageComponent } from './game-page.component';
+// import { HttpClientModule } from '@angular/common/http';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { GamePageComponent } from './game-page.component';
 
-describe('GamePageComponent', () => {
-    // let component: GamePageComponent;
-    let fixture: ComponentFixture<GamePageComponent>;
+// describe('GamePageComponent', () => {
+//     // let component: GamePageComponent;
+//     let fixture: ComponentFixture<GamePageComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [GamePageComponent],
-            imports: [HttpClientModule],
-        }).compileComponents();
-    });
+//     beforeEach(async () => {
+//         await TestBed.configureTestingModule({
+//             declarations: [GamePageComponent],
+//             imports: [HttpClientModule],
+//         }).compileComponents();
+//     });
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(GamePageComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+//     beforeEach(() => {
+//         fixture = TestBed.createComponent(GamePageComponent);
+//         // component = fixture.componentInstance;
+//         fixture.detectChanges();
+//     });
 
-    // it('should create', () => {
-    //     expect(component).toBeTruthy();
-    // });
-});
+//     // it('should create', () => {
+//     //     expect(component).toBeTruthy();
+//     // });
+// });

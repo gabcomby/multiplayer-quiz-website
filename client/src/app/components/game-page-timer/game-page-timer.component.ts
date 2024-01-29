@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AnswerStateService } from '@app/services/answer-state.service';
 import { TimerService } from '@app/services/timer.service';
 import { Observable } from 'rxjs';
-import { AnswerStateService } from '../../services/answer-state.service';
 
 @Component({
     selector: 'app-game-page-timer',

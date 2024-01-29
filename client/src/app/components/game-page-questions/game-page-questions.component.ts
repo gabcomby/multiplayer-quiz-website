@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
-import { AnswerStateService } from '../../services/answer-state.service';
+import { AnswerStateService } from '@app/services/answer-state.service';
 
 enum AnswerStatusEnum {
     Correct,
