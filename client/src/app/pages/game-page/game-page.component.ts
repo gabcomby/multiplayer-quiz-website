@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { GameService } from '@app/services/games.service';
 import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
@@ -24,6 +25,7 @@ export class GamePageComponent implements OnInit {
         private timerService: TimerService,
         private gameService: GameService,
         private playerService: PlayerService,
+        private router: Router,
     ) {}
 
     get questionTimer(): number {
@@ -72,7 +74,7 @@ export class GamePageComponent implements OnInit {
             }, TIME_BETWEEN_QUESTIONS);
         } else {
             setTimeout(() => {
-                alert('Game over!');
+                this.router.navigate(['/']);
             }, TIME_BETWEEN_QUESTIONS);
         }
     }

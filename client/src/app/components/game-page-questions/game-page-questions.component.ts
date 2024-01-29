@@ -29,12 +29,13 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     constructor(@Inject(DOCUMENT) private document: Document) {}
 
+    // TODO: Fix the issue where typing in chat also triggers the buttonDetect function
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         if (!Number.isNaN(Number(this.buttonPressed))) {
             const stringAsNumber = Number(this.buttonPressed);
-            this.toggleAnswer(stringAsNumber - 1);
+            if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
         }
     }
 
