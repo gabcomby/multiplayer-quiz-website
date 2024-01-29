@@ -20,6 +20,9 @@ p.name {
     margin: auto;
     margin-bottom: 10px;
 }
+p.name:hover {
+    background-color:palevioletred;
+}
 div.description {
     border: 3px solid black;
     width: 40%;

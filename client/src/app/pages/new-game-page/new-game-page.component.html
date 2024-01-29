@@ -8,7 +8,7 @@
       <p><b>Description:</b> {{game.description}} <br> <b>Temps alloué par questions: </b> {{game.duration}} <br> <b>Questions:</b> </p>
       <p *ngFor="let question of game.questions" class="questions"> - {{question.text}}</p>
       <button [routerLink]="['/testGame', game.id]">Tester le jeu</button>
-      <button [routerLink]="['/gameWait', game.id]">Creer le jeu</button>
+      <button [routerLink]="['/gameWait', game.id]">Lancer une partie</button>
     </div>
   </ng-container>
 </div>
