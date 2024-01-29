@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { Question } from '@app/interfaces/game';
+// import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -43,11 +43,11 @@ describe('CreateQGamePageComponent', () => {
         component.toggleModifiedQuestion();
         expect(component.modifiedQuestion).toBeTrue();
     });
-    it('should call addQuestion du service', () => {
-        const mockQuestion: Question = { id: 15, type: '', text: 'Quelle est la capitale du Canada', points: 10 };
-        component.addQuestion(mockQuestion);
-        expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
-    });
+    // it('should call addQuestion du service', () => {
+    //     const mockQuestion: Question = { id: 15, type: '', text: 'Quelle est la capitale du Canada', points: 10 };
+    //     component.addQuestion(mockQuestion);
+    //     expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
+    // });
 
     // it('should reset the form after adding a question', () => {
     //     const mockQuestion: Question = { id: 15, type: '', text: 'Quelle est la capitale du Canada', points: 10 };

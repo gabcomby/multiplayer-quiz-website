@@ -16,15 +16,13 @@ export class ModifiedQuestionComponent {
     constructor(private questionService: QuestionService) {
         // this.questionList = this.questionService.getQuestion();
         this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
-        this.disabled = this.questionService.getQuestion().map((_) => true);
+        this.disabled = this.questionService.getQuestion().map(() => true);
         this.questionService.onQuestionAdded.subscribe((question) => {
             this.questionList.push(question);
             this.disabled.push(true);
         });
     }
-    // ngOnInit() {
-    //     this.questionService.getQuestion().subscribe((list) => (this.questionList = list));
-    // }
+
     toggleModify(index: number) {
         this.disabled[index] = false;
     }
@@ -34,9 +32,6 @@ export class ModifiedQuestionComponent {
     }
     removeQuestion(question: Question) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
-        // this.questionList.forEach((element, index) => {
-        //     element.id = index + 1;
-        // });
         this.questionService.updateList(this.questionList);
     }
     drop(event: CdkDragDrop<Question[]>) {
