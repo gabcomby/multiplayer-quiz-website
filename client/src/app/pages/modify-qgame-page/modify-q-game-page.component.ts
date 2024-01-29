@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 
 @Component({
@@ -7,12 +7,5 @@ import { Game } from '@app/interfaces/game';
     styleUrls: ['./modify-q-game-page.component.scss'],
 })
 export class ModifyQGamePageComponent {
-    // id: string;
-    // title: string;
-    // description: string;
-    // isVisible: boolean;
-    // duration: number;
-    // lastModification: Date;
-    // questions: Question[];
-    game: Game;
+    @Input() game: Game;
 }

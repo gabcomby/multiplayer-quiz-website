@@ -4,6 +4,7 @@ import { Game } from '@app/interfaces/game';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+// import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-admin-page',
@@ -11,13 +12,16 @@ import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attribu
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
-    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
+    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
     dataSource: Game[] = [];
-
+    games: Game[] = [];
     constructor(private http: HttpClient) {}
 
     ngOnInit() {
         this.loadGames();
+        // this.gameService.getGames().then((games) => {
+        //     this.games = games;
+        // });
     }
 
     loadGames(): void {
@@ -104,6 +108,14 @@ export class AdminPageComponent implements OnInit {
         };
         reader.readAsText(file);
     }
+
+    // getGame(gameId: string): Game {
+    //     const game = this.games.find((gameSelected) => gameSelected.id === gameId);
+    //     if (!game) {
+    //         throw new Error(`Game with id ${gameId} not found`);
+    //     }
+    //     return game;
+    // }
 
     deleteGame(gameId: string): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);

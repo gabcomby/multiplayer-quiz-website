@@ -1,5 +1,4 @@
-// import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -16,15 +15,16 @@ import { QuestionService } from '@app/services/question.service';
     // imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, FormsModule],
 })
 export class CreateQGamePageComponent {
-    game: Game = {
-        id: '',
-        title: '',
-        description: '',
-        isVisible: true,
-        duration: 0,
-        lastModification: new Date(),
-        questions: [],
-    };
+    @Input() game: Game;
+    // game: Game = {
+    //     id: '',
+    //     title: '',
+    //     description: '',
+    //     isVisible: true,
+    //     duration: 0,
+    //     lastModification: new Date(),
+    //     questions: [],
+    // };
     questions: Question[] = [];
     questionId: number = 0;
     modifiedQuestion: boolean = false;
@@ -34,16 +34,21 @@ export class CreateQGamePageComponent {
         description: new FormControl('', Validators.required),
         time: new FormControl('', Validators.required),
     });
-
     constructor(
         private questionService: QuestionService,
-        private gameService: GameService, // private http: HttpClient,
+        private gameService: GameService,
     ) {
         // this.questionService.getQuestion().forEach((element) => {
         //     this.questions.push(element);
         // });
         this.questions = this.questionService.getQuestion();
     }
+
+    // ngOnInit() {
+    //     this.gameService.getGames().then((games) => {
+    //         this.games = games;
+    //     });
+    // }
 
     // ngOnInit() {
     //     this.questionService.getQuestion().subscribe((list) => (this.questions = list));
