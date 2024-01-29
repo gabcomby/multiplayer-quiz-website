@@ -22,5 +22,14 @@ export class QuestionsController {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching questions' });
             }
         });
+
+        this.router.get('/:id', async (req: Request, res: Response) => {
+            try {
+                const questions = await this.questionsService.getQuestions();
+                res.json(questions);
+            } catch (error) {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching question' });
+            }
+        });
     }
 }

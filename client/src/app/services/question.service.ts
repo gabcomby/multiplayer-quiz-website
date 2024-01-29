@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 // import { EventEmitter } from 'stream';
 // import { BehaviorSubject } from 'rxjs';
 @Injectable({
@@ -60,6 +60,10 @@ export class QuestionService {
         const questions$ = this.http.get<Question[]>(this.apiUrl);
         const questions = await firstValueFrom(questions$);
         return questions;
+    }
+
+    getQuestionById(questionId: string): Observable<Question> {
+        return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
     }
 
     updateList(question: Question[]) {
