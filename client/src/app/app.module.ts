@@ -25,7 +25,6 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
-import { ModifyQGamePageComponent } from './pages/modify-qgame-page/modify-q-game-page.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
 import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
@@ -60,7 +59,6 @@ import { RouterModule } from '@angular/router';
         PasswordDialogComponent,
         ModifiedQuestionComponent,
         GameQuestionListComponent,
-        ModifyQGamePageComponent,
         PlayerNameDialogComponent,
     ],
     imports: [

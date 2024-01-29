@@ -33,12 +33,12 @@
                 </div>
             </div>
             <div id="modifyingComponent">
-                <app-modified-question></app-modified-question>
+                <app-modified-question [gameQuestions]="this.gameFromDB.questions"></app-modified-question>
             </div>
         </div>
         <div>
             <label>Rendre non visible</label>
-            <input type="checkbox" [(ngModel)]="isNotVisible" />
+            <!-- <input type="checkbox" [(ngModel)]="isNotVisible" /> -->
         </div>
         <div id="registerGame">
             <button type="button" (click)="onSubmit(questions, gameForm, isNotVisible)" mat-raised-button color="accent">Enregistrer le jeu</button>

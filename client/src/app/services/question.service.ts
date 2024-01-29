@@ -11,6 +11,10 @@ export class QuestionService {
 
     onQuestionAdded: EventEmitter<Question> = new EventEmitter();
 
+    resetQuestions() {
+        this.questions = [];
+    }
+
     addQuestion(question: Question) {
         this.questions.push(question);
         this.onQuestionAdded.emit(question);

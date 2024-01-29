@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 
@@ -8,15 +8,35 @@ import { QuestionService } from '@app/services/question.service';
     templateUrl: './modified-question.component.html',
     styleUrls: ['./modified-question.component.scss'],
 })
-export class ModifiedQuestionComponent {
-    @Input() modifiedShown: boolean;
+export class ModifiedQuestionComponent implements OnInit {
+    @Input() gameQuestions: Question[];
     questionList: Question[] = [];
     disabled: boolean[] = [];
 
     constructor(private questionService: QuestionService) {
-        // this.questionList = this.questionService.getQuestion();
-        this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
-        this.disabled = this.questionService.getQuestion().map(() => true);
+        // // this.questionList = this.questionService.getQuestion();
+        // console.log(this.gameQuestions);
+        // if (!this.gameQuestions) {
+        //     this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
+        // } else {
+        //     this.questionList = this.gameQuestions;
+        //     console.log('yes');
+        // }
+        // this.disabled = this.questionList.map(() => true);
+        // this.questionService.onQuestionAdded.subscribe((question) => {
+        //     this.questionList.push(question);
+        //     this.disabled.push(true);
+        // });
+    }
+
+    ngOnInit(): void {
+        console.log(this.gameQuestions);
+        if (!this.gameQuestions) {
+            this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
+        } else {
+            this.questionList = this.gameQuestions;
+        }
+        this.disabled = this.questionList.map(() => true);
         this.questionService.onQuestionAdded.subscribe((question) => {
             this.questionList.push(question);
             this.disabled.push(true);
