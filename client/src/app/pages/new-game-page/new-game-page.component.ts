@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { io, Socket } from 'socket.io-client';
 
 @Component({
     selector: 'app-new-game-page',
@@ -11,10 +11,9 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
-    socket$: WebSocketSubject<string> = webSocket('ws://localhost:3000');
-    webSocket$ = this.socket$.asObservable();
+    socket: Socket = io('ws://localhost:3000');
     constructor(private gameService: GameService) {
-        this.webSocket$.subscribe((gameId: string) => {
+        this.socket.on('delete', (gameId: string) => {
             if (this.gameSelected[gameId]) {
                 alert('Game ' + gameId + ' has been deleted');
             }
