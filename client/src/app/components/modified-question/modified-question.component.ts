@@ -30,7 +30,6 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.gameQuestions);
         if (!this.gameQuestions) {
             this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
         } else {

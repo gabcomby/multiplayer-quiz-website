@@ -39,8 +39,8 @@ export class CreateQGamePageComponent implements OnInit {
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
-    questionsFromDB: Question[];
     gameForm: FormGroup;
+    dataReady = false;
     // gameForm = new FormGroup({
     //     name: new FormControl('', Validators.required),
     //     description: new FormControl('', Validators.required),
@@ -59,18 +59,19 @@ export class CreateQGamePageComponent implements OnInit {
             time: new FormControl('', Validators.required),
         });
     }
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.route.paramMap.subscribe((params) => (this.gameId = params.get('id')));
         const id = this.gameId;
         if (id) {
-            this.gameService.getGames().then((games) => {
+            try {
+                const games = await this.gameService.getGames();
                 this.gamesFromDB = games;
                 this.getGame(id);
                 this.gameForm.patchValue({ name: this.gameFromDB.title, description: this.gameFromDB.description, time: this.gameFromDB.duration });
-                this.questionsFromDB = this.gameFromDB.questions;
-                console.log(this.questionsFromDB);
-                // Pas besoin de vérification de non-null ici
-            });
+                this.dataReady = true;
+            } catch (error) {
+                console.error('Error fetching games:', error);
+            }
         }
     }
 
