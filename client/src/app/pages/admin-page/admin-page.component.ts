@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
-import { DeleteService } from '@app/services/delete.service';
+import { GameService } from '@app/services/game.service';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-import isValidGame from '@app/utils/is-valid-game';
+import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 @Component({
@@ -19,22 +19,18 @@ export class AdminPageComponent implements OnInit {
     constructor(
         private http: HttpClient,
         private router: Router,
-        private deleteService: DeleteService,
+        private gameService: GameService,
     ) {}
 
     ngOnInit() {
-        this.loadGames();
-    }
-
-    loadGames(): void {
-        this.http.get<Game[]>('http://localhost:3000/api/games').subscribe({
-            next: (data) => {
-                this.dataSource = data;
-            },
-            error: (error) => {
+        this.gameService
+            .getGames()
+            .then((games) => {
+                this.dataSource = games;
+            })
+            .catch((error) => {
                 alert(error);
-            },
-        });
+            });
     }
 
     toggleVisibility(gameId: string, isVisible: boolean): void {
@@ -124,7 +120,6 @@ export class AdminPageComponent implements OnInit {
         this.http.delete(`http://localhost:3000/api/games/${gameId}`).subscribe({
             next: () => {
                 alert('Game deleted successfully');
-                this.deleteService.notifyDelete(gameId);
             },
             error: (error) => {
                 alert(`Error deleting game: ${error}`);
