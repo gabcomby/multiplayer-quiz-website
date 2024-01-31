@@ -27,4 +27,11 @@ export class GameService {
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
+
+    async toggleVisibility(gameId: string, isVisible: boolean): Promise<void> {
+        const game$ = this.getGame(gameId);
+        const game = await firstValueFrom(game$);
+        game.isVisible = isVisible;
+        await firstValueFrom(this.http.patch(`${this.apiUrl}/${gameId}`, game));
+    }
 }
