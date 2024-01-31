@@ -14,7 +14,7 @@ const MAX_GAME_NAME_LENGTH = 35;
 })
 export class AdminPageComponent implements OnInit {
     @ViewChild('downloadLink') downloadLink: ElementRef<HTMLAnchorElement>;
-    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
+    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     dataSource: Game[] = [];
     downloadJson = '';
 
@@ -107,6 +107,9 @@ export class AdminPageComponent implements OnInit {
     }
 
     deleteGame(gameId: string): void {
+        const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer ce jeu?');
+        if (!confirmDelete) return;
+
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
         this.gameService.deleteGame(gameId).catch((error) => alert(error));
     }

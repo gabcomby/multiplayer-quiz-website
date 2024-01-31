@@ -20,19 +20,13 @@
             </mat-cell>
         </ng-container>
 
+        <!-- Creation Date Column -->
         <ng-container matColumnDef="lastUpdate">
             <mat-header-cell *matHeaderCellDef> Dernière modification</mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ formatLastModificationDate(element.lastModification) }} </mat-cell>
         </ng-container>
 
-        <!-- Modify Column -->
-        <ng-container matColumnDef="modify">
-            <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-                <button mat-raised-button [routerLink]="['/modify', element.id]">Modifier le jeu</button>
-            </mat-cell>
-        </ng-container>
-
+        <!-- Export Column -->
         <ng-container matColumnDef="export">
             <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>
             <mat-cell *matCellDef="let element">
@@ -46,6 +40,14 @@
                     [download]="'game_data_' + element.id + '.json'"
                     style="display: none"
                 ></a>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Modify Column -->
+        <ng-container matColumnDef="modify">
+            <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button [routerLink]="['/modify', element.id]"><mat-icon>settings</mat-icon></button>
             </mat-cell>
         </ng-container>
 
