@@ -13,12 +13,15 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket = io('ws://localhost:3000');
     constructor(private gameService: GameService) {
-        this.socket.on('delete', (gameId: string) => {
+        this.socket.on('delete', (gameId) => {
             if (this.gameSelected[gameId]) {
                 alert('Game ' + gameId + ' has been deleted');
+                this.games = this.games.filter((game) => game.id !== gameId);
+                delete this.gameSelected[gameId];
             }
         });
     }
+
     ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
