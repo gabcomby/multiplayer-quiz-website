@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
@@ -21,7 +20,6 @@ export class AdminPageComponent implements OnInit {
     downloadJson = '';
 
     constructor(
-        private http: HttpClient,
         private router: Router,
         private gameService: GameService,
     ) {}
@@ -60,59 +58,58 @@ export class AdminPageComponent implements OnInit {
         });
     }
 
-    openImportDialog(): void {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.json';
-        fileInput.onchange = (e) => {
-            const target = e.target as HTMLInputElement;
-            if (target && target.files && target.files.length) {
-                this.importGamesFromFile(target.files[0]);
-            }
-        };
-        fileInput.click();
+    onFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (!input?.files?.length) return;
+        this.importGamesFromFile(input.files[0]);
     }
 
-    importGamesFromFile(file: File): void {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const fileReader = e.target;
-            if (fileReader && fileReader.result) {
-                try {
-                    const game = JSON.parse(fileReader.result as string);
+    handleError(error: string): void {
+        alert(error);
+    }
 
-                    if (!this.isGameNameUnique(game.title)) {
-                        const newName = window.prompt('This game name already exists. Please enter a new name:');
-                        if (!newName || newName === game.title || newName.length > MAX_GAME_NAME_LENGTH) {
-                            alert('Import cancelled.');
-                            return;
-                        }
-                        game.title = newName;
-                    }
+    async getValidGameTitle(game: Game): Promise<string | null> {
+        if (!this.isGameNameUnique(game.title)) {
+            const newName = await new Promise<string | null>((resolve) =>
+                resolve(window.prompt('Le nom de ce jeu existe déjà. Veuillez en choisir un autre :')),
+            );
 
-                    this.prepareGameForImport(game);
-                    this.dataSource = [...this.dataSource, game];
-                    this.gameService.addGame(game).catch((error) => alert(error));
-
-                    alert('Game imported successfully');
-                } catch (error) {
-                    alert('Error parsing JSON');
-                }
+            if (!newName || newName === game.title || newName.length > MAX_GAME_NAME_LENGTH) {
+                this.handleError('Import cancelled.');
+                return null;
             }
-        };
-        reader.readAsText(file);
+            return newName;
+        }
+        return game.title;
+    }
+
+    async importGamesFromFile(file: File): Promise<void> {
+        try {
+            const reader = new FileReader();
+            reader.readAsText(file);
+            const result = await new Promise<string>((resolve, reject) => {
+                reader.onload = (e) => resolve((e.target as FileReader).result as string);
+                reader.onerror = () => reject('Error reading file');
+            });
+
+            const game = JSON.parse(result);
+            const validTitle = await this.getValidGameTitle(game);
+            if (!validTitle) return;
+
+            game.title = validTitle;
+            this.prepareGameForImport(game);
+            this.dataSource = [...this.dataSource, game];
+            await this.gameService.addGame(game);
+
+            alert('Game imported successfully');
+        } catch (error) {
+            this.handleError('Error parsing JSON');
+        }
     }
 
     deleteGame(gameId: string): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-        this.http.delete(`http://localhost:3000/api/games/${gameId}`).subscribe({
-            next: () => {
-                alert('Game deleted successfully');
-            },
-            error: (error) => {
-                alert(`Error deleting game: ${error}`);
-            },
-        });
+        this.gameService.deleteGame(gameId).catch((error) => alert(error));
     }
 
     createGame(): void {

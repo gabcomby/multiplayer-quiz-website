@@ -39,4 +39,9 @@ export class GameService {
         const game$ = this.http.post(this.apiUrl, game);
         await firstValueFrom(game$);
     }
+
+    async deleteGame(gameId: string): Promise<void> {
+        const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
+        await firstValueFrom(game$);
+    }
 }
