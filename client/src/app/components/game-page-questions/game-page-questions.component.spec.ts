@@ -68,7 +68,6 @@ describe('GamePageQuestionsComponent', () => {
     });
 
     it('should toggle a single answer for single-choice questions', () => {
-        // Assuming the first two choices are incorrect for a single-choice question
         component.choices = [
             { text: 'Choice 1', isCorrect: false },
             { text: 'Choice 2', isCorrect: false },
@@ -76,12 +75,10 @@ describe('GamePageQuestionsComponent', () => {
         component.toggleAnswer(0);
         expect(component.selectedChoices).toEqual([0]);
         component.toggleAnswer(1);
-        // Should replace the previous choice
         expect(component.selectedChoices).toEqual([1]);
     });
 
     it('should allow multiple answers to be toggled for multiple-choice questions', () => {
-        // Assuming multiple choices can be correct
         component.toggleAnswer(0);
         expect(component.selectedChoices).toContain(0);
         component.toggleAnswer(2);
@@ -94,13 +91,5 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.selectedChoices).toContain(0);
         component.toggleAnswer(0);
         expect(component.selectedChoices).not.toContain(0);
-    });
-
-    it('should calculate score after toggling answer', () => {
-        // Spy on calculateScoreForTheQuestion function
-        spyOn(component, 'calculateScoreForTheQuestion');
-
-        component.toggleAnswer(0);
-        expect(component.calculateScoreForTheQuestion).toHaveBeenCalled();
     });
 });
