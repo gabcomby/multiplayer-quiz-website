@@ -17,6 +17,7 @@ const playerSchema: Schema = new Schema({
 });
 
 const matchSchema: Schema = new Schema({
+    id: { type: String, required: true },
     playerList: [playerSchema],
 });
 

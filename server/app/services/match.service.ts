@@ -1,5 +1,5 @@
+import matchModel, { IMatch, IPlayer } from '@app/model/match.model';
 import { Service } from 'typedi';
-import matchModel, { IMatch } from '../model/match.model';
 
 @Service()
 export class MatchService {
@@ -15,22 +15,22 @@ export class MatchService {
         return await matchModel.create(matchData);
     }
 
-    async deleteGame(matchId: string): Promise<IGame> {
+    async deleteGame(matchId: string): Promise<IMatch> {
         return await matchModel.findOneAndDelete({ id: matchId });
     }
 
     // TODO: Add a player to a game
-    // async addPlayer(player: IPlayer, matchId: string) {
-    //     await matchModel.findOneAndUpdate({})
-    // }
+    async addPlayer(player: IPlayer, matchId: string): Promise<IMatch> {
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } });
+    }
 
     // TODO: Remove a player from a game
-    // async addPlayer(player: IPlayer, matchId: string) {
-    //     await matchModel.findOneAndUpdate({})
-    // }
+    async removePlayer(playerId: string, matchId: string): Promise<IMatch> {
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: playerId } });
+    }
 
     // TODO: Get a list of all the players in the game
-    // async addPlayer(player: IPlayer, matchId: string) {
-    //     await matchModel.findOneAndUpdate({})
-    // }
+    async getAllPlayersFromMatch(matchId: string): Promise<IPlayer[]> {
+        return (await matchModel.findOne({ id: matchId })).playerList;
+    }
 }
