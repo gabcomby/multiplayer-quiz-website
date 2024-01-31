@@ -34,4 +34,9 @@ export class GameService {
         game.isVisible = isVisible;
         await firstValueFrom(this.http.patch(`${this.apiUrl}/${gameId}`, game));
     }
+
+    async addGame(game: Game): Promise<void> {
+        const game$ = this.http.post(this.apiUrl, game);
+        await firstValueFrom(game$);
+    }
 }

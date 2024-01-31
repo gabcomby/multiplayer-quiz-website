@@ -8,7 +8,7 @@ import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 const DELAY_BEFORE_DOWNLOAD_CLICK = 100;
-const MAX_GAME_NAME_LENGTH = 25;
+const MAX_GAME_NAME_LENGTH = 35;
 
 @Component({
     selector: 'app-admin-page',
@@ -92,15 +92,7 @@ export class AdminPageComponent implements OnInit {
 
                     this.prepareGameForImport(game);
                     this.dataSource = [...this.dataSource, game];
-
-                    this.http.post('http://localhost:3000/api/games', game).subscribe({
-                        next: () => {
-                            alert('Game imported successfully');
-                        },
-                        error: (error) => {
-                            alert(`Error sending data to server: ${error}`);
-                        },
-                    });
+                    this.gameService.addGame(game).catch((error) => alert(error));
 
                     alert('Game imported successfully');
                 } catch (error) {
