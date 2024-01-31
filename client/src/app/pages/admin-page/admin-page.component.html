@@ -39,7 +39,13 @@
                 <button mat-icon-button (click)="exportGameAsJson(element)">
                     <mat-icon>file_download</mat-icon>
                 </button>
-                <a *ngIf="downloadJson" [href]="downloadJson" [download]="'game_data_' + element.id + '.json'" style="display: none"> </a>
+                <a
+                    #downloadLink
+                    *ngIf="downloadJson"
+                    [href]="downloadJson"
+                    [download]="'game_data_' + element.id + '.json'"
+                    style="display: none"
+                ></a>
             </mat-cell>
         </ng-container>
 

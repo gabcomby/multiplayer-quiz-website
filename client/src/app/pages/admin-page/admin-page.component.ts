@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -6,15 +6,14 @@ import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
-const DELAY_BEFORE_DOWNLOAD_CLICK = 100;
 const MAX_GAME_NAME_LENGTH = 35;
-
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
+    @ViewChild('downloadLink') downloadLink: ElementRef<HTMLAnchorElement>;
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
     dataSource: Game[] = [];
     downloadJson = '';
@@ -46,11 +45,11 @@ export class AdminPageComponent implements OnInit {
     exportGameAsJson(game: Game): void {
         this.gameService.getGame(game.id).subscribe({
             next: (data) => {
-                this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+                const json = JSON.stringify(data);
+                this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
                 setTimeout(() => {
-                    const link = document.querySelector(`[download='game_data_${game.id}.json']`);
-                    if (link instanceof HTMLElement) link.click();
-                }, DELAY_BEFORE_DOWNLOAD_CLICK);
+                    this.downloadLink.nativeElement.click();
+                });
             },
             error: (error) => {
                 alert(`Error fetching game data: ${error}`);
