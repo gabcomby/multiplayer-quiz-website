@@ -31,6 +31,8 @@ export class MatchService {
 
     // TODO: Get a list of all the players in the game
     async getAllPlayersFromMatch(matchId: string): Promise<IPlayer[]> {
-        return (await matchModel.findOne({ id: matchId })).playerList;
+        const match = await matchModel.findOne({ id: matchId });
+        if (!match) throw new Error("Can't fetch players from a game that doesn't exit");
+        return match.playerList;
     }
 }
