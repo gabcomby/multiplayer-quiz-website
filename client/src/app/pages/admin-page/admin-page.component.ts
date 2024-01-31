@@ -7,6 +7,9 @@ import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
+const DELAY_BEFORE_DOWNLOAD_CLICK = 100;
+const MAX_GAME_NAME_LENGTH = 25;
+
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
@@ -15,6 +18,7 @@ import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attribu
 export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
     dataSource: Game[] = [];
+    downloadJson = '';
 
     constructor(
         private http: HttpClient,
@@ -42,12 +46,13 @@ export class AdminPageComponent implements OnInit {
     }
 
     exportGameAsJson(game: Game): void {
-        this.http.get(`http://localhost:3000/api/games/${game.id}`).subscribe({
+        this.gameService.getGame(game.id).subscribe({
             next: (data) => {
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)));
-                linkElement.setAttribute('download', 'game_data_' + game.id + '.json');
-                linkElement.click();
+                this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+                setTimeout(() => {
+                    const link = document.querySelector(`[download='game_data_${game.id}.json']`);
+                    if (link instanceof HTMLElement) link.click();
+                }, DELAY_BEFORE_DOWNLOAD_CLICK);
             },
             error: (error) => {
                 alert(`Error fetching game data: ${error}`);
@@ -78,16 +83,14 @@ export class AdminPageComponent implements OnInit {
 
                     if (!this.isGameNameUnique(game.title)) {
                         const newName = window.prompt('This game name already exists. Please enter a new name:');
-                        if (newName) {
-                            game.title = newName;
-                        } else {
-                            alert('Import cancelled. A unique name is required.');
+                        if (!newName || newName === game.title || newName.length > MAX_GAME_NAME_LENGTH) {
+                            alert('Import cancelled.');
                             return;
                         }
+                        game.title = newName;
                     }
 
                     this.prepareGameForImport(game);
-
                     this.dataSource = [...this.dataSource, game];
 
                     this.http.post('http://localhost:3000/api/games', game).subscribe({
