@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 // import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
@@ -15,7 +17,7 @@ describe('CreateQGamePageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [CreateQGamePageComponent],
-            providers: [{ provide: QuestionService, useValue: questionServiceSpy }],
+            providers: [{ provide: QuestionService, ActivatedRoute, useValue: questionServiceSpy }],
             imports: [HttpClientTestingModule],
         }).compileComponents();
     }));

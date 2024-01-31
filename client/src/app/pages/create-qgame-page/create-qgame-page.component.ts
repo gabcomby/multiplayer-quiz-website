@@ -14,24 +14,6 @@ import { isValidGame } from '@app/utils/is-valid-game';
 })
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
-    // game: Game = {
-    //     id: '',
-    //     title: '',
-    //     description: '',
-    //     isVisible: true,
-    //     duration: 0,
-    //     lastModification: new Date(),
-    //     questions: [],
-    // };
-    // wtf: Question[] = [
-    //     {
-    //         type: 'QCM',
-    //         text: 'fuck',
-    //         points: 2,
-    //         lastModification: new Date(),
-    //         id: '10391048',
-    //     },
-    // ];
     questions: Question[] = [];
     isNotVisible: boolean = false;
     modifiedQuestion: boolean = false;
@@ -41,11 +23,7 @@ export class CreateQGamePageComponent implements OnInit {
     gameFromDB: Game;
     gameForm: FormGroup;
     dataReady = false;
-    // gameForm = new FormGroup({
-    //     name: new FormControl('', Validators.required),
-    //     description: new FormControl('', Validators.required),
-    //     time: new FormControl('', Validators.required),
-    // });
+
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
