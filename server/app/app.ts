@@ -56,6 +56,7 @@ export class Application {
                 console.log('delete');
                 const deleteId = data.documentKey.id;
                 io.emit('delete', deleteId);
+                console.log('deletedone');
             }
         });
     }

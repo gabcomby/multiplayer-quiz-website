@@ -29,9 +29,9 @@ export class AuthController {
             }
         });
 
-        this.router.delete('/api/games/:id', (req, res) => {
+        /*this.router.delete('/api/games/:id', (req, res) => {
             const gameId = req.params.id;
             res.send(gameId);
-        });
+        });*/
     }
 }
