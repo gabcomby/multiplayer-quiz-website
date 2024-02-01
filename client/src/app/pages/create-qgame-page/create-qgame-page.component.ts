@@ -79,8 +79,10 @@ export class CreateQGamePageComponent implements OnInit {
             lastModification: new Date(),
             questions: questionList,
         };
-
-        if (isValidGame(newGame)) {
+        if (this.gameId) {
+            isValidGame(this.gameFromDB);
+            this.gameService.patchGame(this.gameFromDB);
+        } else if (isValidGame(newGame)) {
             this.gameService.createGame(newGame);
             // console.log(newGame);
             // location.reload();

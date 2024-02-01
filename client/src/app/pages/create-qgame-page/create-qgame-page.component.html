@@ -34,6 +34,7 @@
             </div>
             <div id="modifyingComponent">
                 <app-modified-question *ngIf="dataReady" [gameQuestions]="this.gameFromDB.questions"></app-modified-question>
+                <app-modified-question *ngIf="!dataReady"></app-modified-question>
             </div>
         </div>
         <div>
