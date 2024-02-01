@@ -54,7 +54,7 @@ export class CreateQGamePageComponent implements OnInit {
                 });
                 this.dataReady = true;
             } catch (error) {
-                console.error('Error fetching games:', error);
+                // console.error('Error fetching games:', error);
             }
         }
     }
