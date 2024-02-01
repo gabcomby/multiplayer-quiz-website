@@ -1,7 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+// import * as gameUtilsModule from '@app/utils/is-valid-game';
 // import { Question } from '@app/interfaces/game';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
@@ -89,8 +89,6 @@ describe('CreateQGamePageComponent', () => {
         expect(component.modifiedQuestion).toBeTrue();
     });
     it('should call createGame from GameService when onSubmit is called with valid data', () => {
-        mockIsValidGame.and.returnValue(true);
-
         const mockQuestionList = [
             { type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: new Date() },
             { type: 'QCM', text: 'question 2', points: 10, id: 'akak', lastModification: new Date() },
@@ -98,11 +96,10 @@ describe('CreateQGamePageComponent', () => {
         const mockGameForm = new FormGroup({
             name: new FormControl('Test Game'),
             description: new FormControl('Description'),
-            time: new FormControl('30'),
+            time: new FormControl(10),
         });
-
         component.onSubmit(mockQuestionList, mockGameForm, true);
-
+        mockIsValidGame.and.returnValue(true);
         expect(gameServiceSpy.createGame).toHaveBeenCalled();
     });
 });

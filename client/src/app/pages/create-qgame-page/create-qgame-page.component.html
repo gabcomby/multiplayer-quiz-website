@@ -37,11 +37,11 @@
             </div>
         </div>
         <div>
-            <label>Rendre non visible</label>
-            <!-- <input type="checkbox" [(ngModel)]="isNotVisible" /> -->
+            <label>Rendre visible</label>
+            <input type="checkbox" formControlName="visibility" />
         </div>
         <div id="registerGame">
-            <button type="button" (click)="onSubmit(questions, gameForm, isNotVisible)" mat-raised-button color="accent">Enregistrer le jeu</button>
+            <button type="button" (click)="onSubmit(questions, gameForm)" mat-raised-button color="accent">Enregistrer le jeu</button>
         </div>
     </form>
 </div>
