@@ -20,11 +20,11 @@ export class MatchService {
     }
 
     async addPlayer(matchId: string, player: IPlayer): Promise<IMatch> {
-        return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } }, { returnNewDocument: true });
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } }, { new: true });
     }
 
     async removePlayer(matchId: string, playerId: string): Promise<IMatch> {
-        return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: playerId } }, { returnNewDocument: true });
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: { id: playerId } } }, { new: true });
     }
 
     async getAllPlayersFromMatch(matchId: string): Promise<IPlayer[]> {
