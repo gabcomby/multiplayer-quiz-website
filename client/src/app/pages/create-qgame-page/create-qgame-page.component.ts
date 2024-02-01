@@ -14,26 +14,8 @@ import { isValidGame } from '@app/utils/is-valid-game';
 })
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
-    // game: Game = {
-    //     id: '',
-    //     title: '',
-    //     description: '',
-    //     isVisible: true,
-    //     duration: 0,
-    //     lastModification: new Date(),
-    //     questions: [],
-    // };
-    // wtf: Question[] = [
-    //     {
-    //         type: 'QCM',
-    //         text: 'fuck',
-    //         points: 2,
-    //         lastModification: new Date(),
-    //         id: '10391048',
-    //     },
-    // ];
+    isVisible: boolean = false;
     questions: Question[] = [];
-    isNotVisible: boolean = false;
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = false;
     gameId: string | null;
@@ -41,11 +23,7 @@ export class CreateQGamePageComponent implements OnInit {
     gameFromDB: Game;
     gameForm: FormGroup;
     dataReady = false;
-    // gameForm = new FormGroup({
-    //     name: new FormControl('', Validators.required),
-    //     description: new FormControl('', Validators.required),
-    //     time: new FormControl('', Validators.required),
-    // });
+
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
@@ -57,6 +35,7 @@ export class CreateQGamePageComponent implements OnInit {
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
+            visibility: new FormControl(''),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -67,10 +46,15 @@ export class CreateQGamePageComponent implements OnInit {
                 const games = await this.gameService.getGames();
                 this.gamesFromDB = games;
                 this.getGame(id);
-                this.gameForm.patchValue({ name: this.gameFromDB.title, description: this.gameFromDB.description, time: this.gameFromDB.duration });
+                this.gameForm.patchValue({
+                    name: this.gameFromDB.title,
+                    description: this.gameFromDB.description,
+                    time: this.gameFromDB.duration,
+                    visibility: this.gameFromDB.isVisible,
+                });
                 this.dataReady = true;
             } catch (error) {
-                console.error('Error fetching games:', error);
+                // console.error('Error fetching games:', error);
             }
         }
     }
@@ -85,12 +69,12 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    onSubmit(questionList: Question[], gameForm: FormGroup, isNotVisible: boolean) {
+    onSubmit(questionList: Question[], gameForm: FormGroup) {
         const newGame: Game = {
             id: generateNewId(),
             title: gameForm.get('name')?.value || '',
             description: gameForm.get('description')?.value || '',
-            isVisible: isNotVisible,
+            isVisible: gameForm.get('visibility')?.value || '',
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
             questions: questionList,
