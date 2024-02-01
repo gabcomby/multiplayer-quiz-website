@@ -3,7 +3,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class MatchService {
-    async getAllMatches(): Promise<(typeof matchModel)[]> {
+    async getAllMatches(): Promise<IMatch[]> {
         return await matchModel.find();
     }
 
@@ -20,11 +20,11 @@ export class MatchService {
     }
 
     async addPlayer(matchId: string, player: IPlayer): Promise<IMatch> {
-        return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } });
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } }, { returnNewDocument: true });
     }
 
     async removePlayer(matchId: string, playerId: string): Promise<IMatch> {
-        return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: playerId } });
+        return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: playerId } }, { returnNewDocument: true });
     }
 
     async getAllPlayersFromMatch(matchId: string): Promise<IPlayer[]> {

@@ -14,7 +14,7 @@ export class MatchController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/matches', async (req: Request, res: Response) => {
+        this.router.get('/', async (req: Request, res: Response) => {
             try {
                 const matches = await this.matchService.getAllMatches();
                 res.json(matches);
@@ -23,7 +23,7 @@ export class MatchController {
             }
         });
 
-        this.router.get('/matches/:id', async (req: Request, res: Response) => {
+        this.router.get('/:id', async (req: Request, res: Response) => {
             try {
                 const match = await this.matchService.getMatch(req.params.id);
                 res.json(match);
@@ -32,16 +32,16 @@ export class MatchController {
             }
         });
 
-        this.router.get('/matches/:id/players', async (req: Request, res: Response) => {
+        this.router.get('/:id/players', async (req: Request, res: Response) => {
             try {
                 const players = await this.matchService.getAllPlayersFromMatch(req.params.id);
                 res.json(players);
             } catch (error) {
-                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching game from server' });
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching all players from a match' });
             }
         });
 
-        this.router.post('/matches', async (req: Request, res: Response) => {
+        this.router.post('/', async (req: Request, res: Response) => {
             try {
                 const match = await this.matchService.createMatch(req.body);
                 res.json(match);
@@ -50,7 +50,7 @@ export class MatchController {
             }
         });
 
-        this.router.delete('/matches/:id', async (req: Request, res: Response) => {
+        this.router.delete('/:id', async (req: Request, res: Response) => {
             try {
                 const match = await this.matchService.deleteMatch(req.params.id);
                 res.json(match);
@@ -59,7 +59,7 @@ export class MatchController {
             }
         });
 
-        this.router.patch('/matches/:id/players', async (req: Request, res: Response) => {
+        this.router.patch('/:id/players', async (req: Request, res: Response) => {
             try {
                 const match = await this.matchService.addPlayer(req.params.id, req.body);
                 res.json(match);
@@ -68,7 +68,7 @@ export class MatchController {
             }
         });
 
-        this.router.patch('/matches/:id/players/:playerId', async (req: Request, res: Response) => {
+        this.router.delete('/:id/players/:playerId', async (req: Request, res: Response) => {
             try {
                 const match = await this.matchService.removePlayer(req.params.id, req.params.playerId);
                 res.json(match);
