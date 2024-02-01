@@ -7,7 +7,7 @@
 
     <mat-form-field>
         <mat-label>Nombre de points</mat-label>
-        <input matInput [(ngModel)]="question.points" min="10" max="100" step="10" />
+        <input matInput type="number" placeholder="10" min="10" max="100" step="10" [(ngModel)]="question.points"  />
     </mat-form-field>
     <div>
         <label>Ajouter à la banque de question</label>

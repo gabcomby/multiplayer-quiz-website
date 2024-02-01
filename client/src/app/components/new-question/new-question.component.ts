@@ -32,7 +32,8 @@ export class NewQuestionComponent {
                 // console.log('maxime');
             }
             if (this.addBankQuestion) {
-                // console.log('banque question'); // lier avec la banque de question
+                // devrait faire la meme méthode que maxime appel en haut lorsqu'il crée une nouvelle fonction
+                // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute
             }
         }
 

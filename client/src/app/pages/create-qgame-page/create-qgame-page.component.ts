@@ -14,7 +14,6 @@ import { isValidGame } from '@app/utils/is-valid-game';
 })
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
-    isVisible: boolean = false;
     questions: Question[] = [];
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = false;
@@ -35,7 +34,7 @@ export class CreateQGamePageComponent implements OnInit {
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            visibility: new FormControl(''),
+            visibility: new FormControl(false),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -69,20 +68,21 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    onSubmit(questionList: Question[], gameForm: FormGroup) {
+    async onSubmit(questionList: Question[], gameForm: FormGroup) {
         const newGame: Game = {
             id: generateNewId(),
             title: gameForm.get('name')?.value || '',
             description: gameForm.get('description')?.value || '',
-            isVisible: gameForm.get('visibility')?.value || '',
+            isVisible: gameForm.get('visibility')?.value,
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
             questions: questionList,
         };
+
         if (this.gameId) {
-            isValidGame(this.gameFromDB);
+            isValidGame(this.gameFromDB, this.gameService);
             this.gameService.patchGame(this.gameFromDB);
-        } else if (isValidGame(newGame)) {
+        } else if (await isValidGame(newGame, this.gameService)) {
             this.gameService.createGame(newGame);
             // console.log(newGame);
             // location.reload();
@@ -95,5 +95,9 @@ export class CreateQGamePageComponent implements OnInit {
     }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
+    }
+
+    addQuestionFromBank() {
+        // meme vue que maxime mais on doit ajouter des boutons pour sélectionner et ajouter une bouton de confirmation
     }
 }
