@@ -16,7 +16,7 @@ export class NewQuestionComponent {
 
     addQuestion(event: Choice[], onlyAddQuestionBank: boolean) {
         const newChoices = event.map((item) => ({ ...item }));
-        const newQuestion = {
+        const newQuestion: Question = {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,

@@ -1,6 +1,11 @@
 <header>
     <p class="title">Banque de Question</p>
-    <button class="button" routerLink="/new-question-qbank">Nouvelle Question</button>
+    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/new-question-qbank">
+        <mat-icon>add</mat-icon>
+    </button>
+    <button mat-icon-button (click)="modifyQuestion()">
+        <mat-icon>edit</mat-icon>
+    </button>
     <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
         <mat-icon>home</mat-icon>
     </button>

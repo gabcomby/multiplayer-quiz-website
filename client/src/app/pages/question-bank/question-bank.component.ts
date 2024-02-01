@@ -8,7 +8,7 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./question-bank.component.scss'],
 })
 export class QuestionBankComponent implements OnInit {
-    displayedColumns: string[] = ['question', 'date', 'delete', 'modify'];
+    displayedColumns: string[] = ['question', 'date', 'delete'];
     dataSource: Question[] = [];
 
     // Track the selected row IDs
