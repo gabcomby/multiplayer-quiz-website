@@ -15,21 +15,18 @@ export class MatchService {
         return await matchModel.create(matchData);
     }
 
-    async deleteGame(matchId: string): Promise<IMatch> {
+    async deleteMatch(matchId: string): Promise<IMatch> {
         return await matchModel.findOneAndDelete({ id: matchId });
     }
 
-    // TODO: Add a player to a game
-    async addPlayer(player: IPlayer, matchId: string): Promise<IMatch> {
+    async addPlayer(matchId: string, player: IPlayer): Promise<IMatch> {
         return await matchModel.findOneAndUpdate({ id: matchId }, { $push: { playerList: player } });
     }
 
-    // TODO: Remove a player from a game
-    async removePlayer(playerId: string, matchId: string): Promise<IMatch> {
+    async removePlayer(matchId: string, playerId: string): Promise<IMatch> {
         return await matchModel.findOneAndUpdate({ id: matchId }, { $pull: { playerList: playerId } });
     }
 
-    // TODO: Get a list of all the players in the game
     async getAllPlayersFromMatch(matchId: string): Promise<IPlayer[]> {
         const match = await matchModel.findOne({ id: matchId });
         if (!match) throw new Error("Can't fetch players from a game that doesn't exit");
