@@ -34,6 +34,7 @@
             </div>
             <div id="modifyingComponent">
                 <app-modified-question *ngIf="dataReady" [gameQuestions]="this.gameFromDB.questions"></app-modified-question>
+                <app-modified-question *ngIf="!dataReady"></app-modified-question>
             </div>
         </div>
         <div>
@@ -41,7 +42,9 @@
             <!-- <input type="checkbox" [(ngModel)]="isNotVisible" /> -->
         </div>
         <div id="registerGame">
-            <button type="button" (click)="onSubmit(questions, gameForm, isNotVisible)" mat-raised-button color="accent">Enregistrer le jeu</button>
+            <button type="button" (click)="onSubmit(questions, gameForm, isNotVisible)" mat-raised-button color="accent" routerLink="/admin">
+                Enregistrer le jeu
+            </button>
         </div>
     </form>
 </div>
