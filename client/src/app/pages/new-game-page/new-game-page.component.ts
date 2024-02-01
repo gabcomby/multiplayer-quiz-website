@@ -21,7 +21,7 @@ export class NewGamePageComponent implements OnInit {
             if (this.gameSelected[gameId]) {
                 console.log('deleteComponent');
                 alert('Game ' + gameId + ' has been deleted');
-                this.games = this.games.filter((game) => game.id !== gameId);
+                //this.games = this.games.filter((game) => game.id !== gameId);
                 //delete this.gameSelected[gameId];
                 window.location.reload();
             } else {
