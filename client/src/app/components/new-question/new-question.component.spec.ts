@@ -24,7 +24,6 @@ describe('NewQuestionComponent', () => {
                 } as Question,
             ],
         });
-        // component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', lastModification: new Date() };
     });
 
     beforeEach(() => {

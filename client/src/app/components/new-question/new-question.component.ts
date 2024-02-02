@@ -11,13 +11,11 @@ export class NewQuestionComponent {
     @Input() onlyAddQuestionBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
-    // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
     question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
-    addQuestion(event: Choice[], onlyAddQuestionBank: boolean) {
-        // const newChoices = event.map((item) => ({ ...item }));
+    addQuestion(event: Choice[], onlyAddQuestionBank: boolean): void {
         const newQuestion = {
             type: this.question.type,
             text: this.question.text,
@@ -27,7 +25,6 @@ export class NewQuestionComponent {
             lastModification: new Date(),
         };
         if (newQuestion.text !== '' && newQuestion.points !== 0) {
-            // this.registerQuestion.emit(newQuestion);
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
             } else {
@@ -44,9 +41,8 @@ export class NewQuestionComponent {
         this.question.choices = [];
         this.addBankQuestion = false;
     }
-    addQuestionFromBank(event: Question[]) {
+    addQuestionFromBank(event: Question[]): void {
         event.forEach((element) => this.questionService.addQuestion(element));
         this.addFromQuestionBank = false;
     }
-
 }

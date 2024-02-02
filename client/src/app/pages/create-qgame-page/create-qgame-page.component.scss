@@ -58,12 +58,16 @@
     // background-color: red;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
-#addQuestion {
+#registerButton{
+    width: 25%;
+}
+#newGame {
     // background-color: green;
     flex: 1;
 }
 
-#addFromBank{
+#addQuestion{
     width: 100%;
 }

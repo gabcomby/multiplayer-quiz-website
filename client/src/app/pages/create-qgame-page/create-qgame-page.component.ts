@@ -16,8 +16,7 @@ export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
     questions: Question[] = [];
     modifiedQuestion: boolean = false;
-    addQuestionShown: boolean = false;
-
+    addQuestionShown: boolean = true;
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
@@ -92,9 +91,9 @@ export class CreateQGamePageComponent implements OnInit {
             // console.log(newGame);
         }
     }
-    toggleAddQuestion() {
-        this.addQuestionShown = !this.addQuestionShown;
-    }
+    // toggleAddQuestion() {
+    //     this.addQuestionShown = !this.addQuestionShown;
+    // }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
