@@ -21,7 +21,11 @@
     </div>
 </div>
 <button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Ajouter de la banque de question</button>
+<!-- <button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Fermer</button> -->
+
 <div *ngIf="addFromQuestionBank">
+    <button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Fermer</button>
+
     <app-question-bank [fromCreateNewGame]="addFromQuestionBank" (registerQuestion)="addQuestionFromBank($event)"> </app-question-bank>
 
 </div>

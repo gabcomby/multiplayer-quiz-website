@@ -98,6 +98,4 @@ export class CreateQGamePageComponent implements OnInit {
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
-
-    
 }

@@ -46,6 +46,7 @@ export class NewQuestionComponent {
     }
     addQuestionFromBank(event: Question[]) {
         event.forEach((element) => this.questionService.addQuestion(element));
+        this.addFromQuestionBank = false;
     }
 
     toggleQuestionFromBank() {

@@ -30,6 +30,7 @@ const ELEMENT_DATA: Question[] = [
 export class QuestionBankComponent implements OnInit {
     @Input() fromCreateNewGame: boolean;
     @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
+    questionToAdd: Question[] = [];
     displayedColumns: string[] = ['question', 'date', 'delete', 'modify'];
     dataSource = ELEMENT_DATA;
 
@@ -75,7 +76,14 @@ export class QuestionBankComponent implements OnInit {
     modifyQuestion(): void {
         // Implement logic to modify a question
     }
-    addQuestionToGame(){
-        
+    addQuestionToGame() {
+        this.registerQuestion.emit(this.questionToAdd);
+    }
+    onChange(question: Question) {
+        if (this.questionToAdd.includes(question)) {
+            this.questionToAdd = this.questionToAdd.filter((element) => element.id !== question.id);
+        } else {
+            this.questionToAdd.push(question);
+        }
     }
 }
