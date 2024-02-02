@@ -80,9 +80,10 @@ export class CreateQGamePageComponent implements OnInit {
         };
 
         if (this.gameId) {
-            isValidGame(this.gameFromDB, this.gameService);
-            this.gameService.patchGame(this.gameFromDB);
-        } else if (await isValidGame(newGame, this.gameService)) {
+            if (await isValidGame(this.gameFromDB, this.gameService, false)) {
+                this.gameService.patchGame(this.gameFromDB);
+            }
+        } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
             // console.log(newGame);
             // location.reload();

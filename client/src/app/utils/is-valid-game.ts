@@ -1,12 +1,14 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 
-export const isValidGame = async (game: Game, gameService: GameService): Promise<boolean> => {
+export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
     const errors: string[] = [];
 
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
-    await validateDuplicationGame(game, errors, gameService);
+    if (newGame) {
+        await validateDuplicationGame(game, errors, gameService);
+    }
 
     if (errors.length > 0) {
         alert(errors.join('\n'));
