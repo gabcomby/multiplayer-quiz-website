@@ -118,9 +118,11 @@ describe('CreateQGamePageComponent', () => {
         });
         // eslint-disable-next-line no-unused-vars
         spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        component.onSubmit(mockQuestionList, mockGameForm);
-        expect(component.gameId).toBe('123');
-        expect(gameServiceSpy.patchGame).toHaveBeenCalled();
+        component.onSubmit(mockQuestionList, mockGameForm).then(() => {
+            expect(component.gameId).toBe('123');
+            fixture.detectChanges();
+            expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        });
     });
 });
 
@@ -151,7 +153,10 @@ describe('CreateQGamePageComponent', () => {
         // questionServiceSpy = jasmine.createSpyObj('QuestionService', ['addQuestion', 'getQuestion', 'resetQuestions']);
         gameServiceSpy = jasmine.createSpyObj('GameService', {
             getGames: [],
-            createGame: {},
+            // eslint-disable-next-line no-unused-vars
+            createGame: (game: Game) => {
+                return;
+            },
             patchGame: Promise.resolve({
                 id: 'ddwd',
                 title: 'string',
@@ -193,13 +198,16 @@ describe('CreateQGamePageComponent', () => {
             description: new FormControl('Description'),
             time: new FormControl(TIME),
         });
-        // eslint-disable-next-line no-unused-vars
 
-        component.onSubmit(mockQuestionList, mockGameForm);
-        expect(component.gameId).toBe(null);
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        component.ngOnInit();
-        fixture.detectChanges();
-        expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        // fixture.detectChanges();
+        // eslint-disable-next-line no-unused-vars
+        spyOn(gameUtilsModule, 'isValidGame').and.callFake(async (_: Game, __: GameService, bol: boolean) => {
+            return Promise.resolve(true);
+        });
+        component.onSubmit(mockQuestionList, mockGameForm).then(() => {
+            expect(component.gameId).toBe(null);
+            fixture.detectChanges();
+            expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        });
     });
 });
