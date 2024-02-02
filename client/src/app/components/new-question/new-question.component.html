@@ -1,6 +1,10 @@
 <div id="newQuestion">
-    <button type="button" mat-raised-button color="accent" (click)="toggleCreateQuestion()">Créer Question</button>
+    <div id="buttonAdd">
+        <button type="button" mat-raised-button color="accent" (click)="createQuestionShown = true">Créer Question</button>
+        <button type="button" mat-raised-button color="accent" (click)="this.addFromQuestionBank = true">Ajouter de la banque de question</button>
+    </div>
     <div *ngIf="createQuestionShown">
+
         <p>Ajouter des questions:</p>
         <mat-form-field>
             <mat-label>Question</mat-label>
@@ -17,16 +21,13 @@
         </div>
         <p>Choix de reponse:</p>
         <app-choice (registerAnswer)="addQuestion($event, onlyAddQuestionBank)"> </app-choice>
-        <!-- <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button> -->
+        <button type="button" mat-raised-button color="warn" (click)="createQuestionShown = false">Fermer</button>
+
     </div>
 </div>
-<button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Ajouter de la banque de question</button>
-<!-- <button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Fermer</button> -->
 
 <div *ngIf="addFromQuestionBank">
-    <button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Fermer</button>
-
+    <button type="button" mat-raised-button color="warn" (click)="this.addFromQuestionBank = false">Fermer</button>
     <app-question-bank [fromCreateNewGame]="addFromQuestionBank" (registerQuestion)="addQuestionFromBank($event)"> </app-question-bank>
-
 </div>
 

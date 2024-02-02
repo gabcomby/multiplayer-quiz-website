@@ -49,11 +49,4 @@ export class NewQuestionComponent {
         this.addFromQuestionBank = false;
     }
 
-    toggleQuestionFromBank() {
-        this.addFromQuestionBank = true;
-        // meme vue que maxime mais on doit ajouter des boutons pour sélectionner et ajouter une bouton de confirmation
-    }
-    toggleCreateQuestion() {
-        this.createQuestionShown = !this.createQuestionShown;
-    }
 }

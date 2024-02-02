@@ -78,6 +78,7 @@ export class QuestionBankComponent implements OnInit {
     }
     addQuestionToGame() {
         this.registerQuestion.emit(this.questionToAdd);
+        this.questionToAdd = [];
     }
     onChange(question: Question) {
         if (this.questionToAdd.includes(question)) {
