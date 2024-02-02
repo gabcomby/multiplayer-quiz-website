@@ -1,9 +1,9 @@
 import { Application } from '@app/app';
-import matchModel from '@app/model/match.model';
+import { IMatch, IPlayer } from '@app/model/match.model';
 import { MatchService } from '@app/services/match.service';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
@@ -11,26 +11,25 @@ describe('GameController', () => {
     let matchService: SinonStubbedInstance<MatchService>;
     let expressApp: Express.Application;
 
-    const mockGameData = new matchModel({
-        id: '123abc',
-        playerList: [
-            {
-                id: 'player1',
-                name: 'Player 1',
-                score: 100,
-            },
-            {
-                id: 'player2',
-                name: 'Player 2',
-                score: 50,
-            },
-            {
-                id: 'player3',
-                name: 'Player 3',
-                score: 100,
-            },
-        ],
-    });
+    const mockPlayerData: IPlayer[] = [
+        { id: 'player1', name: 'Player 1', score: 100 } as IPlayer,
+        { id: 'player2', name: 'Player 2', score: 50 } as IPlayer,
+        { id: 'player3', name: 'Player 3', score: 100 } as IPlayer,
+        { id: 'player4', name: 'Player 4', score: 100 } as IPlayer,
+        { id: 'player5', name: 'Player 5', score: 50 } as IPlayer,
+        { id: 'player6', name: 'Player 6', score: 100 } as IPlayer,
+    ];
+
+    const mockMatchData: IMatch[] = [
+        {
+            id: '123abc',
+            playerList: [mockPlayerData[0], mockPlayerData[1], mockPlayerData[2]],
+        } as IMatch,
+        {
+            id: '456def',
+            playerList: [mockPlayerData[3], mockPlayerData[4], mockPlayerData[5]],
+        } as IMatch,
+    ];
 
     beforeEach(async () => {
         matchService = createStubInstance(MatchService);
@@ -79,7 +78,7 @@ describe('GameController', () => {
 
         return supertest(expressApp)
             .post('/api/matches')
-            .send(mockGameData)
+            .send(mockMatchData[0])
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
                 chai.expect(response.body).to.deep.equal({ error: "Can't create match" });
@@ -118,5 +117,64 @@ describe('GameController', () => {
             .then((response) => {
                 chai.expect(response.body).to.deep.equal({ error: "Can't remove player from match" });
             });
+    });
+
+    it('getAllMatches should return all matches successfully on GET request', async () => {
+        matchService.getAllMatches.resolves(mockMatchData);
+
+        const response = await supertest(expressApp).get('/api/matches').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData);
+    });
+
+    it('getMatch should return specified match successfully on GET request', async () => {
+        matchService.getMatch.resolves(mockMatchData[0]);
+
+        const response = await supertest(expressApp).get('/api/matches/123abc').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData[0]);
+    });
+
+    it('getAllPlayersFromMatch should return all players from specified match successfully on GET request', async () => {
+        matchService.getAllPlayersFromMatch.resolves([mockPlayerData[0], mockPlayerData[1], mockPlayerData[2]]);
+
+        const response = await supertest(expressApp).get('/api/matches/123abc/players').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal([mockPlayerData[0], mockPlayerData[1], mockPlayerData[2]]);
+    });
+
+    it('createMatch should return newly created match on POST request', async () => {
+        matchService.createMatch.resolves(mockMatchData[0]);
+
+        const response = await supertest(expressApp).post('/api/matches').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData[0]);
+    });
+
+    it('deleteMatch should return deleted match on DELETE request', async () => {
+        matchService.deleteMatch.resolves(mockMatchData[0]);
+
+        const response = await supertest(expressApp).delete('/api/matches/123abc').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData[0]);
+    });
+
+    it('addPlayer should return updated match on PATCH request', async () => {
+        matchService.addPlayer.resolves(mockMatchData[0]);
+
+        const response = await supertest(expressApp)
+            .patch('/api/matches/123abc')
+            .send({ id: 'a1b2c3', name: 'Test', score: 1000 })
+            .expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData[0]);
+    });
+
+    it('removePlayer should return updated match on DELETE request', async () => {
+        matchService.addPlayer.resolves(mockMatchData[0]);
+
+        const response = await supertest(expressApp).delete('/api/matches/123abc/players/player1').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockMatchData[0]);
     });
 });
