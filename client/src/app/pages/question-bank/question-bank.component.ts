@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
@@ -23,12 +22,14 @@ const ELEMENT_DATA: Question[] = [
 
 @Component({
     selector: 'app-question-bank',
-    standalone: true,
-    imports: [MatTableModule],
+    // standalone: true,
+    // imports: [MatTableModule],
     templateUrl: './question-bank.component.html',
     styleUrls: ['./question-bank.component.scss'],
 })
 export class QuestionBankComponent implements OnInit {
+    @Input() fromCreateNewGame: boolean;
+    @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
     displayedColumns: string[] = ['question', 'date', 'delete', 'modify'];
     dataSource = ELEMENT_DATA;
 
@@ -73,5 +74,8 @@ export class QuestionBankComponent implements OnInit {
 
     modifyQuestion(): void {
         // Implement logic to modify a question
+    }
+    addQuestionToGame(){
+        
     }
 }

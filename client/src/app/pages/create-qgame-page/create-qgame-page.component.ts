@@ -17,6 +17,7 @@ export class CreateQGamePageComponent implements OnInit {
     questions: Question[] = [];
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = false;
+
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
@@ -98,7 +99,5 @@ export class CreateQGamePageComponent implements OnInit {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
 
-    addQuestionFromBank() {
-        // meme vue que maxime mais on doit ajouter des boutons pour sélectionner et ajouter une bouton de confirmation
-    }
+    
 }

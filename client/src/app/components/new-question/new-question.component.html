@@ -1,19 +1,28 @@
 <div id="newQuestion">
-    <p>Ajouter des questions:</p>
-    <mat-form-field>
-        <mat-label>Question</mat-label>
-        <input matInput [(ngModel)]="question.text" />
-    </mat-form-field>
+    <button type="button" mat-raised-button color="accent" (click)="toggleCreateQuestion()">Créer Question</button>
+    <div *ngIf="createQuestionShown">
+        <p>Ajouter des questions:</p>
+        <mat-form-field>
+            <mat-label>Question</mat-label>
+            <input matInput [(ngModel)]="question.text" />
+        </mat-form-field>
 
-    <mat-form-field>
-        <mat-label>Nombre de points</mat-label>
-        <input matInput type="number" placeholder="10" min="10" max="100" step="10" [(ngModel)]="question.points"  />
-    </mat-form-field>
-    <div>
-        <label>Ajouter à la banque de question</label>
-        <input type="checkbox" [(ngModel)]="addBankQuestion" />
+        <mat-form-field>
+            <mat-label>Nombre de points</mat-label>
+            <input matInput type="number" placeholder="10" min="10" max="100" step="10" [(ngModel)]="question.points"  />
+        </mat-form-field>
+        <div>
+            <label>Ajouter à la banque de question</label>
+            <input type="checkbox" [(ngModel)]="addBankQuestion" />
+        </div>
+        <p>Choix de reponse:</p>
+        <app-choice (registerAnswer)="addQuestion($event, onlyAddQuestionBank)"> </app-choice>
+        <!-- <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button> -->
     </div>
-    <p>Choix de reponse:</p>
-    <app-choice (registerAnswer)="addQuestion($event, onlyAddQuestionBank)"> </app-choice>
-    <!-- <button type="submit" (click)="addQuestion()" mat-raised-button color="accent" >Ajouter</button> -->
 </div>
+<button type="button" mat-raised-button color="accent" (click)="toggleQuestionFromBank()">Ajouter de la banque de question</button>
+<div *ngIf="addFromQuestionBank">
+    <app-question-bank [fromCreateNewGame]="addFromQuestionBank" (registerQuestion)="addQuestionFromBank($event)"> </app-question-bank>
+
+</div>
+

@@ -9,6 +9,8 @@ import { QuestionService } from '@app/services/question.service';
 })
 export class NewQuestionComponent {
     @Input() onlyAddQuestionBank: boolean;
+    addFromQuestionBank: boolean = false;
+    createQuestionShown: boolean = false;
     // @Output() registerQuestion: EventEmitter<Question> = new EventEmitter();
     question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
@@ -41,5 +43,16 @@ export class NewQuestionComponent {
         this.question.points = 0;
         this.question.choices = [];
         this.addBankQuestion = false;
+    }
+    addQuestionFromBank(event: Question[]) {
+        event.forEach((element) => this.questionService.addQuestion(element));
+    }
+
+    toggleQuestionFromBank() {
+        this.addFromQuestionBank = true;
+        // meme vue que maxime mais on doit ajouter des boutons pour sélectionner et ajouter une bouton de confirmation
+    }
+    toggleCreateQuestion() {
+        this.createQuestionShown = !this.createQuestionShown;
     }
 }

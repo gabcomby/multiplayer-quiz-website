@@ -25,10 +25,9 @@
                     <mat-label>Temps de délai</mat-label>
                     <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
                 </mat-form-field>
-                <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
-                <button type="button" mat-raised-button color="accent" (click)="addQuestionFromBank()">Ajouter de la banque de question</button>
+                <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">Ajouter Question</button>
 
-                <div *ngIf="addQuestionShown === true">
+                <div id='addFromBank'*ngIf="addQuestionShown">
                     <app-new-question [onlyAddQuestionBank]="false" *ngIf="addQuestionShown"> </app-new-question>
                 </div>
             </div>

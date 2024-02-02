@@ -1,8 +1,11 @@
 <header>
     <p class="title">Banque de Question</p>
-    <button class="button" routerLink="">Nouvelle Question</button>
-    <button class="button" routerLink="/home">Home</button>
+    <div *ngIf="!fromCreateNewGame">
+        <button class="button" routerLink="">Nouvelle Question</button>
+        <button class="button" routerLink="/home">Home</button>
+    </div>   
 </header>
+
 <table mat-table [dataSource]="dataSource" class="questions">
     <!-- Question Column -->
     <ng-container matColumnDef="question">
@@ -17,21 +20,33 @@
     </ng-container>
 
     <!-- Delete Column -->
-    <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let element">
-            <button mat-icon-button (click)="deleteQuestion(element.id)">Supprimer</button>
-        </td>
-    </ng-container>
+        <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+                <div *ngIf="!fromCreateNewGame">
+                    <button mat-icon-button (click)="deleteQuestion(element.id)">Supprimer</button>
+                </div>
+                <div *ngIf="fromCreateNewGame">
+                    <input type="checkbox" value="{{element}}" />
+                </div>
 
-    <!-- Modify Column -->
-    <ng-container matColumnDef="modify">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let element">
-            <button mat-icon-button (click)="modifyQuestion()">Modifier</button>
-        </td>
-    </ng-container>
+            </td>
+        </ng-container>
+    
+        <!-- Modify Column -->
+        <ng-container matColumnDef="modify">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+                <div *ngIf="!fromCreateNewGame">
+                    <button mat-icon-button (click)="modifyQuestion()">Modifier</button>
+                </div>
+            </td>
+        </ng-container>
+    
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let element; columns: displayedColumns"></tr>
 </table>
+<div *ngIf="fromCreateNewGame">
+    <button (click)="addQuestionToGame()">Enregistrer les questions</button>
+</div>
