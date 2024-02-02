@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
-import { Socket, io } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
 @Component({
     selector: 'app-new-game-page',
@@ -13,7 +13,6 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     constructor(private gameService: GameService) {
-        this.socket = io('http://localhost:3000');
         this.socket.on('connect', () => {
             console.log('Connecté au serveur via le socket');
         });
