@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-// TODO: ask why this is not working
-//  import { environment } from '@env/environment/environment';
+import { Injectable } from '@angular/core';
+
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import type { Game, Question } from '@app/interfaces/game';
 
@@ -9,43 +11,55 @@ import type { Game, Question } from '@app/interfaces/game';
     providedIn: 'root',
 })
 export class ApiService {
-    private api = 'http://localhost:3000/api';
+    private readonly apiUrl: string = environment.serverUrl;
 
     constructor(private http: HttpClient) {}
 
+    authenticate(password: string) {
+        return this.http.post<boolean>(`${this.apiUrl}/authenticate`, { password });
+    }
+
     getGame(gameId: string) {
-        return this.http.get(`${this.api}/game/${gameId}`);
+        return this.http.get<Game>(`${this.apiUrl}/game/${gameId}`).pipe(catchError(this.handleError<Game>('getGame')));
     }
 
     getGames() {
-        return this.http.get(`${this.api}/games`);
+        return this.http.get<Game[]>(`${this.apiUrl}/games`).pipe(catchError(this.handleError<Game[]>('getGames', [])));
     }
 
     createGame(gameData: Game) {
-        return this.http.post(`${this.api}/game`, gameData);
+        return this.http.post(`${this.apiUrl}/game`, gameData);
     }
 
     updateGame(gameId: string, gameData: Game) {
-        return this.http.put(`${this.api}/game/${gameId}`, gameData);
+        return this.http.patch(`${this.apiUrl}/game/${gameId}`, gameData).pipe(catchError(this.handleError<Game>('updateGame')));
     }
 
     deleteGame(gameId: string) {
-        return this.http.delete(`${this.api}/game/${gameId}`);
+        return this.http.delete(`${this.apiUrl}/game/${gameId}`).pipe(catchError(this.handleError<Game>('deleteGame')));
     }
 
     getQuestions(gameId: string) {
-        return this.http.get(`${this.api}/game/${gameId}/questions`);
+        return this.http.get<Question>(`${this.apiUrl}/game/${gameId}/questions`).pipe(catchError(this.handleError<Question>('getQuestions')));
     }
 
     createQuestion(gameId: string, questionData: Question) {
-        return this.http.post(`${this.api}/game/${gameId}/question`, questionData);
+        return this.http.post(`${this.apiUrl}/game/${gameId}/question`, questionData);
     }
 
     updateQuestion(gameId: string, questionId: string, questionData: Question) {
-        return this.http.put(`${this.api}/game/${gameId}/question/${questionId}`, questionData);
+        return this.http
+            .patch(`${this.apiUrl}/game/${gameId}/question/${questionId}`, questionData)
+            .pipe(catchError(this.handleError<Question>('updateQuestion')));
     }
 
     deleteQuestion(gameId: string, questionId: string) {
-        return this.http.delete(`${this.api}/game/${gameId}/question/${questionId}`);
+        return this.http
+            .delete(`${this.apiUrl}/game/${gameId}/question/${questionId}`)
+            .pipe(catchError(this.handleError<Question>('deleteQuestion')));
+    }
+
+    private handleError<T>(_: string, result?: T): (error: Error) => Observable<T> {
+        return () => of(result as T);
     }
 }
