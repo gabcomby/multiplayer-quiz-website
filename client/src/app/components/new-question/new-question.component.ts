@@ -15,16 +15,16 @@ export class NewQuestionComponent {
     constructor(private questionService: QuestionService) {}
 
     addQuestion(event: Choice[], onlyAddQuestionBank: boolean) {
-        const newChoices = event.map((item) => ({ ...item }));
+        // const newChoices = event.map((item) => ({ ...item }));
         const newQuestion = {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,
             id: this.questionService.getQuestion().length.toString(),
-            choices: newChoices,
+            choices: event.map((item) => ({ ...item })),
             lastModification: new Date(),
         };
-        if (newQuestion.text !== '') {
+        if (newQuestion.text !== '' && newQuestion.points !== 0) {
             // this.registerQuestion.emit(newQuestion);
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);

@@ -1,13 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-// import { Question } from '@app/interfaces/game';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import * as gameUtilsModule from '@app/utils/is-valid-game';
-// import { of } from 'rxjs';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -17,9 +15,7 @@ describe('CreateQGamePageComponent', () => {
     let gameServiceSpy: SpyObj<GameService>;
     let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
-    // let mockIsValidGame: jasmine.Spy;
     const defaultDate = new Date();
-    // const isValidGameSpy = jasmine.createSpy('isValidGame').and.returnValue(Promise.resolve(true));
 
     beforeEach(() => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
@@ -36,7 +32,6 @@ describe('CreateQGamePageComponent', () => {
             ],
             resetQuestions: {},
         });
-        // questionServiceSpy = jasmine.createSpyObj('QuestionService', ['addQuestion', 'getQuestion', 'resetQuestions']);
         gameServiceSpy = jasmine.createSpyObj('GameService', {
             getGames: [],
             createGame: {},
@@ -50,7 +45,6 @@ describe('CreateQGamePageComponent', () => {
                 questions: [{ type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate }],
             } as Game),
         });
-        // mockIsValidGame = jasmine.createSpy('isValidGame').;
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -58,8 +52,7 @@ describe('CreateQGamePageComponent', () => {
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
-                { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) || of(convertToParamMap({ id: '' })) } },
-                // useValue: { paramMap: of(convertToParamMap({ id: '123' })) }
+                { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
             ],
             imports: [HttpClientTestingModule],
         }).compileComponents();
@@ -82,7 +75,6 @@ describe('CreateQGamePageComponent', () => {
                 lastModification: defaultDate,
             },
         ]);
-        // expect(component.isNotVisible).toBeFalse();
         expect(component.modifiedQuestion).toBeFalse();
         expect(component.addQuestionShown).toBeFalse();
         expect(component.gamesFromDB).toEqual([]);
@@ -93,6 +85,7 @@ describe('CreateQGamePageComponent', () => {
         expect(component.gameForm.get('name')).toBeTruthy();
         expect(component.gameForm.get('description')).toBeTruthy();
         expect(component.gameForm.get('time')).toBeTruthy();
+        expect(component.gameForm.get('visibility')).toBeTruthy();
     });
 
     it('should toggle addQuestionShown property', () => {
@@ -131,9 +124,7 @@ describe('CreateQGamePageComponent', () => {
     let gameServiceSpy: SpyObj<GameService>;
     let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
-    // let mockIsValidGame: jasmine.Spy;
     const defaultDate = new Date();
-    // const isValidGameSpy = jasmine.createSpy('isValidGame').and.returnValue(Promise.resolve(true));
 
     beforeEach(() => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
@@ -150,7 +141,6 @@ describe('CreateQGamePageComponent', () => {
             ],
             resetQuestions: {},
         });
-        // questionServiceSpy = jasmine.createSpyObj('QuestionService', ['addQuestion', 'getQuestion', 'resetQuestions']);
         gameServiceSpy = jasmine.createSpyObj('GameService', {
             getGames: [],
             // eslint-disable-next-line no-unused-vars
@@ -158,7 +148,6 @@ describe('CreateQGamePageComponent', () => {
                 return;
             },
         });
-        // mockIsValidGame = jasmine.createSpy('isValidGame').;
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -167,7 +156,6 @@ describe('CreateQGamePageComponent', () => {
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: null })) } },
-                // useValue: { paramMap: of(convertToParamMap({ id: '123' })) }
             ],
             imports: [HttpClientTestingModule],
         }).compileComponents();
@@ -189,8 +177,6 @@ describe('CreateQGamePageComponent', () => {
             description: new FormControl('Description'),
             time: new FormControl(TIME),
         });
-
-        // fixture.detectChanges();
         // eslint-disable-next-line no-unused-vars
         spyOn(gameUtilsModule, 'isValidGame').and.callFake(async (_: Game, __: GameService, bol: boolean) => {
             return Promise.resolve(true);
