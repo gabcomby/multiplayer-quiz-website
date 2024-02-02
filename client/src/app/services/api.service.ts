@@ -20,7 +20,7 @@ export class ApiService {
     }
 
     getGame(gameId: string) {
-        return this.http.get<Game>(`${this.apiUrl}/game/${gameId}`).pipe(catchError(this.handleError<Game>('getGame')));
+        return this.http.get<Game>(`${this.apiUrl}/games/${gameId}`).pipe(catchError(this.handleError<Game>('getGame')));
     }
 
     getGames() {
@@ -28,34 +28,34 @@ export class ApiService {
     }
 
     createGame(gameData: Game) {
-        return this.http.post(`${this.apiUrl}/game`, gameData);
+        return this.http.post(`${this.apiUrl}/games`, gameData);
     }
 
-    updateGame(gameId: string, gameData: Game) {
-        return this.http.patch(`${this.apiUrl}/game/${gameId}`, gameData).pipe(catchError(this.handleError<Game>('updateGame')));
+    toggleVisibility(gameId: string, isVisible: boolean) {
+        return this.http.patch(`${this.apiUrl}/games/${gameId}`, { isVisible });
     }
 
     deleteGame(gameId: string) {
-        return this.http.delete(`${this.apiUrl}/game/${gameId}`).pipe(catchError(this.handleError<Game>('deleteGame')));
+        return this.http.delete(`${this.apiUrl}/games/${gameId}`).pipe(catchError(this.handleError<Game>('deleteGame')));
     }
 
     getQuestions(gameId: string) {
-        return this.http.get<Question>(`${this.apiUrl}/game/${gameId}/questions`).pipe(catchError(this.handleError<Question>('getQuestions')));
+        return this.http.get<Question>(`${this.apiUrl}/games/${gameId}/questions`).pipe(catchError(this.handleError<Question>('getQuestions')));
     }
 
     createQuestion(gameId: string, questionData: Question) {
-        return this.http.post(`${this.apiUrl}/game/${gameId}/question`, questionData);
+        return this.http.post(`${this.apiUrl}/games/${gameId}/question`, questionData);
     }
 
     updateQuestion(gameId: string, questionId: string, questionData: Question) {
         return this.http
-            .patch(`${this.apiUrl}/game/${gameId}/question/${questionId}`, questionData)
+            .patch(`${this.apiUrl}/games/${gameId}/question/${questionId}`, questionData)
             .pipe(catchError(this.handleError<Question>('updateQuestion')));
     }
 
     deleteQuestion(gameId: string, questionId: string) {
         return this.http
-            .delete(`${this.apiUrl}/game/${gameId}/question/${questionId}`)
+            .delete(`${this.apiUrl}/games/${gameId}/question/${questionId}`)
             .pipe(catchError(this.handleError<Question>('deleteQuestion')));
     }
 
