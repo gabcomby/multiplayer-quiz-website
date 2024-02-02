@@ -1,4 +1,4 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { EventEmitter } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
@@ -20,6 +20,13 @@ describe('ModifiedQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
+                    lastModification: new Date(),
+                },
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test 2',
+                    points: 20,
+                    id: '45',
                     lastModification: new Date(),
                 } as Question,
             ],
@@ -45,12 +52,6 @@ describe('ModifiedQuestionComponent', () => {
     });
 
     it('should initialize questionList with data from QuestionService', () => {
-        // const mockQuestionList: Question[] = [
-        //     { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
-        //     { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
-        // ];
-
-        // questionServiceSpy.getQuestion.and.returnValue(mockQuestionList);
         fixture.detectChanges();
 
         expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
@@ -89,5 +90,34 @@ describe('ModifiedQuestionComponent', () => {
 
         expect(component.questionList).not.toContain(questionToRemove);
         expect(questionServiceSpy.updateList).toHaveBeenCalledWith(component.questionList);
+    });
+    it('should change the question when drag and drop', () => {
+        const mockQuestionList: Question[] = [
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
+        ];
+        component.questionList = mockQuestionList;
+        const event: CdkDragDrop<Question[]> = {
+            previousIndex: 0, // moving the first item
+            currentIndex: 1, // to the last position
+            item: null, // not used in moveItemInArray, so it can be null
+            container: null, // not used in moveItemInArray, so it can be null
+            previousContainer: null, // not used in moveItemInArray, so it can be null
+            isPointerOverContainer: true,
+            distance: { x: 0, y: 0 },
+            dropPoint: null,
+            event: new MouseEvent('dragstart', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+            }),
+        };
+        component.drop(event);
+
+        // Assert that the questionList has been reordered as expected
+        expect(component.questionList).toEqual([
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
+        ]);
     });
 });
