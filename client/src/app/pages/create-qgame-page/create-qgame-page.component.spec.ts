@@ -121,7 +121,7 @@ describe('CreateQGamePageComponent', () => {
         component.onSubmit(mockQuestionList, mockGameForm).then(() => {
             expect(component.gameId).toBe('123');
             fixture.detectChanges();
-            expect(gameServiceSpy.createGame).toHaveBeenCalled();
+            expect(gameServiceSpy.patchGame).toHaveBeenCalled();
         });
     });
 });
@@ -157,15 +157,6 @@ describe('CreateQGamePageComponent', () => {
             createGame: (game: Game) => {
                 return;
             },
-            patchGame: Promise.resolve({
-                id: 'ddwd',
-                title: 'string',
-                description: 'string',
-                isVisible: true,
-                duration: 10,
-                lastModification: defaultDate,
-                questions: [{ type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate }],
-            } as Game),
         });
         // mockIsValidGame = jasmine.createSpy('isValidGame').;
     });
