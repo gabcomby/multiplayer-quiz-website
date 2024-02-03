@@ -1,4 +1,6 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Question } from '@app/interfaces/game';
 import { ChoiceComponent } from './choice.component';
 
 const MAX_CHOICES = 4;
@@ -51,33 +53,6 @@ describe('ChoiceComponent', () => {
     });
     // IL PASSE
 
-    // it('should determine if a choice is a good or bad answer', () => {
-    //     // Mock de component.answers
-    //     component.answers = [
-    //         { text: ' test1 ', isCorrect: false },
-    //         { text: ' test2 ', isCorrect: true },
-    //     ];
-
-    //     // Mise à jour de la vue
-    //     fixture.detectChanges();
-
-    //     // Sélection de la case à cocher
-    //     const checkboxDebugElement = fixture.debugElement.query(By.css('mat-checkbox'));
-
-    //     expect(component.answers[0].isCorrect).toBe(false);
-
-    //     // Simulation du clic sur la case à cocher
-    //     checkboxDebugElement.triggerEventHandler('change', { checked: true });
-
-    //     fixture.detectChanges();
-
-    //     expect(component.answers[0].isCorrect).toBe(true);
-    // }); figure out comment simuler un click
-
-    // it('should require at least one good and bad answer', () => {
-
-    // });
-
     it('should be able to add a choice', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
@@ -99,8 +74,26 @@ describe('ChoiceComponent', () => {
         expect(component.answers.length).toBe(2);
     });
 
-    // it('should move item in array on drop', () => {
-    // });
+    it('should move the answers in the array after the drop', () => {
+        const event = {
+            previousIndex: 1,
+            currentIndex: 2,
+        } as CdkDragDrop<Question[]>;
+
+        component.answers = component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.drop(event);
+
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+            { text: 'test2', isCorrect: false },
+        ]);
+    });
 
     it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {
         component.answers = [
