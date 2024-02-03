@@ -83,7 +83,7 @@ export class GamePageComponent implements OnInit {
                 this.router.navigate(['/']);
                 this.timerService.killTimer();
                 // TODO: Delete match when it ends
-                // this.matchService.deleteMatch('8javry').subscribe();
+                // this.matchService.deleteMatch().subscribe();
             }, TIME_BETWEEN_QUESTIONS);
         }
     }
