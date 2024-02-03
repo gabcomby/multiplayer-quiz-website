@@ -26,8 +26,8 @@
                     <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
                 </mat-form-field>
 
-                <div id="addQuestion">
-                    <app-new-question [onlyAddQuestionBank]="false" *ngIf="addQuestionShown"> </app-new-question>
+                <div id="addQuestion" *ngIf="addQuestionShown">
+                    <app-new-question [fromNewGame]="fromBank"></app-new-question>
                 </div>
             </div>
             <div id="modifyingComponent">

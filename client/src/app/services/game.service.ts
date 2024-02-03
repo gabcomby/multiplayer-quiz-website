@@ -19,7 +19,7 @@ export class GameService {
         const projection = { _id: 0 };
         const games$ = this.http.get<Game[]>(`${this.apiUrl}?projection=${JSON.stringify(projection)}`);
         const games = await firstValueFrom(games$);
-        console.log(games);
+        // console.log(games);
         return games;
     }
     // createGame(game: Game): Observable<Game> {
@@ -27,14 +27,14 @@ export class GameService {
     // }
 
     async createGame(game: Game): Promise<Game> {
-        console.log(game);
+        // console.log(game);
         const game$ = this.http.post<Game>(this.apiUrl, game);
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
 
     async patchGame(game: Game): Promise<Game> {
-        console.log(game);
+        // console.log(game);
         const game$ = this.http.patch<Game>(this.apiUrl, game);
         const newGame = await firstValueFrom(game$);
         return newGame;

@@ -8,7 +8,7 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./new-question.component.scss'],
 })
 export class NewQuestionComponent {
-    @Input() onlyAddQuestionBank: boolean;
+    @Input() fromNewGame: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
     question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };

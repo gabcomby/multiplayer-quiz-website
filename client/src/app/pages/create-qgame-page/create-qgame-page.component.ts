@@ -14,6 +14,7 @@ import { isValidGame } from '@app/utils/is-valid-game';
 })
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
+    fromBank: boolean = false;
     questions: Question[] = [];
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = true;
