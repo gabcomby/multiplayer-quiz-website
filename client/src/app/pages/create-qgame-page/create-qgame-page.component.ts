@@ -5,7 +5,7 @@ import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+import { isValidGame, isValidModifiedGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -80,7 +80,7 @@ export class CreateQGamePageComponent implements OnInit {
         };
 
         if (this.gameId) {
-            isValidGame(this.gameFromDB, this.gameService);
+            isValidModifiedGame(this.gameFromDB);
             this.gameService.patchGame(this.gameFromDB);
         } else if (await isValidGame(newGame, this.gameService)) {
             this.gameService.createGame(newGame);
