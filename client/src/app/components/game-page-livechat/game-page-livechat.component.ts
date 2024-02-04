@@ -25,6 +25,11 @@ export class GamePageLivechatComponent {
         this.textbox.nativeElement.focus();
     }
 
+    onChatEnterPressed(event: Event): void {
+        event.preventDefault();
+        this.sendMessage();
+    }
+
     sendMessage(): void {
         if (this.newMessage.trim() !== '') {
             const message = { text: this.newMessage, sender: this.playerName, visible: true };
