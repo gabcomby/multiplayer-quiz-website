@@ -39,12 +39,14 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     // TODO: Fix the issue where typing in chat also triggers the buttonDetect function
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-        if (!Number.isNaN(Number(this.buttonPressed))) {
-            const stringAsNumber = Number(this.buttonPressed);
-            if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
-        } else if (this.buttonPressed === 'Enter') {
-            this.submitAnswer();
+        if (this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea') {
+            this.buttonPressed = event.key;
+            if (!Number.isNaN(Number(this.buttonPressed))) {
+                const stringAsNumber = Number(this.buttonPressed);
+                if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
+            } else if (this.buttonPressed === 'Enter') {
+                this.submitAnswer();
+            }
         }
     }
 
@@ -80,6 +82,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         } else {
             this.selectedChoices.push(index);
         }
+        this.document.body.focus();
     }
 
     isSelected(index: number): boolean {
