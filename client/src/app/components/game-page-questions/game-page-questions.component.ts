@@ -80,6 +80,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         } else {
             this.selectedChoices.push(index);
         }
+        this.document.body.focus();
     }
 
     isSelected(index: number): boolean {

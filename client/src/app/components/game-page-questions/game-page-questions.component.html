@@ -18,6 +18,7 @@
                 'correct-answer': timerExpired && choice.isCorrect,
                 'wrong-answer': timerExpired && !choice.isCorrect
             }"
+            onclick="this.blur()"
             (click)="toggleAnswer(i)"
             [disabled]="timerExpired || answerIsLocked"
         >
