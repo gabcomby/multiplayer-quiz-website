@@ -25,4 +25,9 @@ export class GameService {
         if (!updatedGame) throw new Error('Game not found');
         return updatedGame;
     }
+
+    async updateGame(gameID: string, gameData: IGame): Promise<IGame> {
+        const updatedGame = await gameModel.findOneAndUpdate({ gameID }, gameData);
+        return updatedGame;
+    }
 }

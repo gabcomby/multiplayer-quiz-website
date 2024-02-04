@@ -21,7 +21,8 @@ export class ChoiceComponent {
 
     addChoice() {
         if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
-            this.answers.push({ text: '', isCorrect: false });
+            // this.answers.push({ text: '', isCorrect: false });
+            this.answers = [...this.answers, { text: '', isCorrect: false }];
         } else {
             alert('minimum 2 choix et maximum 4');
         }

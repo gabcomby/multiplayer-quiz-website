@@ -23,7 +23,6 @@ export class GameService {
     }
 
     async createGame(game: Game): Promise<Game> {
-        console.log(game);
         const game$ = this.http.post<Game>(this.apiUrl, game);
         const newGame = await firstValueFrom(game$);
         return newGame;
