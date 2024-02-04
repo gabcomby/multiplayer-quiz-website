@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',
@@ -20,7 +21,7 @@ export class NewQuestionComponent {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,
-            id: this.questionService.getQuestion().length.toString(),
+            id: generateNewId(),
             choices: event.map((item) => ({ ...item })),
             lastModification: new Date(),
         };

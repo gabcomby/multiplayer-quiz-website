@@ -36,6 +36,7 @@ export class ModifiedQuestionComponent implements OnInit {
         this.disabled[index] = true;
     }
     removeQuestion(question: Question): void {
+        console.log(this.questionList);
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
         this.questionService.updateList(this.questionList);
     }

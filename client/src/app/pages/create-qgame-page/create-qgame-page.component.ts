@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Game, Question } from '@app/interfaces/game';
+import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
@@ -15,7 +15,7 @@ import { isValidGame } from '@app/utils/is-valid-game';
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
     fromBank: boolean = false;
-    questions: Question[] = [];
+    // questions: Question[] = [];
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = true;
     gameId: string | null;
@@ -30,7 +30,7 @@ export class CreateQGamePageComponent implements OnInit {
         private route: ActivatedRoute,
     ) {
         this.questionService.resetQuestions();
-        this.questions = this.questionService.getQuestion();
+        // this.questions = this.questionService.getQuestion();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
@@ -69,7 +69,7 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    async onSubmit(questionList: Question[], gameForm: FormGroup) {
+    async onSubmit(gameForm: FormGroup) {
         const newGame: Game = {
             id: generateNewId(),
             title: gameForm.get('name')?.value || '',
@@ -77,7 +77,7 @@ export class CreateQGamePageComponent implements OnInit {
             isVisible: gameForm.get('visibility')?.value,
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
-            questions: questionList,
+            questions: this.questionService.getQuestion(),
         };
 
         if (this.gameId) {
@@ -86,6 +86,7 @@ export class CreateQGamePageComponent implements OnInit {
             }
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
+            console.log(newGame);
             // console.log(newGame);
             // location.reload();
         } else {

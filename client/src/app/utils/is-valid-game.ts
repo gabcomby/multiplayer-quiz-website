@@ -3,7 +3,7 @@ import { GameService } from '@app/services/game.service';
 
 export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
     const errors: string[] = [];
-    alert('yooo');
+    // alert('yooo');
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
     if (newGame) {

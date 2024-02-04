@@ -27,6 +27,7 @@ export class QuestionService {
         this.questions = [];
         // this.questions.length = 0;
         this.questions = question.map((item) => ({ ...item }));
+        console.log(this.questions);
         // this.questions.push(...question);
     }
 }
