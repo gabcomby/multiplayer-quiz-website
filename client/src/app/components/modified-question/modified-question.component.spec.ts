@@ -77,7 +77,7 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.disabled[index]).toBeTrue();
     });
 
-    it('should remove a question from questionList', () => {
+    it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
         const mockQuestionList: Question[] = [
             { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
@@ -91,6 +91,7 @@ describe('ModifiedQuestionComponent', () => {
 
         expect(component.questionList).not.toContain(questionToRemove);
         expect(questionServiceSpy.updateList).toHaveBeenCalledWith(component.questionList);
+        expect(component.disabled[index]).toBeTrue();
     });
 
     it('should move the answers in the array after the drop', () => {

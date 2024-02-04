@@ -22,7 +22,7 @@ export class CreateQGamePageComponent implements OnInit {
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
     gameForm: FormGroup;
-    dataReady = false;
+    dataReady: boolean = false;
 
     constructor(
         private questionService: QuestionService,
@@ -91,7 +91,7 @@ export class CreateQGamePageComponent implements OnInit {
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
             // this.router.navigate(['/home']);
-            location.reload();
+            // location.reload();
         }
     }
     toggleModifiedQuestion() {
