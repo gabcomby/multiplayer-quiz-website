@@ -15,20 +15,6 @@ export const isValidGame = async (game: Game, gameService: GameService): Promise
     return true;
 };
 
-export const isValidModifiedGame = async (game: Game): Promise<boolean> => {
-    const errors: string[] = [];
-
-    validateBasicGameProperties(game, errors);
-    validateGameQuestions(game, errors);
-    // await validateDuplicationGame(game, errors, gameService);
-
-    if (errors.length > 0) {
-        alert(errors.join('\n'));
-        return false;
-    }
-    return true;
-};
-
 const validateBasicGameProperties = (game: Game, errors: string[]): void => {
     if (!game.title) errors.push('Title is required');
     if (!game.description) errors.push('Description is required');
