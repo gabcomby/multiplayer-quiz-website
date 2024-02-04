@@ -8,7 +8,8 @@
                 <p>Nombre de point:{{ question.points }}</p>
                 <div *ngIf="question.choices">
                     Choix de réponse:
-                    <div *ngFor="let element of question.choices; index as j">{{ j }}-{{ element.text }}</div>
+                    <div *ngFor="let element of question.choices; index as j">{{ j }}-{{ element.text }}
+                </div>
                 </div>
             </div>
             <div *ngIf="!disabled[i]" id="disabled">
@@ -20,6 +21,10 @@
                 Choix de réponse:
                 <div *ngFor="let element of question.choices; index as j">
                     {{ j }}-<input class="input_edit" type="text" [(ngModel)]="element.text" />
+                    <button mat-icon-button (click)="removeChoice(j)">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                    </button>
+                    <mat-checkbox [(ngModel)]="element.isCorrect" name="correctGroup">Correct</mat-checkbox>
                 </div>
             </div>
 

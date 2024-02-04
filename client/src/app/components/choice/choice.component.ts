@@ -23,7 +23,6 @@ export class ChoiceComponent {
         if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
             this.answers.push({ text: '', isCorrect: false });
         } else {
-            // Handle error or provide feedback to the user
             alert('minimum 2 choix et maximum 4');
         }
     }

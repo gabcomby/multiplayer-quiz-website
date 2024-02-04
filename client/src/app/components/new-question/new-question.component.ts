@@ -11,7 +11,7 @@ export class NewQuestionComponent {
     @Input() fromNewGame: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
-    question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
+    question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
