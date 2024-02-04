@@ -1,25 +1,31 @@
+.container {
+    display: flex;
+    flex-direction: column; /* Aligns children (header and modifyingComponent) vertically */
+}
+
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f0f0f0; /* Add your desired background color */
-    padding: 10px; /* Add padding for better visual appearance */
+    background-color: #f0f0f0;
+    padding: 10px;
 }
 
 #title {
-    margin: 0; /* Remove default margin for h1 */
+    margin: 0;
 }
 
 #modifyingComponent {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Adjust the height as needed */
+    /* Remove or adjust height: 100vh; if you want a natural flow */
+    padding: 20px; /* Adjust padding as needed */
 }
 
 /* Optional: Add styles for better visual appearance */
 app-modified-question {
-    max-width: 500px; /* Set a maximum width for the content */
+    max-width: 500px;
     width: 100%;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

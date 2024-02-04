@@ -35,8 +35,4 @@ export class QuestionBankComponent implements OnInit {
         });
         */
     }
-
-    modifyQuestion(): void {
-        // Implement logic to modify a question
-    }
 }

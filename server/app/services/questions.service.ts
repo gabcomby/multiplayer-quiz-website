@@ -15,4 +15,8 @@ export class QuestionsService {
     async addQuestionBank(questionData: IQuestion): Promise<IQuestion> {
         return await questionsModel.create(questionData);
     }
+
+    async deleteQuestion(questionId: string): Promise<IQuestion> {
+        return await questionsModel.findOneAndDelete({ id: questionId });
+    }
 }

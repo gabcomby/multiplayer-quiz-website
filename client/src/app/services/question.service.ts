@@ -65,6 +65,7 @@ export class QuestionService {
     async addQuestionBank(question: Question): Promise<Question> {
         const question$ = this.http.post<Question>(this.apiUrl, question);
         const newQuestion = await firstValueFrom(question$);
+        // console.log(question$);
         return newQuestion;
     }
 
