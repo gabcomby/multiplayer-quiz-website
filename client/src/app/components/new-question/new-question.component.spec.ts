@@ -71,4 +71,15 @@ describe('NewQuestionComponent', () => {
         expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
         // the other function
     });
+    // it('should call addQuestion when selecting question from bank and register', () => {
+    //     const newChoices = [
+    //         { text: '1', isValid: false },
+    //         { text: '2', isValid: true },
+    //     ];
+    //     component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', lastModification: new Date() };
+    //     const mockOnlyAddQuestionBank = false;
+    //     component.addQuestion(newChoices, mockOnlyAddQuestionBank);
+    //     expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
+    //     // the other function
+    // });
 });
