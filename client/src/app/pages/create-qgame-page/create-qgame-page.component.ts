@@ -14,9 +14,10 @@ import { isValidGame } from '@app/utils/is-valid-game';
 })
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
+    fromBank: boolean = false;
     questions: Question[] = [];
     modifiedQuestion: boolean = false;
-    addQuestionShown: boolean = false;
+    addQuestionShown: boolean = true;
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
@@ -80,8 +81,10 @@ export class CreateQGamePageComponent implements OnInit {
         };
 
         if (this.gameId) {
-            this.gameService.patchGame(this.gameFromDB);
-        } else if (await isValidGame(newGame, this.gameService)) {
+            if (await isValidGame(this.gameFromDB, this.gameService, false)) {
+                this.gameService.patchGame(this.gameFromDB);
+            }
+        } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
             // console.log(newGame);
             // location.reload();
@@ -89,14 +92,10 @@ export class CreateQGamePageComponent implements OnInit {
             // console.log(newGame);
         }
     }
-    toggleAddQuestion() {
-        this.addQuestionShown = !this.addQuestionShown;
-    }
+    // toggleAddQuestion() {
+    //     this.addQuestionShown = !this.addQuestionShown;
+    // }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
-    }
-
-    addQuestionFromBank() {
-        // meme vue que maxime mais on doit ajouter des boutons pour sélectionner et ajouter une bouton de confirmation
     }
 }

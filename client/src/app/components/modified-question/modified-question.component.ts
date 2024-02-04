@@ -13,21 +13,7 @@ export class ModifiedQuestionComponent implements OnInit {
     questionList: Question[] = [];
     disabled: boolean[] = [];
 
-    constructor(private questionService: QuestionService) {
-        // // this.questionList = this.questionService.getQuestion();
-        // console.log(this.gameQuestions);
-        // if (!this.gameQuestions) {
-        //     this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
-        // } else {
-        //     this.questionList = this.gameQuestions;
-        //     console.log('yes');
-        // }
-        // this.disabled = this.questionList.map(() => true);
-        // this.questionService.onQuestionAdded.subscribe((question) => {
-        //     this.questionList.push(question);
-        //     this.disabled.push(true);
-        // });
-    }
+    constructor(private questionService: QuestionService) {}
 
     ngOnInit(): void {
         if (!this.gameQuestions) {
@@ -42,18 +28,18 @@ export class ModifiedQuestionComponent implements OnInit {
         });
     }
 
-    toggleModify(index: number) {
+    toggleModify(index: number): void {
         this.disabled[index] = false;
     }
-    saveQuestion(index: number) {
+    saveQuestion(index: number): void {
         this.questionService.updateList(this.questionList);
         this.disabled[index] = true;
     }
-    removeQuestion(question: Question) {
+    removeQuestion(question: Question): void {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
         this.questionService.updateList(this.questionList);
     }
-    drop(event: CdkDragDrop<Question[]>) {
+    drop(event: CdkDragDrop<Question[]>): void {
         moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);
     }
 }

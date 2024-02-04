@@ -29,6 +29,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
 import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 import { RouterModule } from '@angular/router';
+import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 
 /**
  * Main module that is used in main.ts.
@@ -60,6 +61,7 @@ import { RouterModule } from '@angular/router';
         ModifiedQuestionComponent,
         GameQuestionListComponent,
         PlayerNameDialogComponent,
+        QuestionBankComponent,
     ],
     imports: [
         AppMaterialModule,
