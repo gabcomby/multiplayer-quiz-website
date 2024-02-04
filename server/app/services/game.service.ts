@@ -3,12 +3,12 @@ import { Service } from 'typedi';
 
 @Service()
 export class GameService {
-    async getGames(): Promise<(typeof gameModel)[]> {
-        return gameModel.find();
+    async getGames(): Promise<IGame[]> {
+        return gameModel.find({}, { _id: 0, __v: 0 });
     }
 
     async getGame(gameId: string): Promise<IGame> {
-        return gameModel.findOne({ id: gameId });
+        return gameModel.findOne({ id: gameId }, { _id: 0, __v: 0 });
     }
 
     async createGame(gameData: IGame): Promise<IGame> {
