@@ -62,6 +62,9 @@ export class ChoiceComponent {
             if (elem.text === '') {
                 valid = false;
             }
+            if (elem.text.trim().length === 0) {
+                valid = false;
+            }
         });
         return valid;
     }

@@ -12,14 +12,14 @@
 
         <mat-form-field>
             <mat-label>Nombre de points</mat-label>
-            <input matInput type="number" placeholder="10" min="10" max="100" step="10" [(ngModel)]="question.points" />
+            <input matInput type="number" placeholder="10" min="10" max="100" step="10" [(ngModel)]="question.points"/>
         </mat-form-field>
         <div>
             <label>Ajouter à la banque de question</label>
             <input type="checkbox" [(ngModel)]="addBankQuestion" />
         </div>
         <p>Choix de reponse:</p>
-        <app-choice (registerAnswer)="addQuestion($event, fromNewGame)"> </app-choice>
+        <app-choice (registerAnswer)="addQuestion($event, fromBank)"> </app-choice>
         <button type="button" mat-raised-button color="warn" (click)="createQuestionShown = false">Fermer</button>
     </div>
 </div>

@@ -9,7 +9,7 @@ import { generateNewId } from '@app/utils/assign-new-game-attributes';
     styleUrls: ['./new-question.component.scss'],
 })
 export class NewQuestionComponent {
-    @Input() fromNewGame: boolean;
+    @Input() fromBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
     question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
@@ -25,9 +25,13 @@ export class NewQuestionComponent {
             choices: event.map((item) => ({ ...item })),
             lastModification: new Date(),
         };
-        if (newQuestion.text !== '' && newQuestion.points !== 0) {
+        if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
+                this.question.text = '';
+                this.question.points = 0;
+                this.question.choices = [];
+                this.addBankQuestion = false;
             } else {
                 // console.log('maxime');
             }
@@ -36,11 +40,6 @@ export class NewQuestionComponent {
                 // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute
             }
         }
-
-        this.question.text = '';
-        this.question.points = 0;
-        this.question.choices = [];
-        this.addBankQuestion = false;
     }
     addQuestionFromBank(event: Question[]): void {
         event.forEach((element) => this.questionService.addQuestion(element));

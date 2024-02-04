@@ -1,8 +1,5 @@
-// import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-// import { EventEmitter } from 'stream';
-// import { BehaviorSubject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
@@ -25,9 +22,6 @@ export class QuestionService {
     }
     updateList(question: Question[]) {
         this.questions = [];
-        // this.questions.length = 0;
         this.questions = question.map((item) => ({ ...item }));
-        console.log(this.questions);
-        // this.questions.push(...question);
     }
 }

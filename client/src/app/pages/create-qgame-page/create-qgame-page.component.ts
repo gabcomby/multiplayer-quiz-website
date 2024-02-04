@@ -27,7 +27,7 @@ export class CreateQGamePageComponent implements OnInit {
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute, // private router: Router,
     ) {
         this.questionService.resetQuestions();
         // this.questions = this.questionService.getQuestion();
@@ -86,16 +86,12 @@ export class CreateQGamePageComponent implements OnInit {
             }
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
-            console.log(newGame);
-            // console.log(newGame);
-            // location.reload();
+            // this.router.navigate(['/home']);
+            location.reload();
         } else {
             // console.log(newGame);
         }
     }
-    // toggleAddQuestion() {
-    //     this.addQuestionShown = !this.addQuestionShown;
-    // }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
