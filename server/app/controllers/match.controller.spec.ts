@@ -63,7 +63,7 @@ describe('MatchController', () => {
     });
 
     it('getAllPlayersFromMatch should return an error status on GET request if service fails', async () => {
-        matchService.getAllMatches.rejects(new Error('Error fetching all players from a match'));
+        matchService.getAllPlayersFromMatch.rejects(new Error('Error fetching all players from a match'));
 
         return supertest(expressApp)
             .get('/api/matches/123abc/players')
@@ -163,7 +163,7 @@ describe('MatchController', () => {
         matchService.addPlayer.resolves(mockMatchData[0]);
 
         const response = await supertest(expressApp)
-            .patch('/api/matches/123abc')
+            .patch('/api/matches/123abc/players')
             .send({ id: 'a1b2c3', name: 'Test', score: 1000 })
             .expect(StatusCodes.OK);
 
@@ -171,7 +171,7 @@ describe('MatchController', () => {
     });
 
     it('removePlayer should return updated match on DELETE request', async () => {
-        matchService.addPlayer.resolves(mockMatchData[0]);
+        matchService.removePlayer.resolves(mockMatchData[0]);
 
         const response = await supertest(expressApp).delete('/api/matches/123abc/players/player1').expect(StatusCodes.OK);
 
