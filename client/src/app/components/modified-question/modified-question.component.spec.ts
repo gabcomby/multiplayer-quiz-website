@@ -78,6 +78,7 @@ describe('ModifiedQuestionComponent', () => {
     });
 
     it('should remove a question from questionList', () => {
+        const index = 0;
         const mockQuestionList: Question[] = [
             { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
             { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
@@ -86,7 +87,7 @@ describe('ModifiedQuestionComponent', () => {
         const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() };
 
         component.questionList = mockQuestionList;
-        component.removeQuestion(questionToRemove);
+        component.removeQuestion(questionToRemove, index);
 
         expect(component.questionList).not.toContain(questionToRemove);
         expect(questionServiceSpy.updateList).toHaveBeenCalledWith(component.questionList);
