@@ -12,7 +12,7 @@ export class NewQuestionComponent {
     @Input() fromBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
-    question: Question = { type: 'QCM', text: '', points: 0, id: '12312312', lastModification: new Date() };
+    question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
@@ -29,7 +29,7 @@ export class NewQuestionComponent {
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
                 this.question.text = '';
-                this.question.points = 0;
+                this.question.points = 10;
                 this.question.choices = [];
                 this.addBankQuestion = false;
             } else {

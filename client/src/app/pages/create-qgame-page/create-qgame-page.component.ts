@@ -5,7 +5,7 @@ import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -82,14 +82,16 @@ export class CreateQGamePageComponent implements OnInit {
 
         if (this.gameId) {
             if (await isValidGame(this.gameFromDB, this.gameService, false)) {
-                this.gameService.patchGame(this.gameFromDB);
+                if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
+                    this.gameService.patchGame(this.gameFromDB);
+                } else {
+                    this.gameService.createGame(this.gameFromDB);
+                }
             }
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
             // this.router.navigate(['/home']);
             location.reload();
-        } else {
-            // console.log(newGame);
         }
     }
     toggleModifiedQuestion() {

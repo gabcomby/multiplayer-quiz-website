@@ -23,13 +23,13 @@
                 </div>
             </div>
 
-            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">
                 <mat-icon>delete</mat-icon>
             </button>
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
                 <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
             </button>
-            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+            <button mat-mini-fab class="buttonIcon" color="primary" >
                 <mat-icon>menu</mat-icon>
             </button>
         </div>

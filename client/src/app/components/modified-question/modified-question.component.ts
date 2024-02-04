@@ -35,9 +35,10 @@ export class ModifiedQuestionComponent implements OnInit {
         this.questionService.updateList(this.questionList);
         this.disabled[index] = true;
     }
-    removeQuestion(question: Question): void {
+    removeQuestion(question: Question, index: number): void {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
         this.questionService.updateList(this.questionList);
+        this.disabled[index] = true;
     }
     drop(event: CdkDragDrop<Question[]>): void {
         moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);

@@ -3,13 +3,11 @@ import { GameService } from '@app/services/game.service';
 
 export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
     const errors: string[] = [];
-    // alert('yooo');
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
     if (newGame) {
         await validateDuplicationGame(game, errors, gameService);
     }
-
     if (errors.length > 0) {
         alert(errors.join('\n'));
         return false;
@@ -34,6 +32,16 @@ const validateDuplicationGame = async (game: Game, errors: string[], gameService
     }
     if (descriptionExisting) {
         errors.push('Il y a déjà un jeu avec cet description');
+    }
+};
+
+export const validateDeletedGame = async (game: Game, gameService: GameService): Promise<boolean> => {
+    const gameList = await gameService.getGames();
+    const idExisting = gameList.find((element) => element.id === game.id);
+    if (idExisting) {
+        return true;
+    } else {
+        return false;
     }
 };
 
