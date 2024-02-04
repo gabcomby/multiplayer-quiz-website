@@ -18,7 +18,11 @@ export class QuestionBankComponent implements OnInit {
 
     ngOnInit() {
         this.questionService.getQuestions().then((questions) => {
-            this.dataSource = questions;
+            this.dataSource = questions.sort((a, b) => {
+                const dateA = new Date(a.lastModification).getTime();
+                const dateB = new Date(b.lastModification).getTime();
+                return dateB - dateA;
+            });
         });
     }
 
