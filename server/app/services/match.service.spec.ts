@@ -101,21 +101,21 @@ describe('MatchService', () => {
             id: 'player5',
             name: 'Test Player 5',
         };
-        findOneAndUpdateStub.withArgs({ id: matchId }, { $push: { players: player } }).resolves(matchInstance);
+        findOneAndUpdateStub.withArgs({ id: matchId }, { $push: { playerList: player } }).resolves(matchInstance);
 
         const result = await matchService.addPlayer(matchId, player as IPlayer);
         expect(result).to.eql(matchInstance);
-        expect(findOneAndUpdateStub.calledWith({ id: matchId }, { $push: { players: player } }));
+        expect(findOneAndUpdateStub.calledWith({ id: matchId }, { $push: { playerList: player } }));
     });
 
     it('should remove a player from a match', async () => {
         const matchId = '1a2b3c';
         const playerId = 'player1';
-        findOneAndUpdateStub.withArgs({ id: matchId }, { $pull: { players: { id: playerId } } }).resolves(matchInstance);
+        findOneAndUpdateStub.withArgs({ id: matchId }, { $pull: { playerList: { id: playerId } } }).resolves(matchInstance);
 
         const result = await matchService.removePlayer(matchId, playerId);
         expect(result).to.eql(matchInstance);
-        expect(findOneAndUpdateStub.calledWith({ id: matchId }, { $pull: { players: { id: playerId } } }));
+        expect(findOneAndUpdateStub.calledWith({ id: matchId }, { $pull: { playerList: { id: playerId } } }));
     });
 
     it('should retrieve all players from a match', async () => {

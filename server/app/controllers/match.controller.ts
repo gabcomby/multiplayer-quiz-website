@@ -28,7 +28,7 @@ export class MatchController {
                 const match = await this.matchService.getMatch(req.params.id);
                 res.json(match);
             } catch (error) {
-                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching game from server' });
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching match from server' });
             }
         });
 

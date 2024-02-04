@@ -7,7 +7,7 @@ import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
-describe('GameController', () => {
+describe('MatchController', () => {
     let matchService: SinonStubbedInstance<MatchService>;
     let expressApp: Express.Application;
 
@@ -41,81 +41,81 @@ describe('GameController', () => {
     });
 
     it('getAllMatches should return an error status on GET request if service fails', async () => {
-        matchService.getAllMatches.rejects(new Error("Can't find matches to fetch"));
+        matchService.getAllMatches.rejects(new Error('Error fetching all matches from server'));
 
         return supertest(expressApp)
             .get('/api/matches')
             .expect(StatusCodes.NOT_FOUND)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't find matches to fetch" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching all matches from server' });
             });
     });
 
     it('getMatch should return an error status on GET request if service fails', async () => {
-        matchService.getMatch.rejects(new Error("Can't find requested match"));
+        matchService.getMatch.rejects(new Error('Error fetching match from server'));
 
         return supertest(expressApp)
             .get('/api/matches/123abc')
             .expect(StatusCodes.NOT_FOUND)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't find requested match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching match from server' });
             });
     });
 
     it('getAllPlayersFromMatch should return an error status on GET request if service fails', async () => {
-        matchService.getAllMatches.rejects(new Error("Can't find players in requested match"));
+        matchService.getAllMatches.rejects(new Error('Error fetching all players from a match'));
 
         return supertest(expressApp)
             .get('/api/matches/123abc/players')
             .expect(StatusCodes.NOT_FOUND)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't find players in requested match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching all players from a match' });
             });
     });
 
     it('createMatch should return an error status on POST request if service fails', async () => {
-        matchService.createMatch.rejects(new Error("Can't create match"));
+        matchService.createMatch.rejects(new Error('Error creating the match on the server'));
 
         return supertest(expressApp)
             .post('/api/matches')
             .send(mockMatchData[0])
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't create match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error creating the match on the server' });
             });
     });
 
     it('deleteMatch should return an error status on DELETE request if service fails', async () => {
-        matchService.deleteMatch.rejects(new Error("Can't delete match"));
+        matchService.deleteMatch.rejects(new Error('Error deleting the match from the server'));
 
         return supertest(expressApp)
             .delete('/api/matches/123abc')
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't delete match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error deleting the match from the server' });
             });
     });
 
     it('addPlayer should return an error status on PATCH request if service fails', async () => {
-        matchService.addPlayer.rejects(new Error("Can't add player to match"));
+        matchService.addPlayer.rejects(new Error('Error adding a player to a match'));
 
         return supertest(expressApp)
             .patch('/api/matches/123abc/players')
             .send({ id: 'a1b2c3', name: 'Test', score: 1000 })
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't add player to match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error adding a player to a match' });
             });
     });
 
     it('removePlayer should return an error status on DELETE request if service fails', async () => {
-        matchService.removePlayer.rejects(new Error("Can't remove player from match"));
+        matchService.removePlayer.rejects(new Error('Error removing a player from a match'));
 
         return supertest(expressApp)
             .delete('/api/matches/123abc/players/player1')
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
-                chai.expect(response.body).to.deep.equal({ error: "Can't remove player from match" });
+                chai.expect(response.body).to.deep.equal({ error: 'Error removing a player from a match' });
             });
     });
 
