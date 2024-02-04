@@ -19,7 +19,7 @@ export class GameService {
         const projection = { _id: 0 };
         const games$ = this.http.get<Game[]>(`${this.apiUrl}?projection=${JSON.stringify(projection)}`);
         const games = await firstValueFrom(games$);
-        console.log(games);
+        // console.log(games);
         return games;
     }
     // createGame(game: Game): Observable<Game> {
