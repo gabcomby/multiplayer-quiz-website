@@ -126,4 +126,15 @@ describe('MatchService', () => {
         expect(players).to.eql(matchInstance.playerList);
         expect(findOneStub.calledWith({ id: matchId }));
     });
+
+    it("should throw an error when trying to retrieve players from a match that doesn't exist", async () => {
+        const matchId = '1a2b3c';
+        findOneStub.withArgs({ id: matchId }).resolves(null);
+
+        try {
+            await matchService.getAllPlayersFromMatch(matchId);
+        } catch (error) {
+            expect(error.message).to.eql("Can't fetch players from a game that doesn't exit");
+        }
+    });
 });
