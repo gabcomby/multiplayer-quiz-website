@@ -6,6 +6,7 @@ interface IChoice extends Document {
 }
 
 interface IQuestion extends Document {
+    id: string;
     type: string;
     text: string;
     points: number;

@@ -16,20 +16,16 @@ export class GameService {
         return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
     }
     async getGames(): Promise<Game[]> {
-        const projection = { _id: 0 };
-        const games$ = this.http.get<Game[]>(`${this.apiUrl}?projection=${JSON.stringify(projection)}`);
+        // const projection = { _id: 0 };
+        const games$ = this.http.get<Game[]>(this.apiUrl);
         const games = await firstValueFrom(games$);
-        // console.log(games);
         return games;
     }
-    // createGame(game: Game): Observable<Game> {
-    //     return this.http.post<Game>(this.apiUrl, game);
-    // }
 
     async createGame(game: Game): Promise<Game> {
+        console.log(game);
         const game$ = this.http.post<Game>(this.apiUrl, game);
         const newGame = await firstValueFrom(game$);
-        console.log(game$);
         return newGame;
     }
 

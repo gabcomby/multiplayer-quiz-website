@@ -37,7 +37,7 @@ export class NewQuestionComponent {
         }
 
         this.question.text = '';
-        this.question.points = 0;
+        this.question.points = 10;
         this.question.choices = [];
         this.addBankQuestion = false;
     }
