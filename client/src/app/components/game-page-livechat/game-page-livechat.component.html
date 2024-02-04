@@ -14,7 +14,7 @@
     <form class="chat-textbox" #messageForm="ngForm">
         <mat-form-field>
             <mat-label>Message</mat-label>
-            <textarea matInput name="newMessage" [(ngModel)]="newMessage" style="resize: none"></textarea>
+            <textarea #textbox matInput name="newMessage" [(ngModel)]="newMessage" style="resize: none" (click)="onChatClick()"></textarea>
         </mat-form-field>
         <button mat-mini-fab color="primary" (click)="sendMessage()">
             <mat-icon>send</mat-icon>
