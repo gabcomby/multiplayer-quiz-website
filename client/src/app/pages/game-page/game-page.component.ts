@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '@app/services/games.service';
+// import { MatchService } from '@app/services/match.service';
 import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
 
@@ -25,11 +26,16 @@ export class GamePageComponent implements OnInit {
         private timerService: TimerService,
         private gameService: GameService,
         private playerService: PlayerService,
-        private router: Router,
+        private router: Router, // private matchService: MatchService,
     ) {}
 
     get questionTimer(): number {
         return this.gameData?.duration;
+    }
+
+    handleGameLeave() {
+        this.router.navigate(['/']);
+        this.timerService.killTimer();
     }
 
     ngOnInit() {
@@ -75,6 +81,9 @@ export class GamePageComponent implements OnInit {
         } else {
             setTimeout(() => {
                 this.router.navigate(['/']);
+                this.timerService.killTimer();
+                // TODO: Delete match when it ends
+                // this.matchService.deleteMatch().subscribe();
             }, TIME_BETWEEN_QUESTIONS);
         }
     }

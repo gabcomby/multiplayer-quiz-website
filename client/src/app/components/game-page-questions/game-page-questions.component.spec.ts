@@ -1,3 +1,4 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
@@ -96,11 +97,11 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.selectedChoices).not.toContain(0);
     });
 
-    it('should calculate score after toggling answer', () => {
-        // Spy on calculateScoreForTheQuestion function
+    it('should calculate score after timer expiration', () => {
         spyOn(component, 'calculateScoreForTheQuestion');
-
-        component.toggleAnswer(0);
+        component.ngOnChanges({
+            timerExpired: new SimpleChange(null, true, false),
+        });
         expect(component.calculateScoreForTheQuestion).toHaveBeenCalled();
     });
 });

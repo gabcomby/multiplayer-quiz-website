@@ -43,6 +43,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (!Number.isNaN(Number(this.buttonPressed))) {
             const stringAsNumber = Number(this.buttonPressed);
             if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
+        } else if (this.buttonPressed === 'Enter') {
+            this.submitAnswer();
         }
     }
 
