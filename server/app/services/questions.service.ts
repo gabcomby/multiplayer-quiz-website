@@ -19,4 +19,9 @@ export class QuestionsService {
     async deleteQuestion(questionId: string): Promise<IQuestion> {
         return await questionsModel.findOneAndDelete({ id: questionId });
     }
+
+    async updateQuestion(questionId: string, questionData: IQuestion): Promise<IQuestion> {
+        const updatedQuestion = await questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
+        return updatedQuestion;
+    }
 }

@@ -40,8 +40,13 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     saveQuestion(index: number) {
-        this.questionService.updateList(this.questionList);
-        this.disabled[index] = true;
+        if (this.listQuestionBank) {
+            this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
+            this.disabled[index] = true;
+        } else {
+            this.questionService.updateList(this.questionList);
+            this.disabled[index] = true;
+        }
     }
 
     removeQuestion(question: Question) {

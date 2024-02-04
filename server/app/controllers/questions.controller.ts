@@ -49,5 +49,14 @@ export class QuestionsController {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error deleting question' });
             }
         });
+
+        this.router.patch('/:id', async (req: Request, res: Response) => {
+            try {
+                const question = await this.questionsService.updateQuestion(req.params.id, req.body);
+                res.json(question);
+            } catch (error) {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error updating question' });
+            }
+        });
     }
 }

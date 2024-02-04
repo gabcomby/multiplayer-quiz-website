@@ -73,6 +73,12 @@ export class QuestionService {
         return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
     }
 
+    async updateQuestion(questionId: string, questionData: Question): Promise<Question> {
+        const question$ = this.http.patch<Question>(`${this.apiUrl}/${questionId}`, questionData);
+        const updatedQuestion = await firstValueFrom(question$);
+        return updatedQuestion;
+    }
+
     updateList(question: Question[]) {
         this.questions = [];
         // this.questions.length = 0;
