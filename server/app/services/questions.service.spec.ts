@@ -1,4 +1,4 @@
-import questionsModel from '@app/model/game.model';
+import questionsModel from '@app/model/questions.model';
 import { QuestionsService } from '@app/services/questions.service';
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
@@ -12,8 +12,10 @@ describe('Game service', () => {
     let findOneAndDeleteStub: SinonStub;
     let findOneAndUpdateStub: SinonStub;
 
-    const questionsInstance = new questionsModel({
+    const questionInstance = new questionsModel({
         type: 'QCM',
+        id: 'abc123',
+        lastModification: new Date('2018-11-13T20:20:39+00:00'),
         text: 'Parmi les mots suivants, lesquels sont des mots clés réservés en JS?',
         points: 40,
         choices: [
@@ -50,9 +52,25 @@ describe('Game service', () => {
     });
 
     it('should retrieve a list of questions', async () => {
-        findStub.returns([questionsInstance]);
+        findStub.returns([questionInstance]);
         const result = await questionsService.getQuestions();
-        expect(result).to.eql([questionsInstance]);
+        expect(result).to.eql([questionInstance]);
         expect(findStub.calledOnce);
+    });
+
+    it('should retrieve a question by its id', async () => {
+        const questionId = 'abc123';
+        findOneStub.withArgs({ id: questionId }).resolves(questionInstance);
+
+        const game = await questionsService.getQuestionById(questionId);
+        expect(game).to.eql(questionInstance);
+        expect(findOneStub.calledWith({ id: questionId }));
+    });
+
+    it('should add a question to the bank', async () => {
+        createStub.withArgs(questionInstance).resolves(questionInstance);
+        const result = await questionsService.addQuestionBank(questionInstance);
+        expect(result).to.eql(questionInstance);
+        expect(createStub.calledOnce);
     });
 });
