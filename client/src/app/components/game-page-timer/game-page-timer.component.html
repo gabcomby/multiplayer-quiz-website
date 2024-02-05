@@ -6,7 +6,7 @@
     <div class="spinner-container">
         <mat-progress-spinner
             *ngIf="time | async as time; else showIdleWheel"
-            color="primary"
+            [color]="answerLocked ? 'warn' : 'primary'"
             mode="determinate"
             [value]="(time / totalTime) * 100"
         ></mat-progress-spinner>

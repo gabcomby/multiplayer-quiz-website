@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
-import { finalize, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, throwError, timer } from 'rxjs';
+import { finalize, takeUntil, takeWhile, tap } from 'rxjs/operators';
 
 const ONE_SECOND_IN_MS = 1000;
 
@@ -11,6 +11,7 @@ export class TimerService {
     private initialTime: number;
     private currentTime: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private isRunning = false;
+    private stopTimerSubject: Subject<void> = new Subject();
 
     startTimer(timeInSeconds: number): Observable<number> {
         if (this.isRunning) {
@@ -27,10 +28,18 @@ export class TimerService {
                 this.currentTime.next(newTime);
             }),
             takeWhile(() => this.currentTime.value > 0),
+            takeUntil(this.stopTimerSubject),
             finalize(() => {
                 this.isRunning = false;
+                this.stopTimerSubject.next();
             }),
         );
+    }
+
+    killTimer(): void {
+        this.stopTimerSubject.next();
+        this.currentTime.next(0);
+        this.isRunning = false;
     }
 
     getCurrentTime(): Observable<number> {

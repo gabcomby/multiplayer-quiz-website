@@ -1,3 +1,4 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
@@ -68,7 +69,6 @@ describe('GamePageQuestionsComponent', () => {
     });
 
     it('should toggle a single answer for single-choice questions', () => {
-        // Assuming the first two choices are incorrect for a single-choice question
         component.choices = [
             { text: 'Choice 1', isCorrect: false },
             { text: 'Choice 2', isCorrect: false },
@@ -76,12 +76,10 @@ describe('GamePageQuestionsComponent', () => {
         component.toggleAnswer(0);
         expect(component.selectedChoices).toEqual([0]);
         component.toggleAnswer(1);
-        // Should replace the previous choice
         expect(component.selectedChoices).toEqual([1]);
     });
 
     it('should allow multiple answers to be toggled for multiple-choice questions', () => {
-        // Assuming multiple choices can be correct
         component.toggleAnswer(0);
         expect(component.selectedChoices).toContain(0);
         component.toggleAnswer(2);
@@ -96,11 +94,30 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.selectedChoices).not.toContain(0);
     });
 
-    it('should calculate score after toggling answer', () => {
-        // Spy on calculateScoreForTheQuestion function
+    it('should calculate score after timer expiration', () => {
         spyOn(component, 'calculateScoreForTheQuestion');
-
-        component.toggleAnswer(0);
+        component.ngOnChanges({
+            timerExpired: new SimpleChange(null, true, false),
+        });
         expect(component.calculateScoreForTheQuestion).toHaveBeenCalled();
+    });
+
+    it('should allow to choose answers with the keyboard', () => {
+        spyOn(component, 'toggleAnswer');
+        const eventAnswer = new KeyboardEvent('keypress', { key: '1' });
+        component.buttonDetect(eventAnswer);
+        expect(component.toggleAnswer).toHaveBeenCalledWith(0);
+        const eventSubmit = new KeyboardEvent('keypress', { key: 'Enter' });
+        spyOn(component, 'submitAnswer');
+        component.buttonDetect(eventSubmit);
+        expect(component.submitAnswer).toHaveBeenCalled();
+    });
+
+    it('should reset question and answer status on changes', () => {
+        component.ngOnChanges({
+            question: new SimpleChange(null, 'New question', false),
+        });
+        expect(component.selectedChoices.length).toBe(0);
+        expect(component.answerIsLocked).toBe(false);
     });
 });

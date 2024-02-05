@@ -1,8 +1,8 @@
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
-            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
-                <mat-icon>home</mat-icon>
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="handleGameLeave()">
+                <mat-icon>logout</mat-icon>
             </button>
             <span class="large-bar-spacer"></span>
             <span class="top-bar-text">Question {{ currentQuestionIndex + 1 }}/{{ gameData.questions.length }}</span>
@@ -22,9 +22,10 @@
             [mark]="getCurrentQuestion().points"
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
+            (scoreForTheQuestion)="updatePlayerScore($event)"
         ></app-game-page-questions>
     </div>
     <div class="score">
-        <app-game-page-scoresheet [scoreData]="gameScore"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="currentMatch.playerList"></app-game-page-scoresheet>
     </div>
 </div>

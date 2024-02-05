@@ -1,5 +1,6 @@
 import { HttpException } from '@app/classes/http.exception';
 import { DateController } from '@app/controllers/date.controller';
+import { MatchController } from '@app/controllers/match.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -12,6 +13,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
+import { QuestionsController } from './controllers/questions.controller';
 
 @Service()
 export class Application {
@@ -23,6 +25,8 @@ export class Application {
         private readonly dateController: DateController,
         private readonly gameController: GameController,
         private readonly authController: AuthController,
+        private readonly questionsController: QuestionsController,
+        private readonly matchController: MatchController,
     ) {
         this.app = express();
 
@@ -72,7 +76,9 @@ export class Application {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/date', this.dateController.router);
         this.app.use('/api/games', this.gameController.router);
+        this.app.use('/api/questions', this.questionsController.router);
         this.app.use('/api/authenticate', this.authController.router);
+        this.app.use('/api/matches', this.matchController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
