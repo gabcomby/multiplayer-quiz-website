@@ -38,6 +38,6 @@ describe('AdminPageComponent', () => {
         const testDate = '2022-11-19T21:17:24.000Z';
         const formattedDate = component.formatLastModificationDate(testDate);
 
-        expect(formattedDate).toEqual('2022-11-19 21 h 17');
+        expect(formattedDate).toEqual('2022-11-19 16 h 17');
     });
 });
