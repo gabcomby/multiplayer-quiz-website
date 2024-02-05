@@ -7,7 +7,7 @@ import { NewGamePageComponent } from './new-game-page.component';
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
-    let gameService: GameService;
+    // let gameService: GameService;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [NewGamePageComponent],
@@ -16,7 +16,7 @@ describe('NewGamePageComponent', () => {
         }).compileComponents();
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;
-        gameService = TestBed.inject(GameService);
+        // gameService = TestBed.inject(GameService);
         fixture.detectChanges();
     });
 

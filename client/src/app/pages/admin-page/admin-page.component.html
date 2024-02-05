@@ -26,6 +26,14 @@
             <mat-cell *matCellDef="let element"> {{ formatLastModificationDate(element.lastModification) }} </mat-cell>
         </ng-container>
 
+        <!-- Modify Column -->
+        <ng-container matColumnDef="modify">
+            <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-raised-button [routerLink]="['/create-qgame', element.id]">Modifier le jeu</button>
+            </mat-cell>
+        </ng-container>
+
         <!-- Export Column -->
         <ng-container matColumnDef="export">
             <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>

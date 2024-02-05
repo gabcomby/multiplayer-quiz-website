@@ -4,7 +4,8 @@
             <mat-icon>home</mat-icon>
         </button>
         <span class="large-bar-spacer"></span>
-        <span class="top-bar-text">Création d'un nouveau jeu!</span>
+        <span *ngIf="dataReady" class="top-bar-text">Modification d'un nouveau jeu!</span>
+        <span *ngIf="!dataReady"class="top-bar-text">Création d'un nouveau jeu!</span>
         <span class="large-bar-spacer"></span>
     </mat-toolbar>
 </div>
@@ -12,7 +13,7 @@
 <div id="form">
     <form [formGroup]="gameForm" class="example-form">
         <div id="container">
-            <div id="addQuestion">
+            <div id="newGame">
                 <mat-form-field class="example-full-width">
                     <mat-label>Nom</mat-label>
                     <input id="name" matInput placeholder="Entrer un nom" formControlName="name" required />
@@ -25,23 +26,19 @@
                     <mat-label>Temps de délai</mat-label>
                     <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
                 </mat-form-field>
-                <button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
-                <button type="button" mat-raised-button color="accent">Ajouter de la banque de question</button>
 
-                <div *ngIf="addQuestionShown === true">
-                    <app-new-question [onlyAddQuestionBank]="false" *ngIf="addQuestionShown"> </app-new-question>
+                <div id="addQuestion">
+                    <app-new-question [fromBank]="fromBank"></app-new-question>
                 </div>
             </div>
             <div id="modifyingComponent">
-                <app-modified-question></app-modified-question>
+                <app-modified-question *ngIf="dataReady" [gameQuestions]="this.gameFromDB.questions"></app-modified-question>
+                <app-modified-question *ngIf="!dataReady"></app-modified-question>
             </div>
         </div>
-        <div>
-            <label>Rendre non visible</label>
-            <input type="checkbox" [(ngModel)]="isNotVisible" />
-        </div>
         <div id="registerGame">
-            <button type="button" (click)="onSubmit(questions, gameForm, isNotVisible)" mat-raised-button color="accent">Enregistrer le jeu</button>
+            <mat-checkbox type="checkbox" formControlName="visibility">Rendre le jeu visible</mat-checkbox>
+            <button id="registerButton"type="button" (click)="onSubmit()" mat-raised-button color="accent">Enregistrer le jeu</button>
         </div>
     </form>
 </div>

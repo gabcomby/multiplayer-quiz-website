@@ -13,4 +13,18 @@ describe('AnswerStateService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('should lock answer', () => {
+        service.lockAnswer(true);
+        service.answerLocked.subscribe((isLocked) => {
+            expect(isLocked).toBeTrue();
+        });
+    });
+
+    it('should unlock answer', () => {
+        service.lockAnswer(false);
+        service.answerLocked.subscribe((isLocked) => {
+            expect(isLocked).toBeFalse();
+        });
+    });
 });

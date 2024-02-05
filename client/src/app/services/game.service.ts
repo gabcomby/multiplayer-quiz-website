@@ -17,6 +17,8 @@ export class GameService {
     }
 
     async getGames(): Promise<Game[]> {
+        // const projection = { _id: 0 };
+
         const games$ = this.http.get<Game[]>(this.apiUrl);
         const games = await firstValueFrom(games$);
         return games;
@@ -27,6 +29,7 @@ export class GameService {
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
+
 
     async toggleVisibility(gameId: string, isVisible: boolean): Promise<void> {
         const game$ = this.getGame(gameId);
@@ -43,5 +46,11 @@ export class GameService {
     async deleteGame(gameId: string): Promise<void> {
         const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
         await firstValueFrom(game$);
+    }
+
+    async patchGame(game: Game): Promise<Game> {
+        const game$ = this.http.patch<Game>(this.apiUrl, game);
+        const newGame = await firstValueFrom(game$);
+        return newGame;
     }
 }

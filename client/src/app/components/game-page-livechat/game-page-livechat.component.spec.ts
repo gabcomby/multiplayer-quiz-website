@@ -51,4 +51,17 @@ describe('GamePageLivechatComponent', () => {
         tick(DISAPPEAR_DELAY);
         expect(component.messages.length).toBe(0);
     }));
+
+    it('should send a message when enter is pressed', () => {
+        const event = new KeyboardEvent('keypress', { key: 'Enter' });
+        spyOn(component, 'sendMessage');
+        component.onChatEnterPressed(event);
+        expect(component.sendMessage).toHaveBeenCalled();
+    });
+
+    it('should focus the textbox when chat is clicked', () => {
+        const focusSpy = spyOn(component.textbox.nativeElement, 'focus');
+        component.onChatClick();
+        expect(focusSpy).toHaveBeenCalled();
+    });
 });
