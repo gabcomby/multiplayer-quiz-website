@@ -103,10 +103,19 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             score = this.mark;
         }
 
-        this.answerStatus =
-            score === this.mark ? this.answerStatusEnum.Correct : score === 0 ? this.answerStatusEnum.Wrong : this.answerStatusEnum.PartiallyCorrect;
+        this.defineAnswerStatus(score);
 
         // this.scoreForTheQuestion.emit(score);
+    }
+
+    private defineAnswerStatus(score: number): void {
+        if (score === this.mark) {
+            this.answerStatus = this.answerStatusEnum.Correct;
+        } else if (score === 0) {
+            this.answerStatus = this.answerStatusEnum.Wrong;
+        } else {
+            this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
+        }
     }
 
     private checkIfNumberValid(): boolean {
