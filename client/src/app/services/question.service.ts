@@ -79,6 +79,11 @@ export class QuestionService {
         return updatedQuestion;
     }
 
+    async deleteQuestion(questionId: string): Promise<void> {
+        await firstValueFrom(this.http.delete(`${this.apiUrl}/${questionId}`));
+        this.questions = this.questions.filter((question) => question.id !== questionId);
+    }
+
     updateList(question: Question[]) {
         this.questions = [];
         // this.questions.length = 0;
