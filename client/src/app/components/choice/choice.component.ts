@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Choice, Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
@@ -11,58 +11,59 @@ const MAX_CHOICES = 4;
     styleUrls: ['./choice.component.scss'],
 })
 export class ChoiceComponent {
-    @Input() questionString: string;
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
-    type: string = '0';
-    answers: Choice[] = [
-        { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
-    ];
+    questionForm: FormGroup;
+
+    constructor(private formBuilder: FormBuilder) {
+        this.initForm();
+    }
+
+    get answers(): FormArray {
+        return this.questionForm.get('answers') as FormArray;
+    }
+
+    initForm() {
+        this.questionForm = this.formBuilder.group({
+            answers: this.formBuilder.array([this.createAnswerField(), this.createAnswerField()]),
+        });
+    }
+
+    createAnswerField(): FormGroup {
+        return this.formBuilder.group({
+            text: [''],
+            isCorrect: [false],
+        });
+    }
+
+    drop(event: CdkDragDrop<Question[]>) {
+        const answersArray = this.answers.getRawValue();
+        moveItemInArray(answersArray, event.previousIndex, event.currentIndex);
+        this.answers.patchValue(answersArray);
+    }
 
     addChoice() {
-        if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
-            // this.answers.push({ text: '', isCorrect: false });
-            this.answers = [...this.answers, { text: '', isCorrect: false }];
+        if (this.answers.length < MAX_CHOICES) {
+            this.answers.push(this.createAnswerField());
         } else {
-            alert('minimum 2 choix et maximum 4');
+            alert('maximum 4 choix');
         }
     }
 
     removeChoice(index: number) {
         if (this.answers.length > 2) {
-            this.answers.splice(index, 1);
+            this.answers.removeAt(index);
         } else {
             alert('minimum 2');
         }
     }
-    drop(event: CdkDragDrop<Question[]>) {
-        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
-    }
-    addAnswer() {
-        let goodAnswer = 0;
-        for (const answer of this.answers) {
-            if (answer.isCorrect) {
-                goodAnswer++;
-            }
-        }
 
-        if (goodAnswer < 1 || goodAnswer === this.answers.length) {
-            alert('Au moins une bonne réponse et une mauvaise réponse');
-        } else if (this.answerValid(this.answers)) {
-            this.registerAnswer.emit(this.answers);
-            this.answers.forEach((element) => {
-                element.text = '';
-                element.isCorrect = false;
+    addAnswer() {
+        if (this.questionForm.valid) {
+            const answers = this.questionForm.value.answers;
+            this.registerAnswer.emit(answers);
+            this.questionForm.reset({
+                answers: [this.createAnswerField()],
             });
         }
-    }
-    answerValid(answer: Choice[]) {
-        let valid = true;
-        answer.forEach((elem) => {
-            if (elem.text === '') {
-                valid = false;
-            }
-        });
-        return valid;
     }
 }
