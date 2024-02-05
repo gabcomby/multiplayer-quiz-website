@@ -41,7 +41,7 @@ export class AdminPageComponent implements OnInit {
         if (!game) return;
 
         game.isVisible = isVisible;
-        this.apiService.updateGame(gameId, game).subscribe({
+        this.apiService.toggleVisibility(gameId, isVisible).subscribe({
             next: () => {
                 alert('Visibility updated successfully');
             },
