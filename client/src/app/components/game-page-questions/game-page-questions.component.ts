@@ -10,8 +10,6 @@ enum AnswerStatusEnum {
     PartiallyCorrect,
 }
 
-const MINUS_ONE = -1;
-
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -120,12 +118,11 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     private calculateScore(score: number, pointPerCorrectAnswer: number): number {
-        let finalScore = score;
         if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
             const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
-            finalScore -= wrongAnswers * pointPerCorrectAnswer;
+            score -= wrongAnswers * pointPerCorrectAnswer;
         }
-        return finalScore;
+        return score;
     }
 
     private calculateRightAnswers(): number {
