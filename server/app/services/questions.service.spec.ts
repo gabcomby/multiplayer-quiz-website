@@ -73,4 +73,20 @@ describe('Game service', () => {
         expect(result).to.eql(questionInstance);
         expect(createStub.calledOnce);
     });
+
+    it('should delete a question', async () => {
+        const questionId = 'abc123';
+        findOneAndDeleteStub.withArgs({ id: questionId }).resolves(questionInstance);
+        const result = await questionsService.deleteQuestion(questionId);
+        expect(result).to.eql(questionInstance);
+        expect(findOneAndDeleteStub.calledWith({ id: questionId }));
+    });
+
+    it('should update a question', async () => {
+        const questionId = 'abc123';
+        findOneAndUpdateStub.withArgs({ id: questionId }, questionInstance, { new: true }).resolves(questionInstance);
+        const result = await questionsService.updateQuestion(questionId, questionInstance);
+        expect(result).to.eql(questionInstance);
+        expect(findOneAndUpdateStub.calledWith({ id: questionId }, questionInstance, { new: true }));
+    });
 });

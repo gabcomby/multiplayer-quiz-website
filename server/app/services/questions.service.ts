@@ -17,8 +17,8 @@ export class QuestionsService {
             const question = await questionsModel.create(questionData);
             return question;
         } catch (error) {
-            // console.error('Error adding question to the bank:', error);
-            // throw error;
+            console.error('Error adding question to the bank:', error);
+            throw error;
         }
     }
 
