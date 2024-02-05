@@ -18,13 +18,11 @@ export class NewQuestionComponent {
     constructor(private questionService: QuestionService) {}
 
     addQuestion(event: Choice[], onlyAddQuestionBank: boolean): void {
-        console.log(this.addBankQuestion);
         const newQuestion = this.createNewQuestion(event);
         if (this.validateQuestion(newQuestion)) {
             // this.registerQuestion.emit(newQuestion);
             if (!onlyAddQuestionBank) {
                 if (this.addBankQuestion) {
-                    console.log(newQuestion);
                     this.questionService.addQuestionBank(newQuestion);
                     // devrait faire la meme méthode que maxime appel en haut lorsqu'il crée une nouvelle fonction
                     // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute

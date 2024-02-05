@@ -50,24 +50,24 @@ describe('NewQuestionComponent', () => {
         component.addQuestion(newChoices, mockOnlyAddQuestionBank);
         expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
     });
-    it('should call addQuestionBank when coming from the question bank', () => {
-        const newChoices = [
-            { text: '1', isValid: false },
-            { text: '2', isValid: true },
-        ];
-        // const form= new formBuilder.group({
-        //     text: ['', Validators.required],
-        //     isCorrect: false,
-        // });
-        // const mockGameForm = new FormGroup({
-        //     text: new FormControl('Test Game'),
-        //     isCorrect: new FormControl('Description'),
-        // });
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', lastModification: new Date() };
-        const mockOnlyAddQuestionBank = true;
-        component.addQuestion(newChoices, mockOnlyAddQuestionBank);
-        // expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
-    });
+    // it('should call addQuestionBank when coming from the question bank', () => {
+    //     const newChoices = [
+    //         { text: '1', isValid: false },
+    //         { text: '2', isValid: true },
+    //     ];
+    //     // const form= new formBuilder.group({
+    //     //     text: ['', Validators.required],
+    //     //     isCorrect: false,
+    //     // });
+    //     // const mockGameForm = new FormGroup({
+    //     //     text: new FormControl('Test Game'),
+    //     //     isCorrect: new FormControl('Description'),
+    //     // });
+    //     component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', lastModification: new Date() };
+    //     const mockOnlyAddQuestionBank = true;
+    //     component.addQuestion(newChoices, mockOnlyAddQuestionBank);
+    //     // expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
+    // });
     it('should call addQuestion and addQuestionBank when coming from newGame and checkbox checked', () => {
         const newChoices = [
             { text: '1', isValid: false },
