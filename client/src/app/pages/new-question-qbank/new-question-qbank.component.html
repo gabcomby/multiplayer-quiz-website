@@ -1,0 +1,11 @@
+<header>
+    <div id="title">
+        <h1>Création d'une nouvelle question!</h1>
+    </div>
+    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/question-bank">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+</header>
+<div id="questionForm">
+    <app-new-question [onlyAddQuestionBank]="true"> </app-new-question>
+</div>

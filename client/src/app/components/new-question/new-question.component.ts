@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',
@@ -16,11 +17,12 @@ export class NewQuestionComponent {
 
     addQuestion(event: Choice[], onlyAddQuestionBank: boolean) {
         const newChoices = event.map((item) => ({ ...item }));
-        const newQuestion = {
+        const newQuestion: Question = {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,
-            id: this.questionService.getQuestion().length.toString(),
+            // id: this.questionService.getQuestion().length.toString(),
+            id: generateNewId(),
             choices: newChoices,
             lastModification: new Date(),
         };
@@ -29,8 +31,9 @@ export class NewQuestionComponent {
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
             } else {
-                // console.log('maxime');
+                this.questionService.addQuestionBank(newQuestion);
             }
+
             if (this.addBankQuestion) {
                 // console.log('banque question'); // lier avec la banque de question
             }
