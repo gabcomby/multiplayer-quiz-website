@@ -37,4 +37,8 @@ export class MatchService {
     removePlayer(playerId: string, matchId: string): Observable<Match> {
         return this.http.delete<Match>(`${this.apiUrl}/${matchId}/players/${playerId}`);
     }
+
+    updatePlayerScore(matchId: string, playerId: string, score: number): Observable<Player> {
+        return this.http.patch<Player>(`${this.apiUrl}/${matchId}/players/${playerId}`, { score });
+    }
 }

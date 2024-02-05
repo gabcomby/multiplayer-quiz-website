@@ -76,5 +76,14 @@ export class MatchController {
                 res.status(StatusCodes.BAD_REQUEST).send({ error: 'Error removing a player from a match' });
             }
         });
+
+        this.router.patch('/:id/players/:playerId', async (req: Request, res: Response) => {
+            try {
+                const player = await this.matchService.updatePlayerScore(req.params.id, req.params.playerId, req.body.score);
+                res.json(player);
+            } catch (error) {
+                res.status(StatusCodes.BAD_REQUEST).send({ error: 'Error updating player score' });
+            }
+        });
     }
 }

@@ -105,7 +105,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
         this.defineAnswerStatus(score);
 
-        // this.scoreForTheQuestion.emit(score);
+        this.scoreForTheQuestion.emit(score);
     }
 
     private defineAnswerStatus(score: number): void {

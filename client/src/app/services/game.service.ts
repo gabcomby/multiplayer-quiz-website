@@ -30,7 +30,6 @@ export class GameService {
         return newGame;
     }
 
-
     async toggleVisibility(gameId: string, isVisible: boolean): Promise<void> {
         const game$ = this.getGame(gameId);
         const game = await firstValueFrom(game$);
