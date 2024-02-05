@@ -10,5 +10,6 @@
     "eslint.workingDirectories": ["./client", "./server"],
     "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
     "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
-    "cSpell.enabled": false
+    "cSpell.enabled": false,
+    "mos.port": ""
 }
