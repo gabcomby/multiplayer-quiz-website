@@ -13,7 +13,7 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     constructor(private gameService: GameService) {
-        this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:4200');
         console.log('socket');
         this.socket.on('connection', () => {
             console.log('Connecté au serveur via le socket');
