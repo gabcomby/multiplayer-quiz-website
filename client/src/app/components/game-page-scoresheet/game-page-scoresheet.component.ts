@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import type { Player } from '@app/interfaces/match';
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -6,5 +7,5 @@ import { Component, Input } from '@angular/core';
     styleUrls: ['./game-page-scoresheet.component.scss'],
 })
 export class GamePageScoresheetComponent {
-    @Input() scoreData: { name: string; score: number }[];
+    @Input() playerList: Player[];
 }
