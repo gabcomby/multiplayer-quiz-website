@@ -31,6 +31,10 @@ export class NewQuestionComponent {
                 this.question.text = '';
                 this.question.points = 10;
                 this.question.choices = [];
+                event.forEach((element) => {
+                    element.text = '';
+                    element.isCorrect = false;
+                });
                 this.addBankQuestion = false;
             } else {
                 // console.log('maxime');

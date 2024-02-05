@@ -50,10 +50,6 @@ export class ChoiceComponent {
             alert('Au moins une bonne réponse et une mauvaise réponse');
         } else if (this.answerValid(this.answers)) {
             this.registerAnswer.emit(this.answers);
-            this.answers.forEach((element) => {
-                element.text = '';
-                element.isCorrect = false;
-            });
         }
     }
     answerValid(answer: Choice[]) {
