@@ -8,7 +8,6 @@ export const isValidGame = async (game: Game, gameService: GameService, newGame:
     if (newGame) {
         await validateDuplicationGame(game, errors, gameService);
     }
-
     if (errors.length > 0) {
         alert(errors.join('\n'));
         return false;
@@ -18,6 +17,7 @@ export const isValidGame = async (game: Game, gameService: GameService, newGame:
 
 const validateBasicGameProperties = (game: Game, errors: string[]): void => {
     if (!game.title) errors.push('Title is required');
+    if (game.title.trim().length === 0) errors.push('not just whitespace');
     if (!game.description) errors.push('Description is required');
     if (!game.duration) errors.push('Duration is required');
     if (!game.lastModification) errors.push('LastModification is required');
@@ -32,6 +32,16 @@ const validateDuplicationGame = async (game: Game, errors: string[], gameService
     }
     if (descriptionExisting) {
         errors.push('Il y a déjà un jeu avec cet description');
+    }
+};
+
+export const validateDeletedGame = async (game: Game, gameService: GameService): Promise<boolean> => {
+    const gameList = await gameService.getGames();
+    const idExisting = gameList.find((element) => element.id === game.id);
+    if (idExisting) {
+        return true;
+    } else {
+        return false;
     }
 };
 
@@ -50,6 +60,7 @@ const validateQuestion = (question: Question, index: number, errors: string[]): 
     if (!question.type) errors.push(`Question ${index + 1}: Type is required`);
     if (!question.text) errors.push(`Question ${index + 1}: Text is required`);
     if (!question.points) errors.push(`Question ${index + 1}: Points are required`);
+    if (question.text.trim().length === 0) errors.push('not just whitespace');
 
     validateQuestionChoices(question, index, errors);
 };
@@ -72,6 +83,7 @@ const validateQuestionChoices = (question: Question, questionIndex: number, erro
         } else if (choice.isCorrect) {
             hasCorrectChoice = true;
         }
+        if (choice.text.trim().length === 0) errors.push('not just whitespace');
     });
 
     if (!hasCorrectChoice) {

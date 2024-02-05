@@ -1,40 +1,51 @@
-<div cdkDropList (cdkDropListDropped)="drop($event)">
+<div id="list"cdkDropList (cdkDropListDropped)="drop($event)">
     Liste de question:
     <div *ngFor="let question of questionList; index as i" cdkDrag>
         <div class="container">
             <div *ngIf="disabled[i]">
-                {{ i }}
-                <p>Question:{{ question.text }}</p>
-                <p>Nombre de point:{{ question.points }}</p>
+                {{ i +1}}
+                <p>Question : {{ question.text }}</p>
+                <p>Nombre de point : {{ question.points }}</p>
                 <div *ngIf="question.choices">
-                    Choix de réponse:
-                    <div *ngFor="let element of question.choices; index as j">{{ j }}-{{ element.text }}
-                </div>
+                    Choix de réponse :
+                    <div *ngFor="let element of question.choices; index as j">{{ j+1 }}. {{ element.text }}</div>
                 </div>
             </div>
             <div *ngIf="!disabled[i]" id="disabled">
-                Question:<input class="input_edit" type="text" [(ngModel)]="question.text" /> Nombre de points:<input
+                <mat-form-field>
+                    <mat-label>Question : </mat-label>
+                    <input matInput class="input_edit" type="text" [(ngModel)]="question.text" /> 
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label> Nombre de points:</mat-label>
+                    <input matInput
                     class="input_edit"
                     type="text"
                     [(ngModel)]="question.points"
                 />
-                Choix de réponse:
+                </mat-form-field>
+                
+                Choix de réponse :
                 <div *ngFor="let element of question.choices; index as j">
                     {{ j }}-<input class="input_edit" type="text" [(ngModel)]="element.text" />
                     <button mat-icon-button (click)="removeChoice(j)">
                         <mat-icon>remove_circle_outline</mat-icon>
                     </button>
                     <mat-checkbox [(ngModel)]="element.isCorrect" name="correctGroup">Correct</mat-checkbox>
+                    <mat-form-field>
+                        <mat-label> {{ j+1 }}-</mat-label>
+                        <input matInput class="input_edit" type="text" [(ngModel)]="element.text" />
+                    </mat-form-field>
                 </div>
             </div>
 
-            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">
                 <mat-icon>delete</mat-icon>
             </button>
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
                 <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
             </button>
-            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question)">
+            <button mat-mini-fab class="buttonIcon" color="primary" >
                 <mat-icon>menu</mat-icon>
             </button>
         </div>

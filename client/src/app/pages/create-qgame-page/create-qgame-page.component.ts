@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Game, Question } from '@app/interfaces/game';
+import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -15,22 +15,22 @@ import { isValidGame } from '@app/utils/is-valid-game';
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
     fromBank: boolean = false;
-    questions: Question[] = [];
+    // questions: Question[] = [];
     modifiedQuestion: boolean = false;
     addQuestionShown: boolean = true;
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
     gameForm: FormGroup;
-    dataReady = false;
+    dataReady: boolean = false;
 
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute, // private router: Router,
     ) {
         this.questionService.resetQuestions();
-        this.questions = this.questionService.getQuestion();
+        // this.questions = this.questionService.getQuestion();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
@@ -69,7 +69,7 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    async onSubmit(questionList: Question[], gameForm: FormGroup) {
+    async onSubmit(gameForm: FormGroup) {
         const newGame: Game = {
             id: generateNewId(),
             title: gameForm.get('name')?.value || '',
@@ -77,24 +77,23 @@ export class CreateQGamePageComponent implements OnInit {
             isVisible: gameForm.get('visibility')?.value,
             duration: gameForm.get('time')?.value || '',
             lastModification: new Date(),
-            questions: questionList,
+            questions: this.questionService.getQuestion(),
         };
 
         if (this.gameId) {
             if (await isValidGame(this.gameFromDB, this.gameService, false)) {
-                this.gameService.patchGame(this.gameFromDB); // gameID
+                if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
+                    this.gameService.patchGame(this.gameFromDB);
+                } else {
+                    this.gameService.createGame(this.gameFromDB);
+                }
             }
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
-            // console.log(newGame);
+            // this.router.navigate(['/home']);
             // location.reload();
-        } else {
-            // console.log(newGame);
         }
     }
-    // toggleAddQuestion() {
-    //     this.addQuestionShown = !this.addQuestionShown;
-    // }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }

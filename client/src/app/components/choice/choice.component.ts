@@ -57,10 +57,30 @@ export class ChoiceComponent {
         }
     }
 
+
     addAnswer() {
         if (this.questionForm.valid) {
             const answers = this.questionForm.value.answers;
             this.registerAnswer.emit(answers);
         }
     }
+
+    //     if (goodAnswer < 1 || goodAnswer === this.answers.length) {
+    //         alert('Au moins une bonne réponse et une mauvaise réponse');
+    //     } else if (this.answerValid(this.answers)) {
+    //         this.registerAnswer.emit(this.answers);
+    //     }
+    // }
+    // answerValid(answer: Choice[]) {
+    //     let valid = true;
+    //     answer.forEach((elem) => {
+    //         if (elem.text === '') {
+    //             valid = false;
+    //         }
+    //         if (elem.text.trim().length === 0) {
+    //             valid = false;
+    //         }
+    //     });
+    //     return valid;
+    // }
 }
