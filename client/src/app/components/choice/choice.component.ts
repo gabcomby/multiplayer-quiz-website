@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Choice, Question } from '@app/interfaces/game';
 
-const MAX_CHOICES = 4;
+// const MAX_CHOICES = 4;
 @Component({
     selector: 'app-choice',
     templateUrl: './choice.component.html',
@@ -19,12 +19,12 @@ export class ChoiceComponent {
     ];
 
     addChoice() {
-        if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
+        // if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
             // this.answers.push({ text: '', isCorrect: false });
             this.answers = [...this.answers, { text: '', isCorrect: false }];
-        } else {
-            alert('minimum 2 choix et maximum 4');
-        }
+        // } else {
+        //     alert('minimum 2 choix et maximum 4');
+        // }
     }
 
     removeChoice(index: number) {
@@ -49,10 +49,6 @@ export class ChoiceComponent {
             alert('Au moins une bonne réponse et une mauvaise réponse');
         } else if (this.answerValid(this.answers)) {
             this.registerAnswer.emit(this.answers);
-            this.answers.forEach((element) => {
-                element.text = '';
-                element.isCorrect = false;
-            });
         }
     }
     answerValid(answer: Choice[]) {

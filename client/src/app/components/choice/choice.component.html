@@ -1,5 +1,5 @@
 <div cdkDropList class="container" (cdkDropListDropped)="drop($event)">
-    <form>
+    <!-- <form> -->
         <ng-container *ngFor="let answer of answers; let i = index">
             <div class="answer-container" cdkDrag>
                 {{ i + 1 }}.
@@ -15,7 +15,7 @@
         <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add" (click)="addChoice()">
             <mat-icon>add</mat-icon>
         </button>
-    </form>
+    <!-- </form> -->
 
     <div id="addQuestionButton">
         <button mat-raised-button color="accent" id="add" (click)="addAnswer()">Ajouter la question</button>
