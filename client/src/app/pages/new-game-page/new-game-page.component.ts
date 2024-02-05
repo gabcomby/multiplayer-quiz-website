@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
-import { Socket } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 @Component({
     selector: 'app-new-game-page',
@@ -13,15 +13,14 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     constructor(private gameService: GameService) {
+        this.socket = io('http://localhost:3000');
         this.socket.on('connect', () => {
             console.log('Connecté au serveur via le socket');
         });
-        this.socket.on('delete', (gameId) => {
+        this.socket.on('deleteId', (gameId) => {
             if (this.gameSelected[gameId]) {
                 console.log('deleteComponent');
                 alert('Game ' + gameId + ' has been deleted');
-                //this.games = this.games.filter((game) => game.id !== gameId);
-                //delete this.gameSelected[gameId];
                 window.location.reload();
             } else {
                 console.log('deleteComponent');

@@ -55,7 +55,7 @@ export class Application {
             if (data.operationType === 'delete') {
                 console.log('delete');
                 const deleteId = data.documentKey.id;
-                io.emit('delete', deleteId);
+                io.emit('deleteId', deleteId);
                 console.log('deletedone');
             }
         });
