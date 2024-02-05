@@ -1,13 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TimeService } from '@app/services/time.service';
+import { TimerService } from '@app/services/timer.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { GamePageTimerComponent } from './game-page-timer.component';
 
 const TOTAL_PLAYTIME = 100;
 
 class MockTimeService {
     time = 0;
+    currentTime = new BehaviorSubject<number>(this.time);
+
     startTimer(time: number) {
         this.time = time;
+    }
+
+    getCurrentTime(): Observable<number> {
+        return this.currentTime.asObservable();
     }
 }
 
@@ -21,7 +28,7 @@ describe('GamePageTimerComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [GamePageTimerComponent],
-            providers: [{ provide: TimeService, useValue: mockTimeService }],
+            providers: [{ provide: TimerService, useValue: mockTimeService }],
         });
 
         fixture = TestBed.createComponent(GamePageTimerComponent);

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import type { Game, Question } from '@app/interfaces/game';
+import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
+import { MatchService } from '@app/services/match.service';
 import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
-
-import type { Game, Question } from '@app/interfaces/game';
 
 const TIME_BETWEEN_QUESTIONS = 4000;
 @Component({
@@ -16,6 +17,7 @@ export class GamePageComponent implements OnInit {
     gameData: Game;
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
+    currentMatch: Match;
 
     gameScore: { name: string; score: number }[] = [];
 
@@ -26,15 +28,49 @@ export class GamePageComponent implements OnInit {
         private gameService: GameService,
         private playerService: PlayerService,
         private router: Router,
+        private matchService: MatchService,
     ) {}
 
     get questionTimer(): number {
         return this.gameData?.duration;
     }
 
+    updatePlayerScore(scoreFromQuestion: number): void {
+        this.matchService.updatePlayerScore('matchtest', 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
+            next: (data) => {
+                this.currentMatch.playerList[0] = data;
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
+    }
+
+    handleGameLeave() {
+        this.router.navigate(['/']);
+        this.timerService.killTimer();
+        this.matchService.deleteMatch('matchtest').subscribe();
+    }
+
     ngOnInit() {
         this.fetchGameData('8javry');
         this.initializePlayerScore();
+        this.matchService.createNewMatch({ id: 'matchtest', playerList: [] }).subscribe({
+            next: (data) => {
+                this.currentMatch = data;
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
+        this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, 'matchtest').subscribe({
+            next: (data) => {
+                this.currentMatch = data;
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
     }
 
     initializePlayerScore() {
@@ -75,6 +111,8 @@ export class GamePageComponent implements OnInit {
         } else {
             setTimeout(() => {
                 this.router.navigate(['/']);
+                this.timerService.killTimer();
+                this.matchService.deleteMatch('matchtest').subscribe();
             }, TIME_BETWEEN_QUESTIONS);
         }
     }

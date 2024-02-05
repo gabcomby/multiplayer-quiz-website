@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ApiService } from '@app/services/api.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -7,16 +7,14 @@ import { tap } from 'rxjs/operators';
 export class AuthService {
     private isAuthenticated = new BehaviorSubject<boolean>(false);
 
-    constructor(private http: HttpClient) {}
+    constructor(private apiService: ApiService) {}
 
     get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticated.asObservable();
     }
 
     authenticate(password: string): Observable<boolean> {
-        return this.http
-            .post<boolean>('http://localhost:3000/api/authenticate', { password })
-            .pipe(tap((isLoggedIn) => this.isAuthenticated.next(isLoggedIn)));
+        return this.apiService.authenticate(password).pipe(tap((isLoggedIn) => this.isAuthenticated.next(isLoggedIn)));
     }
 
     checkAuthentication(): boolean {

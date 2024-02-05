@@ -4,7 +4,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
-
 @Component({
     selector: 'app-choice',
     templateUrl: './choice.component.html',
@@ -17,15 +16,13 @@ export class ChoiceComponent {
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
-        { text: '', isCorrect: false },
     ];
 
     addChoice() {
         if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
-            this.answers.push({ text: '', isCorrect: false });
+            // this.answers.push({ text: '', isCorrect: false });
+            this.answers = [...this.answers, { text: '', isCorrect: false }];
         } else {
-            // Handle error or provide feedback to the user
             alert('minimum 2 choix et maximum 4');
         }
     }
@@ -50,12 +47,21 @@ export class ChoiceComponent {
 
         if (goodAnswer < 1 || goodAnswer === this.answers.length) {
             alert('Au moins une bonne réponse et une mauvaise réponse');
-        } else {
+        } else if (this.answerValid(this.answers)) {
             this.registerAnswer.emit(this.answers);
             this.answers.forEach((element) => {
                 element.text = '';
                 element.isCorrect = false;
             });
         }
+    }
+    answerValid(answer: Choice[]) {
+        let valid = true;
+        answer.forEach((elem) => {
+            if (elem.text === '') {
+                valid = false;
+            }
+        });
+        return valid;
     }
 }
