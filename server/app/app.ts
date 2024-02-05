@@ -48,22 +48,22 @@ export class Application {
         const server = http.createServer(this.app);
         const io = new socketIo.Server(server, {
             cors: {
-                origin: "http://localhost:3000",
-                methods: ["GET", "POST"],
-            }
+                origin: ['http://localhost:3000', 'http://localhost:4200'],
+                methods: ['GET', 'POST', 'DELETE'],
+            },
         });
         const db = mongoose.connection.useDb('test');
         const gameSchema = new mongoose.Schema({}, { strict: false });
         const game = db.model('Game', gameSchema, 'games');
         const changeStream = game.watch();
         changeStream.on('change', (data) => {
-            console.log(JSON.stringify(data));
+            // console.log(JSON.stringify(data));
             if (data.operationType === 'delete') {
-                console.log('delete');
-                const deleteId = data.documentKey._id;
-                console.log(`The game ${deleteId} has been deleted2`);
-                io.emit('deleteId', deleteId);
-                console.log('deletedone');
+                // console.log('delete');x
+                // const deleteId = data.documentKey._id;
+                // console.log(`The game ${deleteId} has been deleted2`);
+                io.emit('deleteId', 'deleteId'); // enleve les commentaire pour deleteID
+                // console.log('deletedone');
             }
         });
     }
@@ -85,7 +85,14 @@ export class Application {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
-        this.app.use(cors());
+        this.app.use(
+            cors({
+                origin: ['http://localhost:4200'],
+                methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+                allowedHeaders: ['Content-Type', 'Authorization'],
+                credentials: true,
+            }),
+        );
     }
 
     private errorHandling(): void {

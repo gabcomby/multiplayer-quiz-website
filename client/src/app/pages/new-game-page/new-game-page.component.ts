@@ -14,8 +14,18 @@ export class NewGamePageComponent implements OnInit {
     socket: Socket;
     constructor(private gameService: GameService) {
         this.socket = io('http://localhost:3000');
+        this.socket.connect();
+        this.socket.on('connect_error', () => {
+            this.socket.connect();
+            // console.log('Connection Error', error.stack);
+        });
+        /* this.socket.connect();
+        this.socket.on('connect_error', (error) => {
+            this.socket.connect();
+            console.log('Connection Error', error);
+        });
         console.log('socket');
-        this.socket.on('delete', (gameId) => {
+        this.socket.on('deleteId', (gameId) => {
             if (this.gameSelected[gameId]) {
                 console.log('deleteComponent');
                 alert('Game ' + gameId + ' has been deleted');
@@ -23,7 +33,7 @@ export class NewGamePageComponent implements OnInit {
             } else {
                 console.log('deleteComponent');
             }
-        });
+        });*/
     }
 
     ngOnInit() {
