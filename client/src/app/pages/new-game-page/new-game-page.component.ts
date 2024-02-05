@@ -14,10 +14,11 @@ export class NewGamePageComponent implements OnInit {
     socket: Socket;
     constructor(private gameService: GameService) {
         this.socket = io('http://localhost:3000');
-        this.socket.on('connect', () => {
+        console.log('socket');
+        this.socket.on('connection', () => {
             console.log('Connecté au serveur via le socket');
         });
-        this.socket.on('deleteId', (gameId) => {
+        this.socket.on('delete', (gameId) => {
             if (this.gameSelected[gameId]) {
                 console.log('deleteComponent');
                 alert('Game ' + gameId + ' has been deleted');

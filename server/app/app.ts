@@ -52,9 +52,11 @@ export class Application {
         const game = db.model('Game', gameSchema, 'games');
         const changeStream = game.watch();
         changeStream.on('change', (data) => {
+            console.log(JSON.stringify(data));
             if (data.operationType === 'delete') {
                 console.log('delete');
-                const deleteId = data.documentKey.id;
+                const deleteId = data.documentKey._id;
+                console.log(`The game ${deleteId} has been deleted2`);
                 io.emit('deleteId', deleteId);
                 console.log('deletedone');
             }
