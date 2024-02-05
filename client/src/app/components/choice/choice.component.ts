@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Choice, Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
@@ -30,8 +30,8 @@ export class ChoiceComponent {
 
     createAnswerField(): FormGroup {
         return this.formBuilder.group({
-            text: [''],
-            isCorrect: [false],
+            text: ['', Validators.required],
+            isCorrect: false,
         });
     }
 
@@ -61,9 +61,6 @@ export class ChoiceComponent {
         if (this.questionForm.valid) {
             const answers = this.questionForm.value.answers;
             this.registerAnswer.emit(answers);
-            this.questionForm.reset({
-                answers: [this.createAnswerField()],
-            });
         }
     }
 }
