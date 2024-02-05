@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { GameService } from '@app/services/game.service';
 import { Game } from '@app/interfaces/game';
+import { DeleteService } from '@app/services/delete.service';
+import { GameService } from '@app/services/game.service';
 
 @Component({
     selector: 'app-new-game-page',
@@ -10,16 +11,22 @@ import { Game } from '@app/interfaces/game';
 export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
-    constructor(private gameService: GameService) {}
-    get arrayGames(): Game[] {
-        return this.games;
+    constructor(
+        private gameService: GameService,
+        private deleteService: DeleteService,
+    ) {
+        this.deleteService.delete$.subscribe((id) => {
+            if (this.gameSelected[id] === true) {
+                window.alert('The game that you selected has been deleted. We suggest you to select another game.');
+            }
+        });
     }
     ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
         });
     }
-    getInformations(game: Game) {
+    selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
 }

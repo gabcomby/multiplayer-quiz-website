@@ -3,6 +3,7 @@ import { Choice, Game, Question } from '@app/interfaces/game';
 const gameSchema: { [key in keyof Game]?: true } = {
     title: true,
     description: true,
+    isVisible: true,
     duration: true,
     lastModification: true,
     questions: true,

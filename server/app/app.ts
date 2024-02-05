@@ -1,5 +1,6 @@
 import { HttpException } from '@app/classes/http.exception';
 import { DateController } from '@app/controllers/date.controller';
+import { MatchController } from '@app/controllers/match.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -53,6 +54,7 @@ export class Application {
         this.app.use('/api/games', this.gameController.router);
         this.app.use('/api/questions', this.questionsController.router);
         this.app.use('/api/authenticate', this.authController.router);
+        this.app.use('/api/matches', this.matchController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

@@ -44,8 +44,4 @@ export class NewQuestionComponent {
         this.question.choices = [];
         this.addBankQuestion = false;
     }
-
-    // registerAnswer(event: Choice[]) {
-    //     return event;
-    // }
 }

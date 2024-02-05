@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+import { DeleteService } from '@app/services/delete.service';
 
 @Component({
     selector: 'app-admin-page',
@@ -11,13 +13,20 @@ import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attribu
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
-    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'delete'];
+    displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'modify', 'export', 'delete'];
     dataSource: Game[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+        private deleteService: DeleteService,
+    ) {}
 
     ngOnInit() {
         this.loadGames();
+        // this.gameService.getGames().then((games) => {
+        //     this.games = games;
+        // });
     }
 
     loadGames(): void {
@@ -35,6 +44,14 @@ export class AdminPageComponent implements OnInit {
         const game = this.dataSource.find((g) => g.id === gameId);
         if (game) {
             game.isVisible = isVisible;
+            this.http.patch(`http://localhost:3000/api/games/${gameId}`, game).subscribe({
+                next: () => {
+                    alert('Game updated successfully');
+                },
+                error: (error) => {
+                    alert(`Error updating game: ${error}`);
+                },
+            });
         }
     }
 
@@ -105,11 +122,20 @@ export class AdminPageComponent implements OnInit {
         reader.readAsText(file);
     }
 
+    // getGame(gameId: string): Game {
+    //     const game = this.games.find((gameSelected) => gameSelected.id === gameId);
+    //     if (!game) {
+    //         throw new Error(`Game with id ${gameId} not found`);
+    //     }
+    //     return game;
+    // }
+
     deleteGame(gameId: string): void {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
         this.http.delete(`http://localhost:3000/api/games/${gameId}`).subscribe({
             next: () => {
                 alert('Game deleted successfully');
+                this.deleteService.notifyDelete(gameId);
             },
             error: (error) => {
                 alert(`Error deleting game: ${error}`);
@@ -118,7 +144,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     createGame(): void {
-        // Implement logic to create a new game
+        this.router.navigate(['/create-qgame']);
     }
 
     private isGameNameUnique(name: string): boolean {

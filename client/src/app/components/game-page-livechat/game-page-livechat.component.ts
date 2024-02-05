@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 const NOT_EXIST = -1;
 const DISAPPEAR_DELAY = 10000;
@@ -16,9 +16,19 @@ const DISAPPEAR_DELAY = 10000;
     ],
 })
 export class GamePageLivechatComponent {
+    @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
     messages: { text: string; sender: string; visible: boolean }[] = [];
     newMessage: string = '';
+
+    onChatClick(): void {
+        this.textbox.nativeElement.focus();
+    }
+
+    onChatEnterPressed(event: Event): void {
+        event.preventDefault();
+        this.sendMessage();
+    }
 
     sendMessage(): void {
         if (this.newMessage.trim() !== '') {
