@@ -17,7 +17,6 @@ import { GamePageLivechatComponent } from './components/game-page-livechat/game-
 import { GamePageQuestionsComponent } from './components/game-page-questions/game-page-questions.component';
 import { GamePageScoresheetComponent } from './components/game-page-scoresheet/game-page-scoresheet.component';
 import { GamePageTimerComponent } from './components/game-page-timer/game-page-timer.component';
-import { GameQuestionListComponent } from './components/game-question-list/game-question-list.component';
 import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
@@ -59,7 +58,6 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         QuestionsPageComponent,
         PasswordDialogComponent,
         ModifiedQuestionComponent,
-        GameQuestionListComponent,
         PlayerNameDialogComponent,
         QuestionBankComponent,
     ],
