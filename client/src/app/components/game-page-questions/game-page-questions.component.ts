@@ -38,11 +38,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        if (this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea') {
+        if (this.verifyActiveElement()) {
             this.buttonPressed = event.key;
             if (!Number.isNaN(Number(this.buttonPressed))) {
-                const stringAsNumber = Number(this.buttonPressed);
-                if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
+                if (this.checkIfNumberValid()) {
+                    this.toggleAnswer(Number(this.buttonPressed) - 1);
+                }
             } else if (this.buttonPressed === 'Enter') {
                 this.submitAnswer();
             }
@@ -111,6 +112,14 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
             // this.scoreForTheQuestion.emit(score);
         }
+    }
+
+    private checkIfNumberValid(): boolean {
+        return Number(this.buttonPressed) > 0 && Number(this.buttonPressed) <= this.choices.length;
+    }
+
+    private verifyActiveElement(): boolean {
+        return this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea';
     }
 
     private calculatePenaltiesAndFinalScore(score: number, pointPerCorrectAnswer: number): number {
