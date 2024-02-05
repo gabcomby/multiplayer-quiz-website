@@ -13,11 +13,8 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     constructor(private gameService: GameService) {
-        this.socket = io('http://localhost:4200');
+        this.socket = io('http://localhost:3000');
         console.log('socket');
-        this.socket.on('connection', () => {
-            console.log('Connecté au serveur via le socket');
-        });
         this.socket.on('delete', (gameId) => {
             if (this.gameSelected[gameId]) {
                 console.log('deleteComponent');
