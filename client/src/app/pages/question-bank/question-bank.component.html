@@ -1,7 +1,14 @@
 <header>
-    <p class="title">Banque de Question</p>
-    <button class="button" routerLink="">Nouvelle Question</button>
-    <button class="button" routerLink="/home">Home</button>
+    <h2 class="title">Banque de Question</h2>
+    <button mat-icon-button color="white" aria-label="Example icon button with an add icon" routerLink="/new-question-qbank">
+        <mat-icon>add</mat-icon>
+    </button>
+    <button mat-icon-button color="white" aria-label="Example icon button with an edit icon" routerLink="/modify-question-qbank">
+        <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+        <mat-icon>home</mat-icon>
+    </button>
 </header>
 <table mat-table [dataSource]="dataSource" class="questions">
     <!-- Question Column -->
@@ -20,15 +27,9 @@
     <ng-container matColumnDef="delete">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element">
-            <button mat-icon-button (click)="deleteQuestion(element.id)">Supprimer</button>
-        </td>
-    </ng-container>
-
-    <!-- Modify Column -->
-    <ng-container matColumnDef="modify">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let element">
-            <button mat-icon-button (click)="modifyQuestion()">Modifier</button>
+            <button mat-icon-button (click)="deleteQuestion(element.id)">
+                <mat-icon>delete</mat-icon>
+            </button>
         </td>
     </ng-container>
 
