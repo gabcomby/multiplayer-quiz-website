@@ -1,6 +1,7 @@
 import questionsModel from '@app/model/game.model';
 import { QuestionsService } from '@app/services/questions.service';
-import { SinonSandbox, SinonStub } from 'sinon';
+import { expect } from 'chai';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 
 describe('Game service', () => {
     let questionsService: QuestionsService;
@@ -32,5 +33,26 @@ describe('Game service', () => {
                 text: 'int',
             },
         ],
+    });
+
+    beforeEach(() => {
+        questionsService = new QuestionsService();
+        sandbox = createSandbox();
+        findStub = sandbox.stub(questionsModel, 'find');
+        findOneStub = sandbox.stub(questionsModel, 'findOne');
+        createStub = sandbox.stub(questionsModel, 'create');
+        findOneAndDeleteStub = sandbox.stub(questionsModel, 'findOneAndDelete');
+        findOneAndUpdateStub = sandbox.stub(questionsModel, 'findOneAndUpdate');
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it('should retrieve a list of questions', async () => {
+        findStub.returns([questionsInstance]);
+        const result = await questionsService.getQuestions();
+        expect(result).to.eql([questionsInstance]);
+        expect(findStub.calledOnce);
     });
 });
