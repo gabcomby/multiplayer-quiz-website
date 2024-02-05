@@ -28,10 +28,5 @@ export class AuthController {
                 res.status(StatusCodes.BAD_REQUEST).json({ title: 'Invalid Request', body: 'Password is required.' });
             }
         });
-
-        this.router.delete('/api/games/:id', (req, res) => {
-            const gameId = req.params.id;
-            res.send(gameId);
-        });
     }
 }
