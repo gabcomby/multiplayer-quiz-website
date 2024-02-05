@@ -15,9 +15,7 @@ import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
 export class CreateQGamePageComponent implements OnInit {
     @Input() game: Game;
     fromBank: boolean = false;
-    // questions: Question[] = [];
     modifiedQuestion: boolean = false;
-    addQuestionShown: boolean = true;
     gameId: string | null;
     gamesFromDB: Game[] = [];
     gameFromDB: Game;
@@ -30,7 +28,6 @@ export class CreateQGamePageComponent implements OnInit {
         private route: ActivatedRoute, // private router: Router,
     ) {
         this.questionService.resetQuestions();
-        // this.questions = this.questionService.getQuestion();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
@@ -40,18 +37,11 @@ export class CreateQGamePageComponent implements OnInit {
     }
     async ngOnInit(): Promise<void> {
         this.route.paramMap.subscribe((params) => (this.gameId = params.get('id')));
-        const id = this.gameId;
-        if (id) {
+        if (this.gameId) {
             try {
-                const games = await this.gameService.getGames();
-                this.gamesFromDB = games;
-                this.getGame(id);
-                this.gameForm.patchValue({
-                    name: this.gameFromDB.title,
-                    description: this.gameFromDB.description,
-                    time: this.gameFromDB.duration,
-                    visibility: this.gameFromDB.isVisible,
-                });
+                this.gamesFromDB = await this.gameService.getGames();
+                this.getGame(this.gameId);
+                this.insertIfExist();
                 this.dataReady = true;
             } catch (error) {
                 // console.error('Error fetching games:', error);
@@ -69,32 +59,47 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    async onSubmit(gameForm: FormGroup) {
-        const newGame: Game = {
-            id: generateNewId(),
-            title: gameForm.get('name')?.value || '',
-            description: gameForm.get('description')?.value || '',
-            isVisible: gameForm.get('visibility')?.value,
-            duration: gameForm.get('time')?.value || '',
-            lastModification: new Date(),
-            questions: this.questionService.getQuestion(),
-        };
+    async onSubmit() {
+        const newGame: Game = this.createNewGame();
 
         if (this.gameId) {
-            if (await isValidGame(this.gameFromDB, this.gameService, false)) {
-                if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
-                    this.gameService.patchGame(this.gameFromDB);
-                } else {
-                    this.gameService.createGame(this.gameFromDB);
-                }
-            }
+            this.gameValidationWhenModified();
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
-            // this.router.navigate(['/home']);
             // location.reload();
         }
     }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
+    }
+
+    insertIfExist() {
+        this.gameForm.patchValue({
+            name: this.gameFromDB.title,
+            description: this.gameFromDB.description,
+            time: this.gameFromDB.duration,
+            visibility: this.gameFromDB.isVisible,
+        });
+    }
+
+    async gameValidationWhenModified() {
+        if (await isValidGame(this.gameFromDB, this.gameService, false)) {
+            if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
+                this.gameService.patchGame(this.gameFromDB);
+            } else {
+                this.gameService.createGame(this.gameFromDB);
+            }
+        }
+    }
+    createNewGame() {
+        return {
+            id: generateNewId(),
+            title: this.gameForm.get('name')?.value,
+            description: this.gameForm.get('description')?.value,
+            isVisible: this.gameForm.get('visibility')?.value,
+            duration: this.gameForm.get('time')?.value,
+            lastModification: new Date(),
+            questions: this.questionService.getQuestion(),
+        };
     }
 }

@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Choice, Question } from '@app/interfaces/game';
+import { Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
 
@@ -11,7 +11,7 @@ const MAX_CHOICES = 4;
     styleUrls: ['./choice.component.scss'],
 })
 export class ChoiceComponent {
-    @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
+    @Output() registerAnswer: EventEmitter<FormGroup> = new EventEmitter();
     questionForm: FormGroup;
 
     constructor(private formBuilder: FormBuilder) {
@@ -67,9 +67,7 @@ export class ChoiceComponent {
             }
         }
         if (this.questionForm.valid && goodAnswer > 0 && goodAnswer < this.answers.length) {
-            const answers = this.questionForm.value.answers;
-            this.registerAnswer.emit(answers);
-            this.initForm(); // Réinitialisation du formulaire
+            this.registerAnswer.emit(this.questionForm);
         } else {
             alert('Au moins une bonne reponse');
         }
