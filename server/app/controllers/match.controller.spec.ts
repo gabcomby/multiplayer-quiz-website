@@ -177,4 +177,24 @@ describe('MatchController', () => {
 
         chai.expect(response.body).to.deep.equal(mockMatchData[0]);
     });
+
+    it('updatePlayerScore should return updated player on PATCH request', async () => {
+        matchService.updatePlayerScore.resolves(mockPlayerData[0]);
+
+        const response = await supertest(expressApp).patch('/api/matches/123abc/players/player1').send({ score: 1000 }).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(mockPlayerData[0]);
+    });
+
+    it('updatePlayerScore should return an error status on PATCH request if service fails', async () => {
+        matchService.updatePlayerScore.rejects(new Error('Error updating player score'));
+
+        return supertest(expressApp)
+            .patch('/api/matches/123abc/players/player1')
+            .send({ score: 1000 })
+            .expect(StatusCodes.BAD_REQUEST)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error updating player score' });
+            });
+    });
 });

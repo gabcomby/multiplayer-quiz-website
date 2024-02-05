@@ -137,4 +137,27 @@ describe('MatchService', () => {
             expect(error.message).to.eql("Can't fetch players from a game that doesn't exit");
         }
     });
+
+    it('should update a player score', async () => {
+        const matchId = '1a2b3c';
+        const playerId = 'player1';
+        const score = 1000;
+        /* eslint-disable */
+        findOneAndUpdateStub
+            .withArgs({ id: matchId }, { $set: { 'playerList.$[elem].score': score } }, { arrayFilters: [{ 'elem.id': playerId }], new: true })
+            .resolves(matchInstance);
+        /* eslint-enable */
+
+        const result = await matchService.updatePlayerScore(matchId, playerId, score);
+        expect(result).to.eql(matchInstance.playerList.find((player) => player.id === playerId));
+        expect(
+            /* eslint-disable */
+            findOneAndUpdateStub.calledWith(
+                { id: matchId },
+                { $set: { 'playerList.$[elem].score': score } },
+                { arrayFilters: [{ 'elem.id': playerId }], new: true },
+            ),
+            /* eslint-enable */
+        );
+    });
 });

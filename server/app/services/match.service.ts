@@ -32,4 +32,15 @@ export class MatchService {
         if (!match) throw new Error("Can't fetch players from a game that doesn't exit");
         return match.playerList;
     }
+
+    async updatePlayerScore(matchId: string, playerId: string, score: number): Promise<IPlayer> {
+        /*eslint-disable */
+        const match: IMatch = await matchModel.findOneAndUpdate(
+            { id: matchId },
+            { $set: { 'playerList.$[elem].score': score } },
+            { arrayFilters: [{ 'elem.id': playerId }], new: true },
+        );
+        return match.playerList.find((player) => player.id === playerId);
+        /* eslint-enable */
+    }
 }
