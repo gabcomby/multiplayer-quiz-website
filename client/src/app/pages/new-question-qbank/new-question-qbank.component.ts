@@ -5,10 +5,4 @@ import { Component } from '@angular/core';
     templateUrl: './new-question-qbank.component.html',
     styleUrls: ['./new-question-qbank.component.scss'],
 })
-export class NewQuestionQbankComponent {
-    addQuestionShown: boolean = false;
-    // constructor() {}
-    toggleAddQuestion() {
-        this.addQuestionShown = !this.addQuestionShown;
-    }
-}
+export class NewQuestionQbankComponent {}

@@ -6,7 +6,6 @@
         <mat-icon>arrow_back</mat-icon>
     </button>
 </header>
-<button type="button" (click)="toggleAddQuestion()" mat-raised-button color="accent">créer question</button>
-<div id="questionForm" *ngIf="addQuestionShown === true">
-    <app-new-question [onlyAddQuestionBank]="true" *ngIf="addQuestionShown"> </app-new-question>
+<div id="questionForm">
+    <app-new-question [onlyAddQuestionBank]="true"> </app-new-question>
 </div>
