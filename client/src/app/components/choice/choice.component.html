@@ -1,12 +1,12 @@
 <div cdkDropList class="container" (cdkDropListDropped)="drop($event)">
-    <form>
-        <ng-container *ngFor="let answer of answers; let i = index">
-            <div class="answer-container" cdkDrag>
+    <form [formGroup]="questionForm">
+        <ng-container formArrayName="answers">
+            <div class="answer-container" *ngFor="let answer of answers.controls; let i = index" [formGroupName]="i" cdkDrag>
                 {{ i + 1 }}.
                 <mat-form-field>
-                    <input matInput type="text" [(ngModel)]="answers[i].text" name="answerGroup" placeholder="Entrer une réponse" />
+                    <input matInput type="text" formControlName="text" placeholder="Entrer une réponse" />
                 </mat-form-field>
-                <mat-checkbox [(ngModel)]="answers[i].isCorrect" name="correctGroup">Correct</mat-checkbox>
+                <mat-checkbox formControlName="isCorrect">Correct</mat-checkbox>
                 <button mat-icon-button (click)="removeChoice(i)">
                     <mat-icon>remove_circle_outline</mat-icon>
                 </button>
@@ -16,8 +16,9 @@
         <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add" (click)="addChoice()">
             <mat-icon>add</mat-icon>
         </button>
+
+        <div id="addQuestionButton">
+            <button mat-raised-button color="accent" id="add" (click)="addAnswer()">Ajouter la question</button>
+        </div>
     </form>
-    <div id="addQuestionButton">
-        <button mat-raised-button color="accent" id="add" (click)="addAnswer()">Ajouter la question</button>
-    </div>
 </div>

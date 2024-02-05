@@ -28,6 +28,18 @@ export class ModifiedQuestionComponent implements OnInit {
         });
     }
 
+    removeChoice(index: number) {
+        this.questionList.forEach((question) => {
+            if (question.choices) {
+                if (question.choices.length !== 0) {
+                    if (question.choices.length > 2) {
+                        question.choices.splice(index, 1);
+                    }
+                }
+            }
+        });
+    }
+
     toggleModify(index: number): void {
         this.disabled[index] = false;
     }
