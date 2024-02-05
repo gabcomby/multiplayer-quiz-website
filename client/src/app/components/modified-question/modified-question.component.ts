@@ -40,6 +40,7 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     saveQuestion(index: number) {
+        this.questionList[index].lastModification = new Date();
         if (this.listQuestionBank) {
             this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
             this.disabled[index] = true;
