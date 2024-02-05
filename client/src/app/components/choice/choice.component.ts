@@ -58,9 +58,20 @@ export class ChoiceComponent {
     }
 
     addAnswer() {
-        if (this.questionForm.valid) {
+        let goodAnswer = 0;
+        const answersIterator = this.answers.controls.values();
+        for (const answerControl of answersIterator) {
+            const answer = answerControl.value;
+            if (answer.isCorrect) {
+                goodAnswer++;
+            }
+        }
+        if (this.questionForm.valid && goodAnswer > 0 && goodAnswer < this.answers.length) {
             const answers = this.questionForm.value.answers;
             this.registerAnswer.emit(answers);
+            this.initForm(); // Réinitialisation du formulaire
+        } else {
+            console.log('Au moins une bonne reponse');
         }
     }
 }

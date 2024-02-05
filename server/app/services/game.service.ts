@@ -26,8 +26,8 @@ export class GameService {
         return updatedGame;
     }
 
-    async updateGame(gameID: string, gameData: IGame): Promise<IGame> {
-        const updatedGame = await gameModel.findOneAndUpdate({ gameID }, gameData);
-        return updatedGame;
-    }
+    // async updateGame(gameID: string, gameData: IGame): Promise<IGame> {
+    //     const updatedGame = await gameModel.findOneAndUpdate({ gameID }, gameData);
+    //     return updatedGame;
+    // }
 }
