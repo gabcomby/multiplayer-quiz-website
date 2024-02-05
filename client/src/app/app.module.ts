@@ -17,7 +17,6 @@ import { GamePageLivechatComponent } from './components/game-page-livechat/game-
 import { GamePageQuestionsComponent } from './components/game-page-questions/game-page-questions.component';
 import { GamePageScoresheetComponent } from './components/game-page-scoresheet/game-page-scoresheet.component';
 import { GamePageTimerComponent } from './components/game-page-timer/game-page-timer.component';
-import { GameQuestionListComponent } from './components/game-question-list/game-question-list.component';
 import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
@@ -26,12 +25,11 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
-import { ModifyQGamePageComponent } from './pages/modify-qgame-page/modify-q-game-page.component';
+import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modify-question-qbank.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
-import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
-import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modify-question-qbank.component';
 
 /**
  * Main module that is used in main.ts.
@@ -60,8 +58,6 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
         QuestionsPageComponent,
         PasswordDialogComponent,
         ModifiedQuestionComponent,
-        GameQuestionListComponent,
-        ModifyQGamePageComponent,
         PlayerNameDialogComponent,
         QuestionBankComponent,
         NewQuestionQbankComponent,

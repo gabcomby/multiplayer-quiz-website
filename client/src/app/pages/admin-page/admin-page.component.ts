@@ -6,6 +6,7 @@ import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import isValidGame from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 import { DeleteService } from '@app/services/delete.service';
+import { GameService } from '@app/services/game.service';
 
 @Component({
     selector: 'app-admin-page',
@@ -20,6 +21,7 @@ export class AdminPageComponent implements OnInit {
         private http: HttpClient,
         private router: Router,
         private deleteService: DeleteService,
+        private gameService: GameService,
     ) {}
 
     ngOnInit() {
@@ -153,7 +155,7 @@ export class AdminPageComponent implements OnInit {
 
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game)) return;
+        if (!isValidGame(game, this.gameService, true)) return;
         assignNewGameAttributes(game);
     }
 }

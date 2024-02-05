@@ -4,7 +4,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
-
 @Component({
     selector: 'app-choice',
     templateUrl: './choice.component.html',
@@ -21,9 +20,9 @@ export class ChoiceComponent {
 
     addChoice() {
         if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
-            this.answers.push({ text: '', isCorrect: false });
+            // this.answers.push({ text: '', isCorrect: false });
+            this.answers = [...this.answers, { text: '', isCorrect: false }];
         } else {
-            // Handle error or provide feedback to the user
             alert('minimum 2 choix et maximum 4');
         }
     }

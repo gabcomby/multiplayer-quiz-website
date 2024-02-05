@@ -13,13 +13,8 @@ export class QuestionsService {
     }
 
     async addQuestionBank(questionData: IQuestion): Promise<IQuestion> {
-        try {
-            const question = await questionsModel.create(questionData);
-            return question;
-        } catch (error) {
-            console.error('Error adding question to the bank:', error);
-            throw error;
-        }
+        const question = await questionsModel.create(questionData);
+        return question;
     }
 
     async deleteQuestion(questionId: string): Promise<IQuestion> {

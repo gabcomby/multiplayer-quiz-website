@@ -6,9 +6,11 @@ interface IChoice extends Document {
 }
 
 export interface IQuestion extends Document {
+    id: string;
     type: string;
     text: string;
     points: number;
+    lastModification: Date;
     choices?: IChoice[];
 }
 
@@ -31,6 +33,8 @@ const questionSchema: Schema = new Schema({
     type: { type: String, required: true },
     text: { type: String, required: true },
     points: { type: Number, required: true },
+    lastModification: Date,
+    id: { type: String, required: true },
     choices: [choiceSchema],
 });
 

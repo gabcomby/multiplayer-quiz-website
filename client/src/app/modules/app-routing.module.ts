@@ -13,7 +13,6 @@ import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.com
 import { NewQuestionQbankComponent } from '@app/pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from '@app/pages/question-bank/question-bank.component';
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
-import { ModifyQGamePageComponent } from '@app/pages/modify-qgame-page/modify-q-game-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -24,7 +23,7 @@ const routes: Routes = [
     { path: 'questions', component: QuestionsPageComponent },
     { path: 'new-game', component: NewGamePageComponent },
     { path: 'create-qgame', component: CreateQGamePageComponent },
-    { path: 'modify/:id', component: ModifyQGamePageComponent },
+    { path: 'create-qgame/:id', component: CreateQGamePageComponent },
     { path: 'question-bank', component: QuestionBankComponent },
     { path: 'testGame/:id', component: GameTestComponent },
     { path: 'gameWait/:id', component: GameWaitComponent },
