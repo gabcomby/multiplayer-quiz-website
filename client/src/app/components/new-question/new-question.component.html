@@ -1,9 +1,9 @@
 <div id="newQuestion">
-    <div id="buttonAdd">
+    <div id="buttonAdd" *ngIf="!fromBank">
         <button type="button" mat-raised-button color="accent" (click)="createQuestionShown = true">Créer Question</button>
         <button type="button" mat-raised-button color="accent" (click)="this.addFromQuestionBank = true">Ajouter de la banque de question</button>
     </div>
-    <div id="createQuestion" *ngIf="createQuestionShown">
+    <div id="createQuestion" *ngIf="createQuestionShown || fromBank">
         <p>Ajouter des questions:</p>
         <mat-form-field>
             <mat-label>Question</mat-label>

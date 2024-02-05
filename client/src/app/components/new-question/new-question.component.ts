@@ -20,12 +20,14 @@ export class NewQuestionComponent {
     addQuestion(event: Choice[], onlyAddQuestionBank: boolean): void {
         const newQuestion = this.createNewQuestion(event);
         if (this.validateQuestion(newQuestion)) {
+            // this.registerQuestion.emit(newQuestion);
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
                 this.resetComponent();
             } else {
-                // console.log('maxime');
+                this.questionService.addQuestionBank(newQuestion);
             }
+
             if (this.addBankQuestion) {
                 // devrait faire la meme méthode que maxime appel en haut lorsqu'il crée une nouvelle fonction
                 // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute

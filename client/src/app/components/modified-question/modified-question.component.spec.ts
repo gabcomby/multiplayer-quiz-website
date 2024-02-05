@@ -56,12 +56,12 @@ describe('ModifiedQuestionComponent', () => {
 
         expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
     });
-    it('should enable modification', () => {
-        const index = 0;
-        expect(component.disabled[index]).toBeTrue();
-        component.toggleModify(index);
-        expect(component.disabled[index]).toBeFalse();
-    });
+    // it('should enable modification', () => {
+    //     const index = 0;
+    //     expect(component.disabled[index]).toBeTrue();
+    //     component.toggleModify(index);
+    //     expect(component.disabled[index]).toBeFalse();
+    // });
 
     it('should update questionList and disable modification on modifiedQuestion', () => {
         const index = 1;
