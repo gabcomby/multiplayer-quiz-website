@@ -55,6 +55,14 @@ describe('NewQuestionComponent', () => {
             { text: '1', isValid: false },
             { text: '2', isValid: true },
         ];
+        // const form= new formBuilder.group({
+        //     text: ['', Validators.required],
+        //     isCorrect: false,
+        // });
+        // const mockGameForm = new FormGroup({
+        //     text: new FormControl('Test Game'),
+        //     isCorrect: new FormControl('Description'),
+        // });
         component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', lastModification: new Date() };
         const mockOnlyAddQuestionBank = true;
         component.addQuestion(newChoices, mockOnlyAddQuestionBank);

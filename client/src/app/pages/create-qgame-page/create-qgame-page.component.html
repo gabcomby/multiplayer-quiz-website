@@ -27,7 +27,7 @@
                     <input matInput type="number" class="example-right-align" placeholder="10" min="10" max="60" formControlName="time" />
                 </mat-form-field>
 
-                <div id="addQuestion" *ngIf="addQuestionShown">
+                <div id="addQuestion">
                     <app-new-question [fromBank]="fromBank"></app-new-question>
                 </div>
             </div>
@@ -38,7 +38,7 @@
         </div>
         <div id="registerGame">
             <mat-checkbox type="checkbox" formControlName="visibility">Rendre le jeu visible</mat-checkbox>
-            <button id="registerButton"type="button" (click)="onSubmit(gameForm)" mat-raised-button color="accent">Enregistrer le jeu</button>
+            <button id="registerButton"type="button" (click)="onSubmit()" mat-raised-button color="accent">Enregistrer le jeu</button>
         </div>
     </form>
 </div>
