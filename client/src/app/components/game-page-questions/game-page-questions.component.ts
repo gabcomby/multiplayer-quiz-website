@@ -73,11 +73,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     toggleAnswer(index: number) {
         if (this.timerExpired) return;
-        const answerIdx = this.selectedChoices.indexOf(index);
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
         }
-        if (answerIdx > MINUS_ONE) {
+        const answerIdx = this.selectedChoices.indexOf(index);
+        /* eslint-disable-next-line */
+        if (answerIdx > -1) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
@@ -95,23 +96,19 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     calculateScoreForTheQuestion(): void {
+        let score = 0;
+
         if (this.checkIfMultipleChoice()) {
             const pointPerCorrectAnswer = this.mark / this.numberOfCorrectAnswers();
-            const rightAnswers = this.calculateRightAnswers();
-            let score = pointPerCorrectAnswer * rightAnswers;
-            score = this.calculatePenaltiesAndFinalScore(score, pointPerCorrectAnswer);
-            if (score === this.mark) this.answerStatus = this.answerStatusEnum.Correct;
-            else if (score === 0) this.answerStatus = this.answerStatusEnum.Wrong;
-            else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
-            // this.scoreForTheQuestion.emit(score);
-        } else {
-            this.answerStatus = this.answerStatusEnum.Wrong;
-            if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
-                this.answerStatus = this.answerStatusEnum.Correct;
-            }
-            // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
-            // this.scoreForTheQuestion.emit(score);
+            score = this.calculateScore(pointPerCorrectAnswer * this.calculateRightAnswers(), pointPerCorrectAnswer);
+        } else if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
+            score = this.mark;
         }
+
+        this.answerStatus =
+            score === this.mark ? this.answerStatusEnum.Correct : score === 0 ? this.answerStatusEnum.Wrong : this.answerStatusEnum.PartiallyCorrect;
+
+        // this.scoreForTheQuestion.emit(score);
     }
 
     private checkIfNumberValid(): boolean {
@@ -122,7 +119,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         return this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea';
     }
 
-    private calculatePenaltiesAndFinalScore(score: number, pointPerCorrectAnswer: number): number {
+    private calculateScore(score: number, pointPerCorrectAnswer: number): number {
         let finalScore = score;
         if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
             const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
