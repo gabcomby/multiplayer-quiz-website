@@ -28,6 +28,23 @@ export class ModifiedQuestionComponent implements OnInit {
         });
     }
 
+    // addChoice() {
+    //     if (this.questionList.length < 4) {
+    //         this.answers.push(this.createAnswerField());
+    //     } else {
+    //         alert('maximum 4 choix');
+    //     }
+
+    //     this.questionList.forEach((question) => {
+    //         if (question.choices?.length < 4) {
+    //             if (question.choices.length !== 0) {
+    //                 if (question.choices.length > 2) {
+    //                     question.choices.splice(index, 1);
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
     removeChoice(index: number) {
         this.questionList.forEach((question) => {
             if (question.choices) {

@@ -83,6 +83,7 @@ export class CreateQGamePageComponent implements OnInit {
         if (this.gameId) {
             if (await isValidGame(this.gameFromDB, this.gameService, false)) {
                 if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
+                    // console.log(this.gameFromDB);
                     this.gameService.patchGame(this.gameFromDB);
                 } else {
                     this.gameService.createGame(this.gameFromDB);
