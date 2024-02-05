@@ -142,26 +142,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         }
     }
 
-    // private calculateRightAnswers(): number {
-    //     let rightAnswers = 0;
-    //     for (const index of this.selectedChoices) {
-    //         if (this.choices[index].isCorrect) {
-    //             rightAnswers++;
-    //         }
-    //     }
-    //     return rightAnswers;
-    // }
-
-    // private numberOfExpectedAnswers(): number {
-    //     let count = 0;
-    //     for (const choice of this.choices) {
-    //         if (choice.isCorrect) {
-    //             count++;
-    //         }
-    //     }
-    //     return count;
-    // }
-
     private checkIfMultipleChoice(): boolean {
         let count = 0;
         for (const choice of this.choices) {
