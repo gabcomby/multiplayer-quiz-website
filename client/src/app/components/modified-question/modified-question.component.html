@@ -41,6 +41,9 @@
                     <mat-checkbox [(ngModel)]="element.isCorrect" name="correctGroup">Correct</mat-checkbox>
                     
                 </div>
+                <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add">
+                    <mat-icon>add</mat-icon>
+                </button>
             </div>
 
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">
