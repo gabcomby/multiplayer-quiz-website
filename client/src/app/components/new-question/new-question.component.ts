@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',
@@ -8,7 +9,7 @@ import { QuestionService } from '@app/services/question.service';
     styleUrls: ['./new-question.component.scss'],
 })
 export class NewQuestionComponent {
-    @Input() fromNewGame: boolean;
+    @Input() fromBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
     question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date() };
@@ -20,13 +21,21 @@ export class NewQuestionComponent {
             type: this.question.type,
             text: this.question.text,
             points: this.question.points,
-            id: this.questionService.getQuestion().length.toString(),
+            id: generateNewId(),
             choices: event.map((item) => ({ ...item })),
             lastModification: new Date(),
         };
-        if (newQuestion.text !== '' && newQuestion.points !== 0) {
+        if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
             if (!onlyAddQuestionBank) {
                 this.questionService.addQuestion(newQuestion);
+                this.question.text = '';
+                this.question.points = 10;
+                this.question.choices = [];
+                event.forEach((element) => {
+                    element.text = '';
+                    element.isCorrect = false;
+                });
+                this.addBankQuestion = false;
             } else {
                 // console.log('maxime');
             }
@@ -35,11 +44,6 @@ export class NewQuestionComponent {
                 // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute
             }
         }
-
-        this.question.text = '';
-        this.question.points = 10;
-        this.question.choices = [];
-        this.addBankQuestion = false;
     }
     addQuestionFromBank(event: Question[]): void {
         event.forEach((element) => this.questionService.addQuestion(element));

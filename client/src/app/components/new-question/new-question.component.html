@@ -19,7 +19,7 @@
             <input type="checkbox" [(ngModel)]="addBankQuestion" />
         </div>
         <p>Choix de reponse:</p>
-        <app-choice (registerAnswer)="addQuestion($event, fromNewGame)"> </app-choice>
+        <app-choice (registerAnswer)="addQuestion($event, fromBank)"> </app-choice>
         <button type="button" mat-raised-button color="warn" (click)="createQuestionShown = false">Fermer</button>
     </div>
 </div>

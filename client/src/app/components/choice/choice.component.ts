@@ -57,6 +57,7 @@ export class ChoiceComponent {
         }
     }
 
+
     addAnswer() {
         let goodAnswer = 0;
         const answersIterator = this.answers.controls.values();
@@ -74,4 +75,23 @@ export class ChoiceComponent {
             console.log('Au moins une bonne reponse');
         }
     }
+
+    //     if (goodAnswer < 1 || goodAnswer === this.answers.length) {
+    //         alert('Au moins une bonne réponse et une mauvaise réponse');
+    //     } else if (this.answerValid(this.answers)) {
+    //         this.registerAnswer.emit(this.answers);
+    //     }
+    // }
+    // answerValid(answer: Choice[]) {
+    //     let valid = true;
+    //     answer.forEach((elem) => {
+    //         if (elem.text === '') {
+    //             valid = false;
+    //         }
+    //         if (elem.text.trim().length === 0) {
+    //             valid = false;
+    //         }
+    //     });
+    //     return valid;
+    // }
 }
