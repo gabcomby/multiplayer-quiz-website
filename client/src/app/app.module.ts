@@ -6,7 +6,6 @@ import { MatListModule } from '@angular/material/list';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -46,7 +45,6 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
         GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
-        PlayAreaComponent,
         GamePageLivechatComponent,
         AdminPageComponent,
         NewGamePageComponent,

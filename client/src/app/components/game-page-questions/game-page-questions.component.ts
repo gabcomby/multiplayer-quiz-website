@@ -10,8 +10,6 @@ enum AnswerStatusEnum {
     PartiallyCorrect,
 }
 
-const MINUS_ONE = -1;
-
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -38,11 +36,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
-        if (this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea') {
+        if (this.verifyActiveElement()) {
             this.buttonPressed = event.key;
             if (!Number.isNaN(Number(this.buttonPressed))) {
-                const stringAsNumber = Number(this.buttonPressed);
-                if (stringAsNumber > 0 && stringAsNumber <= this.choices.length) this.toggleAnswer(stringAsNumber - 1);
+                if (this.checkIfNumberValid()) {
+                    this.toggleAnswer(Number(this.buttonPressed) - 1);
+                }
             } else if (this.buttonPressed === 'Enter') {
                 this.submitAnswer();
             }
@@ -72,11 +71,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     toggleAnswer(index: number) {
         if (this.timerExpired) return;
-        const answerIdx = this.selectedChoices.indexOf(index);
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
         }
-        if (answerIdx > MINUS_ONE) {
+        const answerIdx = this.selectedChoices.indexOf(index);
+        /* eslint-disable-next-line */
+        if (answerIdx > -1) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
@@ -94,32 +94,44 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     calculateScoreForTheQuestion(): void {
+        let score = 0;
+
         if (this.checkIfMultipleChoice()) {
             const pointPerCorrectAnswer = this.mark / this.numberOfCorrectAnswers();
-            const rightAnswers = this.calculateRightAnswers();
-            let score = pointPerCorrectAnswer * rightAnswers;
-            score = this.calculatePenaltiesAndFinalScore(score, pointPerCorrectAnswer);
-            if (score === this.mark) this.answerStatus = this.answerStatusEnum.Correct;
-            else if (score === 0) this.answerStatus = this.answerStatusEnum.Wrong;
-            else this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
-            // this.scoreForTheQuestion.emit(score);
-        } else {
+            score = this.calculateScore(pointPerCorrectAnswer * this.calculateRightAnswers(), pointPerCorrectAnswer);
+        } else if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
+            score = this.mark;
+        }
+
+        this.defineAnswerStatus(score);
+
+        // this.scoreForTheQuestion.emit(score);
+    }
+
+    private defineAnswerStatus(score: number): void {
+        if (score === this.mark) {
+            this.answerStatus = this.answerStatusEnum.Correct;
+        } else if (score === 0) {
             this.answerStatus = this.answerStatusEnum.Wrong;
-            if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
-                this.answerStatus = this.answerStatusEnum.Correct;
-            }
-            // const score = this.answerStatus === this.answerStatusEnum.Correct ? this.mark : 0;
-            // this.scoreForTheQuestion.emit(score);
+        } else {
+            this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
         }
     }
 
-    private calculatePenaltiesAndFinalScore(score: number, pointPerCorrectAnswer: number): number {
-        let finalScore = score;
+    private checkIfNumberValid(): boolean {
+        return Number(this.buttonPressed) > 0 && Number(this.buttonPressed) <= this.choices.length;
+    }
+
+    private verifyActiveElement(): boolean {
+        return this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea';
+    }
+
+    private calculateScore(score: number, pointPerCorrectAnswer: number): number {
         if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
             const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
-            finalScore -= wrongAnswers * pointPerCorrectAnswer;
+            score -= wrongAnswers * pointPerCorrectAnswer;
         }
-        return finalScore;
+        return score;
     }
 
     private calculateRightAnswers(): number {

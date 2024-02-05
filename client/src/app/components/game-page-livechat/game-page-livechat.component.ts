@@ -1,7 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
-const NOT_EXIST = -1;
 const DISAPPEAR_DELAY = 10000;
 
 @Component({
@@ -31,24 +30,21 @@ export class GamePageLivechatComponent {
     }
 
     sendMessage(): void {
-        if (this.newMessage.trim() !== '') {
+        this.newMessage = this.newMessage.trim();
+        if (this.newMessage) {
             const message = { text: this.newMessage, sender: this.playerName, visible: true };
             this.messages.push(message);
 
-            setTimeout(() => {
-                this.hideMessage(message);
-            }, DISAPPEAR_DELAY);
-
-            this.newMessage = '';
-        } else {
-            this.newMessage = '';
+            setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
         }
+        this.newMessage = '';
     }
 
     hideMessage(message: { text: string; sender: string; visible: boolean }): void {
         message.visible = false;
         const index = this.messages.indexOf(message);
-        if (index !== NOT_EXIST) {
+        /* eslint-disable-next-line */
+        if (index !== -1) {
             this.messages.splice(index, 1);
         }
     }
