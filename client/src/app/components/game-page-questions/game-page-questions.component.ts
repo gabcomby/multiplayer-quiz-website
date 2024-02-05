@@ -36,7 +36,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         private answerStateService: AnswerStateService,
     ) {}
 
-    // TODO: Fix the issue where typing in chat also triggers the buttonDetect function
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         if (this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea') {

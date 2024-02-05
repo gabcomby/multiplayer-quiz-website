@@ -104,4 +104,23 @@ describe('GamePageQuestionsComponent', () => {
         });
         expect(component.calculateScoreForTheQuestion).toHaveBeenCalled();
     });
+
+    it('should allow to choose answers with the keyboard', () => {
+        spyOn(component, 'toggleAnswer');
+        const eventAnswer = new KeyboardEvent('keypress', { key: '1' });
+        component.buttonDetect(eventAnswer);
+        expect(component.toggleAnswer).toHaveBeenCalledWith(0);
+        const eventSubmit = new KeyboardEvent('keypress', { key: 'Enter' });
+        spyOn(component, 'submitAnswer');
+        component.buttonDetect(eventSubmit);
+        expect(component.submitAnswer).toHaveBeenCalled();
+    });
+
+    it('should reset question and answer status on changes', () => {
+        component.ngOnChanges({
+            question: new SimpleChange(null, 'New question', false),
+        });
+        expect(component.selectedChoices.length).toBe(0);
+        expect(component.answerIsLocked).toBe(false);
+    });
 });
