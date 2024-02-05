@@ -24,6 +24,7 @@ export class Application {
         private readonly gameController: GameController,
         private readonly authController: AuthController,
         private readonly questionsController: QuestionsController,
+        private readonly matchController: MatchController,
     ) {
         this.app = express();
 
