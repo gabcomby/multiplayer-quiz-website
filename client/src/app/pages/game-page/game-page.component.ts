@@ -4,7 +4,6 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
 import { MatchService } from '@app/services/match.service';
-import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -18,6 +17,7 @@ export class GamePageComponent implements OnInit {
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
     currentMatch: Match;
+    matchId: string;
 
     gameScore: { name: string; score: number }[] = [];
 
@@ -26,7 +26,7 @@ export class GamePageComponent implements OnInit {
     constructor(
         private timerService: TimerService,
         private gameService: GameService,
-        private playerService: PlayerService,
+        // private playerService: PlayerService,
         private router: Router,
         private matchService: MatchService,
     ) {}
@@ -36,7 +36,7 @@ export class GamePageComponent implements OnInit {
     }
 
     updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchService.updatePlayerScore('matchtest', 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
+        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
             next: (data) => {
                 this.currentMatch.playerList[0] = data;
             },
@@ -47,15 +47,16 @@ export class GamePageComponent implements OnInit {
     }
 
     handleGameLeave() {
-        this.matchService.deleteMatch('matchtest').subscribe();
+        this.matchService.deleteMatch(this.matchId).subscribe();
         this.timerService.killTimer();
         this.router.navigate(['/']);
     }
 
     ngOnInit() {
         this.fetchGameData('8javry');
-        this.initializePlayerScore();
-        this.matchService.createNewMatch({ id: 'matchtest', playerList: [] }).subscribe({
+        // this.initializePlayerScore();
+        this.matchId = crypto.randomUUID();
+        this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
             next: (data) => {
                 this.currentMatch = data;
             },
@@ -63,7 +64,7 @@ export class GamePageComponent implements OnInit {
                 alert(error.message);
             },
         });
-        this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, 'matchtest').subscribe({
+        this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
             next: (data) => {
                 this.currentMatch = data;
             },
@@ -73,12 +74,12 @@ export class GamePageComponent implements OnInit {
         });
     }
 
-    initializePlayerScore() {
-        this.playerName = this.playerService.getPlayerName();
-        if (this.playerName) {
-            this.gameScore.push({ name: this.playerName, score: 0 });
-        }
-    }
+    // initializePlayerScore() {
+    //     this.playerName = this.playerService.getPlayerName();
+    //     if (this.playerName) {
+    //         this.gameScore.push({ name: this.playerName, score: 0 });
+    //     }
+    // }
 
     fetchGameData(gameId: string): void {
         this.gameService.getGame(gameId).subscribe({
@@ -110,9 +111,7 @@ export class GamePageComponent implements OnInit {
             }, TIME_BETWEEN_QUESTIONS);
         } else {
             setTimeout(() => {
-                this.router.navigate(['/']);
-                this.timerService.killTimer();
-                this.matchService.deleteMatch('matchtest').subscribe();
+                this.handleGameLeave();
             }, TIME_BETWEEN_QUESTIONS);
         }
     }
