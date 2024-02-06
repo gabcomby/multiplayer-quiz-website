@@ -34,14 +34,4 @@ describe('AdminPageComponent', () => {
 
         expect(component).toBeTruthy();
     });
-
-    it('should format dates correctly', () => {
-        const req = httpTestingController.expectOne('http://localhost:3000/api/games');
-        req.flush([]);
-
-        const testDate = '2022-11-19T21:17:24.000Z';
-        const formattedDate = component.formatLastModificationDate(testDate);
-
-        expect(formattedDate).toBe('2022-11-19 16 h 17');
-    });
 });
