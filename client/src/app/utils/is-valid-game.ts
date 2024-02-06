@@ -60,6 +60,10 @@ const validateQuestion = (question: Question, index: number, errors: string[]): 
     if (!question.type) errors.push(`Question ${index + 1}: Type is required`);
     if (!question.text) errors.push(`Question ${index + 1}: Text is required`);
     if (!question.points) errors.push(`Question ${index + 1}: Points are required`);
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    if (question.points % 10 !== 0) {
+        errors.push(`Question ${index + 1}: Les points doivent être des multiples de 10`);
+    }
     if (question.text.trim().length === 0) errors.push('not just whitespace');
 
     validateQuestionChoices(question, index, errors);

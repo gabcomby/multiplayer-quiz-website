@@ -74,27 +74,65 @@ describe('ChoiceComponent', () => {
         component.removeChoice(1, component.answers);
         expect(component.answers.length).toBe(2);
     });
+    it('should switch the answer selected and the one on top', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
 
-    // it('should move the answers in the array after the drop', () => {
-    //     const event = {
-    //         previousIndex: 1,
-    //         currentIndex: 2,
-    //     } as CdkDragDrop<Question[]>;
+        component.moveQuestionUp(1, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test2', isCorrect: false },
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
 
-    //     component.answers = component.answers = [
-    //         { text: 'test1', isCorrect: true },
-    //         { text: 'test2', isCorrect: false },
-    //         { text: 'test3', isCorrect: false },
-    //     ];
+    it('should not switch the answers if its the first choice', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
 
-    //     component.drop(event);
+        component.moveQuestionUp(0, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
 
-    //     expect(component.answers).toEqual([
-    //         { text: 'test1', isCorrect: true },
-    //         { text: 'test3', isCorrect: false },
-    //         { text: 'test2', isCorrect: false },
-    //     ]);
-    // });
+    it('should switch the answer selected and the one underneath', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.moveQuestionDown(1, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+            { text: 'test2', isCorrect: false },
+        ]);
+    });
+
+    it('should not switch the answers if its the last choice', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.moveQuestionDown(3, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
 
     it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {
         component.answers = [

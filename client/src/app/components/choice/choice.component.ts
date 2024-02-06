@@ -34,9 +34,6 @@ export class ChoiceComponent {
             alert('minimum 2');
         }
     }
-    // drop(event: CdkDragDrop<Question[]>) {
-    //     moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
-    // }
 
     moveQuestionUp(index: number, choices: Choice[]): void {
         if (index > 0) {
