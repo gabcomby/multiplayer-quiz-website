@@ -26,11 +26,12 @@
                 </mat-form-field>
                 
                 Choix de réponse :
-                <div *ngFor="let element of question.choices; index as j">
+                <!-- <div *ngFor="let element of question.choices; index as j"> -->
+                    <app-choice [question]="question.choices"></app-choice>
                 <!-- <mat-form-field>  -->
                     <!-- {{ j }}-<input MatInput class="input_edit" type="text" [(ngModel)]="element.text" /> -->
                 <!-- </mat-form-field> -->
-                <mat-form-field>
+                <!-- <mat-form-field>
                     <mat-label> {{ j+1 }}-</mat-label>
                     <input matInput class="input_edit" type="text" [(ngModel)]="element.text" />
                 </mat-form-field>
@@ -38,12 +39,12 @@
                     <button mat-icon-button (click)="removeChoice(j)">
                         <mat-icon>remove_circle_outline</mat-icon>
                     </button>
-                    <mat-checkbox [(ngModel)]="element.isCorrect" name="correctGroup">Correct</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="element.isCorrect" name="correctGroup">Correct</mat-checkbox> -->
                     
-                </div>
-                <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add">
+                <!-- </div> -->
+                <!-- <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add">
                     <mat-icon>add</mat-icon>
-                </button>
+                </button> -->
             </div>
 
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">

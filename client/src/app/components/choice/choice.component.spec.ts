@@ -42,14 +42,14 @@ describe('ChoiceComponent', () => {
 
         expect(component.answers.length).toBe(2);
 
-        component.removeChoice(0);
+        component.removeChoice(0, component.answers);
         expect(component.answers.length).toBe(2);
 
-        component.addChoice();
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(3);
 
-        component.addChoice();
-        component.addChoice();
+        component.addChoice(component.answers);
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(MAX_CHOICES);
     });
     // IL PASSE
@@ -60,7 +60,7 @@ describe('ChoiceComponent', () => {
             { text: 'test2', isCorrect: true },
         ];
 
-        component.addChoice();
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(3);
     });
 
@@ -71,7 +71,7 @@ describe('ChoiceComponent', () => {
             { text: 'test3', isCorrect: false },
         ];
 
-        component.removeChoice(1);
+        component.removeChoice(1, component.answers);
         expect(component.answers.length).toBe(2);
     });
 
