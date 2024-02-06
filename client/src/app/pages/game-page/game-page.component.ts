@@ -26,7 +26,6 @@ export class GamePageComponent implements OnInit {
     constructor(
         private timerService: TimerService,
         private gameService: GameService,
-        // private playerService: PlayerService,
         private router: Router,
         private matchService: MatchService,
     ) {}
@@ -54,7 +53,6 @@ export class GamePageComponent implements OnInit {
 
     ngOnInit() {
         this.fetchGameData('8javry');
-        // this.initializePlayerScore();
         this.matchId = crypto.randomUUID();
         this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
             next: (data) => {
@@ -73,13 +71,6 @@ export class GamePageComponent implements OnInit {
             },
         });
     }
-
-    // initializePlayerScore() {
-    //     this.playerName = this.playerService.getPlayerName();
-    //     if (this.playerName) {
-    //         this.gameScore.push({ name: this.playerName, score: 0 });
-    //     }
-    // }
 
     fetchGameData(gameId: string): void {
         this.gameService.getGame(gameId).subscribe({
