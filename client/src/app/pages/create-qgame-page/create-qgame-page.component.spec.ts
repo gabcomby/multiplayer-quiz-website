@@ -62,6 +62,7 @@ describe('CreateQGamePageComponent', () => {
                 questions: [{ type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate }],
             } as Game),
         });
+        
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -94,6 +95,118 @@ describe('CreateQGamePageComponent', () => {
         expect(component.gameForm.get('name')).toBeTruthy();
         expect(component.gameForm.get('description')).toBeTruthy();
         expect(component.gameForm.get('time')).toBeTruthy();
+    });
+    it('find game with id in list should return game if found', () => {
+        component.gamesFromDB = [
+            {
+                id: '123',
+                title: 'allo',
+                description: 'test',
+                isVisible: false,
+                duration: 10,
+                lastModification: defaultDate,
+                questions: [
+                    {
+                        type: 'QCM',
+                        text: 'Ceci est une question de test',
+                        points: 10,
+                        id: 'dsdsd',
+                        choices: [
+                            { text: '1', isCorrect: false },
+                            { text: '2', isCorrect: true },
+                        ],
+                        lastModification: defaultDate,
+                    },
+                ],
+            },
+            {
+                id: '124',
+                title: 'bonjour',
+                description: 'test2',
+                isVisible: false,
+                duration: 20,
+                lastModification: defaultDate,
+                questions: [
+                    {
+                        type: 'QCM',
+                        text: 'Ceci est une question de test',
+                        points: 10,
+                        id: 'dsdsd',
+                        choices: [
+                            { text: '1', isCorrect: false },
+                            { text: '2', isCorrect: true },
+                        ],
+                        lastModification: defaultDate,
+                    },
+                ],
+            },
+        ];
+        component.getGame('123');
+        expect(component.gameFromDB).toEqual({
+            id: '123',
+            title: 'allo',
+            description: 'test',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    choices: [
+                        { text: '1', isCorrect: false },
+                        { text: '2', isCorrect: true },
+                    ],
+                    lastModification: defaultDate,
+                },
+            ],
+        });
+    });
+    it('find game with id in list should return undefined if not found', () => {
+        component.gameFromDB = {
+            id: '',
+            title: '',
+            description: '',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [],
+        };
+        component.gamesFromDB = [
+            {
+                id: '123',
+                title: 'allo',
+                description: 'test',
+                isVisible: false,
+                duration: 10,
+                lastModification: defaultDate,
+                questions: [
+                    {
+                        type: 'QCM',
+                        text: 'Ceci est une question de test',
+                        points: 10,
+                        id: 'dsdsd',
+                        choices: [
+                            { text: '1', isCorrect: false },
+                            { text: '2', isCorrect: true },
+                        ],
+                        lastModification: defaultDate,
+                    },
+                ],
+            },
+        ];
+        component.getGame('124');
+        expect(component.gameFromDB).toEqual({
+            id: '',
+            title: '',
+            description: '',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [],
+        });
     });
 
     it('initialize forms controls with value when gameId is not null', () => {
@@ -172,7 +285,7 @@ describe('CreateQGamePageComponent', () => {
         spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
         spyOn(gameUtilsModule, 'validateDeletedGame').and.returnValue(Promise.resolve(true));
 
-        await component.gameValidationWhenModified().then(() => {
+        component.gameValidationWhenModified().then(() => {
             fixture.detectChanges();
             expect(gameServiceSpy.patchGame).toHaveBeenCalled();
         });
@@ -236,18 +349,12 @@ describe('CreateQGamePageComponent', () => {
         fixture.detectChanges();
     });
 
-    // it('should call createGame from GameService when onSubmit is called with validData', () => {
-    //     // const TIME = 10;
-    //     // const mockGameForm = new FormGroup({
-    //     //     name: new FormControl('Test Game'),
-    //     //     description: new FormControl('Description'),
-    //     //     time: new FormControl(TIME),
-    //     // });
-    //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-    //     component.onSubmit().then(() => {
-    //         expect(component.gameId).toBe(null);
-    //         fixture.detectChanges();
-    //         expect(gameServiceSpy.createGame).toHaveBeenCalled();
-    //     });
-    // });
+    it('should call createGame from GameService when onSubmit is called with validData', () => {
+        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
+        component.onSubmit().then(() => {
+            expect(component.gameId).toBe(null);
+            fixture.detectChanges();
+            expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        });
+    });
 });

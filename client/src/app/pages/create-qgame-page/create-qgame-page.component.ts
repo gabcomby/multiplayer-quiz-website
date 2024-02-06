@@ -18,7 +18,15 @@ export class CreateQGamePageComponent implements OnInit {
     modifiedQuestion: boolean = false;
     gameId: string | null;
     gamesFromDB: Game[] = [];
-    gameFromDB: Game;
+    gameFromDB: Game = {
+        id: '',
+        title: '',
+        description: '',
+        isVisible: false,
+        duration: 10,
+        lastModification: new Date(),
+        questions: [],
+    };
     gameForm: FormGroup;
     dataReady: boolean = false;
 
