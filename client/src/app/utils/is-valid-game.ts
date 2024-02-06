@@ -1,6 +1,7 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 
+const MULTIPLE = 10;
 export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
     const errors: string[] = [];
     validateBasicGameProperties(game, errors);
@@ -60,6 +61,9 @@ const validateQuestion = (question: Question, index: number, errors: string[]): 
     if (!question.type) errors.push(`Question ${index + 1}: Type is required`);
     if (!question.text) errors.push(`Question ${index + 1}: Text is required`);
     if (!question.points) errors.push(`Question ${index + 1}: Points are required`);
+    if (question.points % MULTIPLE !== 0) {
+        errors.push(`Question ${index + 1}: Les points doivent être des multiples de 10`);
+    }
     if (question.text.trim().length === 0) errors.push('not just whitespace');
 
     validateQuestionChoices(question, index, errors);
