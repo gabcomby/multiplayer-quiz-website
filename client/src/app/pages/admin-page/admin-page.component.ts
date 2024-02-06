@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
+import { SocketService } from '@app/services/socket.service';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
@@ -23,6 +24,7 @@ export class AdminPageComponent implements OnInit {
         private router: Router,
         private apiService: ApiService,
         private gameService: GameService,
+        private socketService: SocketService,
     ) {}
 
     ngOnInit() {
@@ -34,6 +36,13 @@ export class AdminPageComponent implements OnInit {
                 alert(`Error fetching games: ${error}`);
             },
         });
+
+        this.socketService.connect();
+        this.socketService.onMessage();
+    }
+
+    sendMessage(): void {
+        this.socketService.sendMessage('Hello from client');
     }
 
     toggleVisibility(gameId: string, isVisible: boolean): void {

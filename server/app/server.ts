@@ -33,11 +33,14 @@ export class Server {
         this.io.on('connection', (socket) => {
             console.log('A user connected');
 
+            socket.on('message', (message) => {
+                console.log('Message received:', message);
+                this.io.emit('message', `Server: ${message}`);
+            });
+
             socket.on('disconnect', () => {
                 console.log('User disconnected');
             });
-
-            // More event handling can be added here
         });
 
         this.server.listen(Server.appPort);
