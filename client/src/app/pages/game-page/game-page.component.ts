@@ -50,7 +50,7 @@ export class GamePageComponent implements OnInit {
     handleGameLeave() {
         this.matchService.deleteMatch(this.matchId).subscribe();
         this.timerService.killTimer();
-        this.router.navigate(['/']);
+        this.router.navigate(['/new-game']);
     }
 
     ngOnInit() {
