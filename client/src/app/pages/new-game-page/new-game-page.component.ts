@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game';
-import { DeleteService } from '@app/services/delete.service';
 import { GameService } from '@app/services/game.service';
+import { Socket, io } from 'socket.io-client';
 
 @Component({
     selector: 'app-new-game-page',
@@ -11,16 +11,31 @@ import { GameService } from '@app/services/game.service';
 export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
-    constructor(
-        private gameService: GameService,
-        private deleteService: DeleteService,
-    ) {
-        this.deleteService.delete$.subscribe((id) => {
-            if (this.gameSelected[id] === true) {
-                window.alert('The game that you selected has been deleted. We suggest you to select another game.');
-            }
+    socket: Socket;
+    constructor(private gameService: GameService) {
+        this.socket = io('http://localhost:3000');
+        this.socket.connect();
+        this.socket.on('connect_error', () => {
+            this.socket.connect();
+            // console.log('Connection Error', error.stack);
         });
+        /* this.socket.connect();
+        this.socket.on('connect_error', (error) => {
+            this.socket.connect();
+            console.log('Connection Error', error);
+        });
+        console.log('socket');
+        this.socket.on('deleteId', (gameId) => {
+            if (this.gameSelected[gameId]) {
+                console.log('deleteComponent');
+                alert('Game ' + gameId + ' has been deleted');
+                window.location.reload();
+            } else {
+                console.log('deleteComponent');
+            }
+        });*/
     }
+
     ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
