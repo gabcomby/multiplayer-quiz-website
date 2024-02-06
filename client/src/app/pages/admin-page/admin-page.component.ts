@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
@@ -25,6 +27,7 @@ export class AdminPageComponent implements OnInit {
         private apiService: ApiService,
         private gameService: GameService,
         private socketService: SocketService,
+        private snackbarService: SnackbarService,
     ) {}
 
     ngOnInit() {
@@ -33,7 +36,7 @@ export class AdminPageComponent implements OnInit {
                 this.dataSource = data;
             },
             error: (error) => {
-                alert(`Error fetching games: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
 
@@ -52,10 +55,10 @@ export class AdminPageComponent implements OnInit {
         game.isVisible = isVisible;
         this.apiService.toggleVisibility(gameId, isVisible).subscribe({
             next: () => {
-                alert('Visibility updated successfully');
+                this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
             },
             error: (error) => {
-                alert(`Error updating visibility: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
     }
@@ -68,9 +71,10 @@ export class AdminPageComponent implements OnInit {
                 setTimeout(() => {
                     this.downloadLink.nativeElement.click();
                 });
+                this.snackbarService.openSnackBar('Le jeu a été exporté avec succès.');
             },
             error: (error) => {
-                alert(`Error fetching game data: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
     }
@@ -82,7 +86,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     handleError(error: string): void {
-        alert(error);
+        this.snackbarService.openSnackBar(error);
     }
 
     async getValidGameTitle(game: Game): Promise<string | null> {
@@ -92,7 +96,7 @@ export class AdminPageComponent implements OnInit {
             );
 
             if (!newName || newName === game.title || newName.length > MAX_GAME_NAME_LENGTH) {
-                this.handleError('Import cancelled.');
+                this.snackbarService.openSnackBar('Le nom du jeu est invalide.');
                 return null;
             }
             return newName;
@@ -118,9 +122,9 @@ export class AdminPageComponent implements OnInit {
             this.dataSource = [...this.dataSource, game];
             this.apiService.createGame(game);
 
-            alert('Game imported successfully');
+            this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
         } catch (error) {
-            this.handleError('Error parsing JSON');
+            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
         }
     }
 
@@ -131,10 +135,10 @@ export class AdminPageComponent implements OnInit {
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
         this.apiService.deleteGame(gameId).subscribe({
             next: () => {
-                alert('Game deleted successfully');
+                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
             },
             error: (error) => {
-                alert(`Error deleting game: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
     }
