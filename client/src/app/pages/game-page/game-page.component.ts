@@ -7,7 +7,7 @@ import { MatchService } from '@app/services/match.service';
 import { PlayerService } from '@app/services/player.service';
 import { TimerService } from '@app/services/timer.service';
 
-const TIME_BETWEEN_QUESTIONS = 4000;
+const TIME_BETWEEN_QUESTIONS = 3000;
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -47,9 +47,9 @@ export class GamePageComponent implements OnInit {
     }
 
     handleGameLeave() {
-        this.router.navigate(['/']);
-        this.timerService.killTimer();
         this.matchService.deleteMatch('matchtest').subscribe();
+        this.timerService.killTimer();
+        this.router.navigate(['/']);
     }
 
     ngOnInit() {
