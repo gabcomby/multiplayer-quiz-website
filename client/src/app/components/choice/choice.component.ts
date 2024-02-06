@@ -1,7 +1,6 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice } from '@app/interfaces/game';
 
 // const MAX_CHOICES = 4;
 @Component({
@@ -10,7 +9,7 @@ import { Choice, Question } from '@app/interfaces/game';
     styleUrls: ['./choice.component.scss'],
 })
 export class ChoiceComponent {
-    @Input() questionString: string;
+    @Input() question: Choice[] | undefined;
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
     type: string = '0';
     answers: Choice[] = [
@@ -18,25 +17,40 @@ export class ChoiceComponent {
         { text: '', isCorrect: false },
     ];
 
-    addChoice() {
-        // if (this.answers.length >= 2 && this.answers.length < MAX_CHOICES) {
-        // this.answers.push({ text: '', isCorrect: false });
-        this.answers = [...this.answers, { text: '', isCorrect: false }];
-        // } else {
-        //     alert('minimum 2 choix et maximum 4');
-        // }
+    addChoice(choices: Choice[]) {
+        if (choices) {
+            if (choices && choices.length >= 2 && choices.length < MAX_CHOICES) {
+                choices.push({ text: '', isCorrect: false });
+            }
+        } else {
+            alert('minimum 2 choix et maximum 4');
+        }
     }
 
-    removeChoice(index: number) {
-        if (this.answers.length > 2) {
-            this.answers.splice(index, 1);
+    removeChoice(index: number, choices: Choice[]) {
+        if (choices.length > 2) {
+            choices.splice(index, 1);
         } else {
             alert('minimum 2');
         }
     }
-    drop(event: CdkDragDrop<Question[]>) {
-        moveItemInArray(this.answers, event.previousIndex, event.currentIndex);
+
+    moveQuestionUp(index: number, choices: Choice[]): void {
+        if (index > 0) {
+            const temp = choices[index];
+            choices[index] = choices[index - 1];
+            choices[index - 1] = temp;
+        }
     }
+
+    moveQuestionDown(index: number, choices: Choice[]): void {
+        if (index < choices.length - 1) {
+            const temp = choices[index];
+            choices[index] = choices[index + 1];
+            choices[index + 1] = temp;
+        }
+    }
+
     addAnswer() {
         let goodAnswer = 0;
         for (const answer of this.answers) {
