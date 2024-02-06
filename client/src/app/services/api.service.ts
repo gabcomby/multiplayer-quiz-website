@@ -31,10 +31,6 @@ export class ApiService {
         return this.http.post(`${this.apiUrl}/games`, gameData);
     }
 
-    toggleVisibility(gameId: string, isVisible: boolean) {
-        return this.http.patch(`${this.apiUrl}/games/${gameId}`, { isVisible });
-    }
-
     updateGame(game: Game) {
         return this.http.patch(`${this.apiUrl}/games/${game.id}`, game).pipe(catchError(this.handleError<Game>('updateGame')));
     }

@@ -64,7 +64,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     exportGameAsJson(game: Game): void {
-        this.gameService.getGame(game.id).subscribe({
+        this.apiService.getGame(game.id).subscribe({
             next: (data) => {
                 const json = JSON.stringify(data);
                 this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);

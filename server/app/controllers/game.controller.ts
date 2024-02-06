@@ -43,7 +43,7 @@ export class GameController {
 
         this.router.patch('/:id', async (req: Request, res: Response) => {
             try {
-                const game = await this.gameService.patchGame(req.body);
+                const game = await this.gameService.updateGame(req.body);
                 res.json(game);
             } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error updating game' });
