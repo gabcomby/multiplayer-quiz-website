@@ -22,7 +22,7 @@ import { MatRadioModule } from '@angular/material/radio';
 // import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // import { MatSliderModule } from '@angular/material/slider';
-// import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 // import { MatSortModule } from '@angular/material/sort';
 // import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
@@ -55,7 +55,7 @@ const modules = [
     // MatSidenavModule,
     // MatSliderModule,
     MatSlideToggleModule,
-    // MatSnackBarModule,
+    MatSnackBarModule,
     // MatSortModule,
     // MatStepperModule,
     MatTableModule,
