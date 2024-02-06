@@ -6,7 +6,6 @@ enum AnswerStatusEnum {
     Correct,
     Wrong,
     Unanswered,
-    PartiallyCorrect,
 }
 
 describe('GamePageQuestionsComponent', () => {
@@ -41,7 +40,7 @@ describe('GamePageQuestionsComponent', () => {
         ];
 
         component.mark = 10;
-        component.selectedChoices = [0]; // Selecting the correct answer
+        component.selectedChoices = [0];
         component.calculateScoreForTheQuestion();
         expect(component.answerStatus).toEqual(AnswerStatusEnum.Correct);
         // Uncomment the next line once we emit the score
