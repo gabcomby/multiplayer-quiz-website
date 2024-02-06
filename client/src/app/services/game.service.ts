@@ -48,7 +48,7 @@ export class GameService {
     }
 
     async patchGame(game: Game): Promise<Game> {
-        const game$ = this.http.patch<Game>(this.apiUrl, game);
+        const game$ = this.http.patch<Game>(`${this.apiUrl}/${game.id}`, game);
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
