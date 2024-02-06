@@ -1,13 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-// import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import * as gameUtilsModule from '@app/utils/is-valid-game';
-
-import { FormControl, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -62,7 +60,6 @@ describe('CreateQGamePageComponent', () => {
                 questions: [{ type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate }],
             } as Game),
         });
-        
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({

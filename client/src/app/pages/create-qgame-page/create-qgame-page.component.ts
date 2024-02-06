@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
@@ -33,7 +33,8 @@ export class CreateQGamePageComponent implements OnInit {
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
-        private route: ActivatedRoute, // private router: Router,
+        private route: ActivatedRoute,
+        private router: Router,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
@@ -74,7 +75,8 @@ export class CreateQGamePageComponent implements OnInit {
             this.gameValidationWhenModified();
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
-            // location.reload();
+            // je veux retourner a admin
+            this.router.navigate(['/home']);
         }
     }
     toggleModifiedQuestion() {
