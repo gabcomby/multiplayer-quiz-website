@@ -3,7 +3,6 @@
         <h1
             [class.correct-answer]="timerExpired && answerStatus === answerStatusEnum.Correct"
             [class.wrong-answer]="timerExpired && answerStatus === answerStatusEnum.Wrong"
-            [class.partial-answer]="timerExpired && answerStatus === answerStatusEnum.PartiallyCorrect"
         >
             {{ question }}
         </h1>

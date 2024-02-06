@@ -7,7 +7,6 @@ enum AnswerStatusEnum {
     Correct,
     Wrong,
     Unanswered,
-    PartiallyCorrect,
 }
 
 @Component({
@@ -97,8 +96,11 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         let score = 0;
 
         if (this.checkIfMultipleChoice()) {
-            const pointPerCorrectAnswer = this.mark / this.numberOfCorrectAnswers();
-            score = this.calculateScore(pointPerCorrectAnswer * this.calculateRightAnswers(), pointPerCorrectAnswer);
+            if (this.checkMultipleAnswersCorrect()) {
+                score = this.mark;
+            } else {
+                score = 0;
+            }
         } else if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
             score = this.mark;
         }
@@ -113,8 +115,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.answerStatus = this.answerStatusEnum.Correct;
         } else if (score === 0) {
             this.answerStatus = this.answerStatusEnum.Wrong;
-        } else {
-            this.answerStatus = this.answerStatusEnum.PartiallyCorrect;
         }
     }
 
@@ -126,32 +126,20 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         return this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea';
     }
 
-    private calculateScore(score: number, pointPerCorrectAnswer: number): number {
-        if (this.selectedChoices.length > this.numberOfExpectedAnswers()) {
-            const wrongAnswers = this.selectedChoices.length - this.numberOfExpectedAnswers();
-            score -= wrongAnswers * pointPerCorrectAnswer;
-        }
-        return score;
-    }
-
-    private calculateRightAnswers(): number {
-        let rightAnswers = 0;
-        for (const index of this.selectedChoices) {
-            if (this.choices[index].isCorrect) {
-                rightAnswers++;
+    private checkMultipleAnswersCorrect(): boolean {
+        let correctAnswers = 0;
+        for (const answer of this.selectedChoices) {
+            if (this.choices[answer].isCorrect) {
+                correctAnswers++;
+            } else if (!this.choices[answer].isCorrect) {
+                return false;
             }
         }
-        return rightAnswers;
-    }
-
-    private numberOfExpectedAnswers(): number {
-        let count = 0;
-        for (const choice of this.choices) {
-            if (choice.isCorrect) {
-                count++;
-            }
+        if (correctAnswers === this.numberOfCorrectAnswers()) {
+            return true;
+        } else {
+            return false;
         }
-        return count;
     }
 
     private checkIfMultipleChoice(): boolean {
