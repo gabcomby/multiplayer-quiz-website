@@ -50,18 +50,54 @@ describe('ModifiedQuestionComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+    it('should call loadQuestionsFromBank when listQUestionBank is not null', () => {
+        component.listQuestionBank = true;
+        expect(component.loadQuestionsFromBank).toHaveBeenCalled();
+    });
 
-    it('should initialize questionList with data from QuestionService', () => {
-        fixture.detectChanges();
+    it('should initiliaze questionList with getQuestion from service and disabled modification', async () => {
+        await component.loadQuestionsFromBank();
+        expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
+        expect(component.disabled).toEqual([true, true]);
+    });
+    it('should add question to list and add true to disabled when eventEmitter from service', () => {
+        spyOn(questionServiceSpy.onQuestionAdded, 'emit');
+        const mockQuestion = {
+            type: 'QCM',
+            text: 'Ceci est une question de test',
+            points: 10,
+            id: 'dsdsd',
+            lastModification: new Date(),
+        };
+        questionServiceSpy.onQuestionAdded.emit(mockQuestion);
+        expect(component.questionList).toContain(mockQuestion);
+        expect(component.disabled).toContain(true);
+    });
 
+    it('should initialize questionList with data from QuestionService if the is no gameQuestion', () => {
+        component.setQuestionList();
+        component.gameQuestions = [];
         expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
     });
-    // it('should enable modification', () => {
-    //     const index = 0;
-    //     expect(component.disabled[index]).toBeTrue();
-    //     component.toggleModify(index);
-    //     expect(component.disabled[index]).toBeFalse();
-    // });
+    it('should initialize questionList with data from gameQuestion if gameQuestion is not null', () => {
+        component.setQuestionList();
+        component.gameQuestions = [
+            {
+                type: 'QCM',
+                text: 'Ceci est une question de test',
+                points: 10,
+                id: 'dsdsd',
+                lastModification: new Date(),
+            },
+        ];
+        expect(component.questionList).toEqual(component.gameQuestions);
+    });
+    it('should enable modification', () => {
+        const index = 0;
+        expect(component.disabled[index]).toBeTrue();
+        component.toggleModify(index);
+        expect(component.disabled[index]).toBeFalse();
+    });
 
     it('should update questionList and disable modification on modifiedQuestion', () => {
         const index = 1;

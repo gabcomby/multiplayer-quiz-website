@@ -19,33 +19,24 @@ export class ModifiedQuestionComponent implements OnInit {
 
     constructor(private questionService: QuestionService) {}
 
-    // ngOnInit(): void {
-    //     if (!this.gameQuestions) {
-    //         this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
-    //     } else {
-    //         this.questionList = this.gameQuestions;
-    //     }
-    //     if (this.listQuestionBank) {
-    //         this.loadQuestionsFromBank();
-    //     this.disabled = this.questionList.map(() => true);
-
     ngOnInit() {
         if (this.listQuestionBank) {
             this.loadQuestionsFromBank();
         } else {
-            if (!this.gameQuestions) {
-                this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
-            } else {
-                this.questionList = this.gameQuestions;
-            }
+            this.setQuestionList();
         }
-
         this.questionService.onQuestionAdded.subscribe((question) => {
             this.questionList.push(question);
             this.disabled.push(true);
         });
     }
-
+    setQuestionList() {
+        if (!this.gameQuestions) {
+            this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
+        } else {
+            this.questionList = this.gameQuestions;
+        }
+    }
     async loadQuestionsFromBank() {
         this.questionList = await this.questionService.getQuestions();
         this.disabled = this.questionList.map(() => true);
