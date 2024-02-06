@@ -46,10 +46,6 @@ export class ModifiedQuestionComponent implements OnInit {
         });
     }
 
-    isAnyQuestionEditing(): boolean {
-        return this.disabled.some((isEditing) => !isEditing);
-    }
-
     async loadQuestionsFromBank() {
         this.questionList = await this.questionService.getQuestions();
         this.disabled = this.questionList.map(() => true);
