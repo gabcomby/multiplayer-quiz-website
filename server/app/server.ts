@@ -1,6 +1,7 @@
 import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
+import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 
 @Service()
@@ -9,6 +10,7 @@ export class Server {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     private server: http.Server;
+    private io: SocketIoServer;
 
     constructor(private readonly application: Application) {}
 
@@ -20,6 +22,24 @@ export class Server {
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
+
+        this.io = new SocketIoServer(this.server, {
+            cors: {
+                origin: 'http://localhost:4200',
+                methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            },
+        });
+
+        this.io.on('connection', (socket) => {
+            socket.on('message', (message) => {
+                this.io.emit('message', `Server: ${message}`);
+            });
+
+            socket.on('disconnect', () => {
+                // eslint-disable-next-line no-console
+                console.log('Client disconnected');
+            });
+        });
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

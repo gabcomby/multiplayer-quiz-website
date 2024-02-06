@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import gameModel from '@app/model/game.model';
 import { GameService } from '@app/services/game.service';
 import { expect } from 'chai';
@@ -10,7 +12,6 @@ describe('Game service', () => {
     let findOneStub: SinonStub;
     let createStub: SinonStub;
     let findOneAndDeleteStub: SinonStub;
-    let findOneAndUpdateStub: SinonStub;
 
     const gameInstance = new gameModel({
         id: '1a2b3c',
@@ -21,6 +22,8 @@ describe('Game service', () => {
         lastModification: new Date('2018-11-13T20:20:39+00:00'),
         questions: [
             {
+                id: '1a2b3c4d',
+                lastModification: new Date('2018-11-13T20:20:39+00:00'),
                 type: 'QCM',
                 text: 'Parmi les mots suivants, lesquels sont des mots clés réservés en JS?',
                 points: 40,
@@ -39,15 +42,38 @@ describe('Game service', () => {
                     },
                     {
                         text: 'int',
+                        isCorrect: false,
                     },
                 ],
             },
             {
-                type: 'QRL',
-                text: "Donnez la différence entre 'let' et 'var' pour la déclaration d'une variable en JS ?",
-                points: 60,
+                lastModification: new Date('2018-11-13T20:20:39+00:00'),
+                id: '1a2b3c4d',
+                type: 'QCM',
+                text: 'Parmi les villes suivantes, laquelle est la capitale des États-Unis?',
+                points: 40,
+                choices: [
+                    {
+                        text: 'New York',
+                        isCorrect: false,
+                    },
+                    {
+                        text: 'Washington',
+                        isCorrect: true,
+                    },
+                    {
+                        text: 'San Francisco',
+                        isCorrect: false,
+                    },
+                    {
+                        text: 'Dallas',
+                        isCorrect: false,
+                    },
+                ],
             },
             {
+                lastModification: new Date('2018-11-13T20:20:39+00:00'),
+                id: '1a2b3c4d',
                 type: 'QCM',
                 text: "Est-ce qu'on le code suivant lance une erreur : const a = 1/NaN; ? ",
                 points: 20,
@@ -58,7 +84,7 @@ describe('Game service', () => {
                     },
                     {
                         text: 'Oui',
-                        isCorrect: null,
+                        isCorrect: false,
                     },
                 ],
             },
@@ -72,7 +98,6 @@ describe('Game service', () => {
         findOneStub = sandbox.stub(gameModel, 'findOne');
         createStub = sandbox.stub(gameModel, 'create');
         findOneAndDeleteStub = sandbox.stub(gameModel, 'findOneAndDelete');
-        findOneAndUpdateStub = sandbox.stub(gameModel, 'findOneAndUpdate');
     });
 
     afterEach(() => {
@@ -84,7 +109,15 @@ describe('Game service', () => {
 
         const games = await gameService.getGames();
         expect(games).to.eql([gameInstance]);
-        expect(findStub.calledOnce);
+        expect(findStub.calledOnce).to.be.true;
+    });
+
+    it('should return an empty array if no games are found', async () => {
+        findStub.resolves([]);
+
+        const games = await gameService.getGames();
+        expect(games).to.eql([]);
+        expect(findStub.calledOnce).to.be.true;
     });
 
     it('should create a new game', async () => {
@@ -92,51 +125,38 @@ describe('Game service', () => {
 
         const result = await gameService.createGame(gameInstance);
         expect(result).to.eql(gameInstance);
-        expect(createStub.calledWith(gameInstance));
+        expect(createStub.calledWith(gameInstance)).to.be.true;
     });
 
     it('should retrieve a specific game', async () => {
-        const gameId = '1a2b3c';
-        findOneStub.withArgs({ id: gameId }).resolves(gameInstance);
+        findOneStub.withArgs({ id: gameInstance.id }).resolves(gameInstance);
 
-        const game = await gameService.getGame(gameId);
+        const game = await gameService.getGame(gameInstance.id);
         expect(game).to.eql(gameInstance);
-        expect(findOneStub.calledWith({ id: gameId }));
+        expect(findOneStub.calledWith({ id: gameInstance.id })).to.be.true;
+    });
+
+    it('should return null if a specific game is not found', async () => {
+        findOneStub.withArgs({ id: 'nonExistingId' }).resolves(null);
+
+        const game = await gameService.getGame('nonExistingId');
+        expect(game).to.be.null;
+        expect(findOneStub.calledWith({ id: 'nonExistingId' })).to.be.true;
     });
 
     it('should delete a specific game', async () => {
-        const gameId = '1a2b3c';
-        findOneAndDeleteStub.withArgs({ id: gameId }).resolves(gameInstance);
+        findOneAndDeleteStub.withArgs({ id: gameInstance.id }).resolves(gameInstance);
 
-        const result = await gameService.deleteGame(gameId);
+        const result = await gameService.deleteGame(gameInstance.id);
         expect(result).to.eql(gameInstance);
-        expect(findOneAndDeleteStub.calledWith({ id: gameId }));
+        expect(findOneAndDeleteStub.calledWith({ id: gameInstance.id })).to.be.true;
     });
 
-    it('should toggle the visibility of a specific game', async () => {
-        const gameId = '1a2b3c';
-        const gameData = gameInstance;
-        const updatedGame = { ...gameInstance, isVisible: true };
+    it('should return null if trying to delete a game that does not exist', async () => {
+        findOneAndDeleteStub.withArgs({ id: 'nonExistingId' }).resolves(null);
 
-        findOneAndUpdateStub.withArgs({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }).resolves(updatedGame);
-
-        const result = await gameService.toggleVisibility(gameId, gameData);
-        expect(result).to.eql(updatedGame);
-        expect(findOneAndUpdateStub.calledWith({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }));
-    });
-
-    it('should throw an error if the game to toggle visibility is not found', async () => {
-        const gameId = '4d5e6f';
-        const gameData = gameInstance;
-
-        findOneAndUpdateStub.withArgs({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }).resolves(null);
-
-        try {
-            await gameService.toggleVisibility(gameId, gameData);
-            expect.fail('Expected error was not thrown');
-        } catch (e) {
-            expect(e.message).to.equal('Game not found');
-        }
-        expect(findOneAndUpdateStub.calledWith({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true }));
+        const result = await gameService.deleteGame('nonExistingId');
+        expect(result).to.be.null;
+        expect(findOneAndDeleteStub.calledWith({ id: 'nonExistingId' })).to.be.true;
     });
 });

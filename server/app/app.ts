@@ -4,10 +4,8 @@ import { MatchController } from '@app/controllers/match.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
-import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
-import * as socketIo from 'socket.io';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
@@ -49,27 +47,6 @@ export class Application {
     connectToDatabase(): void {
         const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
         mongoose.connect(mongoDBUri);
-        const server = http.createServer(this.app);
-        const io = new socketIo.Server(server, {
-            cors: {
-                origin: ['http://localhost:3000', 'http://localhost:4200'],
-                methods: ['GET', 'POST', 'DELETE'],
-            },
-        });
-        const db = mongoose.connection.useDb('test');
-        const gameSchema = new mongoose.Schema({}, { strict: false });
-        const game = db.model('Game', gameSchema, 'games');
-        const changeStream = game.watch();
-        changeStream.on('change', (data) => {
-            // console.log(JSON.stringify(data));
-            if (data.operationType === 'delete') {
-                // console.log('delete');x
-                // const deleteId = data.documentKey._id;
-                // console.log(`The game ${deleteId} has been deleted2`);
-                io.emit('deleteId', 'deleteId'); // enleve les commentaire pour deleteID
-                // console.log('deletedone');
-            }
-        });
     }
 
     bindRoutes(): void {
@@ -91,14 +68,7 @@ export class Application {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
-        this.app.use(
-            cors({
-                origin: ['http://localhost:4200'],
-                methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
-                allowedHeaders: ['Content-Type', 'Authorization'],
-                credentials: true,
-            }),
-        );
+        this.app.use(cors());
     }
 
     private errorHandling(): void {

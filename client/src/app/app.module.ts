@@ -30,6 +30,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -62,6 +63,7 @@ import { QuestionsPageComponent } from './pages/questions-page/questions-page.co
         QuestionBankComponent,
         NewQuestionQbankComponent,
         ModifyQuestionQbankComponent,
+        ServerErrorDialogComponent,
     ],
     imports: [
         AppMaterialModule,
