@@ -31,15 +31,13 @@ export class Server {
         });
 
         this.io.on('connection', (socket) => {
-            console.log('A user connected');
-
             socket.on('message', (message) => {
-                console.log('Message received:', message);
                 this.io.emit('message', `Server: ${message}`);
             });
 
             socket.on('disconnect', () => {
-                console.log('User disconnected');
+                // eslint-disable-next-line no-console
+                console.log('Client disconnected');
             });
         });
 
