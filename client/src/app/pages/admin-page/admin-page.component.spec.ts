@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdminPageComponent } from './admin-page.component';
 
 describe('AdminPageComponent', () => {
@@ -10,9 +11,12 @@ describe('AdminPageComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
-            imports: [HttpClientTestingModule],
-        });
+            imports: [HttpClientTestingModule, MatSnackBarModule],
+            providers: [],
+        }).compileComponents();
+    });
 
+    beforeEach(() => {
         fixture = TestBed.createComponent(AdminPageComponent);
         component = fixture.componentInstance;
         httpTestingController = TestBed.inject(HttpTestingController);
