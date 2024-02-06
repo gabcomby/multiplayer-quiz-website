@@ -62,5 +62,27 @@ describe('QuestionService', () => {
         expect(service.questions.length).toBe(2);
     });
 
-    // it('shoudl emit question after being added' => {})
+    it('should emit question after being added', () => {
+        spyOn(service.onQuestionAdded, 'emit');
+        const question = {
+            id: 'string',
+            type: 'string',
+            text: 'string',
+            points: 40,
+            lastModification: defaultDate,
+            choices: [
+                { text: 'Ceci est une question de test', isCorrect: true },
+                { text: 'Ceci est une question de test 2', isCorrect: false },
+            ],
+        };
+        service.addQuestion(question);
+
+        expect(service.onQuestionAdded.emit).toHaveBeenCalledWith(question);
+    });
+
+    it('should return the questions of the service', () => {
+        const questions = service.getQuestion();
+
+        expect(questions).toEqual(service.questions);
+    });
 });
