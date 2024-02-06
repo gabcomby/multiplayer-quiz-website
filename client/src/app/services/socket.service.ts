@@ -13,6 +13,7 @@ export class SocketService {
     connect(): void {
         this.socket = io(this.url, { autoConnect: true });
         this.socket.on('connect', () => {
+            // eslint-disable-next-line no-console
             console.log('Connected to Socket.IO server');
         });
     }
@@ -29,6 +30,7 @@ export class SocketService {
 
     onMessage(): void {
         this.socket.on('message', (data: unknown) => {
+            // eslint-disable-next-line no-console
             console.log(data);
         });
     }
