@@ -95,13 +95,14 @@ describe('ModifiedQuestionComponent', () => {
     });
 
     it('should move the answers in the array after the drop', () => {
+        const defaultDate = new Date();
         const event = {
             previousIndex: 0,
             currentIndex: 1,
         } as CdkDragDrop<Question[]>;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
         ];
 
         component.questionList = mockQuestionList;
@@ -109,8 +110,8 @@ describe('ModifiedQuestionComponent', () => {
         component.drop(event);
 
         expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
         ]);
     });
 });
