@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-const DURATION = 5000;
+const DURATION = 7000;
 
 @Injectable({
     providedIn: 'root',

@@ -53,12 +53,12 @@ export class AdminPageComponent implements OnInit {
         if (!game) return;
 
         game.isVisible = isVisible;
-        this.apiService.toggleVisibility(gameId, isVisible).subscribe({
+        this.apiService.updateGame(game).subscribe({
             next: () => {
                 this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
             },
             error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
             },
         });
     }
@@ -74,7 +74,7 @@ export class AdminPageComponent implements OnInit {
                 this.snackbarService.openSnackBar('Le jeu a été exporté avec succès.');
             },
             error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
             },
         });
     }

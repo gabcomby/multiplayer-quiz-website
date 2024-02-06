@@ -35,6 +35,10 @@ export class ApiService {
         return this.http.patch(`${this.apiUrl}/games/${gameId}`, { isVisible });
     }
 
+    updateGame(game: Game) {
+        return this.http.patch(`${this.apiUrl}/games/${game.id}`, game).pipe(catchError(this.handleError<Game>('updateGame')));
+    }
+
     deleteGame(gameId: string) {
         return this.http.delete(`${this.apiUrl}/games/${gameId}`).pipe(catchError(this.handleError<Game>('deleteGame')));
     }
