@@ -19,14 +19,7 @@ export class GameService {
         return await gameModel.findOneAndDelete({ id: gameId });
     }
 
-    async toggleVisibility(gameId: string, gameData: IGame): Promise<IGame> {
-        const updatedGame = await gameModel.findOneAndUpdate({ id: gameId }, { $set: { isVisible: gameData.isVisible } }, { new: true });
-
-        if (!updatedGame) throw new Error('Game not found');
-        return updatedGame;
-    }
-
-    async patchGame(gameData: IGame): Promise<IGame> {
+    async updateGame(gameData: IGame): Promise<IGame> {
         const updatedGame = await gameModel.findOneAndUpdate({ id: gameData.id }, { $set: gameData }, { new: true });
 
         if (!updatedGame) throw new Error('Game not found');
