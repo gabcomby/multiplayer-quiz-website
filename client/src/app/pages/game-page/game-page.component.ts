@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
@@ -18,6 +18,7 @@ export class GamePageComponent implements OnInit {
     questionHasExpired: boolean = false;
     currentMatch: Match;
     matchId: string;
+    gameId: string;
 
     gameScore: { name: string; score: number }[] = [];
 
@@ -28,6 +29,7 @@ export class GamePageComponent implements OnInit {
         private gameService: GameService,
         private router: Router,
         private matchService: MatchService,
+        private route: ActivatedRoute,
     ) {}
 
     get questionTimer(): number {
@@ -52,7 +54,10 @@ export class GamePageComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.fetchGameData('8javry');
+        this.route.params.subscribe((params) => {
+            this.gameId = params['id'];
+        });
+        this.fetchGameData(this.gameId);
         this.matchId = crypto.randomUUID();
         this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
             next: (data) => {
