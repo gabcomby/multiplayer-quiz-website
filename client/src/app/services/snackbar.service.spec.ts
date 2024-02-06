@@ -25,7 +25,7 @@ describe('SnackbarService', () => {
     it('should open a snackbar with default parameters', () => {
         const message = 'Test message';
         const action = 'Fermer';
-        const duration = 5000;
+        const duration = 7000;
 
         service.openSnackBar(message);
 
