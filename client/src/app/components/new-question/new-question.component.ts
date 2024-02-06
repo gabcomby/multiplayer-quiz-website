@@ -17,20 +17,16 @@ export class NewQuestionComponent {
     addBankQuestion: boolean = false;
     constructor(private questionService: QuestionService) {}
 
-    addQuestion(event: Choice[], onlyAddQuestionBank: boolean): void {
+    async addQuestion(event: Choice[], onlyAddQuestionBank: boolean): Promise<void> {
         const newQuestion = this.createNewQuestion(event);
         if (this.validateQuestion(newQuestion)) {
-            // this.registerQuestion.emit(newQuestion);
             if (!onlyAddQuestionBank) {
-                if (this.addBankQuestion) {
+                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion))) {
                     this.questionService.addQuestionBank(newQuestion);
-                    // devrait faire la meme méthode que maxime appel en haut lorsqu'il crée une nouvelle fonction
-                    // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute
                 }
                 this.questionService.addQuestion(newQuestion);
-
-                this.resetComponent();
-            } else if (onlyAddQuestionBank) {
+                this.resetComponent(event);
+            } else if (onlyAddQuestionBank && (await this.validateQuestionExisting(newQuestion))) {
                 this.questionService.addQuestionBank(newQuestion);
             }
         }
@@ -40,11 +36,14 @@ export class NewQuestionComponent {
         this.addFromQuestionBank = false;
     }
 
-    resetComponent() {
+    resetComponent(event: Choice[]) {
         this.question.text = '';
         this.question.points = 10;
         this.question.choices = [];
-        // form.reset();
+        event.forEach((element) => {
+            element.isCorrect = false;
+            element.text = '';
+        });
         this.addBankQuestion = false;
     }
     createNewQuestion(choices: Choice[]) {
@@ -61,6 +60,16 @@ export class NewQuestionComponent {
         if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
             return true;
         }
+        alert('needs a question and points and cannot be just whitespace');
         return false;
+    }
+    async validateQuestionExisting(question: Question): Promise<boolean> {
+        const questionInBank = await this.questionService.getQuestions();
+        const findQuestion = questionInBank.find((element) => element.text === question.text);
+        if (findQuestion) {
+            alert('question already exist');
+            return false;
+        }
+        return true;
     }
 }
