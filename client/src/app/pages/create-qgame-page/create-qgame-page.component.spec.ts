@@ -299,6 +299,15 @@ describe('CreateQGamePageComponent', () => {
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
     });
+    it('should toggle modifiedQuestion property', () => {
+        expect(component.modifiedQuestion).toBeFalse();
+
+        component.toggleModifiedQuestion();
+        expect(component.modifiedQuestion).toBeTrue();
+
+        component.toggleModifiedQuestion();
+        expect(component.modifiedQuestion).toBeFalse();
+    });
 });
 
 // pour autre route
