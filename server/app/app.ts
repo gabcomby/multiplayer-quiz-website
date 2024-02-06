@@ -6,15 +6,12 @@ import * as cors from 'cors';
 import * as express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
-import { Server } from 'socket.io';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
 import { QuestionsController } from './controllers/questions.controller';
-
-const CLIENT_ORIGIN = 4200;
 
 @Service()
 export class Application {
@@ -72,25 +69,6 @@ export class Application {
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
         this.app.use(cors());
-        const io = new Server();
-
-        io.on('connection', (socket) => {
-            console.log(`socket ${socket.id} connected`);
-
-            // send an event to the client
-            socket.emit('foo', 'bar');
-
-            socket.on('foobar', () => {
-                // an event was received from the client
-            });
-
-            // upon disconnection
-            socket.on('disconnect', (reason) => {
-                console.log(`socket ${socket.id} disconnected due to ${reason}`);
-            });
-        });
-
-        io.listen(CLIENT_ORIGIN);
     }
 
     private errorHandling(): void {
