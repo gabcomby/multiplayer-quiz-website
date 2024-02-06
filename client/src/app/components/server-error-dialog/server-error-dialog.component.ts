@@ -5,15 +5,8 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-server-error-dialog',
-    template: `
-        <h1 mat-dialog-title>Erreur serveur</h1>
-        <div mat-dialog-content>
-            <p>{{ data.message }}</p>
-        </div>
-        <div mat-dialog-actions>
-            <button mat-button mat-dialog-close>OK</button>
-        </div>
-    `,
+    templateUrl: './server-error-dialog.component.html',
+    styleUrls: ['./server-error-dialog.component.scss'],
 })
 export class ServerErrorDialogComponent {
     constructor(@Inject(MAT_DIALOG_DATA) public data: { message: string }) {}
