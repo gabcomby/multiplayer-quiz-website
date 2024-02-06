@@ -15,6 +15,7 @@ export class ModifiedQuestionComponent implements OnInit {
 
     questionList: Question[] = [];
     disabled: boolean[] = [];
+    menuSelected: boolean = false;
 
     constructor(private questionService: QuestionService) {}
 
@@ -45,33 +46,8 @@ export class ModifiedQuestionComponent implements OnInit {
         });
     }
 
-    // addChoice() {
-    //     if (this.questionList.length < 4) {
-    //         this.answers.push(this.createAnswerField());
-    //     } else {
-    //         alert('maximum 4 choix');
-    //     }
-
-    //     this.questionList.forEach((question) => {
-    //         if (question.choices?.length < 4) {
-    //             if (question.choices.length !== 0) {
-    //                 if (question.choices.length > 2) {
-    //                     question.choices.splice(index, 1);
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-    removeChoice(index: number) {
-        this.questionList.forEach((question) => {
-            if (question.choices) {
-                if (question.choices.length !== 0) {
-                    if (question.choices.length > 2) {
-                        question.choices.splice(index, 1);
-                    }
-                }
-            }
-        });
+    isAnyQuestionEditing(): boolean {
+        return this.disabled.some((isEditing) => !isEditing);
     }
 
     async loadQuestionsFromBank() {
@@ -102,5 +78,10 @@ export class ModifiedQuestionComponent implements OnInit {
 
     drop(event: CdkDragDrop<Question[]>) {
         moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);
+        this.toggleMenuSelection();
+    }
+
+    toggleMenuSelection(): void {
+        this.menuSelected = !this.menuSelected;
     }
 }

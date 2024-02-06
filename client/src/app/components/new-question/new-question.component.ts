@@ -28,6 +28,7 @@ export class NewQuestionComponent {
                     // il faut vérifier que la question n'est pas déjà crée quand on l'ajoute
                 }
                 this.questionService.addQuestion(newQuestion);
+
                 this.resetComponent();
             } else if (onlyAddQuestionBank) {
                 this.questionService.addQuestionBank(newQuestion);

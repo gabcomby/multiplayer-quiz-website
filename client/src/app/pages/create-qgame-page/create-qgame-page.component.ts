@@ -68,6 +68,8 @@ export class CreateQGamePageComponent implements OnInit {
             this.gameService.createGame(newGame);
             // location.reload();
         }
+
+        location.reload();
     }
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
