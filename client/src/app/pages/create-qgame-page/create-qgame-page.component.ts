@@ -32,7 +32,7 @@ export class CreateQGamePageComponent implements OnInit {
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            visibility: new FormControl(false),
+            // visibility: new FormControl(false),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -96,7 +96,7 @@ export class CreateQGamePageComponent implements OnInit {
             id: generateNewId(),
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
-            isVisible: this.gameForm.get('visibility')?.value,
+            isVisible: false,
             duration: this.gameForm.get('time')?.value,
             lastModification: new Date(),
             questions: this.questionService.getQuestion(),
