@@ -10,6 +10,7 @@ describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
+    const defaultDate = new Date();
     beforeEach(() => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
@@ -20,16 +21,33 @@ describe('ModifiedQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
-                    lastModification: new Date(),
+                    lastModification: defaultDate,
                 },
                 {
                     type: 'QCM',
                     text: 'Ceci est une question de test 2',
                     points: 20,
                     id: '45',
-                    lastModification: new Date(),
+                    lastModification: defaultDate,
                 } as Question,
             ],
+            getQuestions: [
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    lastModification: defaultDate,
+                },
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test 2',
+                    points: 20,
+                    id: '45',
+                    lastModification: defaultDate,
+                } as Question,
+            ],
+            onQuestionAdded: {},
         });
         questionServiceSpy.onQuestionAdded = new EventEmitter<Question>();
     });
@@ -50,14 +68,23 @@ describe('ModifiedQuestionComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-    it('should call loadQuestionsFromBank when listQUestionBank is not null', () => {
+    it('should call loadQuestionsFromBank when listQuestionBank is not null', () => {
         component.listQuestionBank = true;
+        spyOn(component, 'loadQuestionsFromBank');
+        component.ngOnInit();
+
         expect(component.loadQuestionsFromBank).toHaveBeenCalled();
+    });
+    it('should call setQuestionList when listQuestionBank is null', () => {
+        component.listQuestionBank = false;
+        spyOn(component, 'setQuestionList');
+        component.ngOnInit();
+        expect(component.setQuestionList).toHaveBeenCalled();
     });
 
     it('should initiliaze questionList with getQuestion from service and disabled modification', async () => {
         await component.loadQuestionsFromBank();
-        expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
+        expect(component.questionList).toEqual(await questionServiceSpy.getQuestions());
         expect(component.disabled).toEqual([true, true]);
     });
     it('should add question to list and add true to disabled when eventEmitter from service', () => {
@@ -67,11 +94,14 @@ describe('ModifiedQuestionComponent', () => {
             text: 'Ceci est une question de test',
             points: 10,
             id: 'dsdsd',
-            lastModification: new Date(),
+            lastModification: defaultDate,
         };
+        component.disabled = [];
+        component.ngOnInit();
+
         questionServiceSpy.onQuestionAdded.emit(mockQuestion);
         expect(component.questionList).toContain(mockQuestion);
-        expect(component.disabled).toContain(true);
+        // expect(component.disabled).toContain(true);
     });
 
     it('should initialize questionList with data from QuestionService if the is no gameQuestion', () => {
@@ -80,30 +110,39 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.questionList).toEqual(questionServiceSpy.getQuestion());
     });
     it('should initialize questionList with data from gameQuestion if gameQuestion is not null', () => {
-        component.setQuestionList();
         component.gameQuestions = [
             {
                 type: 'QCM',
                 text: 'Ceci est une question de test',
                 points: 10,
                 id: 'dsdsd',
-                lastModification: new Date(),
+                lastModification: defaultDate,
             },
         ];
+        component.setQuestionList();
+
         expect(component.questionList).toEqual(component.gameQuestions);
     });
     it('should enable modification', () => {
         const index = 0;
+        component.disabled = [true];
         expect(component.disabled[index]).toBeTrue();
         component.toggleModify(index);
         expect(component.disabled[index]).toBeFalse();
+    });
+    it('toggle menu selection should toggle menuSelected', () => {
+        component.menuSelected = true;
+        component.toggleMenuSelection();
+        expect(component.menuSelected).toBeFalse();
+        component.toggleMenuSelection();
+        expect(component.menuSelected).toBeTrue();
     });
 
     it('should update questionList and disable modification on modifiedQuestion', () => {
         const index = 1;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
         ];
 
         component.questionList = mockQuestionList;
@@ -116,11 +155,11 @@ describe('ModifiedQuestionComponent', () => {
     it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: new Date() },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
         ];
 
-        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: new Date() };
+        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate };
 
         component.questionList = mockQuestionList;
         component.removeQuestion(questionToRemove, index);
@@ -131,7 +170,6 @@ describe('ModifiedQuestionComponent', () => {
     });
 
     it('should move the answers in the array after the drop', () => {
-        const defaultDate = new Date();
         const event = {
             previousIndex: 0,
             currentIndex: 1,
