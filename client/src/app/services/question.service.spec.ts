@@ -68,4 +68,24 @@ describe('QuestionService', () => {
         expect(req.request.method).toBe('POST');
         req.flush(question);
     });
+
+    it('should get a question by its id', () => {
+        service.getQuestionById('abc123').subscribe((q) => {
+            expect(q).toEqual(question);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/questions/abc123');
+        expect(req.request.method).toBe('GET');
+        req.flush(question);
+    });
+
+    it('should update a question', () => {
+        service.updateQuestion('abc123', question).then((updatedQuestion) => {
+            expect(updatedQuestion).toEqual(question);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/questions/abc123');
+        expect(req.request.method).toBe('PATCH');
+        req.flush(question);
+    });
 });
