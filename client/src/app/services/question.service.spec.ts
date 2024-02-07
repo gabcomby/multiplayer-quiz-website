@@ -88,4 +88,14 @@ describe('QuestionService', () => {
         expect(req.request.method).toBe('PATCH');
         req.flush(question);
     });
+
+    it('should delete a question', () => {
+        service.deleteQuestion('abc123').then(() => {
+            expect(service.questions).toEqual([]);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/questions/abc123');
+        expect(req.request.method).toBe('DELETE');
+        req.flush(null);
+    });
 });

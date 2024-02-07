@@ -22,6 +22,10 @@ export class QuestionBankComponent implements OnInit {
 
     ngOnInit() {
         this.displayedColumns = this.fromCreateNewGame ? ['question', 'delete'] : this.defaultDisplayedColumns;
+        this.loadQuestions();
+    }
+
+    loadQuestions() {
         this.questionService.getQuestions().then((questions) => {
             this.dataSource = questions.sort((a, b) => {
                 const dateA = new Date(a.lastModification).getTime();
