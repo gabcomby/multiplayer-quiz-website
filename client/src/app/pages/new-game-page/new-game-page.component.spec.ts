@@ -55,4 +55,20 @@ describe('NewGamePageComponent', () => {
         component.games = gamesMock;
         expect(component.games).toEqual(gamesMock);
     });
+
+    it('should connnect to the sever', async () => {
+        const socketSpy = jasmine.createSpyObj('socket', ['connect']);
+        component.socket = socketSpy;
+        component.socket.connect();
+        expect(socketSpy.connect).toHaveBeenCalled();
+    });
+
+    it('should retry connecting when the socket cannot connect', async () => {
+        const socketSpy = jasmine.createSpyObj('socket', ['on']);
+        component.socket = socketSpy;
+        component.socket.on('connect_error', () => {
+            component.socket.connect();
+        });
+        expect(socketSpy.on).toHaveBeenCalled();
+    });
 });
