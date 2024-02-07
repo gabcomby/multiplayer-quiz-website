@@ -11,8 +11,9 @@ export class QuestionBankComponent implements OnInit {
     @Input() fromCreateNewGame: boolean;
     @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
     questionToAdd: Question[] = [];
-    displayedColumns: string[] = ['question', 'date', 'delete'];
+    displayedColumns: string[];
     dataSource: Question[] = [];
+    defaultDisplayedColumns: string[] = ['question', 'date', 'delete'];
 
     // Track the selected row IDs
     selectedRowIds: string[] = [];
@@ -20,6 +21,11 @@ export class QuestionBankComponent implements OnInit {
     constructor(private questionService: QuestionService) {}
 
     ngOnInit() {
+        this.displayedColumns = this.fromCreateNewGame ? ['question', 'delete'] : this.defaultDisplayedColumns;
+        this.loadQuestions();
+    }
+
+    loadQuestions() {
         this.questionService.getQuestions().then((questions) => {
             this.dataSource = questions.sort((a, b) => {
                 const dateA = new Date(a.lastModification).getTime();

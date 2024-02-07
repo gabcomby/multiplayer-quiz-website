@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
@@ -18,21 +18,30 @@ export class CreateQGamePageComponent implements OnInit {
     modifiedQuestion: boolean = false;
     gameId: string | null;
     gamesFromDB: Game[] = [];
-    gameFromDB: Game;
+    gameFromDB: Game = {
+        id: '',
+        title: '',
+        description: '',
+        isVisible: false,
+        duration: 10,
+        lastModification: new Date(),
+        questions: [],
+    };
     gameForm: FormGroup;
     dataReady: boolean = false;
 
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
-        private route: ActivatedRoute, // private router: Router,
+        private route: ActivatedRoute,
+        private router: Router,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            visibility: new FormControl(false),
+            // visibility: new FormControl(false),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -66,7 +75,8 @@ export class CreateQGamePageComponent implements OnInit {
             this.gameValidationWhenModified();
         } else if (await isValidGame(newGame, this.gameService, true)) {
             this.gameService.createGame(newGame);
-            // location.reload();
+            // je veux retourner a admin
+            this.router.navigate(['/home']);
         }
     }
     toggleModifiedQuestion() {
@@ -98,7 +108,7 @@ export class CreateQGamePageComponent implements OnInit {
             id: generateNewId(),
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
-            isVisible: this.gameForm.get('visibility')?.value,
+            isVisible: false,
             duration: this.gameForm.get('time')?.value,
             lastModification: new Date(),
             questions: this.questionService.getQuestion(),
