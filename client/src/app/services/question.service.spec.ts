@@ -1,11 +1,36 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-
+import { Question } from '@app/interfaces/game';
 import { QuestionService } from './question.service';
 
 describe('QuestionService', () => {
     let service: QuestionService;
     let httpController: HttpTestingController;
+
+    const question: Question = {
+        type: 'QCM',
+        id: 'abc123',
+        lastModification: new Date('2018-11-13T20:20:39+00:00'),
+        text: 'Parmi les mots suivants, lesquels sont des mots clés réservés en JS?',
+        points: 40,
+        choices: [
+            {
+                text: 'var',
+                isCorrect: true,
+            },
+            {
+                text: 'self',
+                isCorrect: false,
+            },
+            {
+                text: 'this',
+                isCorrect: true,
+            },
+            {
+                text: 'int',
+            },
+        ],
+    };
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -22,5 +47,25 @@ describe('QuestionService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should get all questions', () => {
+        service.getQuestions().then((questions) => {
+            expect(questions).toEqual([]);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/questions');
+        expect(req.request.method).toBe('GET');
+        req.flush([]);
+    });
+
+    it('should add a question to the question bank', () => {
+        service.addQuestionBank(question).then((newQuestion) => {
+            expect(newQuestion).toEqual(question);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/questions');
+        expect(req.request.method).toBe('POST');
+        req.flush(question);
     });
 });

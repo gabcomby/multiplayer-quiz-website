@@ -26,29 +26,31 @@ export class QuestionService {
     getQuestion() {
         return this.questions;
     }
-
+    // a tester
     async getQuestions(): Promise<Question[]> {
         const questions$ = this.http.get<Question[]>(this.apiUrl);
         const questions = await firstValueFrom(questions$);
         return questions;
     }
-
+    // a tester
     async addQuestionBank(question: Question): Promise<Question> {
         const question$ = this.http.post<Question>(this.apiUrl, question);
         const newQuestion = await firstValueFrom(question$);
         return newQuestion;
     }
 
+    // a tester
     getQuestionById(questionId: string): Observable<Question> {
         return this.http.get<Question>(`${this.apiUrl}/${questionId}`);
     }
 
+    // a tester
     async updateQuestion(questionId: string, questionData: Question): Promise<Question> {
         const question$ = this.http.patch<Question>(`${this.apiUrl}/${questionId}`, questionData);
         const updatedQuestion = await firstValueFrom(question$);
         return updatedQuestion;
     }
-
+    // a tester
     async deleteQuestion(questionId: string): Promise<void> {
         await firstValueFrom(this.http.delete(`${this.apiUrl}/${questionId}`));
         this.questions = this.questions.filter((question) => question.id !== questionId);
