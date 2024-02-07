@@ -48,9 +48,8 @@ export class Server {
             });
 
             socket.on('set-timer-duration', (duration) => {
-                if (!isNaN(duration)) {
-                    duration = parseInt(duration, 10);
-                    this.room.duration = duration;
+                if (parseInt(duration, 10) > 0) {
+                    this.room.duration = parseInt(duration, 10);
                     // eslint-disable-next-line no-console
                     console.log('Set duration of time to', duration);
                     this.io.emit('timer-duration', duration);
@@ -73,20 +72,16 @@ export class Server {
             });
 
             const startCountdownTimer = (duration: number): void => {
-                if (duration > 0) {
-                    const timerId = setInterval(
-                        () => {
-                            this.io.emit('timer-countdown', duration);
-                            duration -= 1;
-                            this.room.currentTime = duration;
-                        },
-                        ONE_SECOND_IN_MS,
-                        duration,
-                    );
-                    this.room.timerId = timerId;
-                } else {
-                    this.io.emit('timer-update', 'Invalid duration');
-                }
+                const timerId = setInterval(
+                    () => {
+                        this.io.emit('timer-countdown', duration);
+                        duration -= 1;
+                        this.room.currentTime = duration;
+                    },
+                    ONE_SECOND_IN_MS,
+                    duration,
+                );
+                this.room.timerId = timerId;
             };
         });
     }
