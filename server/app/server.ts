@@ -12,7 +12,6 @@ export class Server {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     room = {
-        roomId: 'testroom',
         duration: 0,
         timerId: 0,
         currentTime: 0,

@@ -34,4 +34,19 @@ export class SocketService {
             console.log(data);
         });
     }
+
+    setTimerDuration(duration: number): void {
+        this.socket.emit('set-timer-duration', duration);
+    }
+
+    startTimer(): void {
+        this.socket.emit('start-timer');
+    }
+
+    onTimerDuration(): void {
+        this.socket.on('timer-duration', (data: unknown) => {
+            // eslint-disable-next-line no-console
+            console.log(data);
+        });
+    }
 }
