@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChoiceComponent } from './choice.component';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Question } from '@app/interfaces/game';
+// import { CdkDragDrop } from '@angular/cdk/drag-drop';
+// import { Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
 
@@ -42,14 +42,14 @@ describe('ChoiceComponent', () => {
 
         expect(component.answers.length).toBe(2);
 
-        component.removeChoice(0);
+        component.removeChoice(0, component.answers);
         expect(component.answers.length).toBe(2);
 
-        component.addChoice();
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(3);
 
-        component.addChoice();
-        component.addChoice();
+        component.addChoice(component.answers);
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(MAX_CHOICES);
     });
     // IL PASSE
@@ -60,7 +60,7 @@ describe('ChoiceComponent', () => {
             { text: 'test2', isCorrect: true },
         ];
 
-        component.addChoice();
+        component.addChoice(component.answers);
         expect(component.answers.length).toBe(3);
     });
 
@@ -71,28 +71,66 @@ describe('ChoiceComponent', () => {
             { text: 'test3', isCorrect: false },
         ];
 
-        component.removeChoice(1);
+        component.removeChoice(1, component.answers);
         expect(component.answers.length).toBe(2);
     });
-
-    it('should move the answers in the array after the drop', () => {
-        const event = {
-            previousIndex: 1,
-            currentIndex: 2,
-        } as CdkDragDrop<Question[]>;
-
-        component.answers = component.answers = [
+    it('should switch the answer selected and the one on top', () => {
+        component.answers = [
             { text: 'test1', isCorrect: true },
             { text: 'test2', isCorrect: false },
             { text: 'test3', isCorrect: false },
         ];
 
-        component.drop(event);
+        component.moveQuestionUp(1, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test2', isCorrect: false },
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
 
+    it('should not switch the answers if its the first choice', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.moveQuestionUp(0, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
+
+    it('should switch the answer selected and the one underneath', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.moveQuestionDown(1, component.answers);
         expect(component.answers).toEqual([
             { text: 'test1', isCorrect: true },
             { text: 'test3', isCorrect: false },
             { text: 'test2', isCorrect: false },
+        ]);
+    });
+
+    it('should not switch the answers if its the last choice', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        component.moveQuestionDown(3, component.answers);
+        expect(component.answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
         ]);
     });
 

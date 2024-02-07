@@ -15,19 +15,23 @@ export class QuestionService {
     constructor(private http: HttpClient) {}
 
     resetQuestions() {
+        // Julie
         this.questions = [];
     }
 
     addQuestion(question: Question) {
+        // julie
         this.questions.push(question);
         this.onQuestionAdded.emit(question);
     }
 
     getQuestion() {
+        // julie
         return this.questions;
     }
     // a tester
     async getQuestions(): Promise<Question[]> {
+        // Julie
         const questions$ = this.http.get<Question[]>(this.apiUrl);
         const questions = await firstValueFrom(questions$);
         return questions;
