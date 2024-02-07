@@ -4,6 +4,7 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
 import { MatchService } from '@app/services/match.service';
+import { SocketService } from '@app/services/socket.service';
 import { TimerService } from '@app/services/timer.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -19,6 +20,7 @@ export class GamePageComponent implements OnInit {
     currentMatch: Match;
     matchId: string;
     gameId: string;
+    timerCountdown: number;
 
     gameScore: { name: string; score: number }[] = [];
 
@@ -30,6 +32,7 @@ export class GamePageComponent implements OnInit {
         private router: Router,
         private matchService: MatchService,
         private route: ActivatedRoute,
+        private socketService: SocketService,
     ) {}
 
     get questionTimer(): number {
@@ -80,6 +83,20 @@ export class GamePageComponent implements OnInit {
             error: (error) => {
                 alert(error.message);
             },
+        });
+        this.socketService.connect();
+        this.socketService.onTimerDuration((data) => {
+            // eslint-disable-next-line no-console
+            console.log(data);
+        });
+
+        this.socketService.onTimerUpdate((data) => {
+            // eslint-disable-next-line no-console
+            console.log(data);
+        });
+
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
         });
     }
 

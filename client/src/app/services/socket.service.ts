@@ -47,29 +47,27 @@ export class SocketService {
         this.socket.emit('stop-timer');
     }
 
-    onTimerDuration(): unknown {
-        let dataOut: unknown;
+    onTimerDuration(callback: (data: unknown) => void): void {
         this.socket.on('timer-duration', (data: unknown) => {
             // eslint-disable-next-line no-console
             console.log(data);
-            dataOut = data;
+            callback(data);
         });
-        return dataOut;
     }
 
-    onTimerUpdate(): void {
+    onTimerUpdate(callback: (data: unknown) => void): void {
         this.socket.on('timer-update', (data: unknown) => {
             // eslint-disable-next-line no-console
             console.log(data);
+            callback(data);
         });
     }
 
-    onTimerCountdown(): number {
-        let countdown = 0;
+    onTimerCountdown(callback: (data: number) => void): void {
         this.socket.on('timer-countdown', (data: number) => {
             // eslint-disable-next-line no-console
-            countdown = data;
+            console.log(data);
+            callback(data);
         });
-        return countdown;
     }
 }
