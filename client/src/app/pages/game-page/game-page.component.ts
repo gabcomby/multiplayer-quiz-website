@@ -98,6 +98,8 @@ export class GamePageComponent implements OnInit {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
         });
+        this.socketService.setTimerDuration(this.gameData.duration);
+        this.socketService.startTimer();
     }
 
     fetchGameData(gameId: string): void {

@@ -84,6 +84,10 @@ export class Server {
                 this.room.timerId = timerId;
             };
         });
+
+        this.server.listen(Server.appPort);
+        this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
+        this.server.on('listening', () => this.onListening());
     }
     private onError(error: NodeJS.ErrnoException): void {
         if (error.syscall !== 'listen') {
