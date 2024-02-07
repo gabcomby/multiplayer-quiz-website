@@ -58,6 +58,7 @@ describe('QuestionService', () => {
 
     afterEach(() => {
         httpController.verify();
+        service.questions = [];
     });
 
     it('should be created', () => {
@@ -112,6 +113,7 @@ describe('QuestionService', () => {
         const req = httpController.expectOne('http://localhost:3000/api/questions/abc123');
         expect(req.request.method).toBe('DELETE');
         req.flush(null);
+    });
 
     it('should reset questions', () => {
         expect(service.questions.length).toBe(1);
@@ -139,7 +141,7 @@ describe('QuestionService', () => {
 
     it('should emit question after being added', () => {
         spyOn(service.onQuestionAdded, 'emit');
-        const question = {
+        const questionInstance = {
             id: 'string',
             type: 'string',
             text: 'string',
@@ -150,9 +152,9 @@ describe('QuestionService', () => {
                 { text: 'Ceci est une question de test 2', isCorrect: false },
             ],
         };
-        service.addQuestion(question);
+        service.addQuestion(questionInstance);
 
-        expect(service.onQuestionAdded.emit).toHaveBeenCalledWith(question);
+        expect(service.onQuestionAdded.emit).toHaveBeenCalledWith(questionInstance);
     });
 
     it('should return the questions of the service', () => {
