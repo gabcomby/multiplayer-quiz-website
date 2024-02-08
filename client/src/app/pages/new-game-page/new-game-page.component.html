@@ -1,14 +1,14 @@
-<h2 id="title">Liste des jeux</h2>
-<div *ngFor="let game of games">
-<div *ngIf = "game.isVisible">
-  <p (click)="selected(game)" id={{game.id}} class="name"> {{ game.title }} 
-  </p>
-  <ng-container *ngIf="this.gameSelected[game.id]===true">
-    <div style="display: flex; flex-direction: column;" class="description">
-      <p><b>Description:</b> {{game.description}} <br> <b>Temps alloué par questions: </b> {{game.duration}} <br> <b>Questions:</b> </p>
-      <p *ngFor="let question of game.questions" class="questions"> - {{question.text}}</p>
-      <button [routerLink]="['/game', game.id]">Tester le jeu</button>
-      <button [routerLink]="['/gameWait', game.id]">Lancer une partie</button>
-    </div>
-  </ng-container>
-</div>
+<h1 id="title">Liste des jeux</h1>
+<mat-card *ngFor="let game of games">
+  <mat-card-header *ngIf="game.isVisible" (click)="selected(game)" id="{{game.id}}">
+    <mat-card-title><b>{{ game.title }}</b></mat-card-title>
+  </mat-card-header>
+  <mat-card-content *ngIf="gameSelected[game.id]===true">
+    <p><b>Description:</b> {{game.description}}</p>
+    <p><b>Temps alloué par questions:</b> {{game.duration}}</p>
+    <p><b>Questions:</b></p>
+    <p *ngFor="let question of game.questions"> - {{question.text}}</p>
+    <button mat-raised-button color="primary" [routerLink]="['/game', game.id]">Tester le jeu</button>
+    <button mat-raised-button color="accent" [routerLink]="['/gameWait', game.id]">Lancer une partie</button>
+  </mat-card-content>
+</mat-card>
