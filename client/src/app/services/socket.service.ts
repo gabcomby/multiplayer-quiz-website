@@ -10,12 +10,13 @@ export class SocketService {
     private socket: Socket;
     private readonly url: string = 'http://localhost:3000';
 
-    connect(): void {
+    connect(): [string, string][] {
         this.socket = io(this.url, { autoConnect: true });
-        this.socket.on('connect', () => {
+        this.socket.on('messageConnect', (mesage) => {
             // eslint-disable-next-line no-console
-            console.log('Connected to Socket.IO server');
+            return mesage;
         });
+        return [['', '']];
     }
 
     disconnect(): void {
@@ -33,5 +34,15 @@ export class SocketService {
             // eslint-disable-next-line no-console
             console.log(data);
         });
+    }
+
+    deleteId(): string {
+        console.log('deletehu');
+        this.socket = io(this.url, { autoConnect: true });
+        this.socket.on('deleteId', (gameId) => {
+            console.log('socketcalled');
+            return gameId;
+        });
+        return '';
     }
 }

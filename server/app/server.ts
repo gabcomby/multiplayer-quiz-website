@@ -35,10 +35,21 @@ export class Server {
                 this.io.emit('message', `Server: ${message}`);
             });
 
-            socket.on('disconnect', () => {
+            /* socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('Client disconnected');
+            });*/
+        });
+        this.io.on('connect', () => {
+            this.application.getIdentification().then((pair: [string, string][]) => {
+                console.log('Connected to Socket.IO server');
+                this.io.emit('messageConnect', pair);
             });
+        });
+
+        this.io.on('deleteId', (gameId) => {
+            console.log(gameId);
+            this.io.emit('deleteId', gameId.toString());
         });
 
         this.server.listen(Server.appPort);
