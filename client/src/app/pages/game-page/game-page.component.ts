@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
@@ -13,7 +13,7 @@ const TIME_BETWEEN_QUESTIONS = 3000;
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit, OnChanges {
+export class GamePageComponent implements OnInit {
     gameData: Game;
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
@@ -106,6 +106,9 @@ export class GamePageComponent implements OnInit, OnChanges {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
+            if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
         });
         // Ensure game data duration is available before setting timer duration.
         if (this.gameData && this.gameData.duration) {
@@ -120,12 +123,6 @@ export class GamePageComponent implements OnInit, OnChanges {
             // eslint-disable-next-line no-console
             console.log(data);
         });
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.timerCountdown && changes.timerCountdown.currentValue === 0) {
-            this.onTimerComplete();
-        }
     }
 
     // async ngOnInit() {
@@ -193,7 +190,7 @@ export class GamePageComponent implements OnInit, OnChanges {
     handleGameLeave() {
         this.matchService.deleteMatch(this.matchId).subscribe({
             next: () => {
-                this.timerService.killTimer();
+                // this.timerService.killTimer();
                 this.router.navigate(['/new-game']);
             },
             error: (error) => {
@@ -217,6 +214,7 @@ export class GamePageComponent implements OnInit, OnChanges {
             setTimeout(() => {
                 this.currentQuestionIndex++;
                 this.questionHasExpired = false;
+                this.socketService.setTimerDuration(this.gameData.duration);
                 this.socketService.startTimer();
                 // this.startQuestionTimer();
             }, TIME_BETWEEN_QUESTIONS);
