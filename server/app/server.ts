@@ -77,6 +77,7 @@ export class Server {
             });
 
             const startCountdownTimer = (duration: number): void => {
+                this.room.currentTime = duration;
                 const timerId = setInterval(
                     () => {
                         this.io.emit('timer-countdown', duration);

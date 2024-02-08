@@ -215,7 +215,6 @@ export class GamePageComponent implements OnInit {
             setTimeout(() => {
                 this.currentQuestionIndex++;
                 this.questionHasExpired = false;
-                this.socketService.setTimerDuration(this.gameData.duration);
                 this.socketService.startTimer();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
