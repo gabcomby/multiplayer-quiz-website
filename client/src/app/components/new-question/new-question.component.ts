@@ -26,7 +26,7 @@ export class NewQuestionComponent {
                 }
                 this.questionService.addQuestion(newQuestion);
                 this.resetComponent(event);
-            } else if (onlyAddQuestionBank && (await this.validateQuestionExisting(newQuestion))) {
+            } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
             }
         }
