@@ -37,15 +37,24 @@ export class SocketService {
         });
     }
 
-    deleteId(): string[] {
+    /* deleteId(): string {
         console.log('deletehu');
         this.socket = io(this.url, { autoConnect: true });
-        this.socket.on('deleteId', (gameId) => {
+        const gameID = this.socket.on('deleteId', (gameId) => {
             console.log('socketcalled');
-            const deletedGames: string[] = [];
-            deletedGames.push(gameId.toString());
-            return deletedGames;
+            return gameId;
         });
-        return [''];
+        return gameID;
+    }*/
+    async deleteId(): Promise<string> {
+        return new Promise<string>((resolve) => {
+            console.log('deletehu');
+            this.socket = io(this.url, { autoConnect: true });
+            console.log('deletehu2');
+            this.socket.on('deleteId', (gameId) => {
+                console.log('socketcalled');
+                resolve(gameId);
+            });
+        });
     }
 }

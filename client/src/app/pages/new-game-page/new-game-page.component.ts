@@ -21,25 +21,26 @@ export class NewGamePageComponent implements OnInit {
         private socketService: SocketService,
     ) {}
 
-    ngOnInit() {
+    async ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
         });
         this.gamesId = this.socketService.connect();
+        await this.deleteGameEvent();
     }
     selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
 
-    deleteGameEvent() {
+    async deleteGameEvent() {
         this.socket = io('http://localhost:3000');
-        const gameIdArray = this.socketService.deleteId(); //prend _id delete game
-        const gameId = gameIdArray[gameIdArray.length - 1]; //prend le dernier _id delete game
-        const index = this.gamesId.indexOf(gameId);
-        const gameD = this.games[index]; //retour du jeux avec les infos
+        const gameIdString = await this.socketService.deleteId(); // prend _id delete game
+        this.gamesId.push(gameIdString);
+        const index = this.gamesId.indexOf(gameIdString);
+        const gameD = this.games[index]; // retour du jeux avec les infos
         const goodID = gameD.id;
         console.log(goodID);
-        /*const tupleFound = this.gamesId.find((innerPair) => {
+        /* const tupleFound = this.gamesId.find((innerPair) => {
             console.log('     ');
             console.log(innerPair[1]);
             return innerPair[1] === gameId;
@@ -47,7 +48,7 @@ export class NewGamePageComponent implements OnInit {
         console.log('allo');
         if (goodID !== undefined) {
             console.log('goodID found');
-            //const gameGoodId = tupleFound[0];
+            // const gameGoodId = tupleFound[0];
             if (this.gameSelected[goodID]) {
                 alert('Game ' + goodID + ' has been deleted');
                 // window.location.reload();

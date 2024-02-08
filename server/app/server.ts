@@ -36,8 +36,8 @@ export class Server {
             });
         });
         this.application.watchDelete().then((deletedId) => {
-            this.io.emit('deleteId', deletedId);
             console.log('deleteDetected');
+            this.io.emit('deleteId', deletedId);
         });
 
         /* socket.on('disconnect', () => {
