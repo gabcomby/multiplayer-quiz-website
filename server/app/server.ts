@@ -34,24 +34,28 @@ export class Server {
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
             });
+        });
+        this.application.watchDelete().then((deletedId) => {
+            this.io.emit('deleteId', deletedId);
+            console.log('deleteDetected');
+        });
 
-            /* socket.on('disconnect', () => {
+        /* socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('Client disconnected');
             });*/
-        });
         this.io.on('connect', () => {
-             this.application.getIdentification().then((pair) => {
+            this.application.getIdentification().then((pair) => {
                 console.log('Connected to Socket.IO server');
                 console.log(pair[0]);
                 this.io.emit('messageConnect', pair);
             });
         });
 
-        this.io.on('delete', (gameId) => {
+        /*this.io.on('delete', (gameId) => {
             console.log(gameId);
             this.io.emit('deleteId', gameId.toString());
-        });
+        });*/
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
