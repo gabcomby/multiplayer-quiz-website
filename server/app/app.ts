@@ -55,9 +55,14 @@ export class Application {
         const db = mongoose.connection.useDb('test');
         const gameSchema = new mongoose.Schema({}, { strict: false });
         const game = db.model('Game', gameSchema, 'games');
-        const games = await game.find({}, '_id id');
-        // eslint-disable-next-line no-underscore-dangle
-        const pair: [string, string][] = games.map((gameIds) => [gameIds.id, gameIds._id.toString()]);
+        const games = await game.find({}, { id: 1, _id: 1 });
+        console.log(games);
+        const pair: [string, string][] = games.map((gameIds) => {
+            console.log(gameIds);
+            console.log(gameIds.id);
+            return [gameIds._id.toString(), gameIds.id];
+        });
+        console.log(pair);
         return pair;
     }
 

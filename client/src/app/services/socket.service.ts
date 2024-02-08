@@ -36,13 +36,15 @@ export class SocketService {
         });
     }
 
-    deleteId(): string {
+    deleteId(): string[] {
         console.log('deletehu');
         this.socket = io(this.url, { autoConnect: true });
         this.socket.on('deleteId', (gameId) => {
             console.log('socketcalled');
-            return gameId;
+            const deletedGames: string[] = [];
+            deletedGames.push(gameId.toString());
+            return deletedGames;
         });
-        return '';
+        return [''];
     }
 }

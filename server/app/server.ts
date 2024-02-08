@@ -43,11 +43,12 @@ export class Server {
         this.io.on('connect', () => {
             this.application.getIdentification().then((pair: [string, string][]) => {
                 console.log('Connected to Socket.IO server');
+                console.log(pair);
                 this.io.emit('messageConnect', pair);
             });
         });
 
-        this.io.on('deleteId', (gameId) => {
+        this.io.on('delete', (gameId) => {
             console.log(gameId);
             this.io.emit('deleteId', gameId.toString());
         });
