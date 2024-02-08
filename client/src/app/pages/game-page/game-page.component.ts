@@ -190,7 +190,8 @@ export class GamePageComponent implements OnInit {
     handleGameLeave() {
         this.matchService.deleteMatch(this.matchId).subscribe({
             next: () => {
-                // this.timerService.killTimer();
+                this.socketService.stopTimer();
+                this.socketService.disconnect();
                 this.router.navigate(['/new-game']);
             },
             error: (error) => {
@@ -216,7 +217,6 @@ export class GamePageComponent implements OnInit {
                 this.questionHasExpired = false;
                 this.socketService.setTimerDuration(this.gameData.duration);
                 this.socketService.startTimer();
-                // this.startQuestionTimer();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
             setTimeout(() => {

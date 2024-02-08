@@ -59,6 +59,9 @@ export class Server {
             });
 
             socket.on('start-timer', () => {
+                if (this.room.isRunning) {
+                    clearInterval(this.room.timerId);
+                }
                 this.room.isRunning = true;
                 startCountdownTimer(this.room.duration);
                 this.io.emit('timer-update', 'Timer started');
