@@ -113,13 +113,17 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             } else {
                 score = 0;
             }
-        } else if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
+        } else if (this.checkIfSingleAnswerCorrect()) {
             score = this.mark;
         }
 
         this.defineAnswerStatus(score);
 
         this.scoreForTheQuestion.emit(score);
+    }
+
+    private checkIfSingleAnswerCorrect(): boolean | undefined {
+        return this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect;
     }
 
     private defineAnswerStatus(score: number): void {
