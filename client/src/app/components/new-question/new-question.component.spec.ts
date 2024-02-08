@@ -68,7 +68,7 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: new Date() };
+        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         const mockOnlyAddQuestionBank = false;
         component.addQuestion(newChoices, mockOnlyAddQuestionBank);
         expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: new Date() };
+        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         const mockOnlyAddQuestionBank = true;
         component.addQuestion(newChoices, mockOnlyAddQuestionBank).then(() => {
             expect(questionServiceSpy.addQuestionBank).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: new Date() };
+        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         const mockOnlyAddQuestionBank = false;
         component.addBankQuestion = true;
         await component.addQuestion(newChoices, mockOnlyAddQuestionBank);
@@ -134,7 +134,7 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: new Date() };
+        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         component.resetComponent(newChoices);
         expect(component.question).toEqual({
             text: '',
@@ -142,7 +142,7 @@ describe('NewQuestionComponent', () => {
             choices: [],
             type: 'QCM',
             id: '12312312',
-            lastModification: new Date(),
+            lastModification: defaultDate,
         });
         expect(newChoices[0]).toEqual({ isCorrect: false, text: '' });
         expect(newChoices[1]).toEqual({ isCorrect: false, text: '' });
@@ -156,7 +156,7 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: new Date() };
+        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         const newQuestion = component.createNewQuestion(newChoices);
         expect(newQuestion).toEqual({
             text: 'allo',
