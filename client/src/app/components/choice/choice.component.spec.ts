@@ -23,6 +23,37 @@ describe('ChoiceComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should add a choice if length of choices is lower than MAX_CHOICES', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: false },
+            { text: 'test2', isCorrect: true },
+        ];
+
+        component.addChoice(component.answers);
+
+        expect(component.answers.length).toBe(3);
+    });
+
+    it('should not add a choice if length of choices is MAX_CHOICES', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: false },
+            { text: 'test2', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+            { text: 'test4', isCorrect: false },
+        ];
+
+        component.addChoice(component.answers);
+
+        expect(component.answers.length).toBe(MAX_CHOICES);
+    });
+
+    it('should not add a choice if choices is undefined', () => {
+        component.question = undefined;
+
+        component.addChoice(component.question);
+
+        expect(component.question).toBe(undefined);
+    });
     it('should have a minimum of 2 choices and a maximum of 4 choices', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
@@ -52,19 +83,8 @@ describe('ChoiceComponent', () => {
         component.addChoice(component.answers);
         expect(component.answers.length).toBe(MAX_CHOICES);
     });
-    // IL PASSE
 
-    it('should be able to add a choice', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-        ];
-
-        component.addChoice(component.answers);
-        expect(component.answers.length).toBe(3);
-    });
-
-    it('should be able to remove a choice', () => {
+    it('should be able to remove a choice if length of choices is higher than 2', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
             { text: 'test2', isCorrect: true },
@@ -74,6 +94,17 @@ describe('ChoiceComponent', () => {
         component.removeChoice(1, component.answers);
         expect(component.answers.length).toBe(2);
     });
+
+    it('should not be able to remove a choice if length of choices is 2 or lower', () => {
+        component.answers = [
+            { text: 'test1', isCorrect: false },
+            { text: 'test2', isCorrect: true },
+        ];
+
+        component.removeChoice(1, component.answers);
+        expect(component.answers.length).toBe(2);
+    });
+
     it('should switch the answer selected and the one on top', () => {
         component.answers = [
             { text: 'test1', isCorrect: true },
