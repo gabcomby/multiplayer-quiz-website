@@ -5,7 +5,6 @@ import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
 import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
-import { TimerService } from '@app/services/timer.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 @Component({
@@ -27,7 +26,6 @@ export class GamePageComponent implements OnInit {
     playerName: string;
 
     constructor(
-        private timerService: TimerService,
         private gameService: GameService,
         private router: Router,
         private matchService: MatchService,

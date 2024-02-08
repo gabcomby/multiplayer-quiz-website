@@ -78,10 +78,12 @@ export class Server {
 
             const startCountdownTimer = (duration: number): void => {
                 this.room.currentTime = duration;
+                this.io.emit('timer-countdown', duration);
                 const timerId = setInterval(
                     () => {
-                        this.io.emit('timer-countdown', duration);
                         duration -= 1;
+                        this.io.emit('timer-countdown', duration);
+                        // duration -= 1;
                         this.room.currentTime = duration;
                     },
                     ONE_SECOND_IN_MS,
