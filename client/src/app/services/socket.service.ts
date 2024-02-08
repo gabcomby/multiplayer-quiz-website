@@ -13,11 +13,12 @@ export class SocketService {
     connect(): string[] {
         console.log('connecthu');
         this.socket = io(this.url, { autoConnect: true });
+        let arrayM: string[] = [];
         this.socket.on('messageConnect', (mesage) => {
             // eslint-disable-next-line no-console
-            return mesage;
+            arrayM.push(mesage);
         });
-        return [''];
+        return arrayM;
     }
 
     disconnect(): void {

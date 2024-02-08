@@ -24,8 +24,11 @@ export class NewGamePageComponent implements OnInit {
     async ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
+            console.log(this.games);
         });
         this.gamesId = this.socketService.connect();
+        console.log('allo');
+        console.log(this.gamesId);
         await this.deleteGameEvent();
     }
     selected(game: Game) {
@@ -34,33 +37,27 @@ export class NewGamePageComponent implements OnInit {
 
     async deleteGameEvent() {
         this.socket = io('http://localhost:3000');
-        const gameIdString = await this.socketService.deleteId(); // prend _id delete game
+        const gameIdString = await this.socketService.deleteId();
         this.gamesId.push(gameIdString);
         const index = this.gamesId.indexOf(gameIdString);
-        const gameD = this.games[index]; // retour du jeux avec les infos
+        const gameD = this.games[index];
+        console.log(gameD);
         const goodID = gameD.id;
         console.log(goodID);
-        /* const tupleFound = this.gamesId.find((innerPair) => {
-            console.log('     ');
-            console.log(innerPair[1]);
-            return innerPair[1] === gameId;
-        });*/
         console.log('allo');
         if (goodID !== undefined) {
             console.log('goodID found');
-            // const gameGoodId = tupleFound[0];
             if (this.gameSelected[goodID]) {
                 alert('Game ' + goodID + ' has been deleted');
-                // window.location.reload();
+                window.location.reload();
             } else {
+                alert('Game ');
                 console.log('deleteComponent');
+                window.location.reload();
             }
         } else {
             console.log('tuple undefined');
         }
-        /* this.socket.on('connect_error', () => {
-            this.socket.connect();
-        });*/
     }
 
     async nextStep(): Promise<string> {
