@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
@@ -13,7 +13,7 @@ const TIME_BETWEEN_QUESTIONS = 3000;
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit {
+export class GamePageComponent implements OnInit, OnChanges {
     gameData: Game;
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
@@ -37,29 +37,6 @@ export class GamePageComponent implements OnInit {
 
     get questionTimer(): number {
         return this.gameData?.duration;
-    }
-
-    updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
-            next: (data) => {
-                this.currentMatch.playerList[0] = data;
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
-    }
-
-    handleGameLeave() {
-        this.matchService.deleteMatch(this.matchId).subscribe({
-            next: () => {
-                this.timerService.killTimer();
-                this.router.navigate(['/new-game']);
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
     }
 
     async ngOnInit() {
@@ -145,6 +122,12 @@ export class GamePageComponent implements OnInit {
         });
     }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.timerCountdown && changes.timerCountdown.currentValue === 0) {
+            this.onTimerComplete();
+        }
+    }
+
     // async ngOnInit() {
     //     this.socketService.connect();
     //     await this.socketService.onTimerCountdown((data) => {
@@ -196,6 +179,29 @@ export class GamePageComponent implements OnInit {
     //     });
     // }
 
+    updatePlayerScore(scoreFromQuestion: number): void {
+        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
+            next: (data) => {
+                this.currentMatch.playerList[0] = data;
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
+    }
+
+    handleGameLeave() {
+        this.matchService.deleteMatch(this.matchId).subscribe({
+            next: () => {
+                this.timerService.killTimer();
+                this.router.navigate(['/new-game']);
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
+    }
+
     startQuestionTimer() {
         this.timerService.startTimer(this.questionTimer).subscribe({
             complete: () => {
@@ -205,12 +211,14 @@ export class GamePageComponent implements OnInit {
     }
 
     onTimerComplete(): void {
+        this.socketService.stopTimer();
         this.questionHasExpired = true;
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
             setTimeout(() => {
                 this.currentQuestionIndex++;
                 this.questionHasExpired = false;
-                this.startQuestionTimer();
+                this.socketService.startTimer();
+                // this.startQuestionTimer();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
             setTimeout(() => {
