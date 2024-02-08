@@ -68,10 +68,12 @@ export class Server {
             });
 
             socket.on('stop-timer', () => {
-                clearInterval(this.room.timerId);
-                this.room.isRunning = false;
-                this.room.currentTime = 0;
-                this.io.emit('timer-update', 'Timer stopped');
+                if (this.room.timerId) {
+                    clearInterval(this.room.timerId);
+                    this.room.isRunning = false;
+                    this.room.currentTime = this.room.duration;
+                    this.io.emit('timer-update', 'Timer stopped');
+                }
             });
 
             const startCountdownTimer = (duration: number): void => {
