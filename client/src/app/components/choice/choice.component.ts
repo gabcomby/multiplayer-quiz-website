@@ -70,6 +70,7 @@ export class ChoiceComponent {
         answer.forEach((elem) => {
             if (elem.text === '') {
                 valid = false;
+                alert('tous les choix de réponses doivent être rempli');
             }
         });
         return valid;

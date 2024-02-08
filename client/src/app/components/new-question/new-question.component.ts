@@ -60,14 +60,14 @@ export class NewQuestionComponent {
         if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
             return true;
         }
-        alert('needs a question and points and cannot be just whitespace');
+        alert('la question a un besoin d un nom, de point et pas juste des espaces');
         return false;
     }
     async validateQuestionExisting(question: Question): Promise<boolean> {
         const questionInBank = await this.questionService.getQuestions();
         const findQuestion = questionInBank.find((element) => element.text === question.text);
         if (findQuestion) {
-            alert('question already exist');
+            alert('la question existe déjà');
             return false;
         }
         return true;
