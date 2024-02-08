@@ -83,7 +83,6 @@ export class Server {
                     () => {
                         duration -= 1;
                         this.io.emit('timer-countdown', duration);
-                        // duration -= 1;
                         this.room.currentTime = duration;
                     },
                     ONE_SECOND_IN_MS,
