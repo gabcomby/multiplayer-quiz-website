@@ -33,20 +33,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         private answerStateService: AnswerStateService,
     ) {}
 
-    // @HostListener('keydown', ['$event'])
-    // buttonDetect(event: KeyboardEvent) {
-    //     if (this.verifyActiveElement()) {
-    //         this.buttonPressed = event.key;
-    //         if (!Number.isNaN(Number(this.buttonPressed))) {
-    //             if (this.checkIfNumberValid()) {
-    //                 this.toggleAnswer(Number(this.buttonPressed) - 1);
-    //             }
-    //         } else if (this.buttonPressed === 'Enter') {
-    //             this.submitAnswer();
-    //         }
-    //     }
-    // }
-
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         if (this.verifyActiveElement()) {
