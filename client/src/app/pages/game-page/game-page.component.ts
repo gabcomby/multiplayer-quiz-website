@@ -40,24 +40,17 @@ export class GamePageComponent implements OnInit {
     }
 
     async ngOnInit() {
-        // Extract game ID from route parameters first. This doesn't need to be awaited.
         this.gameId = this.route.snapshot.params['id'];
 
-        // Fetch game data synchronously before setting up WebSocket and other dependencies.
         await this.fetchGameData(this.gameId);
 
-        // After game data is fetched, proceed with match creation and player addition.
         await this.createAndSetupMatch();
 
-        // Now that the match is set up and we have the necessary game data,
-        // connect to the WebSocket and set up real-time event listeners.
         this.setupWebSocketEvents();
 
-        // Finally, start the WebSocket timer now that everything is set up.
         this.socketService.startTimer();
     }
 
-    // Convert fetchGameData to return a Promise.
     async fetchGameData(gameId: string): Promise<void> {
         return new Promise((resolve, reject) => {
             this.gameService.getGame(gameId).subscribe({
@@ -73,10 +66,8 @@ export class GamePageComponent implements OnInit {
         });
     }
 
-    // Create and setup match as a promise to ensure sequential execution.
     async createAndSetupMatch(): Promise<void> {
         this.matchId = crypto.randomUUID();
-        // Wrap the entire operation in a Promise to handle both match creation and player addition.
         return new Promise((resolve, reject) => {
             this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
                 next: (matchData) => {
@@ -101,7 +92,6 @@ export class GamePageComponent implements OnInit {
         });
     }
 
-    // Setup WebSocket events without awaiting them since they are real-time and continuous.
     setupWebSocketEvents() {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
@@ -110,7 +100,6 @@ export class GamePageComponent implements OnInit {
                 this.onTimerComplete();
             }
         });
-        // Ensure game data duration is available before setting timer duration.
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
@@ -124,57 +113,6 @@ export class GamePageComponent implements OnInit {
             console.log(data);
         });
     }
-
-    // async ngOnInit() {
-    //     this.socketService.connect();
-    //     await this.socketService.onTimerCountdown((data) => {
-    //         this.timerCountdown = data;
-    //     });
-    //     this.socketService.setTimerDuration(this.gameData.duration);
-    //     this.route.params.subscribe((params) => {
-    //         this.gameId = params['id'];
-    //     });
-    //     this.fetchGameData(this.gameId);
-    //     this.matchId = crypto.randomUUID();
-    //     this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
-    //         next: (data) => {
-    //             this.currentMatch = data;
-    //         },
-    //         error: (error) => {
-    //             alert(error.message);
-    //         },
-    //     });
-    //     this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
-    //         next: (data) => {
-    //             this.currentMatch = data;
-    //         },
-    //         error: (error) => {
-    //             alert(error.message);
-    //         },
-    //     });
-    //     this.socketService.onTimerDuration((data) => {
-    //         // eslint-disable-next-line no-console
-    //         console.log(data);
-    //     });
-
-    //     this.socketService.onTimerUpdate((data) => {
-    //         // eslint-disable-next-line no-console
-    //         console.log(data);
-    //     });
-    //     this.socketService.startTimer();
-    // }
-
-    // async fetchGameData(gameId: string): void {
-    //     this.gameService.getGame(gameId).subscribe({
-    //         next: (gameData: Game) => {
-    //             this.gameData = gameData;
-    //             this.startQuestionTimer();
-    //         },
-    //         error: (error) => {
-    //             alert(error.message);
-    //         },
-    //     });
-    // }
 
     updatePlayerScore(scoreFromQuestion: number): void {
         this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
