@@ -81,7 +81,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     toggleAnswer(index: number) {
-        if (this.timerExpired) return;
+        if (this.timerExpired || this.answerIsLocked) return;
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
         }
