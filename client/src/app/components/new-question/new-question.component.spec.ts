@@ -10,7 +10,7 @@ describe('NewQuestionComponent', () => {
 
     let component: NewQuestionComponent;
     let fixture: ComponentFixture<NewQuestionComponent>;
-    // const defaultDate = new Date();
+    const defaultDate = new Date();
     beforeEach(() => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
@@ -166,5 +166,55 @@ describe('NewQuestionComponent', () => {
             id: '334',
             lastModification: new Date(),
         });
+    });
+    it('should return true when validateQuestion with valid data', () => {
+        const newQuestion = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
+        const valid = component.validateQuestion(newQuestion);
+        expect(valid).toEqual(true);
+    });
+    it('should return false when validateQuestion with no text in question', () => {
+        const newQuestion = { type: 'QCM', text: '', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
+        const valid = component.validateQuestion(newQuestion);
+        expect(valid).toEqual(false);
+    });
+    it('should return false when validateQuestion with no points in question', () => {
+        const newQuestion = { type: 'QCM', text: 'allo', points: 0, id: '12312312', choices: [], lastModification: defaultDate };
+        const valid = component.validateQuestion(newQuestion);
+        expect(valid).toEqual(false);
+    });
+    it('should return false when validateQuestion with just whitespaces in question text', () => {
+        const newQuestion = { type: 'QCM', text: '   ', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
+        const valid = component.validateQuestion(newQuestion);
+        expect(valid).toEqual(false);
+    });
+    it('should return false when calling validateQuestionExisting with question already in questionBank', async () => {
+        const newQuestion = {
+            type: 'QCM',
+            text: 'Ceci est une question de test',
+            points: 10,
+            id: 'dsdsd',
+            choice: [
+                { text: '1', isCorrect: false },
+                { text: '2', isCorrect: true },
+            ],
+            lastModification: new Date(),
+        };
+        const valid = await component.validateQuestionExisting(newQuestion);
+        expect(valid).toEqual(false);
+    });
+    it('should return true when calling validateQuestionExisting with question not in questionBank', async () => {
+        const newQuestion = {
+            type: 'QCM',
+            text: 'Ceci est une question de test 2',
+            points: 10,
+            id: '1234',
+            choice: [
+                { text: '1', isCorrect: false },
+                { text: '2', isCorrect: true },
+            ],
+            lastModification: new Date(),
+        };
+        const valid = await component.validateQuestionExisting(newQuestion);
+        expect(valid).toEqual(true);
     });
 });
