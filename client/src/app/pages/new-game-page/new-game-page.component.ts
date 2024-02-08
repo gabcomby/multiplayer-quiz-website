@@ -39,7 +39,7 @@ export class NewGamePageComponent implements OnInit {
         this.socket = io('http://localhost:3000');
         const gameIdString = await this.socketService.deleteId();
         this.gamesId.push(gameIdString);
-        const index = this.gamesId.indexOf(gameIdString);
+        const index = this.gamesId[0].indexOf(gameIdString);
         const gameD = this.games[index];
         console.log(gameD);
         const goodID = gameD.id;
