@@ -10,13 +10,14 @@ export class SocketService {
     private socket: Socket;
     private readonly url: string = 'http://localhost:3000';
 
-    connect(): [string, string][] {
+    connect(): string[] {
+        console.log('connecthu');
         this.socket = io(this.url, { autoConnect: true });
         this.socket.on('messageConnect', (mesage) => {
             // eslint-disable-next-line no-console
             return mesage;
         });
-        return [['', '']];
+        return [''];
     }
 
     disconnect(): void {

@@ -49,24 +49,29 @@ export class Application {
         mongoose.connect(mongoDBUri);
     }
 
-    async getIdentification(): Promise<[string, string][]> {
+    async getIdentification(): Promise<string[]> {
         const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
         mongoose.connect(mongoDBUri);
         const db = mongoose.connection.useDb('test');
         const gameSchema = new mongoose.Schema({}, { strict: false });
         const game = db.model('Game', gameSchema, 'games');
-        game.find({}, { _id: 0, id: 1 }).then((games) => {
-            console.log(games);
-            console.log(games[0].id);
+        let mongoId: string[] = [];
+        await game.find({}, { _id: 1 }).then((games) => {
+            mongoId = games.map((gameIds) => {
+                console.log(gameIds);
+                console.log(gameIds.id);
+                return gameIds.id;
+            });
+            console.log(mongoId);
         });
-        const pair: [string, string][] = [];
+       // console.log(mongoId);
+        console.log('bonjour');
+        return mongoId;
         /* const pair: [string, string][] = games.map((gameIds) => {
             console.log(gameIds);
             console.log(gameIds.id);
             return [gameIds._id.toString(), gameIds.id];
         });*/
-        console.log(pair);
-        return pair;
     }
 
     bindRoutes(): void {

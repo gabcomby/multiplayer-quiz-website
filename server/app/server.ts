@@ -41,9 +41,9 @@ export class Server {
             });*/
         });
         this.io.on('connect', () => {
-            this.application.getIdentification().then((pair: [string, string][]) => {
+             this.application.getIdentification().then((pair) => {
                 console.log('Connected to Socket.IO server');
-                console.log(pair);
+                console.log(pair[0]);
                 this.io.emit('messageConnect', pair);
             });
         });
