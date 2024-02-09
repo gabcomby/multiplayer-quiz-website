@@ -16,6 +16,7 @@ export class NewGamePageComponent implements OnInit {
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     gamesId: string[] = [];
+    deletedGamesId: string[] = [];
     constructor(
         private gameService: GameService,
         private socketService: SocketService,
@@ -41,6 +42,7 @@ export class NewGamePageComponent implements OnInit {
         this.gamesId.push(gameIdString);
         const index = this.gamesId[0].indexOf(gameIdString);
         const gameD = this.games[index];
+        this.deletedGamesId.push(gameD.id);
         console.log(gameD);
         const goodID = gameD.id;
         console.log(goodID);
@@ -49,20 +51,34 @@ export class NewGamePageComponent implements OnInit {
             console.log('goodID found');
             if (this.gameSelected[goodID]) {
                 alert('Game ' + goodID + ' has been deleted');
-                window.location.reload();
+                // I want to recreate the component after the alert to update list of games and recall ngOnInit
+                this.ngOnInit();
+                this.deleteGameEvent();
             } else {
                 alert('Game ');
                 console.log('deleteComponent');
-                window.location.reload();
+                // I want to recreate the component after the alert to update list of games and recall ngOnInit
+                this.ngOnInit();
+                this.deleteGameEvent();
             }
         } else {
             console.log('tuple undefined');
         }
     }
 
-    async nextStep(): Promise<string> {
-        const deletedIdId = await this.socketService.deleteId();
-        const deletedId = deletedIdId[deletedIdId.length - 1];
-        return deletedId;
+    isTheGameDeleted(game: Game): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if (this.deletedGamesId.indexOf(game.id) !== -1) {
+            return true;
+        } else {
+            const indexGame = this.games.indexOf(game);
+            const newSuggestedGame = this.games[indexGame + 1];
+            alert('Game ' + game.id + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
+            return false;
+        }
+    }
+
+    isTheGameHidden(game: Game): boolean {
+        return this.gameSelected[game.id];
     }
 }
