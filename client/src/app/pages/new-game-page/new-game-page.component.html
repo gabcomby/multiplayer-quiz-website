@@ -8,7 +8,7 @@
     <p><b>Temps alloué par questions:</b> {{game.duration}}</p>
     <p><b>Questions:</b></p>
     <p *ngFor="let question of game.questions"> - {{question.text}}</p>
-    <button mat-raised-button color="primary" [routerLink]="['/game', game.id]" (click)="isTheGameDeleted(game)">Tester le jeu</button>
-    <button mat-raised-button color="accent" [routerLink]="['/gameWait', game.id]"(click)="isTheGameDeleted(game)">Lancer une partie</button>
+    <button mat-raised-button color="primary" (click)="isTheGameDeletedTest(game)" (click)="isTheGameHiddenTest(game)">Tester le jeu</button>
+    <button mat-raised-button color="accent" (click)="isTheGameDeletedPlay(game)" (click)="isTheGameHiddenPlay(game)">Lancer une partie</button>
   </mat-card-content>
 </mat-card>

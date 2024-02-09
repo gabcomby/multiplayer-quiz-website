@@ -38,15 +38,6 @@ export class SocketService {
         });
     }
 
-    /* deleteId(): string {
-        console.log('deletehu');
-        this.socket = io(this.url, { autoConnect: true });
-        const gameID = this.socket.on('deleteId', (gameId) => {
-            console.log('socketcalled');
-            return gameId;
-        });
-        return gameID;
-    }*/
     async deleteId(): Promise<string> {
         return new Promise<string>((resolve) => {
             console.log('deletehu');

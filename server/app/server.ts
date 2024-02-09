@@ -36,10 +36,6 @@ export class Server {
             });
         });
 
-        /* socket.on('disconnect', () => {
-                // eslint-disable-next-line no-console
-                console.log('Client disconnected');
-            });*/
         this.io.on('connect', () => {
             this.application.getIdentification().then((pair) => {
                 console.log('Connected to Socket.IO server');

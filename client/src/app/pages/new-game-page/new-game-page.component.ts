@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
@@ -20,6 +21,7 @@ export class NewGamePageComponent implements OnInit {
     constructor(
         private gameService: GameService,
         private socketService: SocketService,
+        private router: Router,
     ) {}
 
     async ngOnInit() {
@@ -54,47 +56,104 @@ export class NewGamePageComponent implements OnInit {
             console.log('goodID found');
             if (this.gameSelected[goodID]) {
                 alert('Game ' + goodID + ' has been deleted');
-                // I want to recreate the component after the alert to update list of games and recall ngOnInit
-                this.ngOnInit();
-                // this.gamesId = this.socketService.connect();
-                // this.deleteGameEvent();
             } else {
-                alert('Game ');
                 console.log('deleteComponent');
-                // I want to recreate the component after the alert to update list of games and recall ngOnInit
-                this.ngOnInit();
-                // this.gamesId = this.socketService.connect();
-                // this.deleteGameEvent();
             }
         } else {
-            console.log('tuple undefined');
+            console.log('game is undefined');
         }
     }
 
-    isTheGameDeleted(game: Game): boolean {
+    isTheGameDeletedTest(game: Game): boolean {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         if (this.deletedGamesId.indexOf(game.id) !== -1) {
-            return true;
-        } else {
             const indexGame = this.games.indexOf(game);
-            const newSuggestedGame = this.games[indexGame + 1];
-            alert('Game ' + game.id + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
-            return false;
+            if (indexGame === this.games.length - 1) {
+                const newSuggestedGameCase1 = this.games[0];
+                alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGameCase1.title);
+                return false;
+            } else if (this.games.length === 1) {
+                alert('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
+                return false;
+            } else {
+                const newSuggestedGame = this.games[indexGame + 1];
+                alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
+                return false;
+            }
+        } else {
+            this.router.navigate(['/game', game.id]);
+            return true;
         }
     }
 
-    isTheGameHidden(game: Game): boolean {
+    isTheGameHiddenTest(game: Game): boolean {
         this.gameService.getGames().then((games) => {
             this.games = games;
             console.log(this.games);
         });
         if (game.isVisible === false) {
             const indexGame = this.games.indexOf(game);
-            // gestion des différents cas
-            const newSuggestedGame = this.games[indexGame + 1];
-            alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
-            return false;
+            if (indexGame === this.games.length - 1) {
+                const newSuggestedGameCase1 = this.games[0];
+                alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGameCase1.title);
+                return false;
+            } else if (this.games.length === 1) {
+                alert('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
+                return false;
+            } else {
+                const newSuggestedGame = this.games[indexGame + 1];
+                alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
+                return false;
+            }
         } else {
+            this.router.navigate(['/game', game.id]);
+            return true;
+        }
+    }
+
+    isTheGameDeletedPlay(game: Game): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if (this.deletedGamesId.indexOf(game.id) !== -1) {
+            const indexGame = this.games.indexOf(game);
+            if (indexGame === this.games.length - 1) {
+                const newSuggestedGameCase1 = this.games[0];
+                alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGameCase1.title);
+                return false;
+            } else if (this.games.length === 1) {
+                alert('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
+                return false;
+            } else {
+                const newSuggestedGame = this.games[indexGame + 1];
+                alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
+                return false;
+            }
+        } else {
+            this.router.navigate(['/gameWait', game.id]);
+            return true;
+        }
+    }
+
+    isTheGameHiddenPlay(game: Game): boolean {
+        this.gameService.getGames().then((games) => {
+            this.games = games;
+            console.log(this.games);
+        });
+        if (game.isVisible === false) {
+            const indexGame = this.games.indexOf(game);
+            if (indexGame === this.games.length - 1) {
+                const newSuggestedGameCase1 = this.games[0];
+                alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGameCase1.title);
+                return false;
+            } else if (this.games.length === 1) {
+                alert('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
+                return false;
+            } else {
+                const newSuggestedGame = this.games[indexGame + 1];
+                alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
+                return false;
+            }
+        } else {
+            this.router.navigate(['/gameWait', game.id]);
             return true;
         }
     }
