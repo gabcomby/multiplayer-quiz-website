@@ -28,17 +28,20 @@ export class NewGamePageComponent implements OnInit {
             console.log(this.games);
         });
         this.gamesId = this.socketService.connect();
-        console.log('allo');
-        console.log(this.gamesId);
-        await this.deleteGameEvent();
+        this.initializeSocket();
     }
     selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
 
-    async deleteGameEvent() {
+    initializeSocket() {
         this.socket = io('http://localhost:3000');
-        const gameIdString = await this.socketService.deleteId();
+        this.socket.on('deleteId', async (gameId: string) => {
+            await this.deleteGameEvent(gameId);
+        });
+    }
+
+    async deleteGameEvent(gameIdString: string) {
         this.gamesId.push(gameIdString);
         const index = this.gamesId[0].indexOf(gameIdString);
         const gameD = this.games[index];
@@ -53,13 +56,15 @@ export class NewGamePageComponent implements OnInit {
                 alert('Game ' + goodID + ' has been deleted');
                 // I want to recreate the component after the alert to update list of games and recall ngOnInit
                 this.ngOnInit();
-                this.deleteGameEvent();
+                // this.gamesId = this.socketService.connect();
+                // this.deleteGameEvent();
             } else {
                 alert('Game ');
                 console.log('deleteComponent');
                 // I want to recreate the component after the alert to update list of games and recall ngOnInit
                 this.ngOnInit();
-                this.deleteGameEvent();
+                // this.gamesId = this.socketService.connect();
+                // this.deleteGameEvent();
             }
         } else {
             console.log('tuple undefined');
@@ -79,6 +84,18 @@ export class NewGamePageComponent implements OnInit {
     }
 
     isTheGameHidden(game: Game): boolean {
-        return this.gameSelected[game.id];
+        this.gameService.getGames().then((games) => {
+            this.games = games;
+            console.log(this.games);
+        });
+        if (game.isVisible === false) {
+            const indexGame = this.games.indexOf(game);
+            // gestion des différents cas
+            const newSuggestedGame = this.games[indexGame + 1];
+            alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
+            return false;
+        } else {
+            return true;
+        }
     }
 }

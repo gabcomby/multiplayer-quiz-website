@@ -35,10 +35,6 @@ export class Server {
                 this.io.emit('message', `Server: ${message}`);
             });
         });
-        this.application.watchDelete().then((deletedId) => {
-            console.log('deleteDetected');
-            this.io.emit('deleteId', deletedId);
-        });
 
         /* socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
@@ -50,12 +46,11 @@ export class Server {
                 console.log(pair);
                 this.io.emit('messageConnect', pair);
             });
+            this.application.watchDelete().then((deletedId) => {
+                console.log('deleteDetected');
+                this.io.emit('deleteId', deletedId);
+            });
         });
-
-        /*this.io.on('delete', (gameId) => {
-            console.log(gameId);
-            this.io.emit('deleteId', gameId.toString());
-        });*/
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

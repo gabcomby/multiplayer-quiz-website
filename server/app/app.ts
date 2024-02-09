@@ -68,23 +68,6 @@ export class Application {
         return mongoId;
     }
 
-    /* async watchDelete(): Promise<string> {
-        const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
-        mongoose.connect(mongoDBUri);
-        const db = mongoose.connection.useDb('test');
-        const gameSchema = new mongoose.Schema({}, { strict: false });
-        const game = db.model('Game', gameSchema, 'games');
-        const changeStream = game.watch();
-        await changeStream.on('change', (data) => {
-            if (data.operationType === 'delete') {
-                console.log('delete');
-                const deleteId = data.documentKey.id;
-                console.log(deleteId);
-                return deleteId;
-            }
-            return '';
-        });
-    }*/
     async watchDelete(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
