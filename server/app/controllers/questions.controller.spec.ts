@@ -53,6 +53,14 @@ describe('QuestionsController', () => {
             });
     });
 
+    it('should return a list of questions on GET request', async () => {
+        questionsService.getQuestions.resolves([mockQuestionData.toObject()]);
+
+        const response = await supertest(expressApp).get('/api/questions').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal([JSON.parse(JSON.stringify(mockQuestionData))]);
+    });
+
     it('should return an error status on GET request if service fails', async () => {
         questionsService.getQuestionById.rejects(new Error('Service Failure'));
 
@@ -65,14 +73,11 @@ describe('QuestionsController', () => {
     });
 
     it('should return a question on GET request', async () => {
-        questionsService.getQuestionById.resolves(mockQuestionData);
+        questionsService.getQuestionById.resolves(mockQuestionData.toObject());
 
-        return supertest(expressApp)
-            .get('/api/questions/abc123')
-            .expect(StatusCodes.OK)
-            .then((response) => {
-                chai.expect(response.body);
-            });
+        const response = await supertest(expressApp).get('/api/questions/abc123').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockQuestionData)));
     });
 
     it('should return an error status on POST request if service fails', async () => {
@@ -88,15 +93,11 @@ describe('QuestionsController', () => {
     });
 
     it('should return a question on POST request', async () => {
-        questionsService.addQuestionBank.resolves(mockQuestionData);
+        questionsService.addQuestionBank.resolves(mockQuestionData.toObject());
 
-        return supertest(expressApp)
-            .post('/api/questions')
-            .send(mockQuestionData)
-            .expect(StatusCodes.OK)
-            .then((response) => {
-                chai.expect(response.body);
-            });
+        const response = await supertest(expressApp).post('/api/questions').send(mockQuestionData).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockQuestionData)));
     });
 
     it('should return an error status on DELETE request if service fails', async () => {
@@ -111,14 +112,11 @@ describe('QuestionsController', () => {
     });
 
     it('should return a question on DELETE request', async () => {
-        questionsService.deleteQuestion.resolves(mockQuestionData);
+        questionsService.deleteQuestion.resolves(mockQuestionData.toObject());
 
-        return supertest(expressApp)
-            .delete('/api/questions/abc123')
-            .expect(StatusCodes.OK)
-            .then((response) => {
-                chai.expect(response.body);
-            });
+        const response = await supertest(expressApp).delete('/api/questions/abc123').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockQuestionData)));
     });
 
     it('should return an error status on PATCH request if service fails', async () => {
@@ -131,5 +129,13 @@ describe('QuestionsController', () => {
             .then((response) => {
                 chai.expect(response.body).to.deep.equal({ error: 'Error updating question' });
             });
+    });
+
+    it('should return a question on PATCH request', async () => {
+        questionsService.updateQuestion.resolves(mockQuestionData.toObject());
+
+        const response = await supertest(expressApp).patch('/api/questions/abc123').send(mockQuestionData).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockQuestionData)));
     });
 });

@@ -4,7 +4,7 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/games.service';
 import { MatchService } from '@app/services/match.service';
-import { TimerService } from '@app/services/timer.service';
+import { SocketService } from '@app/services/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 @Component({
@@ -19,21 +19,96 @@ export class GamePageComponent implements OnInit {
     currentMatch: Match;
     matchId: string;
     gameId: string;
+    timerCountdown: number;
 
     gameScore: { name: string; score: number }[] = [];
 
     playerName: string;
 
     constructor(
-        private timerService: TimerService,
         private gameService: GameService,
         private router: Router,
         private matchService: MatchService,
         private route: ActivatedRoute,
+        private socketService: SocketService,
     ) {}
 
     get questionTimer(): number {
         return this.gameData?.duration;
+    }
+
+    async ngOnInit() {
+        // Get the game ID from the URL
+        this.gameId = this.route.snapshot.params['id'];
+        // Fetch the game data from the server
+        await this.fetchGameData(this.gameId);
+        // Create a new match and set up the match ID
+        await this.createAndSetupMatch();
+        // Set up the web socket events for the timer
+        this.setupWebSocketEvents();
+        // Start the timer
+        this.socketService.startTimer();
+    }
+
+    async fetchGameData(gameId: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.gameService.getGame(gameId).subscribe({
+                next: (gameData: Game) => {
+                    this.gameData = gameData;
+                    resolve();
+                },
+                error: (error) => {
+                    alert(error.message);
+                    reject(error);
+                },
+            });
+        });
+    }
+
+    async createAndSetupMatch(): Promise<void> {
+        this.matchId = crypto.randomUUID();
+        return new Promise((resolve, reject) => {
+            this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
+                next: (matchData) => {
+                    this.currentMatch = matchData;
+                    this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
+                        next: (data) => {
+                            this.currentMatch = data;
+                            resolve();
+                        },
+                        error: (error) => {
+                            alert(error.message);
+                            reject(error);
+                        },
+                    });
+                },
+                error: (error) => {
+                    alert(error.message);
+                    reject(error);
+                },
+            });
+        });
+    }
+
+    setupWebSocketEvents() {
+        this.socketService.connect();
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
+            if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
+        });
+        if (this.gameData && this.gameData.duration) {
+            this.socketService.setTimerDuration(this.gameData.duration);
+        }
+        this.socketService.onTimerDuration((data) => {
+            // eslint-disable-next-line no-console
+            console.log(data);
+        });
+        this.socketService.onTimerUpdate((data) => {
+            // eslint-disable-next-line no-console
+            console.log(data);
+        });
     }
 
     updatePlayerScore(scoreFromQuestion: number): void {
@@ -50,7 +125,8 @@ export class GamePageComponent implements OnInit {
     handleGameLeave() {
         this.matchService.deleteMatch(this.matchId).subscribe({
             next: () => {
-                this.timerService.killTimer();
+                this.socketService.stopTimer();
+                this.socketService.disconnect();
                 this.router.navigate(['/new-game']);
             },
             error: (error) => {
@@ -59,57 +135,12 @@ export class GamePageComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
-        this.route.params.subscribe((params) => {
-            this.gameId = params['id'];
-        });
-        this.fetchGameData(this.gameId);
-        this.matchId = crypto.randomUUID();
-        this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
-            next: (data) => {
-                this.currentMatch = data;
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
-        this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
-            next: (data) => {
-                this.currentMatch = data;
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
-    }
-
-    fetchGameData(gameId: string): void {
-        this.gameService.getGame(gameId).subscribe({
-            next: (gameData: Game) => {
-                this.gameData = gameData;
-                this.startQuestionTimer();
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
-    }
-
-    startQuestionTimer() {
-        this.timerService.startTimer(this.questionTimer).subscribe({
-            complete: () => {
-                this.onTimerComplete();
-            },
-        });
-    }
-
     onTimerComplete(): void {
+        this.socketService.stopTimer();
         this.questionHasExpired = true;
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
             setTimeout(() => {
-                this.currentQuestionIndex++;
-                this.questionHasExpired = false;
-                this.startQuestionTimer();
+                this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
             setTimeout(() => {
@@ -124,5 +155,11 @@ export class GamePageComponent implements OnInit {
 
     getCurrentQuestion(): Question {
         return this.gameData.questions[this.currentQuestionIndex];
+    }
+
+    private handleNextQuestion(): void {
+        this.currentQuestionIndex++;
+        this.questionHasExpired = false;
+        this.socketService.startTimer();
     }
 }

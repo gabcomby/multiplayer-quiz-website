@@ -32,10 +32,7 @@ export class GamePageLivechatComponent {
     sendMessage(): void {
         this.newMessage = this.newMessage.trim();
         if (this.newMessage) {
-            const message = { text: this.newMessage, sender: this.playerName, visible: true };
-            this.messages.push(message);
-
-            setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
+            this.addMessageToData();
         }
         this.newMessage = '';
     }
@@ -47,5 +44,11 @@ export class GamePageLivechatComponent {
         if (index !== -1) {
             this.messages.splice(index, 1);
         }
+    }
+
+    private addMessageToData(): void {
+        const message = { text: this.newMessage, sender: this.playerName, visible: true };
+        this.messages.push(message);
+        setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
     }
 }
