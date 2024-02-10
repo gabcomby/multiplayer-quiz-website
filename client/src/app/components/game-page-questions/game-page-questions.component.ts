@@ -25,7 +25,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     answerGivenIsCorrect: boolean;
     answerStatusEnum = AnswerStatusEnum;
     answerStatus: AnswerStatusEnum;
-    buttonPressed: string;
+    // buttonPressed: string;
     answerIsLocked: boolean;
 
     constructor(
@@ -36,12 +36,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         if (this.verifyActiveElement()) {
-            this.buttonPressed = event.key;
-            if (!Number.isNaN(Number(this.buttonPressed))) {
-                if (this.checkIfNumberValid()) {
-                    this.toggleAnswer(Number(this.buttonPressed) - 1);
+            const buttonPressed = event.key;
+            if (this.checkIsNumber(buttonPressed)) {
+                if (this.checkIfNumberValid(buttonPressed)) {
+                    this.toggleAnswer(Number(buttonPressed) - 1);
                 }
-            } else if (this.buttonPressed === 'Enter') {
+            } else if (buttonPressed === 'Enter') {
                 this.submitAnswer();
             }
         }
@@ -49,9 +49,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.question || changes.choices) {
-            this.selectedChoices = [];
-            this.answerIsLocked = false;
-            this.answerStateService.lockAnswer(this.answerIsLocked);
+            this.resetAnswerState();
         }
 
         if (changes.timerExpired && changes.timerExpired.currentValue === true) {
@@ -69,7 +67,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     toggleAnswer(index: number) {
-        if (this.timerExpired) return;
+        if (this.timerExpired || this.answerIsLocked) return;
         if (!this.checkIfMultipleChoice()) {
             this.selectedChoices = [];
         }
@@ -101,13 +99,17 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             } else {
                 score = 0;
             }
-        } else if (this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect) {
+        } else if (this.checkIfSingleAnswerCorrect()) {
             score = this.mark;
         }
 
         this.defineAnswerStatus(score);
 
         this.scoreForTheQuestion.emit(score);
+    }
+
+    private checkIfSingleAnswerCorrect(): boolean | undefined {
+        return this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect;
     }
 
     private defineAnswerStatus(score: number): void {
@@ -118,8 +120,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         }
     }
 
-    private checkIfNumberValid(): boolean {
-        return Number(this.buttonPressed) > 0 && Number(this.buttonPressed) <= this.choices.length;
+    private checkIfNumberValid(buttonPressed: string): boolean {
+        return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
     }
 
     private verifyActiveElement(): boolean {
@@ -161,5 +163,15 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             }
         }
         return count;
+    }
+
+    private checkIsNumber(buttonPressed: string): boolean {
+        return !Number.isNaN(Number(buttonPressed));
+    }
+
+    private resetAnswerState(): void {
+        this.selectedChoices = [];
+        this.answerIsLocked = false;
+        this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 }

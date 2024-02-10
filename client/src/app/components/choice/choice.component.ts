@@ -11,15 +11,14 @@ const MAX_CHOICES = 4;
 export class ChoiceComponent {
     @Input() question: Choice[] | undefined;
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
-    type: string = '0';
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
     ];
 
-    addChoice(choices: Choice[]) {
+    addChoice(choices: Choice[] | undefined) {
         if (choices) {
-            if (choices && choices.length >= 2 && choices.length < MAX_CHOICES) {
+            if (choices.length < MAX_CHOICES) {
                 choices.push({ text: '', isCorrect: false });
             }
         } else {

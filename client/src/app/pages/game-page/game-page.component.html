@@ -14,7 +14,7 @@
         <app-game-page-livechat [playerName]="playerName" id="sidebar"></app-game-page-livechat>
     </div>
     <div class="timer">
-        <app-game-page-timer [gameTimer]="questionTimer" (timerComplete)="onTimerComplete()"></app-game-page-timer>
+        <app-game-page-timer [timerCountdown]="timerCountdown" [totalTimer]="gameData.duration"></app-game-page-timer>
     </div>
     <div class="question" *ngIf="gameData">
         <app-game-page-questions

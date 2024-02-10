@@ -4,14 +4,21 @@ import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 
+const ONE_SECOND_IN_MS = 1000;
+
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
+    room = {
+        duration: 0,
+        timerId: 0,
+        currentTime: 0,
+        isRunning: false,
+    };
     private server: http.Server;
     private io: SocketIoServer;
-
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -39,13 +46,56 @@ export class Server {
                 // eslint-disable-next-line no-console
                 console.log('Client disconnected');
             });
+
+            socket.on('set-timer-duration', (duration) => {
+                if (parseInt(duration, 10) > 0) {
+                    this.room.duration = parseInt(duration, 10);
+                    // eslint-disable-next-line no-console
+                    console.log('Set duration of time to', duration);
+                    this.io.emit('timer-duration', duration);
+                } else {
+                    this.io.emit('timer-duration', 'Invalid duration');
+                }
+            });
+
+            socket.on('start-timer', () => {
+                if (this.room.isRunning) {
+                    clearInterval(this.room.timerId);
+                }
+                this.room.isRunning = true;
+                startCountdownTimer(this.room.duration);
+                this.io.emit('timer-update', 'Timer started');
+            });
+
+            socket.on('stop-timer', () => {
+                if (this.room.timerId) {
+                    clearInterval(this.room.timerId);
+                    this.room.isRunning = false;
+                    this.room.currentTime = this.room.duration;
+                    this.io.emit('timer-update', 'Timer stopped');
+                }
+            });
+
+            const startCountdownTimer = (duration: number): void => {
+                this.room.currentTime = duration;
+                this.io.emit('timer-countdown', duration);
+                const timerId = setInterval(
+                    () => {
+                        duration -= 1;
+                        this.io.emit('timer-countdown', duration);
+                        this.room.currentTime = duration;
+                    },
+                    ONE_SECOND_IN_MS,
+                    duration,
+                );
+                this.room.timerId = timerId;
+            };
         });
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
     }
-
     private onError(error: NodeJS.ErrnoException): void {
         if (error.syscall !== 'listen') {
             throw error;
