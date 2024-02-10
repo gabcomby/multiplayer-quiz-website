@@ -27,7 +27,6 @@ export class NewGamePageComponent implements OnInit {
     async ngOnInit() {
         this.gameService.getGames().then((games) => {
             this.games = games;
-            console.log(this.games);
         });
         this.gamesId = this.socketService.connect();
         this.initializeSocket();
@@ -48,19 +47,11 @@ export class NewGamePageComponent implements OnInit {
         const index = this.gamesId[0].indexOf(gameIdString);
         const gameD = this.games[index];
         this.deletedGamesId.push(gameD.id);
-        console.log(gameD);
         const goodID = gameD.id;
-        console.log(goodID);
-        console.log('allo');
         if (goodID !== undefined) {
-            console.log('goodID found');
             if (this.gameSelected[goodID]) {
                 alert('Game ' + goodID + ' has been deleted');
-            } else {
-                console.log('deleteComponent');
             }
-        } else {
-            console.log('game is undefined');
         }
     }
 
@@ -88,10 +79,7 @@ export class NewGamePageComponent implements OnInit {
 
     async isTheGameHiddenTest(game: Game): Promise<boolean> {
         const newGameArray = await this.gameService.getGames();
-        console.log('julianne');
-        console.log(newGameArray);
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        console.log(indexG);
         if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
@@ -136,10 +124,7 @@ export class NewGamePageComponent implements OnInit {
 
     async isTheGameHiddenPlay(game: Game): Promise<boolean> {
         const newGameArray = await this.gameService.getGames();
-        console.log('julianne');
-        console.log(newGameArray);
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        console.log(indexG);
         if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {

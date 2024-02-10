@@ -11,9 +11,8 @@ export class SocketService {
     private readonly url: string = 'http://localhost:3000';
 
     connect(): string[] {
-        console.log('connecthu');
         this.socket = io(this.url, { autoConnect: true });
-        let arrayM: string[] = [];
+        const arrayM: string[] = [];
         this.socket.on('messageConnect', (mesage) => {
             // eslint-disable-next-line no-console
             arrayM.push(mesage);
@@ -40,11 +39,8 @@ export class SocketService {
 
     async deleteId(): Promise<string> {
         return new Promise<string>((resolve) => {
-            console.log('deletehu');
             this.socket = io(this.url, { autoConnect: true });
-            console.log('deletehu2');
             this.socket.on('deleteId', (gameId) => {
-                console.log('socketcalled');
                 resolve(gameId);
             });
         });

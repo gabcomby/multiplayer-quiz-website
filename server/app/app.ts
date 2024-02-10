@@ -58,13 +58,9 @@ export class Application {
         let mongoId: string[] = [];
         await game.find({}, { _id: 1 }).then((games) => {
             mongoId = games.map((gameIds) => {
-                console.log(gameIds);
-                console.log(gameIds.id);
                 return gameIds.id;
             });
-            console.log(mongoId);
         });
-        console.log('bonjour');
         return mongoId;
     }
 
@@ -78,15 +74,12 @@ export class Application {
             const changeStream = game.watch();
             changeStream.on('change', (data) => {
                 if (data.operationType === 'delete') {
-                    console.log('delete');
                     // eslint-disable-next-line no-underscore-dangle
                     const deleteId = data.documentKey._id;
-                    console.log(deleteId.toString());
                     resolve(deleteId.toString());
                 }
             });
             changeStream.on('error', (error) => {
-                console.log('error');
                 reject(error);
             });
         });
