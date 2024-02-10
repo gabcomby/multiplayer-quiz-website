@@ -41,10 +41,14 @@ export class Server {
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
             });
+        });
 
-            socket.on('disconnect', () => {
-                // eslint-disable-next-line no-console
-                console.log('Client disconnected');
+        this.io.on('connect', () => {
+            this.application.getIdentification().then((pair) => {
+                this.io.emit('messageConnect', pair);
+            });
+            this.application.watchDelete().then((deletedId) => {
+                this.io.emit('deleteId', deletedId);
             });
 
             socket.on('set-timer-duration', (duration) => {

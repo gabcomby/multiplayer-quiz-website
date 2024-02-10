@@ -10,12 +10,14 @@ export class SocketService {
     private socket: Socket;
     private readonly url: string = 'http://localhost:3000';
 
-    connect(): void {
+    connect(): string[] {
         this.socket = io(this.url, { autoConnect: true });
-        this.socket.on('connect', () => {
+        const arrayM: string[] = [];
+        this.socket.on('messageConnect', (mesage) => {
             // eslint-disable-next-line no-console
-            console.log('Connected to Socket.IO server');
+            arrayM.push(mesage);
         });
+        return arrayM;
     }
 
     disconnect(): void {
@@ -34,6 +36,15 @@ export class SocketService {
             console.log(data);
         });
     }
+
+    async deleteId(): Promise<string> {
+        return new Promise<string>((resolve) => {
+            this.socket = io(this.url, { autoConnect: true });
+            this.socket.on('deleteId', (gameId) => {
+                resolve(gameId);
+            });
+        });
+    }    
 
     setTimerDuration(duration: number): void {
         this.socket.emit('set-timer-duration', duration);

@@ -49,6 +49,42 @@ export class Application {
         mongoose.connect(mongoDBUri);
     }
 
+    async getIdentification(): Promise<string[]> {
+        const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
+        mongoose.connect(mongoDBUri);
+        const db = mongoose.connection.useDb('test');
+        const gameSchema = new mongoose.Schema({}, { strict: false });
+        const game = db.model('Game', gameSchema, 'games');
+        let mongoId: string[] = [];
+        await game.find({}, { _id: 1 }).then((games) => {
+            mongoId = games.map((gameIds) => {
+                return gameIds.id;
+            });
+        });
+        return mongoId;
+    }
+
+    async watchDelete(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
+            mongoose.connect(mongoDBUri);
+            const db = mongoose.connection.useDb('test');
+            const gameSchema = new mongoose.Schema({}, { strict: false });
+            const game = db.model('Game', gameSchema, 'games');
+            const changeStream = game.watch();
+            changeStream.on('change', (data) => {
+                if (data.operationType === 'delete') {
+                    // eslint-disable-next-line no-underscore-dangle
+                    const deleteId = data.documentKey._id;
+                    resolve(deleteId.toString());
+                }
+            });
+            changeStream.on('error', (error) => {
+                reject(error);
+            });
+        });
+    }
+
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/date', this.dateController.router);

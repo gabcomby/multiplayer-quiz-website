@@ -95,13 +95,23 @@ export class CreateQGamePageComponent implements OnInit {
     async gameValidationWhenModified() {
         if (await isValidGame(this.gameFromDB, this.gameService, false)) {
             if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
-                this.gameService.patchGame(this.gameFromDB);
-                // eslint-disable-next-line no-console
-                console.log(this.gameFromDB);
+                this.gameService.patchGame(this.patchOldGame());
+                console.log(this.patchOldGame());
             } else {
                 this.gameService.createGame(this.gameFromDB);
             }
         }
+    }
+    patchOldGame() {
+        return {
+            id: this.gameFromDB.id,
+            title: this.gameForm.get('name')?.value,
+            description: this.gameForm.get('description')?.value,
+            isVisible: this.gameForm.get('visibility')?.value,
+            duration: this.gameForm.get('time')?.value,
+            lastModification: new Date(),
+            questions: this.gameFromDB.questions,
+        };
     }
 
     createNewGame(isNewGame: boolean) {
