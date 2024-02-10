@@ -86,12 +86,13 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    isTheGameHiddenTest(game: Game): boolean {
-        this.gameService.getGames().then((games) => {
-            this.games = games;
-            console.log(this.games);
-        });
-        if (game.isVisible === false) {
+    async isTheGameHiddenTest(game: Game): Promise<boolean> {
+        const newGameArray = await this.gameService.getGames();
+        console.log('julianne');
+        console.log(newGameArray);
+        const indexG = newGameArray.findIndex((g) => g.id === game.id);
+        console.log(indexG);
+        if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
@@ -133,12 +134,13 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    isTheGameHiddenPlay(game: Game): boolean {
-        this.gameService.getGames().then((games) => {
-            this.games = games;
-            console.log(this.games);
-        });
-        if (game.isVisible === false) {
+    async isTheGameHiddenPlay(game: Game): Promise<boolean> {
+        const newGameArray = await this.gameService.getGames();
+        console.log('julianne');
+        console.log(newGameArray);
+        const indexG = newGameArray.findIndex((g) => g.id === game.id);
+        console.log(indexG);
+        if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
