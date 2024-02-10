@@ -1,3 +1,13 @@
+<div class="top-bar">
+  <mat-toolbar color="accent" id="menu-bar">
+    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+        <mat-icon>home</mat-icon>
+    </button>
+    <span class="large-bar-spacer"></span>
+    <span class="top-bar-text">Création d'une partie</span>
+    <span class="large-bar-spacer"></span>
+  </mat-toolbar>
+</div>
 <h1 id="title">Liste des jeux</h1>
 <mat-card *ngFor="let game of games">
   <mat-card-header *ngIf="game.isVisible" (click)="selected(game)" id="{{game.id}}">
