@@ -87,7 +87,7 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.questionList).toEqual(await questionServiceSpy.getQuestions());
         expect(component.disabled).toEqual([true, true]);
     });
-    it('should add question to list and add true to disabled when eventEmitter from service', () => {
+    it('should add question to list and add true to disabled when eventEmitter from service', async () => {
         spyOn(questionServiceSpy.onQuestionAdded, 'emit');
         const mockQuestion = {
             type: 'QCM',
@@ -99,9 +99,10 @@ describe('ModifiedQuestionComponent', () => {
         component.disabled = [];
         component.ngOnInit();
 
-        questionServiceSpy.onQuestionAdded.emit(mockQuestion);
+        questionServiceSpy.onQuestionAdded.next(mockQuestion);
         expect(component.questionList).toContain(mockQuestion);
-        // expect(component.disabled).toContain(true);
+        fixture.detectChanges();
+        expect(component.disabled[0]).toBeTrue();
     });
 
     it('should initialize questionList with data from QuestionService if the is no gameQuestion', () => {

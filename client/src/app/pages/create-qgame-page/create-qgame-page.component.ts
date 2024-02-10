@@ -69,7 +69,7 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async onSubmit() {
-        const newGame: Game = this.createNewGame();
+        const newGame: Game = this.createNewGame(true);
 
         if (this.gameId) {
             this.gameValidationWhenModified();
@@ -104,9 +104,9 @@ export class CreateQGamePageComponent implements OnInit {
         }
     }
 
-    createNewGame() {
+    createNewGame(isNewGame: boolean) {
         return {
-            id: generateNewId(),
+            id: isNewGame ? generateNewId() : this.gameFromDB.id,
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
             isVisible: false,

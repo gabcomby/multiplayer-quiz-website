@@ -260,7 +260,7 @@ describe('CreateQGamePageComponent', () => {
         component.gameForm.controls['description'].setValue('Test Description');
         component.gameForm.controls['time'].setValue(MAGIC_NUMB);
 
-        const newGame = component.createNewGame();
+        const newGame = component.createNewGame(true);
         expect(newGame).toBeTruthy();
         expect(newGame.id).toBeDefined();
         expect(newGame.title).toBe('Test Game');
