@@ -55,93 +55,83 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    isTheGameDeletedTest(game: Game): boolean {
+    async isTheGameModifiedTest(game: Game): Promise<boolean> {
+        let result;
+        const newGameArray = await this.gameService.getGames();
+        const indexG = newGameArray.findIndex((g) => g.id === game.id);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         if (this.deletedGamesId.indexOf(game.id) !== -1) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
                 alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGameCase1.title);
-                return false;
+                result = false;
             } else if (this.games.length === 1) {
                 alert('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
-                return false;
+                result = false;
             } else {
                 const newSuggestedGame = this.games[indexGame + 1];
                 alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
-                return false;
+                result = false;
             }
-        } else {
-            this.router.navigate(['/game', game.id]);
-            return true;
-        }
-    }
-
-    async isTheGameHiddenTest(game: Game): Promise<boolean> {
-        const newGameArray = await this.gameService.getGames();
-        const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        if (newGameArray[indexG].isVisible === false) {
+        } else if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
                 alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGameCase1.title);
-                return false;
+                result = false;
             } else if (this.games.length === 1) {
                 alert('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
-                return false;
+                result = false;
             } else {
                 const newSuggestedGame = this.games[indexGame + 1];
                 alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
-                return false;
+                result = false;
             }
         } else {
             this.router.navigate(['/game', game.id]);
-            return true;
+            result = true;
         }
+        return result;
     }
 
-    isTheGameDeletedPlay(game: Game): boolean {
+    async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+        let result;
+        const newGameArray = await this.gameService.getGames();
+        const indexG = newGameArray.findIndex((g) => g.id === game.id);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         if (this.deletedGamesId.indexOf(game.id) !== -1) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
                 alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGameCase1.title);
-                return false;
+                result = false;
             } else if (this.games.length === 1) {
                 alert('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
-                return false;
+                result = false;
             } else {
                 const newSuggestedGame = this.games[indexGame + 1];
                 alert('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
-                return false;
+                result = false;
             }
-        } else {
-            this.router.navigate(['/gameWait', game.id]);
-            return true;
-        }
-    }
-
-    async isTheGameHiddenPlay(game: Game): Promise<boolean> {
-        const newGameArray = await this.gameService.getGames();
-        const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        if (newGameArray[indexG].isVisible === false) {
+        } else if (newGameArray[indexG].isVisible === false) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
                 alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGameCase1.title);
-                return false;
+                result = false;
             } else if (this.games.length === 1) {
                 alert('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
-                return false;
+                result = false;
             } else {
                 const newSuggestedGame = this.games[indexGame + 1];
                 alert('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
-                return false;
+                result = false;
             }
         } else {
             this.router.navigate(['/gameWait', game.id]);
-            return true;
+            result = true;
         }
+        return result;
     }
 }

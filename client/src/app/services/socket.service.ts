@@ -44,7 +44,7 @@ export class SocketService {
                 resolve(gameId);
             });
         });
-    }    
+    }
 
     setTimerDuration(duration: number): void {
         this.socket.emit('set-timer-duration', duration);

@@ -43,7 +43,7 @@ export class Server {
             });
         });
 
-        this.io.on('connect', () => {
+        this.io.on('connect', (socket) => {
             this.application.getIdentification().then((pair) => {
                 this.io.emit('messageConnect', pair);
             });
