@@ -84,7 +84,6 @@ describe('QuestionService', () => {
         expect(req.request.method).toBe('POST');
         req.flush(question);
     });
-
     it('should get a question by its id', () => {
         service.getQuestionById('abc123').subscribe((q) => {
             expect(q).toEqual(question);
@@ -161,5 +160,35 @@ describe('QuestionService', () => {
         const questions = service.getQuestion();
 
         expect(questions).toEqual(service.questions);
+    });
+
+    it('should update the question list with the question added', () => {
+        const questions = [
+            {
+                id: 'string',
+                type: 'string',
+                text: 'string',
+                points: 40,
+                lastModification: new Date(),
+                choices: [
+                    { text: 'Ceci est une question de test', isCorrect: true },
+                    { text: 'Ceci est une question de test 2', isCorrect: false },
+                ],
+            },
+
+            {
+                id: 'string1',
+                type: 'string',
+                text: 'string',
+                points: 50,
+                lastModification: new Date(),
+                choices: [
+                    { text: 'Ceci est une question de test3', isCorrect: true },
+                    { text: 'Ceci est une question de test 4', isCorrect: false },
+                ],
+            },
+        ];
+        service.updateList(questions);
+        expect(service.questions).toEqual(questions);
     });
 });
