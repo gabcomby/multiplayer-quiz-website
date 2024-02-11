@@ -104,12 +104,13 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async gameValidationWhenModified() {
-        if (isValidGame(this.gameFromDB, this.snackbarService)) {
-            if (await this.gameService.validateDeletedGame(this.gameFromDB)) {
-                this.gameService.patchGame(this.createNewGame(false));
+        const modifiedGame = this.createNewGame(false);
+        if (isValidGame(modifiedGame, this.snackbarService)) {
+            if (await this.gameService.validateDeletedGame(modifiedGame)) {
+                this.gameService.patchGame(modifiedGame);
                 this.router.navigate(['/home']);
             } else {
-                this.gameService.createGame(this.gameFromDB);
+                this.gameService.createGame(modifiedGame);
                 this.router.navigate(['/home']);
             }
         }

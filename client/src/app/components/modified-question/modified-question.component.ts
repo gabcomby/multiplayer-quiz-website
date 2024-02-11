@@ -39,6 +39,9 @@ export class ModifiedQuestionComponent implements OnInit {
             this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
         } else {
             this.questionList = this.gameQuestions;
+            this.questionList.forEach(() => {
+                this.disabled.push(false);
+            });
         }
     }
     async loadQuestionsFromBank() {
