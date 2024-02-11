@@ -7,6 +7,8 @@ import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -116,7 +118,7 @@ export class GamePageComponent implements OnInit {
         this.socketService.onAnswerVerification((data) => {
             this.answerIsCorrect = data;
             if (data === true) {
-                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points);
+                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
             }
         });
     }

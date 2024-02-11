@@ -82,42 +82,22 @@ export class Server {
             });
 
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
-                // eslint-ignore-next-line
-                console.log(answerIdx);
-                let multipleAnswer = false;
-                let nbr = 0;
-                for (const choice of choices) {
-                    if (choice.isCorrect) {
-                        nbr++;
-                    }
-                }
-                if (nbr > 1) {
-                    multipleAnswer = true;
+                if (answerIdx.length === 0) {
+                    this.io.emit('answer-verification', false);
+                    return;
                 }
 
-                if (!multipleAnswer) {
-                    if (choices[answerIdx[0]].isCorrect) {
-                        this.io.emit('answer-verification', true);
-                    } else {
-                        this.io.emit('answer-verification', false);
-                    }
+                const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+                const isMultipleAnswer = totalCorrectChoices > 1;
+
+                const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
+
+                if (!isMultipleAnswer) {
+                    this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
                 } else {
-                    let nbrOfRightAnswers = 0;
-                    for (const choice of choices) {
-                        if (choice.isCorrect) {
-                            nbrOfRightAnswers++;
-                        }
-                    }
-                    for (const index of answerIdx) {
-                        if (choices[index].isCorrect) {
-                            nbrOfRightAnswers--;
-                        }
-                    }
-                    if (nbrOfRightAnswers === 0) {
-                        this.io.emit('answer-verification', true);
-                    } else {
-                        this.io.emit('answer-verification, false');
-                    }
+                    const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+                    const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+                    this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
                 }
             });
 

@@ -52,14 +52,11 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (changes.question || changes.choices) {
             this.resetAnswerState();
         }
-
-        // if (changes.timerExpired && changes.timerExpired.currentValue === true) {
-        //     this.calculateScoreForTheQuestion();
-        // }
     }
 
     ngOnInit(): void {
         this.selectedChoices = [];
+        this.answerIdx.emit(this.selectedChoices);
         this.document.addEventListener('keydown', this.buttonDetect.bind(this));
     }
 
@@ -117,6 +114,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     private resetAnswerState(): void {
         this.selectedChoices = [];
+        this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }
