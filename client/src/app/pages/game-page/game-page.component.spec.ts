@@ -1,106 +1,99 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { Router } from '@angular/router';
-// import { RouterTestingModule } from '@angular/router/testing';
-// import { GameService } from '@app/services/games.service';
-// import { PlayerService } from '@app/services/player.service';
-// import { TimerService } from '@app/services/timer.service';
-// import { of } from 'rxjs';
-// import { GamePageComponent } from './game-page.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Game, Question } from '@app/interfaces/game'; // Assuming the path is correct
+import { GameService } from '@app/services/games.service';
+import { MatchService } from '@app/services/match.service';
+import { SocketService } from '@app/services/socket.service';
+import { GamePageComponent } from './game-page.component';
 
-// const mockGameData = {
-//     id: '1a2b3c',
-//     title: 'Test Game',
-//     description: 'Test game description',
-//     isVisible: true,
-//     duration: 30,
-//     lastModification: new Date(),
-//     questions: [
-//         {
-//             type: 'multiple-choice',
-//             text: 'What is the capital of France?',
-//             points: 10,
-//             choices: [{ text: 'Paris', isCorrect: true }, { text: 'London' }, { text: 'Berlin' }, { text: 'Madrid' }],
-//             previousIndex: 0,
-//             currentIndex: 0,
-//             lastModification: new Date(),
-//             id: '1a2b3c',
-//         },
-//     ],
-// };
+describe('GamePageComponent', () => {
+    let component: GamePageComponent;
+    let fixture: ComponentFixture<GamePageComponent>;
+    let gameService: jasmine.SpyObj<GameService>;
+    let matchService: jasmine.SpyObj<MatchService>;
+    let socketService: jasmine.SpyObj<SocketService>;
 
-// describe('GamePageComponent', () => {
-//     let component: GamePageComponent;
-//     let fixture: ComponentFixture<GamePageComponent>;
-//     let gameServiceMock: jasmine.SpyObj<GameService>;
-//     let playerServiceMock: jasmine.SpyObj<PlayerService>;
-//     let timerServiceMock: jasmine.SpyObj<TimerService>;
-//     let router: Router;
+    beforeEach(async () => {
+        const mockActivatedRoute = {
+            snapshot: {
+                params: { id: 'testGameId' },
+            },
+        };
 
-//     beforeEach(async () => {
-//         // Create mocks
-//         gameServiceMock = jasmine.createSpyObj('GameService', ['getGame']);
-//         playerServiceMock = jasmine.createSpyObj('PlayerService', ['getPlayerName']);
-//         timerServiceMock = jasmine.createSpyObj('TimerService', ['startTimer', 'killTimer']);
-//         timerServiceMock.startTimer.and.returnValue(of(0));
+        gameService = jasmine.createSpyObj('GameService', ['getGame']);
+        matchService = jasmine.createSpyObj('MatchService', ['createNewMatch', 'addPlayer', 'deleteMatch', 'updatePlayerScore']);
+        socketService = jasmine.createSpyObj('SocketService', [
+            'connect',
+            'disconnect',
+            'startTimer',
+            'stopTimer',
+            'onTimerCountdown',
+            'onAnswerVerification',
+            'setTimerDuration',
+        ]);
 
-//         await TestBed.configureTestingModule({
-//             imports: [RouterTestingModule],
-//             declarations: [GamePageComponent],
-//             providers: [
-//                 { provide: GameService, useValue: gameServiceMock },
-//                 { provide: PlayerService, useValue: playerServiceMock },
-//                 { provide: TimerService, useValue: timerServiceMock },
-//                 // Remove the Router mock if not needed, or keep it if you have specific tests that require spying on navigate.
-//             ],
-//         }).compileComponents();
-//     });
+        await TestBed.configureTestingModule({
+            declarations: [GamePageComponent],
+            imports: [RouterTestingModule, HttpClientTestingModule],
+            providers: [
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: GameService, useValue: gameService },
+                { provide: MatchService, useValue: matchService },
+                { provide: SocketService, useValue: socketService },
+            ],
+        }).compileComponents();
 
-//     beforeEach(() => {
-//         fixture = TestBed.createComponent(GamePageComponent);
-//         component = fixture.componentInstance;
-//         router = TestBed.inject(Router); // Get the actual router instance
-//         fixture.detectChanges();
-//     });
+        fixture = TestBed.createComponent(GamePageComponent);
+        component = fixture.componentInstance;
+    });
 
-//     it('should create', () => {
-//         expect(component).toBeTruthy();
-//     });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-//     describe('initializePlayerScore', () => {
-//         it('should initialize player score if player name exists', () => {
-//             const playerName = 'John Doe';
-//             playerServiceMock.getPlayerName.and.returnValue(playerName);
-//             component.initializePlayerScore();
-//             expect(component.gameScore.length).toBe(1);
-//             expect(component.gameScore[0].name).toEqual(playerName);
-//             expect(component.gameScore[0].score).toEqual(0);
-//         });
+    it('should fetch game data and set up a match on init', async () => {
+        const questionMock: Question[] = [
+            {
+                type: 'multiple-choice',
+                text: 'Question 1?',
+                points: 10,
+                choices: [
+                    { text: 'Answer 1', isCorrect: false },
+                    { text: 'Answer 2', isCorrect: true },
+                ],
+                lastModification: new Date(),
+                id: 'q1',
+            },
+        ];
+        const mockedGameData: Game = {
+            id: 'game123',
+            title: 'Test Game',
+            description: 'This is a test game',
+            isVisible: true,
+            duration: 30,
+            lastModification: new Date(),
+            questions: questionMock,
+        };
+        const mockedMatchData = {
+            id: 'match123',
+            playerList: [],
+        };
+        const updatedMatchDataWithPlayer = {
+            ...mockedMatchData,
+            playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
+        };
 
-//         it('should not initialize player score if player name does not exist', () => {
-//             playerServiceMock.getPlayerName.and.returnValue('');
-//             component.initializePlayerScore();
-//             expect(component.gameScore.length).toBe(0);
-//         });
-//     });
+        fixture.detectChanges();
 
-//     describe('fetchGameData', () => {
-//         it('should fetch game data successfully', () => {
-//             gameServiceMock.getGame.and.returnValue(of(mockGameData));
-//             spyOn(component, 'startQuestionTimer');
+        await fixture.whenStable();
 
-//             component.fetchGameData(mockGameData.id);
+        expect(gameService.getGame).toHaveBeenCalledWith('testGameId');
+        expect(matchService.createNewMatch).toHaveBeenCalled();
+        expect(matchService.addPlayer).toHaveBeenCalledWith({ id: 'playertest', name: 'Player 1', score: 0 }, jasmine.any(String));
 
-//             expect(gameServiceMock.getGame).toHaveBeenCalledWith(mockGameData.id);
-//             expect(component.gameData).toEqual(mockGameData);
-//             expect(component.startQuestionTimer).toHaveBeenCalled();
-//         });
-//     });
-
-//     it('should navigate to the home page after leaving the game', () => {
-//         const spy = spyOn(router, 'navigate');
-//         component.handleGameLeave();
-//         expect(spy).toHaveBeenCalledWith(['/']);
-//     });
-
-//     // Add more tests for other methods and behaviors of the component...
-// });
+        expect(component.gameData).toEqual(mockedGameData);
+        expect(component.currentMatch).toEqual(updatedMatchDataWithPlayer);
+    });
+});
