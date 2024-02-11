@@ -105,6 +105,22 @@ describe('GamePageComponent', () => {
         });
     });
 
+    it('should correctly setup WebSocket events', () => {
+        spyOn(component, 'setupWebSocketEvents').and.callThrough();
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            expect(socketService.connect).toHaveBeenCalled();
+            expect(socketService.onTimerCountdown).toHaveBeenCalled();
+            expect(socketService.setTimerDuration).toHaveBeenCalledWith(component.gameData.duration);
+            expect(socketService.onTimerDuration).toHaveBeenCalled();
+            expect(socketService.onTimerUpdate).toHaveBeenCalled();
+            expect(socketService.onAnswerVerification).toHaveBeenCalled();
+            expect(component.setupWebSocketEvents).toHaveBeenCalled();
+        });
+    });
+
     it('should correctly update player score', () => {
         spyOn(component, 'updatePlayerScore').and.callThrough();
 
