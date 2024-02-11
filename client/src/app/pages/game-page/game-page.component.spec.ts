@@ -2,11 +2,42 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Game, Question } from '@app/interfaces/game'; // Assuming the path is correct
+import type { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/games.service';
 import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
 import { GamePageComponent } from './game-page.component';
+
+const questionMock: Question[] = [
+    {
+        type: 'multiple-choice',
+        text: 'Question 1?',
+        points: 10,
+        choices: [
+            { text: 'Answer 1', isCorrect: false },
+            { text: 'Answer 2', isCorrect: true },
+        ],
+        lastModification: new Date(),
+        id: 'q1',
+    },
+];
+const mockedGameData: Game = {
+    id: 'game123',
+    title: 'Test Game',
+    description: 'This is a test game',
+    isVisible: true,
+    duration: 30,
+    lastModification: new Date(),
+    questions: questionMock,
+};
+const mockedMatchData = {
+    id: 'match123',
+    playerList: [],
+};
+const updatedMatchDataWithPlayer = {
+    ...mockedMatchData,
+    playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
+};
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -54,37 +85,6 @@ describe('GamePageComponent', () => {
     });
 
     it('should fetch game data and set up a match on init', async () => {
-        const questionMock: Question[] = [
-            {
-                type: 'multiple-choice',
-                text: 'Question 1?',
-                points: 10,
-                choices: [
-                    { text: 'Answer 1', isCorrect: false },
-                    { text: 'Answer 2', isCorrect: true },
-                ],
-                lastModification: new Date(),
-                id: 'q1',
-            },
-        ];
-        const mockedGameData: Game = {
-            id: 'game123',
-            title: 'Test Game',
-            description: 'This is a test game',
-            isVisible: true,
-            duration: 30,
-            lastModification: new Date(),
-            questions: questionMock,
-        };
-        const mockedMatchData = {
-            id: 'match123',
-            playerList: [],
-        };
-        const updatedMatchDataWithPlayer = {
-            ...mockedMatchData,
-            playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
-        };
-
         fixture.detectChanges();
 
         await fixture.whenStable();

@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
-import { GameService } from '@app/services/games.service';
+import { ApiService } from '@app/services/api.service';
 import { MatchService } from '@app/services/match.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -32,11 +33,12 @@ export class GamePageComponent implements OnInit {
     private previousQuestionIndex: number;
 
     constructor(
-        private gameService: GameService,
         private router: Router,
         private matchService: MatchService,
         private route: ActivatedRoute,
         private socketService: SocketService,
+        private apiService: ApiService,
+        private snackbarService: SnackbarService,
     ) {}
 
     get questionTimer(): number {
@@ -47,28 +49,22 @@ export class GamePageComponent implements OnInit {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
         // Fetch the game data from the server
-        await this.fetchGameData(this.gameId);
+        this.apiService.getGame(this.gameId).subscribe({
+            next: (data) => {
+                this.gameData = data;
+                // eslint-disable-next-line no-console
+                console.log(this.gameData);
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+            },
+        });
         // Create a new match and set up the match ID
         await this.createAndSetupMatch();
         // Set up the web socket events for the timer
         this.setupWebSocketEvents();
         // Start the timer
         this.socketService.startTimer();
-    }
-
-    async fetchGameData(gameId: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.gameService.getGame(gameId).subscribe({
-                next: (gameData: Game) => {
-                    this.gameData = gameData;
-                    resolve();
-                },
-                error: (error) => {
-                    alert(error.message);
-                    reject(error);
-                },
-            });
-        });
     }
 
     async createAndSetupMatch(): Promise<void> {
