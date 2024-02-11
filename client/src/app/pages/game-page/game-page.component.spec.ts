@@ -133,4 +133,18 @@ describe('GamePageComponent', () => {
             expect(component.updatePlayerScore).toHaveBeenCalledWith(TEN);
         });
     });
+
+    it('should correctly handle game leave', () => {
+        spyOn(component, 'handleGameLeave').and.callThrough();
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            component.handleGameLeave();
+
+            expect(matchService.deleteMatch).toHaveBeenCalledWith(component.matchId);
+            expect(socketService.stopTimer).toHaveBeenCalled();
+            expect(component.handleGameLeave).toHaveBeenCalled();
+        });
+    });
 });
