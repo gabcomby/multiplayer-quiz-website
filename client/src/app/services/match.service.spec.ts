@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import type { Match } from '@app/interfaces/match';
+import type { Match, Player } from '@app/interfaces/match';
 import { MatchService } from '@app/services/match.service';
 
 describe('MatchService', () => {
