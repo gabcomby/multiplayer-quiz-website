@@ -82,6 +82,8 @@ export class Server {
             });
 
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
+                // eslint-ignore-next-line
+                console.log(answerIdx);
                 let multipleAnswer = false;
                 let nbr = 0;
                 for (const choice of choices) {

@@ -78,6 +78,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         } else {
             this.selectedChoices.push(index);
         }
+        this.answerIdx.emit(this.selectedChoices);
         this.document.body.focus();
     }
 
@@ -105,7 +106,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
         this.defineAnswerStatus(score);
 
-        this.answerIdx.emit(this.selectedChoices);
+        // this.answerIdx.emit(this.selectedChoices);
     }
 
     private checkIfSingleAnswerCorrect(): boolean | undefined {
