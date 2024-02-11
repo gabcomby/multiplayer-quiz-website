@@ -1,4 +1,5 @@
 import { Application } from '@app/app';
+import type IChoice from '@app/models/choice.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
@@ -77,6 +78,33 @@ export class Server {
                     this.room.isRunning = false;
                     this.room.currentTime = this.room.duration;
                     this.io.emit('timer-update', 'Timer stopped');
+                }
+            });
+
+            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[], multipleAnswer: boolean) => {
+                if (!multipleAnswer) {
+                    if (choices[answerIdx[0]].isCorrect) {
+                        this.io.emit('answer-verification', true);
+                    } else {
+                        this.io.emit('answer-verification', false);
+                    }
+                } else {
+                    let nbrOfRightAnswers = 0;
+                    for (const choice of choices) {
+                        if (choice.isCorrect) {
+                            nbrOfRightAnswers++;
+                        }
+                    }
+                    for (const index of answerIdx) {
+                        if (choices[index].isCorrect) {
+                            nbrOfRightAnswers--;
+                        }
+                    }
+                    if (nbrOfRightAnswers === 0) {
+                        this.io.emit('answer-verification', true);
+                    } else {
+                        this.io.emit('answer-verification, false');
+                    }
                 }
             });
 
