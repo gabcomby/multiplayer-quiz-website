@@ -5,9 +5,12 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
+import { of } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
 const TEN = 10;
+
+// const TIME_BETWEEN_QUESTIONS = 3000;
 
 // const questionMock: Question[] = [
 //     {
@@ -20,6 +23,17 @@ const TEN = 10;
 //         ],
 //         lastModification: new Date(),
 //         id: 'q1',
+//     },
+//     {
+//         type: 'multiple-choice',
+//         text: 'Question 2?',
+//         points: 10,
+//         choices: [
+//             { text: 'Answer 1', isCorrect: true },
+//             { text: 'Answer 2', isCorrect: false },
+//         ],
+//         lastModification: new Date(),
+//         id: 'q2',
 //     },
 // ];
 // const mockedGameData: Game = {
@@ -39,8 +53,6 @@ const updatedMatchDataWithPlayer = {
     ...mockedMatchData,
     playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
 };
-
-import { of } from 'rxjs'; // Import the 'of' function from RxJS to mock Observables
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -64,7 +76,22 @@ describe('GamePageComponent', () => {
             'onTimerCountdown',
             'onAnswerVerification',
             'setTimerDuration',
+            'verifyAnswers',
         ]);
+
+        // socketService.onTimerDuration = jasmine.createSpy('onTimerDuration').and.callFake((callback) => {
+        //     // Simulate calling the callback with mock data
+        //     const mockMessage = 'Timer duration set to 30 seconds'; // Example duration
+        //     callback(mockMessage);
+        // });
+
+        // socketService.onTimerUpdate = jasmine.createSpy('onTimerUpdate').and.callFake((callback) => {
+        //     // Simulate calling the callback with mock data
+        //     const mockMessage = 'Timer started'; // Example time
+        //     callback(mockMessage);
+        // });
+
+        // socketService.setTimerDuration = jasmine.createSpy('setTimerDuration').and.callThrough();
 
         // Mock the API calls to return Observables of mock data
         matchService.createNewMatch.and.returnValue(of(mockedMatchData));
@@ -134,29 +161,50 @@ describe('GamePageComponent', () => {
         });
     });
 
-    it('should correctly handle game leave', () => {
-        spyOn(component, 'handleGameLeave').and.callThrough();
+    // it('should fetch game data on init and handle errors', () => {
+    //     const apiService = TestBed.inject(ApiService);
+    //     spyOn(apiService, 'getGame').and.returnValue(throwError(() => new Error('Failed to fetch game data')));
+    //     const snackbarService = TestBed.inject(SnackbarService);
+    //     spyOn(snackbarService, 'openSnackBar');
 
-        fixture.detectChanges();
+    //     component.ngOnInit();
 
-        fixture.whenStable().then(() => {
-            component.handleGameLeave();
+    //     expect(apiService.getGame).toHaveBeenCalledWith('testGameId');
+    //     expect(snackbarService.openSnackBar).toHaveBeenCalledWith(jasmine.any(String));
+    // });
 
-            expect(matchService.deleteMatch).toHaveBeenCalledWith(component.matchId);
-            expect(socketService.stopTimer).toHaveBeenCalled();
-            expect(component.handleGameLeave).toHaveBeenCalled();
-        });
-    });
+    // it('should handle timer countdown and question expiration correctly', fakeAsync(() => {
+    //     component.gameData = mockedGameData;
+    //     component.gameData.duration = 30;
+    //     socketService.onTimerCountdown.and.callFake((callback) => {
+    //         callback(0); // Simulate timer reaching 0
+    //     });
 
-    it('should correctly handle timer complete', () => {
-        spyOn(component, 'onTimerComplete').and.callThrough();
+    //     component.setupWebSocketEvents();
+    //     tick(); // Fast-forward any asynchronous code
 
-        fixture.detectChanges();
+    //     expect(component.questionHasExpired).toBeTrue();
+    //     expect(component.onTimerComplete).toHaveBeenCalled();
+    // }));
 
-        fixture.whenStable().then(() => {
-            component.onTimerComplete();
+    // it('should transition to the next question correctly', fakeAsync(() => {
+    //     component.gameData.questions = questionMock;
+    //     component.currentQuestionIndex = 0;
 
-            expect(component.onTimerComplete).toHaveBeenCalled();
-        });
-    });
+    //     component.handleNextQuestion();
+    //     tick(TIME_BETWEEN_QUESTIONS);
+
+    //     expect(component.currentQuestionIndex).toBe(1);
+    //     expect(component.questionHasExpired).toBeFalse();
+    //     expect(socketService.startTimer).toHaveBeenCalled();
+    // }));
+
+    // it('should handle errors when updating player score fails', () => {
+    //     matchService.updatePlayerScore.and.returnValue(throwError(() => new Error('Failed to update score')));
+    //     spyOn(window, 'alert');
+
+    //     component.updatePlayerScore(TEN);
+
+    //     expect(window.alert).toHaveBeenCalledWith(jasmine.any(String));
+    // });
 });

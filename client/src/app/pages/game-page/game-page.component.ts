@@ -190,7 +190,7 @@ export class GamePageComponent implements OnInit {
         this.answerIdx = answerIdx;
     }
 
-    private handleNextQuestion(): void {
+    handleNextQuestion(): void {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();
