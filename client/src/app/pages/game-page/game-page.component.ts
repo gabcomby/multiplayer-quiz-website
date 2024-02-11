@@ -17,7 +17,15 @@ const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
-    gameData: Game;
+    gameData: Game = {
+        id: '',
+        title: '',
+        description: '',
+        isVisible: true,
+        duration: 0,
+        lastModification: new Date(),
+        questions: [],
+    };
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
     currentMatch: Match = { id: '', playerList: [] };
@@ -165,7 +173,17 @@ export class GamePageComponent implements OnInit {
     }
 
     getCurrentQuestion(): Question {
-        return this.gameData.questions[this.currentQuestionIndex];
+        if (this.gameData.questions.length > 0) {
+            return this.gameData.questions[this.currentQuestionIndex];
+        } else {
+            return {
+                type: '',
+                text: '',
+                points: 0,
+                lastModification: new Date(),
+                id: '',
+            };
+        }
     }
 
     getAnswerIndex(answerIdx: number[]) {
