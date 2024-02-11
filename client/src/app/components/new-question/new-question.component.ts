@@ -83,7 +83,7 @@ export class NewQuestionComponent {
         const questionInBank = await this.questionService.getQuestions();
         const findQuestion = questionInBank.find((element) => element.text === question.text);
         if (findQuestion) {
-            this.snackbarService.openSnackBar('Une question avec un nom similaire existe deja');
+            this.snackbarService.openSnackBar('Une question avec un nom similaire existe deja dans la banque de question');
             return false;
         }
         return true;

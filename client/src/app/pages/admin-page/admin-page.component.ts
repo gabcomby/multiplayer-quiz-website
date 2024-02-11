@@ -163,7 +163,7 @@ export class AdminPageComponent implements OnInit {
 
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.gameService, true)) return;
+        if (!isValidGame(game, this.gameService, true, this.snackbarService)) return;
         assignNewGameAttributes(game);
     }
 }

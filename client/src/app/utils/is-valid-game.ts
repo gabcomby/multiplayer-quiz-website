@@ -1,11 +1,11 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
-// import { SnackbarService } from '@app/services/snackbar.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 
 const MULTIPLE = 10;
 const MAX_DURATION = 60;
 const MIN_DURATION = 10;
-export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
+export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean, snackbarService: SnackbarService): Promise<boolean> => {
     const errors: string[] = [];
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
@@ -13,7 +13,8 @@ export const isValidGame = async (game: Game, gameService: GameService, newGame:
         await validateDuplicationGame(game, errors, gameService);
     }
     if (errors.length > 0) {
-        alert(errors.join('\n'));
+        // alert(errors.join('\n'));
+        snackbarService.openSnackBar(errors.join('\n'));
         return false;
     }
     return true;

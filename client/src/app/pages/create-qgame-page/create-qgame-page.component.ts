@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
-// import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -35,7 +35,8 @@ export class CreateQGamePageComponent implements OnInit {
         private questionService: QuestionService,
         private gameService: GameService,
         private route: ActivatedRoute,
-        private router: Router, // private snackbar: SnackbarService,
+        private router: Router,
+        private snackbar: SnackbarService,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
@@ -74,7 +75,7 @@ export class CreateQGamePageComponent implements OnInit {
 
         if (this.gameId) {
             this.gameValidationWhenModified();
-        } else if (await isValidGame(newGame, this.gameService, true)) {
+        } else if (await isValidGame(newGame, this.gameService, true, this.snackbar)) {
             this.gameService.createGame(newGame);
             // je veux retourner a admin
             this.router.navigate(['/home']);
@@ -94,25 +95,15 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async gameValidationWhenModified() {
-        if (await isValidGame(this.gameFromDB, this.gameService, false)) {
+        if (await isValidGame(this.gameFromDB, this.gameService, false, this.snackbar)) {
             if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
-                this.gameService.patchGame(this.patchOldGame());
-                console.log(this.patchOldGame());
+                this.gameService.patchGame(this.createNewGame(false));
+                this.router.navigate(['/home']);
             } else {
                 this.gameService.createGame(this.gameFromDB);
+                this.router.navigate(['/home']);
             }
         }
-    }
-    patchOldGame() {
-        return {
-            id: this.gameFromDB.id,
-            title: this.gameForm.get('name')?.value,
-            description: this.gameForm.get('description')?.value,
-            isVisible: this.gameForm.get('visibility')?.value,
-            duration: this.gameForm.get('time')?.value,
-            lastModification: new Date(),
-            questions: this.gameFromDB.questions,
-        };
     }
 
     createNewGame(isNewGame: boolean) {
@@ -120,10 +111,10 @@ export class CreateQGamePageComponent implements OnInit {
             id: isNewGame ? generateNewId() : this.gameFromDB.id,
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
-            isVisible: false,
+            isVisible: isNewGame ? false : this.gameForm.get('visibility')?.value,
             duration: this.gameForm.get('time')?.value,
             lastModification: new Date(),
-            questions: this.questionService.getQuestion(),
+            questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
         };
     }
 }
