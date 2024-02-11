@@ -2,12 +2,14 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { QuestionBankComponent } from './question-bank.component';
 
 describe('QuestionBankComponent', () => {
     let component: QuestionBankComponent;
     let fixture: ComponentFixture<QuestionBankComponent>;
     let questionServiceMock: jasmine.SpyObj<QuestionService>;
+    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
     const questionMock: Question[] = [
         {
@@ -25,13 +27,17 @@ describe('QuestionBankComponent', () => {
 
     beforeEach(async () => {
         questionServiceMock = jasmine.createSpyObj('QuestionService', ['getQuestions', 'deleteQuestion']);
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionServiceMock.getQuestions.and.returnValue(Promise.resolve(questionMock));
         questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
 
         await TestBed.configureTestingModule({
             declarations: [QuestionBankComponent],
             imports: [HttpClientTestingModule],
-            providers: [{ provide: QuestionService, useValue: questionServiceMock }],
+            providers: [
+                { provide: QuestionService, useValue: questionServiceMock },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(QuestionBankComponent);
@@ -98,16 +104,37 @@ describe('QuestionBankComponent', () => {
         expect(component.dataSource).toEqual([questionListMock[1], questionListMock[0]]);
     });
 
-    it('should delete a question and update dataSource', async () => {
-        fixture.detectChanges();
-        await fixture.whenStable();
+    it('should delete a question and update dataSource upon confirmation', async () => {
+        spyOn(window, 'confirm').and.returnValue(true);
 
-        const initialLength = component.dataSource.length;
         component.deleteQuestion(questionMock[0].id);
         await fixture.whenStable();
 
         expect(questionServiceMock.deleteQuestion).toHaveBeenCalledWith(questionMock[0].id);
-        expect(component.dataSource.length).toBeLessThan(initialLength);
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
+    });
+
+    it('should display an error message in the snackbar upon deletion failure', () => {
+        spyOn(window, 'confirm').and.returnValue(true);
+        const errorMessage = 'Deletion failed due to server error';
+        questionServiceMock.deleteQuestion.and.returnValue(Promise.reject(errorMessage));
+
+        component.deleteQuestion(questionMock[0].id);
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith(`Nous avons rencontré l'erreur suivante: ${errorMessage}`);
+        });
+    });
+
+    it('should not delete a question nor show a snackbar message when deletion is cancelled', () => {
+        spyOn(window, 'confirm').and.returnValue(false);
+
+        component.deleteQuestion('some-question-id');
+
+        expect(questionServiceMock.deleteQuestion).not.toHaveBeenCalled();
+
+        expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalled();
     });
 
     it('should add a question to game and reset questionToAdd array', () => {

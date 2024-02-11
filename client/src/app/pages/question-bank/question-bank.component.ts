@@ -43,13 +43,15 @@ export class QuestionBankComponent implements OnInit {
         const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer cette question?');
         if (!confirmDelete) return;
 
-        try {
-            this.questionService.deleteQuestion(questionId);
-            this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
-            this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
-        } catch (error) {
-            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
-        }
+        this.questionService
+            .deleteQuestion(questionId)
+            .then(() => {
+                this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            })
+            .catch((error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error.message || error}`);
+            });
     }
 
     addQuestionToGame() {
