@@ -28,11 +28,14 @@ export class NewQuestionComponent {
         const newQuestion = this.createNewQuestion(event);
         if (this.validateQuestion(newQuestion)) {
             if (!onlyAddQuestionBank) {
-                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion))) {
+                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion)) ) {
                     this.questionService.addQuestionBank(newQuestion);
+                    this.questionService.addQuestion(newQuestion);
+                    this.resetComponent(event);
+                } else if (!this.addBankQuestion) {
+                    this.questionService.addQuestion(newQuestion);
+                    this.resetComponent(event);
                 }
-                this.questionService.addQuestion(newQuestion);
-                this.resetComponent(event);
             } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
             }
@@ -80,7 +83,7 @@ export class NewQuestionComponent {
         const questionInBank = await this.questionService.getQuestions();
         const findQuestion = questionInBank.find((element) => element.text === question.text);
         if (findQuestion) {
-            alert('la question existe déjà');
+            this.snackbarService.openSnackBar('Une question avec un nom similaire existe deja');
             return false;
         }
         return true;
