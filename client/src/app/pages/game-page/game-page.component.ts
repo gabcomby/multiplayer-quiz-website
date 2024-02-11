@@ -50,10 +50,6 @@ export class GamePageComponent implements OnInit {
         private snackbarService: SnackbarService,
     ) {}
 
-    get questionTimer(): number {
-        return this.gameData?.duration;
-    }
-
     ngOnInit() {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
@@ -61,14 +57,12 @@ export class GamePageComponent implements OnInit {
         this.apiService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameData = data;
-                // eslint-disable-next-line no-console
-                console.log(this.gameData);
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
-        // Create a new match and set up the match ID
+
         this.createAndSetupMatch();
     }
 
