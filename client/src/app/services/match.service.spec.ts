@@ -48,4 +48,16 @@ describe('MatchService', () => {
         expect(req.request.method).toBe('GET');
         req.flush(dummyMatch);
     });
+
+    it('should post a new match', () => {
+        const newMatch: Match = { id: '3', playerList: [] };
+
+        service.createNewMatch(newMatch).subscribe((match) => {
+            expect(match).toEqual(newMatch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/`);
+        expect(req.request.method).toBe('POST');
+        req.flush(newMatch);
+    });
 });
