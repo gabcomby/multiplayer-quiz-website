@@ -22,7 +22,7 @@
             [mark]="getCurrentQuestion().points"
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
-            (scoreForTheQuestion)="updatePlayerScore($event)"
+            (answerIdx)="getAnswerIndex($event)"
         ></app-game-page-questions>
     </div>
     <div class="score">

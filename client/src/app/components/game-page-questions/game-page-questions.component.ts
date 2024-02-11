@@ -19,7 +19,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() mark: number;
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
-    @Output() scoreForTheQuestion = new EventEmitter<number>();
+    @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
@@ -105,7 +105,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
         this.defineAnswerStatus(score);
 
-        this.scoreForTheQuestion.emit(score);
+        this.answerIdx.emit(this.selectedChoices);
     }
 
     private checkIfSingleAnswerCorrect(): boolean | undefined {

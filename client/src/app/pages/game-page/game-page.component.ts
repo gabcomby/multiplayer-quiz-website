@@ -167,6 +167,10 @@ export class GamePageComponent implements OnInit {
         return this.gameData.questions[this.currentQuestionIndex];
     }
 
+    getAnswerIndex(answerIdx: number[]) {
+        this.answerIdx = answerIdx;
+    }
+
     private handleNextQuestion(): void {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
