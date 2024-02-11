@@ -86,6 +86,15 @@ export class GamePageComponent implements OnInit {
         });
     }
 
+    createMatch(): Observable<Match> {
+        this.matchId = crypto.randomUUID();
+        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
+    }
+
+    addPlayerToMatch(matchId: string): Observable<Match> {
+        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
+    }
+
     setupWebSocketEvents() {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
