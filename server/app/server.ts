@@ -1,5 +1,5 @@
 import { Application } from '@app/app';
-import type IChoice from '@app/models/choice.model';
+import type { IChoice } from '@app/model/questions.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
