@@ -6,7 +6,6 @@ import { ApiService } from '@app/services/api.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { Observable, switchMap } from 'rxjs';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
@@ -20,7 +19,7 @@ export class GamePageComponent implements OnInit {
     gameData: Game;
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
-    currentMatch: Match;
+    currentMatch: Match = { id: '', playerList: [] };
     matchId: string;
     gameId: string;
     timerCountdown: number;
@@ -65,32 +64,26 @@ export class GamePageComponent implements OnInit {
     }
 
     createAndSetupMatch() {
-        this.createMatch()
-            .pipe(
-                switchMap((matchData) => {
-                    this.currentMatch = matchData;
-                    return this.addPlayerToMatch(this.matchId);
-                }),
-            )
-            .subscribe({
-                next: (data) => {
-                    this.currentMatch = data;
-                    this.setupWebSocketEvents();
-                    this.socketService.startTimer();
-                },
-                error: (error) => {
-                    alert(error.message);
-                },
-            });
-    }
-
-    createMatch(): Observable<Match> {
         this.matchId = crypto.randomUUID();
-        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
-    }
 
-    addPlayerToMatch(matchId: string): Observable<Match> {
-        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
+        this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
+            next: (matchData) => {
+                this.currentMatch = matchData;
+                this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
+                    next: (data) => {
+                        this.currentMatch = data;
+                        this.setupWebSocketEvents();
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        alert(error.message);
+                    },
+                });
+            },
+            error: (error) => {
+                alert(error.message);
+            },
+        });
     }
 
     setupWebSocketEvents() {
