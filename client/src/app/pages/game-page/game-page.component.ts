@@ -61,10 +61,6 @@ export class GamePageComponent implements OnInit {
         });
         // Create a new match and set up the match ID
         this.createAndSetupMatch();
-        // Set up the web socket events for the timer
-        this.setupWebSocketEvents();
-        // Start the timer
-        this.socketService.startTimer();
     }
 
     createAndSetupMatch() {
@@ -76,6 +72,8 @@ export class GamePageComponent implements OnInit {
                 this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
                     next: (data) => {
                         this.currentMatch = data;
+                        this.setupWebSocketEvents();
+                        this.socketService.startTimer();
                     },
                     error: (error) => {
                         alert(error.message);
