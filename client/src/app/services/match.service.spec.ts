@@ -122,7 +122,7 @@ describe('MatchService', () => {
     it("should update a player's score within a match", () => {
         const matchId = '1';
         const playerId = 'p1';
-        const score = 50; // New score
+        const score = 50;
         const updatedPlayer: Player = { id: playerId, name: 'Player One', score };
 
         service.updatePlayerScore(matchId, playerId, score).subscribe((player) => {
