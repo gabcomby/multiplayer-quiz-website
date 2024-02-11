@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
+import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
@@ -26,6 +27,7 @@ export class AdminPageComponent implements OnInit {
         private apiService: ApiService,
         private socketService: SocketService,
         private snackbarService: SnackbarService,
+        private gameService: GameService,
     ) {}
 
     ngOnInit() {
@@ -161,7 +163,7 @@ export class AdminPageComponent implements OnInit {
 
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.snackbarService)) return;
+        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
         assignNewGameAttributes(game);
     }
 }

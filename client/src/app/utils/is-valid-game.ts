@@ -5,10 +5,11 @@ import { SnackbarService } from '@app/services/snackbar.service';
 const MULTIPLE = 10;
 const MAX_DURATION = 60;
 const MIN_DURATION = 10;
-export const isValidGame = (game: Game, snackbarService: SnackbarService): boolean => {
+export const isValidGame = async (game: Game, snackbarService: SnackbarService, gameService: GameService): Promise<boolean> => {
     const errors: string[] = [];
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
+    await gameService.validateDuplicationGame(game, errors);
     if (errors.length > 0) {
         snackbarService.openSnackBar(errors.join('\n'));
         return false;
@@ -25,15 +26,6 @@ const validateBasicGameProperties = (game: Game, errors: string[]): void => {
         errors.push('Duration must be between 10 and 60 seconds');
     }
     if (!game.lastModification) errors.push('LastModification is required');
-};
-
-export const validationDuplication = async (gameService: GameService, game: Game, snackbarService: SnackbarService): Promise<boolean> => {
-    const errors = await gameService.validateDuplicationGame(game);
-    if (errors.length > 0) {
-        snackbarService.openSnackBar(errors.join('\n'));
-        return false;
-    }
-    return true;
 };
 
 const validateGameQuestions = (game: Game, errors: string[]): void => {
