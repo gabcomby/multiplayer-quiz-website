@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
 // import { CdkDragDrop } from '@angular/cdk/drag-drop';
 // import { Question } from '@app/interfaces/game';
@@ -9,10 +9,13 @@ const MAX_CHOICES = 4;
 describe('ChoiceComponent', () => {
     let component: ChoiceComponent;
     let fixture: ComponentFixture<ChoiceComponent>;
+    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
     beforeEach(() => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         TestBed.configureTestingModule({
             declarations: [ChoiceComponent],
+            providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
         });
         fixture = TestBed.createComponent(ChoiceComponent);
         component = fixture.componentInstance;
@@ -45,6 +48,7 @@ describe('ChoiceComponent', () => {
         component.addChoice(component.answers);
 
         expect(component.answers.length).toBe(MAX_CHOICES);
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Maximum 4 choix');
     });
 
     it('should not add a choice if choices is undefined', () => {
@@ -53,6 +57,7 @@ describe('ChoiceComponent', () => {
         component.addChoice(component.question);
 
         expect(component.question).toBe(undefined);
+        expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
     });
     it('should have a minimum of 2 choices and a maximum of 4 choices', () => {
         component.answers = [

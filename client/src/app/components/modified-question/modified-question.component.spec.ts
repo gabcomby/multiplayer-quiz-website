@@ -3,15 +3,18 @@ import { EventEmitter } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
 
 describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
+    let snackbarServiceMock: SpyObj<SnackbarService>;
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     const defaultDate = new Date();
     beforeEach(() => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
             updateList: {},
@@ -54,7 +57,10 @@ describe('ModifiedQuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [ModifiedQuestionComponent],
-            providers: [{ provide: QuestionService, useValue: questionServiceSpy }],
+            providers: [
+                { provide: QuestionService, useValue: questionServiceSpy },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
             imports: [DragDropModule],
         }).compileComponents();
     }));

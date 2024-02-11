@@ -28,7 +28,7 @@ export class NewQuestionComponent {
         const newQuestion = this.createNewQuestion(event);
         if (this.validateQuestion(newQuestion)) {
             if (!onlyAddQuestionBank) {
-                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion)) ) {
+                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion))) {
                     this.questionService.addQuestionBank(newQuestion);
                     this.questionService.addQuestion(newQuestion);
                     this.resetComponent(event);

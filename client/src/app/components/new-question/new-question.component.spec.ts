@@ -1,16 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import * as gameUtilsModule from '@app/utils/assign-new-game-attributes';
 import { NewQuestionComponent } from './new-question.component';
 import SpyObj = jasmine.SpyObj;
 
 describe('NewQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
-
+    let snackbarServiceMock: SpyObj<SnackbarService>;
     let component: NewQuestionComponent;
     let fixture: ComponentFixture<NewQuestionComponent>;
     const defaultDate = new Date();
+
     beforeEach(() => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
@@ -46,11 +48,16 @@ describe('NewQuestionComponent', () => {
     });
 
     beforeEach(() => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         TestBed.configureTestingModule({
             declarations: [NewQuestionComponent],
-            providers: [{ provide: QuestionService, useValue: questionServiceSpy }],
+            providers: [
+                { provide: QuestionService, useValue: questionServiceSpy },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
         });
         fixture = TestBed.createComponent(NewQuestionComponent);
+        // snackbarService = TestBed.inject(SnackbarService);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
