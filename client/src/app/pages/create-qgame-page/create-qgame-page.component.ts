@@ -6,7 +6,7 @@ import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+import { isValidGame, validationDuplication } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -36,14 +36,13 @@ export class CreateQGamePageComponent implements OnInit {
         private gameService: GameService,
         private route: ActivatedRoute,
         private router: Router,
-        private snackbar: SnackbarService,
+        private snackbarService: SnackbarService,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            // visibility: new FormControl(false),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -55,7 +54,7 @@ export class CreateQGamePageComponent implements OnInit {
                 this.insertIfExist();
                 this.dataReady = true;
             } catch (error) {
-                // console.error('Error fetching games:', error);
+                throw new Error(`Game with id ${this.gameId} not found`);
             }
         }
     }
@@ -74,8 +73,8 @@ export class CreateQGamePageComponent implements OnInit {
         const newGame: Game = this.createNewGame(true);
 
         if (this.gameId) {
-            this.gameValidationWhenModified();
-        } else if (isValidGame(newGame, this.snackbar)) {
+            await this.gameValidationWhenModified();
+        } else if (await this.newGameValidation(newGame)) {
             this.gameService.createGame(newGame);
             // je veux retourner a admin
             this.router.navigate(['/home']);
@@ -93,9 +92,19 @@ export class CreateQGamePageComponent implements OnInit {
             visibility: this.gameFromDB.isVisible,
         });
     }
+    async newGameValidation(newGame: Game) {
+        if (!isValidGame(newGame, this.snackbarService)) {
+            return false;
+        }
+        if (!(await validationDuplication(this.gameService, newGame, this.snackbarService))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     async gameValidationWhenModified() {
-        if (isValidGame(this.gameFromDB, this.snackbar)) {
+        if (isValidGame(this.gameFromDB, this.snackbarService)) {
             if (await this.gameService.validateDeletedGame(this.gameFromDB)) {
                 this.gameService.patchGame(this.createNewGame(false));
                 this.router.navigate(['/home']);

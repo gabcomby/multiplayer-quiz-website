@@ -1,4 +1,5 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
+import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
 const MULTIPLE = 10;
@@ -9,7 +10,6 @@ export const isValidGame = (game: Game, snackbarService: SnackbarService): boole
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
     if (errors.length > 0) {
-        // alert(errors.join('\n'));
         snackbarService.openSnackBar(errors.join('\n'));
         return false;
     }
@@ -27,27 +27,14 @@ const validateBasicGameProperties = (game: Game, errors: string[]): void => {
     if (!game.lastModification) errors.push('LastModification is required');
 };
 
-// const validateDuplicationGame = async (game: Game, errors: string[], gameService: GameService): Promise<void> => {
-//     const gameList = await gameService.getGames();
-//     const titleExisting = gameList.find((element) => element.title === game.title);
-//     const descriptionExisting = gameList.find((element) => element.description === game.description);
-//     if (titleExisting) {
-//         errors.push('Il y a déjà un jeu avec ce nom');
-//     }
-//     if (descriptionExisting) {
-//         errors.push('Il y a déjà un jeu avec cet description');
-//     }
-// };
-
-// export const validateDeletedGame = async (game: Game, gameService: GameService): Promise<boolean> => {
-//     const gameList = await gameService.getGames();
-//     const idExisting = gameList.find((element) => element.id === game.id);
-//     if (idExisting) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// };
+export const validationDuplication = async (gameService: GameService, game: Game, snackbarService: SnackbarService): Promise<boolean> => {
+    const errors = await gameService.validateDuplicationGame(game);
+    if (errors.length > 0) {
+        snackbarService.openSnackBar(errors.join('\n'));
+        return false;
+    }
+    return true;
+};
 
 const validateGameQuestions = (game: Game, errors: string[]): void => {
     if (!game.questions || !game.questions.length) {
