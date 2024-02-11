@@ -26,6 +26,7 @@ export class GamePageComponent implements OnInit {
     playerName: string;
 
     private answerIdx: number[];
+    private previousQuestionIndex: number;
 
     constructor(
         private gameService: GameService,
@@ -111,6 +112,11 @@ export class GamePageComponent implements OnInit {
             // eslint-disable-next-line no-console
             console.log(data);
         });
+        this.socketService.onAnswerVerification((data) => {
+            if (data === true) {
+                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points);
+            }
+        });
     }
 
     updatePlayerScore(scoreFromQuestion: number): void {
@@ -140,7 +146,8 @@ export class GamePageComponent implements OnInit {
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
-        // this.socketService
+        this.previousQuestionIndex = this.currentQuestionIndex;
+        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
