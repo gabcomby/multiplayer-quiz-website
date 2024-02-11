@@ -60,4 +60,31 @@ describe('MatchService', () => {
         expect(req.request.method).toBe('POST');
         req.flush(newMatch);
     });
+
+    it('should delete a match and return the deleted match', () => {
+        const matchId = '1';
+        const deletedMatch: Match = { id: matchId, playerList: [] };
+
+        service.deleteMatch(matchId).subscribe((response) => {
+            expect(response).toEqual(deletedMatch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${matchId}`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(deletedMatch);
+    });
+
+    it('should add a player to a match', () => {
+        const matchId = '1';
+        const newPlayer: Player = { id: '123', name: 'Test Player', score: 0 };
+        const updatedMatch: Match = { id: matchId, playerList: [newPlayer] };
+
+        service.addPlayer(newPlayer, matchId).subscribe((match) => {
+            expect(match.playerList).toContain(newPlayer);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${matchId}/players`);
+        expect(req.request.method).toBe('PATCH');
+        req.flush(updatedMatch);
+    });
 });
