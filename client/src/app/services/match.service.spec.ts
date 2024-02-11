@@ -36,4 +36,16 @@ describe('MatchService', () => {
         expect(req.request.method).toBe('GET');
         req.flush(dummyMatches);
     });
+
+    it('should fetch a single match by id', () => {
+        const dummyMatch: Match = { id: '1', playerList: [] };
+
+        service.getMatch('1').subscribe((match) => {
+            expect(match).toEqual(dummyMatch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('GET');
+        req.flush(dummyMatch);
+    });
 });
