@@ -81,7 +81,18 @@ export class Server {
                 }
             });
 
-            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[], multipleAnswer: boolean) => {
+            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
+                let multipleAnswer = false;
+                let nbr = 0;
+                for (const choice of choices) {
+                    if (choice.isCorrect) {
+                        nbr++;
+                    }
+                }
+                if (nbr > 1) {
+                    multipleAnswer = true;
+                }
+
                 if (!multipleAnswer) {
                     if (choices[answerIdx[0]].isCorrect) {
                         this.io.emit('answer-verification', true);

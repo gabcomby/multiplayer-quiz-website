@@ -25,6 +25,8 @@ export class GamePageComponent implements OnInit {
 
     playerName: string;
 
+    private answerIdx: number[];
+
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -138,6 +140,7 @@ export class GamePageComponent implements OnInit {
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
+        // this.socketService
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
