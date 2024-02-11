@@ -52,4 +52,26 @@ export class GameService {
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
+    async validateDuplicationGame(game: Game) {
+        const errors = [];
+        const gameList = await this.getGames();
+        const titleExisting = gameList.find((element) => element.title === game.title);
+        const descriptionExisting = gameList.find((element) => element.description === game.description);
+        if (titleExisting) {
+            errors.push('Il y a déjà un jeu avec ce nom');
+        }
+        if (descriptionExisting) {
+            errors.push('Il y a déjà un jeu avec cet description');
+        }
+        return errors;
+    }
+    async validateDeletedGame(game: Game) {
+        const gameList = await this.getGames();
+        const idExisting = gameList.find((element) => element.id === game.id);
+        if (idExisting) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

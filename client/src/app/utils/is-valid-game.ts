@@ -1,17 +1,13 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
 const MULTIPLE = 10;
 const MAX_DURATION = 60;
 const MIN_DURATION = 10;
-export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean, snackbarService: SnackbarService): Promise<boolean> => {
+export const isValidGame = (game: Game, snackbarService: SnackbarService): boolean => {
     const errors: string[] = [];
     validateBasicGameProperties(game, errors);
     validateGameQuestions(game, errors);
-    if (newGame) {
-        await validateDuplicationGame(game, errors, gameService);
-    }
     if (errors.length > 0) {
         // alert(errors.join('\n'));
         snackbarService.openSnackBar(errors.join('\n'));
@@ -26,33 +22,32 @@ const validateBasicGameProperties = (game: Game, errors: string[]): void => {
     if (!game.description) errors.push('Description is required');
     if (!game.duration) errors.push('Duration is required');
     if (game.duration < MIN_DURATION || game.duration > MAX_DURATION) {
-        console.log(game.duration);
         errors.push('Duration must be between 10 and 60 seconds');
     }
     if (!game.lastModification) errors.push('LastModification is required');
 };
 
-const validateDuplicationGame = async (game: Game, errors: string[], gameService: GameService): Promise<void> => {
-    const gameList = await gameService.getGames();
-    const titleExisting = gameList.find((element) => element.title === game.title);
-    const descriptionExisting = gameList.find((element) => element.description === game.description);
-    if (titleExisting) {
-        errors.push('Il y a déjà un jeu avec ce nom');
-    }
-    if (descriptionExisting) {
-        errors.push('Il y a déjà un jeu avec cet description');
-    }
-};
+// const validateDuplicationGame = async (game: Game, errors: string[], gameService: GameService): Promise<void> => {
+//     const gameList = await gameService.getGames();
+//     const titleExisting = gameList.find((element) => element.title === game.title);
+//     const descriptionExisting = gameList.find((element) => element.description === game.description);
+//     if (titleExisting) {
+//         errors.push('Il y a déjà un jeu avec ce nom');
+//     }
+//     if (descriptionExisting) {
+//         errors.push('Il y a déjà un jeu avec cet description');
+//     }
+// };
 
-export const validateDeletedGame = async (game: Game, gameService: GameService): Promise<boolean> => {
-    const gameList = await gameService.getGames();
-    const idExisting = gameList.find((element) => element.id === game.id);
-    if (idExisting) {
-        return true;
-    } else {
-        return false;
-    }
-};
+// export const validateDeletedGame = async (game: Game, gameService: GameService): Promise<boolean> => {
+//     const gameList = await gameService.getGames();
+//     const idExisting = gameList.find((element) => element.id === game.id);
+//     if (idExisting) {
+//         return true;
+//     } else {
+//         return false;
+//     }
+// };
 
 const validateGameQuestions = (game: Game, errors: string[]): void => {
     if (!game.questions || !game.questions.length) {

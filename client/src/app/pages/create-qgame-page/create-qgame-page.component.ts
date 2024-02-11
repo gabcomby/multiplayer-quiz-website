@@ -6,7 +6,7 @@ import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
+import { isValidGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -75,7 +75,7 @@ export class CreateQGamePageComponent implements OnInit {
 
         if (this.gameId) {
             this.gameValidationWhenModified();
-        } else if (await isValidGame(newGame, this.gameService, true, this.snackbar)) {
+        } else if (isValidGame(newGame, this.snackbar)) {
             this.gameService.createGame(newGame);
             // je veux retourner a admin
             this.router.navigate(['/home']);
@@ -95,8 +95,8 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async gameValidationWhenModified() {
-        if (await isValidGame(this.gameFromDB, this.gameService, false, this.snackbar)) {
-            if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
+        if (isValidGame(this.gameFromDB, this.snackbar)) {
+            if (await this.gameService.validateDeletedGame(this.gameFromDB)) {
                 this.gameService.patchGame(this.createNewGame(false));
                 this.router.navigate(['/home']);
             } else {
