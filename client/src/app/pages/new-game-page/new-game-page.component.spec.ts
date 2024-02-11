@@ -80,4 +80,22 @@ describe('NewGamePageComponent', () => {
         component.deleteGameEvent(gamesMock[0].id);
         expect(deleteGameEventSpy).toHaveBeenCalledWith(gamesMock[0].id);
     });
+
+    it('should return the good index of the game', async () => {
+        const gamesMock: Game[] = [
+            {
+                id: '1',
+                title: 'game1',
+                description: 'description1',
+                isVisible: true,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+        ];
+        const indexOfSpy = spyOn(gamesMock, 'indexOf').and.callThrough();
+        const result = gamesMock.indexOf(gamesMock[0]);
+        expect(indexOfSpy).toHaveBeenCalled();
+        expect(result).toEqual(0);
+    });
 });
