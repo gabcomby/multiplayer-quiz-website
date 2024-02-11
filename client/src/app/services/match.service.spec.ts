@@ -87,4 +87,21 @@ describe('MatchService', () => {
         expect(req.request.method).toBe('PATCH');
         req.flush(updatedMatch);
     });
+
+    it('should fetch all players from a match', () => {
+        const matchId = '1';
+        const dummyPlayers: Player[] = [
+            { id: 'p1', name: 'Player One', score: 10 },
+            { id: 'p2', name: 'Player Two', score: 20 },
+        ];
+
+        service.getPlayersFromMatch(matchId).subscribe((players) => {
+            expect(players.length).toBe(2);
+            expect(players).toEqual(dummyPlayers);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${matchId}/players`);
+        expect(req.request.method).toBe('GET');
+        req.flush(dummyPlayers);
+    });
 });
