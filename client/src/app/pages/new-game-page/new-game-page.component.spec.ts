@@ -4,19 +4,27 @@ import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
 import { NewGamePageComponent } from './new-game-page.component';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarService } from '@app/services/snackbar.service';
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
+    let snackbarSpy: jasmine.SpyObj<SnackbarService>;
+
     beforeEach(async () => {
+        const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         await TestBed.configureTestingModule({
             declarations: [NewGamePageComponent],
-            providers: [GameService, SocketService],
+            providers: [GameService, SocketService, SnackbarService, { provide: MatSnackBar, useValue: snackbarObj }],
             imports: [HttpClientModule],
         }).compileComponents();
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        component.gameSelected = {
+            game1: true,
+        };
+        snackbarSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
     });
 
     it('should create', () => {
@@ -64,7 +72,7 @@ describe('NewGamePageComponent', () => {
         expect(socketSpy.connect).toHaveBeenCalled();
     });
 
-    it('sould add the game to gamesId when deleted', async () => {
+    it('sould add the game to gamesId when deleted and should alert if gameSelected was deleted', async () => {
         const gamesMock: Game[] = [
             {
                 id: '1',
@@ -76,6 +84,11 @@ describe('NewGamePageComponent', () => {
                 questions: [],
             },
         ];
+        const deletedGamesIdMock = ['1'];
+        component.deletedGamesId = deletedGamesIdMock;
+        const selectedGameMock = { '1': true };
+        component.gameSelected = selectedGameMock;
+        spyOn(snackbarSpy, 'openSnackBar');
         const deleteGameEventSpy = spyOn(component, 'deleteGameEvent');
         component.deleteGameEvent(gamesMock[0].id);
         expect(deleteGameEventSpy).toHaveBeenCalledWith(gamesMock[0].id);
@@ -98,4 +111,5 @@ describe('NewGamePageComponent', () => {
         expect(indexOfSpy).toHaveBeenCalled();
         expect(result).toEqual(0);
     });
+
 });
