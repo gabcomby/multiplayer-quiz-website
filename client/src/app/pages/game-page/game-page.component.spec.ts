@@ -7,6 +7,8 @@ import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
 import { GamePageComponent } from './game-page.component';
 
+const TEN = 10;
+
 // const questionMock: Question[] = [
 //     {
 //         type: 'multiple-choice',
@@ -87,28 +89,32 @@ describe('GamePageComponent', () => {
     });
 
     it('should correctly initialize match and add player on init', () => {
-        // Spy on internal methods if you need to ensure they are called,
-        // but since we're mocking their dependencies (MatchService), it might not be necessary.
         spyOn(component, 'createMatch').and.callThrough();
         spyOn(component, 'addPlayerToMatch').and.callThrough();
 
-        // Instead of directly testing createAndSetupMatch(), we let ngOnInit() trigger it.
-        fixture.detectChanges(); // This will trigger ngOnInit(), which calls createAndSetupMatch().
+        fixture.detectChanges();
 
-        // We need to wait for async operations to complete.
-        // Since Angular TestBed.configureTestingModule does not return a promise here, we use whenStable().
         fixture.whenStable().then(() => {
-            // Now we verify that the MatchService's methods have been called with the expected arguments.
             expect(matchService.createNewMatch).toHaveBeenCalledWith({ id: jasmine.any(String), playerList: [] });
             expect(matchService.addPlayer).toHaveBeenCalledWith({ id: 'playertest', name: 'Player 1', score: 0 }, jasmine.any(String));
 
-            // Since we're not directly subscribing to an Observable here, we check the component state.
-            // Verify the component's state is as expected after the async operations.
             expect(component.currentMatch).toEqual(updatedMatchDataWithPlayer);
 
-            // If you had spied on component methods, verify they were called.
             expect(component.createMatch).toHaveBeenCalled();
             expect(component.addPlayerToMatch).toHaveBeenCalledWith(component.matchId);
+        });
+    });
+
+    it('should correctly update player score', () => {
+        spyOn(component, 'updatePlayerScore').and.callThrough();
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            component.updatePlayerScore(TEN);
+
+            expect(matchService.updatePlayerScore).toHaveBeenCalledWith(component.matchId, 'playertest', TEN);
+            expect(component.updatePlayerScore).toHaveBeenCalledWith(TEN);
         });
     });
 });
