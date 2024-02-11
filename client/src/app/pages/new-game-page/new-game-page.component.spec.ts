@@ -9,7 +9,7 @@ import { NewGamePageComponent } from './new-game-page.component';
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
-    let socketService: SocketService;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
 
     const gamesMock: Game[] = [
@@ -27,13 +27,14 @@ describe('NewGamePageComponent', () => {
     beforeEach(async () => {
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames']);
         const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        const socketObj = jasmine.createSpyObj('SocketService', ['connect']);
         await TestBed.configureTestingModule({
             declarations: [NewGamePageComponent],
             providers: [
                 GameService,
                 SocketService,
                 { provide: GameService, useValue: gameServiceObj },
-                { provide: SocketService, useValue: socketService },
+                { provide: SocketService, useValue: socketObj },
                 { provide: SnackbarService, useValue: snackbarObj },
             ],
             imports: [HttpClientModule],
@@ -43,7 +44,7 @@ describe('NewGamePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
-        socketService = jasmine.createSpyObj('SocketService', ['deleteId', 'connect']);
+        socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
     });
 
     it('should create', () => {
@@ -57,17 +58,16 @@ describe('NewGamePageComponent', () => {
         expect(gameSelectedMock['un']).toEqual(false);
     });
 
-    it('should return the array', async () => {
-        component.games = gamesMock;
+    it('should initialize games the array', async () => {
+        gameServiceSpy.getGames.and.resolveTo(gamesMock);
+        socketServiceSpy.connect();
+        spyOn(component, 'ngOnInit').and.callThrough();
+        spyOn(component, 'initializeSocket');
+        component.ngOnInit();
+        expect(socketServiceSpy.connect).toHaveBeenCalled();
         expect(gameServiceSpy.getGames).toHaveBeenCalled();
+        expect(component.initializeSocket).toHaveBeenCalled();
     });
-
-    /* it('should connnect to the sever', async () => {
-        const socketSpy = jasmine.createSpyObj('socket', ['connect']);
-        component.socket = socketSpy;
-        component.socket.connect();
-        expect(socketSpy.connect).toHaveBeenCalled();
-    });*/
 
     /* it('should call the on method when initialized socket is called', async () => {
         const socketSpy = jasmine.createSpyObj('socket', ['on']).and.callThrough();
