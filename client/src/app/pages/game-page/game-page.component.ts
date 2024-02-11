@@ -45,7 +45,7 @@ export class GamePageComponent implements OnInit {
         return this.gameData?.duration;
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
         // Fetch the game data from the server
@@ -60,35 +60,31 @@ export class GamePageComponent implements OnInit {
             },
         });
         // Create a new match and set up the match ID
-        await this.createAndSetupMatch();
+        this.createAndSetupMatch();
         // Set up the web socket events for the timer
         this.setupWebSocketEvents();
         // Start the timer
         this.socketService.startTimer();
     }
 
-    async createAndSetupMatch(): Promise<void> {
+    createAndSetupMatch() {
         this.matchId = crypto.randomUUID();
-        return new Promise((resolve, reject) => {
-            this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
-                next: (matchData) => {
-                    this.currentMatch = matchData;
-                    this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
-                        next: (data) => {
-                            this.currentMatch = data;
-                            resolve();
-                        },
-                        error: (error) => {
-                            alert(error.message);
-                            reject(error);
-                        },
-                    });
-                },
-                error: (error) => {
-                    alert(error.message);
-                    reject(error);
-                },
-            });
+
+        this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
+            next: (matchData) => {
+                this.currentMatch = matchData;
+                this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
+                    next: (data) => {
+                        this.currentMatch = data;
+                    },
+                    error: (error) => {
+                        alert(error.message);
+                    },
+                });
+            },
+            error: (error) => {
+                alert(error.message);
+            },
         });
     }
 
