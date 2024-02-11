@@ -104,4 +104,18 @@ describe('MatchService', () => {
         expect(req.request.method).toBe('GET');
         req.flush(dummyPlayers);
     });
+
+    it('should remove a player from a match and return the updated match', () => {
+        const matchId = '1';
+        const playerId = 'p1';
+        const updatedMatch: Match = { id: matchId, playerList: [] };
+
+        service.removePlayer(playerId, matchId).subscribe((match) => {
+            expect(match).toEqual(updatedMatch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${matchId}/players/${playerId}`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(updatedMatch);
+    });
 });
