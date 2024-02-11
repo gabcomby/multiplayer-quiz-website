@@ -21,6 +21,7 @@ import { ModifiedQuestionComponent } from './components/modified-question/modifi
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
 import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
+import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
 import { GameTestComponent } from './pages/game-test/game-test.component';
@@ -30,7 +31,6 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
-import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 
 /**
  * Main module that is used in main.ts.
