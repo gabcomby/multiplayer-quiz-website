@@ -1,7 +1,10 @@
 import { Choice, Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
+// import { SnackbarService } from '@app/services/snackbar.service';
 
 const MULTIPLE = 10;
+const MAX_DURATION = 60;
+const MIN_DURATION = 10;
 export const isValidGame = async (game: Game, gameService: GameService, newGame: boolean): Promise<boolean> => {
     const errors: string[] = [];
     validateBasicGameProperties(game, errors);
@@ -21,6 +24,10 @@ const validateBasicGameProperties = (game: Game, errors: string[]): void => {
     if (game.title.trim().length === 0) errors.push('not just whitespace');
     if (!game.description) errors.push('Description is required');
     if (!game.duration) errors.push('Duration is required');
+    if (game.duration < MIN_DURATION || game.duration > MAX_DURATION) {
+        console.log(game.duration);
+        errors.push('Duration must be between 10 and 60 seconds');
+    }
     if (!game.lastModification) errors.push('LastModification is required');
 };
 

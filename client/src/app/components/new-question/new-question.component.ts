@@ -2,8 +2,11 @@ import { Component, Input } from '@angular/core';
 // import { FormGroup } from '@angular/forms';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
+const MAX_POINTS = 100;
+const MIN_POINTS = 10;
 @Component({
     selector: 'app-new-question',
     templateUrl: './new-question.component.html',
@@ -15,7 +18,11 @@ export class NewQuestionComponent {
     createQuestionShown: boolean = false;
     question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date() };
     addBankQuestion: boolean = false;
-    constructor(private questionService: QuestionService) {}
+
+    constructor(
+        private questionService: QuestionService,
+        private snackbarService: SnackbarService,
+    ) {}
 
     async addQuestion(event: Choice[], onlyAddQuestionBank: boolean): Promise<void> {
         const newQuestion = this.createNewQuestion(event);
@@ -56,11 +63,17 @@ export class NewQuestionComponent {
             lastModification: new Date(),
         };
     }
+
+    validatePoints(newQuestion: Question) {
+        const points = newQuestion.points;
+        return points % MIN_POINTS === 0 && points >= MIN_POINTS && points <= MAX_POINTS;
+    }
+
     validateQuestion(newQuestion: Question) {
-        if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
+        if (newQuestion.text !== '' && this.validatePoints(newQuestion) && newQuestion.text.trim().length !== 0) {
             return true;
         }
-        alert('la question a un besoin d un nom, de point et pas juste des espaces');
+        this.snackbarService.openSnackBar('la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces');
         return false;
     }
     async validateQuestionExisting(question: Question): Promise<boolean> {

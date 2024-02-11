@@ -6,6 +6,7 @@ import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
+// import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -34,7 +35,7 @@ export class CreateQGamePageComponent implements OnInit {
         private questionService: QuestionService,
         private gameService: GameService,
         private route: ActivatedRoute,
-        private router: Router,
+        private router: Router, // private snackbar: SnackbarService,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
