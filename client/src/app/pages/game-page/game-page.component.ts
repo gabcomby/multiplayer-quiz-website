@@ -20,6 +20,7 @@ export class GamePageComponent implements OnInit {
     matchId: string;
     gameId: string;
     timerCountdown: number;
+    answerIsCorrect: boolean;
 
     gameScore: { name: string; score: number }[] = [];
 
@@ -113,6 +114,7 @@ export class GamePageComponent implements OnInit {
             console.log(data);
         });
         this.socketService.onAnswerVerification((data) => {
+            this.answerIsCorrect = data;
             if (data === true) {
                 this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points);
             }

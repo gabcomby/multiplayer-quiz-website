@@ -19,6 +19,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() mark: number;
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
+    @Input() answerIsCorrect: boolean;
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
@@ -52,9 +53,9 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.resetAnswerState();
         }
 
-        if (changes.timerExpired && changes.timerExpired.currentValue === true) {
-            this.calculateScoreForTheQuestion();
-        }
+        // if (changes.timerExpired && changes.timerExpired.currentValue === true) {
+        //     this.calculateScoreForTheQuestion();
+        // }
     }
 
     ngOnInit(): void {
@@ -91,35 +92,33 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 
-    calculateScoreForTheQuestion(): void {
-        let score = 0;
+    // calculateScoreForTheQuestion(): void {
+    //     let score = 0;
 
-        if (this.checkIfMultipleChoice()) {
-            if (this.checkMultipleAnswersCorrect()) {
-                score = this.mark;
-            } else {
-                score = 0;
-            }
-        } else if (this.checkIfSingleAnswerCorrect()) {
-            score = this.mark;
-        }
+    //     if (this.checkIfMultipleChoice()) {
+    //         if (this.checkMultipleAnswersCorrect()) {
+    //             score = this.mark;
+    //         } else {
+    //             score = 0;
+    //         }
+    //     } else if (this.checkIfSingleAnswerCorrect()) {
+    //         score = this.mark;
+    //     }
 
-        this.defineAnswerStatus(score);
+    //     this.defineAnswerStatus(score);
+    // }
 
-        // this.answerIdx.emit(this.selectedChoices);
-    }
+    // private checkIfSingleAnswerCorrect(): boolean | undefined {
+    //     return this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect;
+    // }
 
-    private checkIfSingleAnswerCorrect(): boolean | undefined {
-        return this.selectedChoices.length !== 0 && this.choices[this.selectedChoices[0]].isCorrect;
-    }
-
-    private defineAnswerStatus(score: number): void {
-        if (score === this.mark) {
-            this.answerStatus = this.answerStatusEnum.Correct;
-        } else if (score === 0) {
-            this.answerStatus = this.answerStatusEnum.Wrong;
-        }
-    }
+    // private defineAnswerStatus(score: number): void {
+    //     if (score === this.mark) {
+    //         this.answerStatus = this.answerStatusEnum.Correct;
+    //     } else if (score === 0) {
+    //         this.answerStatus = this.answerStatusEnum.Wrong;
+    //     }
+    // }
 
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
@@ -129,21 +128,21 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         return this.document.activeElement == null || this.document.activeElement.tagName.toLowerCase() !== 'textarea';
     }
 
-    private checkMultipleAnswersCorrect(): boolean {
-        let correctAnswers = 0;
-        for (const answer of this.selectedChoices) {
-            if (this.choices[answer].isCorrect) {
-                correctAnswers++;
-            } else if (!this.choices[answer].isCorrect) {
-                return false;
-            }
-        }
-        if (correctAnswers === this.numberOfCorrectAnswers()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // private checkMultipleAnswersCorrect(): boolean {
+    //     let correctAnswers = 0;
+    //     for (const answer of this.selectedChoices) {
+    //         if (this.choices[answer].isCorrect) {
+    //             correctAnswers++;
+    //         } else if (!this.choices[answer].isCorrect) {
+    //             return false;
+    //         }
+    //     }
+    //     if (correctAnswers === this.numberOfCorrectAnswers()) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     private checkIfMultipleChoice(): boolean {
         let count = 0;
@@ -156,15 +155,15 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         else return false;
     }
 
-    private numberOfCorrectAnswers(): number {
-        let count = 0;
-        for (const choice of this.choices) {
-            if (choice.isCorrect) {
-                count++;
-            }
-        }
-        return count;
-    }
+    // private numberOfCorrectAnswers(): number {
+    //     let count = 0;
+    //     for (const choice of this.choices) {
+    //         if (choice.isCorrect) {
+    //             count++;
+    //         }
+    //     }
+    //     return count;
+    // }
 
     private checkIsNumber(buttonPressed: string): boolean {
         return !Number.isNaN(Number(buttonPressed));

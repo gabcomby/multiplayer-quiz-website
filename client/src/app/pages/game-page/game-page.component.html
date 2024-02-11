@@ -23,6 +23,7 @@
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
             (answerIdx)="getAnswerIndex($event)"
+            [answerIsCorrect]="answerIsCorrect"
         ></app-game-page-questions>
     </div>
     <div class="score">
