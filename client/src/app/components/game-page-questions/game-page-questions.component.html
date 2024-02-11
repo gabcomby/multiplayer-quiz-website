@@ -1,9 +1,6 @@
 <div id="container" *ngIf="choices">
     <div class="question-point-div">
-        <h1
-            [class.correct-answer]="timerExpired && answerStatus === answerStatusEnum.Correct"
-            [class.wrong-answer]="timerExpired && answerStatus === answerStatusEnum.Wrong"
-        >
+        <h1 [class.correct-answer]="timerExpired && answerIsCorrect" [class.wrong-answer]="timerExpired && !answerIsCorrect">
             {{ question }}
         </h1>
         <h2>{{ mark }} points</h2>
