@@ -147,4 +147,16 @@ describe('GamePageComponent', () => {
             expect(component.handleGameLeave).toHaveBeenCalled();
         });
     });
+
+    it('should correctly handle timer complete', () => {
+        spyOn(component, 'onTimerComplete').and.callThrough();
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            component.onTimerComplete();
+
+            expect(component.onTimerComplete).toHaveBeenCalled();
+        });
+    });
 });
