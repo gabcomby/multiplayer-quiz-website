@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { Choice } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
 const MAX_CHOICES = 4;
@@ -19,7 +20,8 @@ export class ChoiceComponent implements OnInit {
 
     choices: Choice[];
 
-    constructor(private snackbarService: SnackbarService) {}
+    constructor(private snackbarService: SnackbarService,
+    private questionValidationService: QuestionValidationService,) {}
 
     ngOnInit(): void {
         if (this.question) {
@@ -63,36 +65,11 @@ export class ChoiceComponent implements OnInit {
         }
     }
 
-    verifyOneGoodAndBadAnswer(choices: Choice[]): boolean {
-        let goodAnswer = 0;
-        for (const choice of choices) {
-            if (choice.isCorrect) {
-                goodAnswer++;
-            }
-        }
-
-        if (goodAnswer < 1 || goodAnswer === choices.length) {
-            this.snackbarService.openSnackBar('Au moins une bonne réponse et une mauvaise réponse');
-            return false;
-        }
-        return true;
-    }
-
     addAnswer() {
-        if (this.verifyOneGoodAndBadAnswer(this.choices)) {
-            if (this.answerValid(this.choices)) {
-                this.registerAnswer.emit(this.choices);
+        if (this.questionValidationService.verifyOneGoodAndBadAnswer(this.answers)) {
+            if (this.questionValidationService.answerValid(this.answers)) {
+                this.registerAnswer.emit(this.answers);
             }
         }
-    }
-    answerValid(answer: Choice[]) {
-        let valid = true;
-        answer.forEach((elem) => {
-            if (elem.text === '') {
-                valid = false;
-                this.snackbarService.openSnackBar('tous les champs des choix de réponses doivent être remplis');
-            }
-        });
-        return valid;
     }
 }

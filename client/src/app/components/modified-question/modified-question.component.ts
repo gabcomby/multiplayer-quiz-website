@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Choice, Question } from '@app/interfaces/game';
+import { Question } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-modified-question',
@@ -19,7 +19,7 @@ export class ModifiedQuestionComponent implements OnInit {
 
     constructor(
         private questionService: QuestionService,
-        private snackbarService: SnackbarService,
+        private questionValidationService: QuestionValidationService,
     ) {}
 
     ngOnInit() {
@@ -58,52 +58,14 @@ export class ModifiedQuestionComponent implements OnInit {
             this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
             this.disabled[index] = true;
         } else {
-            if (this.verifyOneGoodAndBadAnswer(index) && this.validateQuestion(this.questionList[index])) {
+            if (
+                this.questionValidationService.verifyOneGoodAndBadAnswer(this.questionList[index].choices) &&
+                this.questionValidationService.validateQuestion(this.questionList[index])
+            ) {
                 this.questionService.updateList(this.questionList);
                 this.disabled[index] = true;
             }
         }
-    }
-
-    verifyOneGoodAndBadAnswer(index: number): boolean {
-        const question = this.questionList[index];
-
-        let goodAnswerCount = 0;
-        if (question.choices) {
-            for (const choice of question.choices) {
-                if (choice.isCorrect) {
-                    goodAnswerCount++;
-                }
-            }
-
-            if (goodAnswerCount < 1 || goodAnswerCount === question.choices.length) {
-                this.snackbarService.openSnackBar('Il doit y avoir au moins une bonne et mauvaise réponse');
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    validateQuestion(newQuestion: Question) {
-        if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
-            if (newQuestion.choices) {
-                if (this.answerValid(newQuestion.choices)) return true;
-            }
-        } else this.snackbarService.openSnackBar('La question a besoin d une question, de point et pas juste des espaces');
-        return false;
-    }
-
-    answerValid(choices: Choice[]) {
-        let valid = true;
-        choices.forEach((elem) => {
-            if (elem.text === '') {
-                valid = false;
-                this.snackbarService.openSnackBar('tous les champs des choix de réponses doivent être remplis');
-            }
-        });
-        return valid;
     }
 
     moveQuestionUp(index: number): void {
