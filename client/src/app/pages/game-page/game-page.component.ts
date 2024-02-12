@@ -164,6 +164,7 @@ export class GamePageComponent implements OnInit {
                 points: 0,
                 lastModification: new Date(),
                 id: '',
+                choices: [],
             };
         }
     }

@@ -111,7 +111,7 @@ export class CreateQGamePageComponent implements OnInit {
             id: isNewGame ? generateNewId() : this.gameFromDB.id,
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
-            isVisible: isNewGame ? false : this.gameForm.get('visibility')?.value,
+            isVisible: isNewGame ? false : this.gameFromDB.isVisible,
             duration: this.gameForm.get('time')?.value,
             lastModification: new Date(),
             questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,

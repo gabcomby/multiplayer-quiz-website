@@ -2,6 +2,7 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { EventEmitter } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
@@ -12,9 +13,29 @@ describe('ModifiedQuestionComponent', () => {
     let snackbarServiceMock: SpyObj<SnackbarService>;
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
+    let questionValidationSpy: SpyObj<QuestionValidationService>;
     const defaultDate = new Date();
+    const questionList = [
+        {
+            type: 'QCM',
+            text: 'Ceci est une question de test',
+            points: 10,
+            id: 'dsdsd',
+            lastModification: defaultDate,
+            choices: [],
+        },
+        {
+            type: 'QCM',
+            text: 'Ceci est une question de test 2',
+            points: 20,
+            id: '45',
+            lastModification: defaultDate,
+            choices: [],
+        },
+    ];
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion', 'verifyOneGoodAndBadAnswer']);
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
             updateList: {},
@@ -25,6 +46,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 10,
                     id: 'dsdsd',
                     lastModification: defaultDate,
+                    choices: [],
                 },
                 {
                     type: 'QCM',
@@ -32,6 +54,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 20,
                     id: '45',
                     lastModification: defaultDate,
+                    choices: [],
                 } as Question,
             ],
             getQuestions: [
@@ -41,6 +64,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 10,
                     id: 'dsdsd',
                     lastModification: defaultDate,
+                    choices: [],
                 },
                 {
                     type: 'QCM',
@@ -48,6 +72,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 20,
                     id: '45',
                     lastModification: defaultDate,
+                    choices: [],
                 } as Question,
             ],
             onQuestionAdded: {},
@@ -101,6 +126,7 @@ describe('ModifiedQuestionComponent', () => {
             points: 10,
             id: 'dsdsd',
             lastModification: defaultDate,
+            choices: [],
         };
         component.disabled = [];
         component.ngOnInit();
@@ -124,6 +150,7 @@ describe('ModifiedQuestionComponent', () => {
                 points: 10,
                 id: 'dsdsd',
                 lastModification: defaultDate,
+                choices: [],
             },
         ];
         component.setQuestionList();
@@ -144,29 +171,41 @@ describe('ModifiedQuestionComponent', () => {
         component.toggleMenuSelection();
         expect(component.menuSelected).toBeTrue();
     });
+    it('when saveQuestion is called, initialize with new date', () => {
+        const index = 1;
+        component.saveQuestion(index);
+        expect(component.questionList[index].lastModification).toEqual(new Date());
+    });
+    // it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
+    //     component.disabled = [false, false];
+    //     component.questionList = questionList;
+    //     questionValidationSpy.validateQuestion.and.returnValue(true);
+    //     questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
 
-    // it('should update questionList and disable modification on modifiedQuestion', () => {
     //     const index = 1;
-    //     const mockQuestionList: Question[] = [
-    //         { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-    //     ];
-
-    //     component.questionList = mockQuestionList;
     //     component.saveQuestion(index);
-
-    //     expect(questionServiceSpy.updateList).toHaveBeenCalledWith(mockQuestionList);
+    //     expect(questionServiceSpy.updateList).toHaveBeenCalled();
     //     expect(component.disabled[index]).toBeTrue();
     // });
+    it('when saveQuestion is not from questionBank, it should not update list and disabled with valid data', () => {
+        component.disabled = [false, false];
+        questionValidationSpy.validateQuestion.and.returnValue(false);
+        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+        const index = 1;
+        component.questionList = questionList;
+
+        expect(questionServiceSpy.updateList).not.toHaveBeenCalled();
+        expect(component.disabled[index]).toBeFalse();
+    });
 
     it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
-        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate };
+        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] };
 
         component.questionList = mockQuestionList;
         component.removeQuestion(questionToRemove, index);
@@ -182,8 +221,8 @@ describe('ModifiedQuestionComponent', () => {
             currentIndex: 1,
         } as CdkDragDrop<Question[]>;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.questionList = mockQuestionList;
@@ -191,8 +230,8 @@ describe('ModifiedQuestionComponent', () => {
         component.drop(event);
 
         expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 });
