@@ -11,16 +11,27 @@ describe('QuestionBankComponent', () => {
     let questionServiceMock: jasmine.SpyObj<QuestionService>;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
-    const questionMock: Question[] = [
+    const questionsMock: Question[] = [
         {
             id: 'abc123',
             type: 'QCM',
             text: 'question de test',
             points: 40,
-            lastModification: new Date(),
+            lastModification: new Date('2021-01-01'),
             choices: [
                 { text: 'Ceci est une question de test', isCorrect: true },
                 { text: 'Ceci est une question de test 2', isCorrect: false },
+            ],
+        },
+        {
+            id: 'abc124',
+            type: 'QCM',
+            text: 'question de test 2',
+            points: 40,
+            lastModification: new Date('2020-01-01'),
+            choices: [
+                { text: 'Ceci est une question de test 3', isCorrect: true },
+                { text: 'Ceci est une question de test 4', isCorrect: false },
             ],
         },
     ];
@@ -28,7 +39,7 @@ describe('QuestionBankComponent', () => {
     beforeEach(async () => {
         questionServiceMock = jasmine.createSpyObj('QuestionService', ['getQuestions', 'deleteQuestion']);
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        questionServiceMock.getQuestions.and.returnValue(Promise.resolve(questionMock));
+        questionServiceMock.getQuestions.and.returnValue(Promise.resolve(questionsMock));
         questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
 
         await TestBed.configureTestingModule({
@@ -53,7 +64,7 @@ describe('QuestionBankComponent', () => {
         await fixture.whenStable();
 
         expect(questionServiceMock.getQuestions).toHaveBeenCalled();
-        expect(component.dataSource).toEqual(questionMock);
+        expect(component.dataSource).toEqual(questionsMock);
     });
 
     it('should set displayedColumns based on fromCreateNewGame', () => {
@@ -63,9 +74,9 @@ describe('QuestionBankComponent', () => {
         ];
 
         testCases.forEach((testCase) => {
-            component.fromCreateNewGame = testCase.fromCreateNewGame; // Arrange
-            component.ngOnInit(); // Act
-            expect(component.displayedColumns).toEqual(testCase.expectedColumns); // Assert
+            component.fromCreateNewGame = testCase.fromCreateNewGame;
+            component.ngOnInit();
+            expect(component.displayedColumns).toEqual(testCase.expectedColumns);
         });
     });
 
@@ -104,13 +115,19 @@ describe('QuestionBankComponent', () => {
         expect(component.dataSource).toEqual([questionListMock[1], questionListMock[0]]);
     });
 
-    it('should delete a question and update dataSource upon confirmation', async () => {
+    it('should delete a question and update dataSource upon confirmation, ensuring dataSource.filter works as intended', async () => {
         spyOn(window, 'confirm').and.returnValue(true);
+        component.dataSource = [...questionsMock];
 
-        component.deleteQuestion(questionMock[0].id);
+        expect(component.dataSource.length).toBe(2);
+        expect(component.dataSource.some((question) => question.id === questionsMock[0].id)).toBe(true);
+
+        component.deleteQuestion(questionsMock[0].id);
         await fixture.whenStable();
 
-        expect(questionServiceMock.deleteQuestion).toHaveBeenCalledWith(questionMock[0].id);
+        expect(questionServiceMock.deleteQuestion).toHaveBeenCalledWith(questionsMock[0].id);
+        expect(component.dataSource.some((question) => question.id === questionsMock[0].id)).toBe(false);
+        expect(component.dataSource.length).toBe(1);
         expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
     });
 
@@ -119,7 +136,7 @@ describe('QuestionBankComponent', () => {
         const errorMessage = 'Deletion failed due to server error';
         questionServiceMock.deleteQuestion.and.returnValue(Promise.reject(errorMessage));
 
-        component.deleteQuestion(questionMock[0].id);
+        component.deleteQuestion(questionsMock[0].id);
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -138,20 +155,20 @@ describe('QuestionBankComponent', () => {
     });
 
     it('should add a question to game and reset questionToAdd array', () => {
-        component.questionToAdd = [questionMock[0]];
+        component.questionToAdd = [questionsMock[0]];
         spyOn(component.registerQuestion, 'emit');
 
         component.addQuestionToGame();
 
-        expect(component.registerQuestion.emit).toHaveBeenCalledWith([questionMock[0]]);
+        expect(component.registerQuestion.emit).toHaveBeenCalledWith([questionsMock[0]]);
         expect(component.questionToAdd.length).toBe(0);
     });
 
     it('should handle selection change correctly', () => {
-        component.onChange(questionMock[0]);
-        expect(component.questionToAdd).toContain(questionMock[0]);
+        component.onChange(questionsMock[0]);
+        expect(component.questionToAdd).toContain(questionsMock[0]);
 
-        component.onChange(questionMock[0]);
-        expect(component.questionToAdd).not.toContain(questionMock[0]);
+        component.onChange(questionsMock[0]);
+        expect(component.questionToAdd).not.toContain(questionsMock[0]);
     });
 });

@@ -10,7 +10,7 @@ import SpyObj = jasmine.SpyObj;
 describe('NewQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
-    let routerMock: SpyObj<Router>;
+    let routerSpy: SpyObj<Router>;
     let component: NewQuestionComponent;
     let fixture: ComponentFixture<NewQuestionComponent>;
     const defaultDate = new Date();
@@ -51,13 +51,13 @@ describe('NewQuestionComponent', () => {
 
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        routerMock = jasmine.createSpyObj('Router', ['navigate']);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         TestBed.configureTestingModule({
             declarations: [NewQuestionComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
-                { provide: Router, useValue: routerMock },
+                { provide: Router, useValue: routerSpy },
             ],
         });
         fixture = TestBed.createComponent(NewQuestionComponent);
@@ -101,7 +101,7 @@ describe('NewQuestionComponent', () => {
         await component.addQuestion(newChoices, mockOnlyAddQuestionBank);
 
         expect(questionServiceSpy.addQuestionBank).toHaveBeenCalled();
-        expect(routerMock.navigate).toHaveBeenCalledWith(['/question-bank']);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/question-bank']);
     });
 
     it('should call addQuestion and addQuestionBank when coming from newGame and checkbox checked', async () => {
