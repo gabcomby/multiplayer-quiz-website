@@ -55,11 +55,8 @@ export class Server {
             socket.on('set-timer-duration', (duration) => {
                 if (parseInt(duration, 10) > 0) {
                     this.room.duration = parseInt(duration, 10);
-                    // eslint-disable-next-line no-console
-                    console.log('Set duration of time to', duration);
-                    this.io.emit('timer-duration', duration);
                 } else {
-                    this.io.emit('timer-duration', 'Invalid duration');
+                    throw new Error('Invalid duration');
                 }
             });
 
@@ -69,7 +66,6 @@ export class Server {
                 }
                 this.room.isRunning = true;
                 startCountdownTimer(this.room.duration);
-                this.io.emit('timer-update', 'Timer started');
             });
 
             socket.on('stop-timer', () => {
@@ -77,7 +73,6 @@ export class Server {
                     clearInterval(this.room.timerId);
                     this.room.isRunning = false;
                     this.room.currentTime = this.room.duration;
-                    this.io.emit('timer-update', 'Timer stopped');
                 }
             });
 
