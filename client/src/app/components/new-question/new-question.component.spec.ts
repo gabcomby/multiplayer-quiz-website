@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Choice, Question } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import * as gameUtilsModule from '@app/utils/assign-new-game-attributes';
@@ -8,7 +9,8 @@ import SpyObj = jasmine.SpyObj;
 
 describe('NewQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
-    let snackbarServiceMock: SpyObj<SnackbarService>;
+    let snackbarServiceSpy: SpyObj<SnackbarService>;
+    let questionValidationSpy: SpyObj<QuestionValidationService>;
     let component: NewQuestionComponent;
     let fixture: ComponentFixture<NewQuestionComponent>;
     const defaultDate = new Date();
@@ -48,12 +50,13 @@ describe('NewQuestionComponent', () => {
     });
 
     beforeEach(() => {
-        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        snackbarServiceSpy = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion']);
         TestBed.configureTestingModule({
             declarations: [NewQuestionComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
-                { provide: SnackbarService, useValue: snackbarServiceMock },
+                { provide: SnackbarService, useValue: snackbarServiceSpy },
             ],
         });
         fixture = TestBed.createComponent(NewQuestionComponent);
@@ -67,7 +70,10 @@ describe('NewQuestionComponent', () => {
     });
 
     it('should call addQuestion from service when question comes from a new game with valid data ', () => {
-        spyOn(component, 'validateQuestion').and.returnValue(true);
+        // spyOn(component, 'validateQuestion').and.returnValue(true);
+        questionValidationSpy.validateQuestion.and.returnValue(true);
+        // gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(true));
+
         spyOn(component, 'resetComponent');
         spyOn(component, 'validateQuestionExisting').and.returnValue(Promise.resolve(true));
         const newChoices: Choice[] = [
@@ -82,7 +88,8 @@ describe('NewQuestionComponent', () => {
         expect(component.resetComponent).toHaveBeenCalled();
     });
     it('should call addQuestionBank when coming from the question bank with valid data', async () => {
-        spyOn(component, 'validateQuestion').and.returnValue(true);
+        questionValidationSpy.validateQuestion.and.returnValue(true);
+
         spyOn(component, 'validateQuestionExisting').and.returnValue(Promise.resolve(true));
         const newChoices: Choice[] = [
             { text: '1', isCorrect: false },
@@ -96,7 +103,9 @@ describe('NewQuestionComponent', () => {
         });
     });
     it('should call addQuestion and addQuestionBank when coming from newGame and checkbox checked', async () => {
-        spyOn(component, 'validateQuestion').and.returnValue(true);
+        // spyOn(component, 'validateQuestion').and.returnValue(true);
+        questionValidationSpy.validateQuestion.and.returnValue(true);
+
         spyOn(component, 'resetComponent');
         spyOn(component, 'validateQuestionExisting').and.returnValue(Promise.resolve(true));
         const newChoices: Choice[] = [
@@ -122,6 +131,7 @@ describe('NewQuestionComponent', () => {
                 points: 10,
                 id: 'dsdsd',
                 lastModification: new Date(),
+                choices: [],
             },
             {
                 type: 'QCM',
@@ -129,6 +139,7 @@ describe('NewQuestionComponent', () => {
                 points: 10,
                 id: 'alala',
                 lastModification: new Date(),
+                choices: [],
             },
         ];
         component.addQuestionFromBank(questionFromBank);
@@ -174,26 +185,7 @@ describe('NewQuestionComponent', () => {
             lastModification: new Date(),
         });
     });
-    it('should return true when validateQuestion with valid data', () => {
-        const newQuestion = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-        const valid = component.validateQuestion(newQuestion);
-        expect(valid).toEqual(true);
-    });
-    it('should return false when validateQuestion with no text in question', () => {
-        const newQuestion = { type: 'QCM', text: '', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-        const valid = component.validateQuestion(newQuestion);
-        expect(valid).toEqual(false);
-    });
-    it('should return false when validateQuestion with no points in question', () => {
-        const newQuestion = { type: 'QCM', text: 'allo', points: 0, id: '12312312', choices: [], lastModification: defaultDate };
-        const valid = component.validateQuestion(newQuestion);
-        expect(valid).toEqual(false);
-    });
-    it('should return false when validateQuestion with just whitespaces in question text', () => {
-        const newQuestion = { type: 'QCM', text: '   ', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-        const valid = component.validateQuestion(newQuestion);
-        expect(valid).toEqual(false);
-    });
+
     it('should return false when calling validateQuestionExisting with question already in questionBank', async () => {
         const newQuestion = {
             type: 'QCM',
@@ -205,6 +197,7 @@ describe('NewQuestionComponent', () => {
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
+            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(false);
@@ -220,6 +213,7 @@ describe('NewQuestionComponent', () => {
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
+            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(true);
