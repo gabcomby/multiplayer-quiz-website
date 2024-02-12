@@ -62,7 +62,7 @@ export class GamePageComponent implements OnInit {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             },
         });
-
+        // Create a new match with a new player, and then setup the WebSocket events
         this.createAndSetupMatch();
     }
 
