@@ -101,6 +101,7 @@ describe('ModifiedQuestionComponent', () => {
             points: 10,
             id: 'dsdsd',
             lastModification: defaultDate,
+            choices: [],
         };
         component.disabled = [];
         component.ngOnInit();
@@ -124,6 +125,7 @@ describe('ModifiedQuestionComponent', () => {
                 points: 10,
                 id: 'dsdsd',
                 lastModification: defaultDate,
+                choices: [],
             },
         ];
         component.setQuestionList();
@@ -162,11 +164,11 @@ describe('ModifiedQuestionComponent', () => {
     it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', choices: [], points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', choices: [], points: 10, lastModification: defaultDate },
         ];
 
-        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate };
+        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] };
 
         component.questionList = mockQuestionList;
         component.removeQuestion(questionToRemove, index);
@@ -178,57 +180,57 @@ describe('ModifiedQuestionComponent', () => {
 
     it('should switch the answer selected and the one on top', () => {
         component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.moveQuestionUp(1);
         expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 
     it('should not switch the answers if its the first choice', () => {
         component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.moveQuestionUp(0);
         expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 
     it('should switch the answer selected and the one underneath', () => {
         component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.moveQuestionDown(1);
         expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 
     it('should not switch the answers if its the last choice', () => {
         component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.moveQuestionDown(3);
         expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 });

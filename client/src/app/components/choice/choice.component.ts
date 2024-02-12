@@ -10,7 +10,7 @@ const MAX_CHOICES = 4;
     styleUrls: ['./choice.component.scss'],
 })
 export class ChoiceComponent implements OnInit {
-    @Input() question: Choice[] | undefined;
+    @Input() question: Choice[];
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
     answers: Choice[] = [
         { text: '', isCorrect: false },

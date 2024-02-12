@@ -24,7 +24,7 @@ describe('NewQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
-                    choice: [
+                    choices: [
                         { text: '1', isCorrect: false },
                         { text: '2', isCorrect: true },
                     ],
@@ -37,7 +37,7 @@ describe('NewQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
-                    choice: [
+                    choices: [
                         { text: '1', isCorrect: false },
                         { text: '2', isCorrect: true },
                     ],
@@ -122,6 +122,7 @@ describe('NewQuestionComponent', () => {
                 points: 10,
                 id: 'dsdsd',
                 lastModification: new Date(),
+                choices: [],
             },
             {
                 type: 'QCM',
@@ -129,6 +130,7 @@ describe('NewQuestionComponent', () => {
                 points: 10,
                 id: 'alala',
                 lastModification: new Date(),
+                choices: [],
             },
         ];
         component.addQuestionFromBank(questionFromBank);
@@ -200,7 +202,7 @@ describe('NewQuestionComponent', () => {
             text: 'Ceci est une question de test',
             points: 10,
             id: 'dsdsd',
-            choice: [
+            choices: [
                 { text: '1', isCorrect: false },
                 { text: '2', isCorrect: true },
             ],
@@ -215,7 +217,7 @@ describe('NewQuestionComponent', () => {
             text: 'Ceci est une question de test 2',
             points: 10,
             id: '1234',
-            choice: [
+            choices: [
                 { text: '1', isCorrect: false },
                 { text: '2', isCorrect: true },
             ],

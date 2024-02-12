@@ -16,7 +16,7 @@ export class NewQuestionComponent {
     @Input() fromBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
-    question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date() };
+    question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', choices: [], lastModification: new Date() };
     addBankQuestion: boolean = false;
 
     constructor(

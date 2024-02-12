@@ -35,11 +35,11 @@ const validateGameQuestions = (game: Game, errors: string[]): void => {
     }
 
     game.questions.forEach((question, index) => {
-        validateQuestion(question, index, errors);
+        validateQuestionImport(question, index, errors);
     });
 };
 
-const validateQuestion = (question: Question, index: number, errors: string[]): void => {
+const validateQuestionImport = (question: Question, index: number, errors: string[]): void => {
     if (!question.type) errors.push(`Question ${index + 1}: Type is required`);
     if (!question.text) errors.push(`Question ${index + 1}: Text is required`);
     if (!question.points) errors.push(`Question ${index + 1}: Points are required`);
@@ -48,10 +48,10 @@ const validateQuestion = (question: Question, index: number, errors: string[]): 
     }
     if (question.text.trim().length === 0) errors.push('not just whitespace');
 
-    validateQuestionChoices(question, index, errors);
+    validateQuestionChoicesImport(question, index, errors);
 };
 
-const validateQuestionChoices = (question: Question, questionIndex: number, errors: string[]): void => {
+export const validateQuestionChoicesImport = (question: Question, questionIndex: number, errors: string[]): void => {
     if (question.type === 'QRL') return;
 
     if (!question.choices || !question.choices.length) {

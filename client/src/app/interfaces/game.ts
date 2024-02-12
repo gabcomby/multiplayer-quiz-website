@@ -10,14 +10,14 @@ export interface Game {
 
 export interface Choice {
     text: string;
-    isCorrect?: boolean;
+    isCorrect: boolean;
 }
 
 export interface Question {
     type: string;
     text: string;
     points: number;
-    choices?: Choice[];
+    choices: Choice[];
     lastModification: Date;
     id: string;
 }

@@ -2,11 +2,32 @@ import { TestBed } from '@angular/core/testing';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import { isValidGame } from '@app/utils/is-valid-game';
+import { isValidGame, validateQuestionChoicesImport } from '@app/utils/is-valid-game';
 
 describe('is-valid-game', () => {
     let gameServiceMock: jasmine.SpyObj<GameService>;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
+    const game: Game = {
+        id: '123456',
+        title: 'Valid Game',
+        description: 'A valid game description',
+        isVisible: true,
+        duration: 60,
+        lastModification: new Date(),
+        questions: [
+            {
+                id: '12345',
+                lastModification: new Date(),
+                type: 'QCM',
+                text: 'Sample Question',
+                points: 10,
+                choices: [
+                    { text: 'Choice 1', isCorrect: true },
+                    { text: 'Choice 2', isCorrect: false },
+                ],
+            },
+        ],
+    };
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         gameServiceMock = jasmine.createSpyObj('GameService', ['validateDuplicationGame']);
@@ -20,27 +41,6 @@ describe('is-valid-game', () => {
     });
 
     it('should validate a valid game', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Valid Game',
-            description: 'A valid game description',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
-            questions: [
-                {
-                    id: '12345',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
-                    choices: [
-                        { text: 'Choice 1', isCorrect: true },
-                        { text: 'Choice 2', isCorrect: false },
-                    ],
-                },
-            ],
-        };
         const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(true);
 
@@ -48,285 +48,159 @@ describe('is-valid-game', () => {
     });
 
     it('should return false if the game title is missing', async () => {
-        const game: Game = {
-            id: '123456',
-            title: '',
-            description: 'Game without title',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
-            questions: [],
-        };
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const gameNoTitle = { ...game, title: '' };
+
+        const isValid = await isValidGame(gameNoTitle, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if the game has no questions', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game with no questions',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
-            questions: [],
-        };
-
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const gameNoQuestions: Game = { ...game, questions: [] };
+        const isValid = await isValidGame(gameNoQuestions, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if a question is missing a type', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game with no questions',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
+        const gameNoType: Game = {
+            ...game,
             questions: [
                 {
-                    id: '123',
-                    lastModification: new Date(),
+                    ...game.questions[0],
                     type: '',
-                    text: 'Sample Question',
-                    points: 10,
-                    choices: [],
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameNoType, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if a question is missing text', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game with no questions',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
+        const gameMissingText: Game = {
+            ...game,
             questions: [
                 {
-                    id: '12378',
-                    lastModification: new Date(),
-                    type: 'QCM',
+                    ...game.questions[0],
                     text: '',
-                    points: 10,
-                    choices: [],
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameMissingText, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if a question is missing points', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game with no questions',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
+        const gameQuestionMissingPoints: Game = {
+            ...game,
             questions: [
                 {
-                    id: '12309',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    choices: [],
-                    points: null as unknown as number,
+                    ...game.questions[0],
+                    text: '',
                 },
+                ...game.questions.slice(1),
             ],
         };
-
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameQuestionMissingPoints, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if a question has no choices', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game with no questions',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
+        const gameHasNoChoice: Game = {
+            ...game,
             questions: [
                 {
-                    id: '12',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
+                    ...game.questions[0],
                     choices: [],
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
-        expect(isValid).toBe(false);
+        const questionIndex = 0;
+        const errors: string[] = [];
+        validateQuestionChoicesImport(gameHasNoChoice.questions[0], questionIndex, errors);
+        expect(errors.length).toBe(1);
+        expect(errors[0]).toEqual('Question 1: At least one choice is required');
     });
 
     it('should return false if a question has no correct choice', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game',
-            isVisible: true,
-            duration: 60,
-            lastModification: new Date(),
+        const gameHasNoCorrectChoice: Game = {
+            ...game,
             questions: [
                 {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
-                    choices: [
-                        { text: 'Choice 1', isCorrect: false },
-                        { text: 'Choice 2', isCorrect: false },
-                    ],
+                    ...game.questions[0],
+                    choices: game.questions[0]?.choices?.map((choice) => ({ ...choice, isCorrect: false })) || [],
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameHasNoCorrectChoice, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
     it('should return false if the duration is not between 10 and 60 seconds', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game',
-            isVisible: true,
-            duration: 0,
-            lastModification: new Date(),
-            questions: [
-                {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
-                    choices: [
-                        { text: 'Choice 1', isCorrect: true },
-                        { text: 'Choice 2', isCorrect: false },
-                    ],
-                },
-            ],
-        };
+        const gameDurationNotBetween10And60Seconds: Game = { ...game, duration: 5 };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameDurationNotBetween10And60Seconds, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
 
-    it('should return false if a choice has no text', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game',
-            isVisible: true,
-            duration: 0,
-            lastModification: new Date(),
+    it('should return errors for missing text and no whitespaces if a choice has no text', async () => {
+        const gameHasChoiceNoText: Game = {
+            ...game,
             questions: [
                 {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
+                    ...game.questions[0],
                     choices: [
-                        { text: '', isCorrect: true },
-                        { text: 'Choice 2', isCorrect: false },
+                        {
+                            ...game.questions[0].choices[0],
+                            text: '',
+                        },
                     ],
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
-        expect(isValid).toBe(false);
+        const questionIndex = 0;
+        const errors: string[] = [];
+        validateQuestionChoicesImport(gameHasChoiceNoText.questions[0], questionIndex, errors);
+        expect(errors.length).toBe(2);
     });
 
     it('should return false if the duration if points not a multiple of 10', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game',
-            isVisible: true,
-            duration: 0,
-            lastModification: new Date(),
+        const gameNotMultipleOf10: Game = {
+            ...game,
             questions: [
                 {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 14,
-                    choices: [
-                        { text: 'Choice 1', isCorrect: true },
-                        { text: 'Choice 2', isCorrect: false },
-                    ],
+                    ...game.questions[0],
+                    points: 13,
                 },
+                ...game.questions.slice(1),
             ],
         };
 
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
+        const isValid = await isValidGame(gameNotMultipleOf10, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(false);
     });
-
-    it('should return false if the isCorrect attribute of a choice is undefined', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: 'A game',
-            isVisible: true,
-            duration: 0,
-            lastModification: new Date(),
+    it('should return without errors if question type is QRL', async () => {
+        const gameQRL: Game = {
+            ...game,
             questions: [
                 {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCM',
-                    text: 'Sample Question',
-                    points: 10,
-                    choices: [
-                        { text: 'Choice 1', isCorrect: undefined },
-                        { text: 'Choice 2', isCorrect: false },
-                    ],
+                    ...game.questions[0],
+                    text: 'QRL',
                 },
+                ...game.questions.slice(1),
             ],
         };
-
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
-        expect(isValid).toBe(false);
-    });
-
-    it('should return if question type is QRL', async () => {
-        const game: Game = {
-            id: '123456',
-            title: 'Game',
-            description: '',
-            isVisible: true,
-            duration: 0,
-            lastModification: new Date(),
-            questions: [
-                {
-                    id: '123765',
-                    lastModification: new Date(),
-                    type: 'QCL',
-                    text: 'Sample Question',
-                    points: 10,
-                },
-            ],
-        };
-
-        const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
-        expect(isValid).toBe(false);
+        const questionIndex = 0;
+        const errors: string[] = [];
+        validateQuestionChoicesImport(gameQRL.questions[0], questionIndex, errors);
+        expect(errors.length).toBe(0);
     });
 });
