@@ -17,20 +17,20 @@ export const isValidGame = async (game: Game, snackbarService: SnackbarService, 
     return true;
 };
 
-const validateBasicGameProperties = (game: Game, errors: string[]): void => {
-    if (!game.title) errors.push('Title is required');
-    if (game.title.trim().length === 0) errors.push('not just whitespace');
-    if (!game.description) errors.push('Description is required');
-    if (!game.duration) errors.push('Duration is required');
-    if (game.duration < MIN_DURATION || game.duration > MAX_DURATION) {
-        errors.push('Duration must be between 10 and 60 seconds');
+export const validateBasicGameProperties = (game: Game, errors: string[]): void => {
+    if (!game.title) errors.push('Le titre est requis');
+    if (game.title.trim().length === 0) errors.push('Pas juste des espaces');
+    if (!game.description) errors.push('La description est requise');
+    if (!game.duration) errors.push('La durée est requise');
+    if (game.duration && (game.duration < MIN_DURATION || game.duration > MAX_DURATION)) {
+        errors.push('La durée doit être entre 10 et 60 secondes');
     }
-    if (!game.lastModification) errors.push('LastModification is required');
+    if (!game.lastModification) errors.push('La date de mise à jour est requise');
 };
 
-const validateGameQuestions = (game: Game, errors: string[]): void => {
+export const validateGameQuestions = (game: Game, errors: string[]): void => {
     if (!game.questions || !game.questions.length) {
-        errors.push('At least one question is required');
+        errors.push('Au moins une question est requise');
         return;
     }
 
@@ -39,14 +39,14 @@ const validateGameQuestions = (game: Game, errors: string[]): void => {
     });
 };
 
-const validateQuestionImport = (question: Question, index: number, errors: string[]): void => {
-    if (!question.type) errors.push(`Question ${index + 1}: Type is required`);
-    if (!question.text) errors.push(`Question ${index + 1}: Text is required`);
-    if (!question.points) errors.push(`Question ${index + 1}: Points are required`);
-    if (question.points % MULTIPLE !== 0) {
+export const validateQuestionImport = (question: Question, index: number, errors: string[]): void => {
+    if (!question.type) errors.push(`Question ${index + 1}: Type est requis`);
+    if (!question.text) errors.push(`Question ${index + 1}: Text est requis`);
+    if (!question.points) errors.push(`Question ${index + 1}: Points sont requis`);
+    if (question.points && question.points % MULTIPLE !== 0) {
         errors.push(`Question ${index + 1}: Les points doivent être des multiples de 10`);
     }
-    if (question.text.trim().length === 0) errors.push('not just whitespace');
+    if (question.text.trim().length === 0) errors.push('Pas juste des espaces');
 
     validateQuestionChoicesImport(question, index, errors);
 };
@@ -55,25 +55,25 @@ export const validateQuestionChoicesImport = (question: Question, questionIndex:
     if (question.type === 'QRL') return;
 
     if (!question.choices || !question.choices.length) {
-        errors.push(`Question ${questionIndex + 1}: At least one choice is required`);
+        errors.push(`Question ${questionIndex + 1}: Au moins un choix est requis`);
         return;
     }
 
     let hasCorrectChoice = false;
     question.choices.forEach((choice: Choice, choiceIndex: number) => {
         if (!choice.text) {
-            errors.push(`Question ${questionIndex + 1}, Choice ${choiceIndex + 1}: Text is required`);
+            errors.push(`Question ${questionIndex + 1}, Choix ${choiceIndex + 1}: Text est requis`);
         }
-        if (choice.isCorrect === undefined) {
-            errors.push(`Question ${questionIndex + 1}, Choice ${choiceIndex + 1}: Correctness status is required`);
+        if (choice.isCorrect === null) {
+            errors.push(`Question ${questionIndex + 1}, Choix ${choiceIndex + 1}: Status de validité requis`);
         } else if (choice.isCorrect) {
             hasCorrectChoice = true;
         }
-        if (choice.text.trim().length === 0) errors.push('not just whitespace');
+        if (choice.text.trim().length === 0) errors.push('Pas juste des espaces');
     });
 
     if (!hasCorrectChoice) {
-        errors.push(`Question ${questionIndex + 1}: At least one choice must be correct`);
+        errors.push(`Question ${questionIndex + 1}: Au moins un choix doit être correct`);
     }
 };
 
