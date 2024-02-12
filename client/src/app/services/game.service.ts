@@ -17,8 +17,6 @@ export class GameService {
     }
 
     async getGames(): Promise<Game[]> {
-        // const projection = { _id: 0 };
-
         const games$ = this.http.get<Game[]>(this.apiUrl);
         const games = await firstValueFrom(games$);
         return games;
