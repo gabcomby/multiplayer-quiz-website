@@ -12,7 +12,7 @@ import { SocketService } from '@app/services/socket.service';
 import { of, throwError } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
-// const TEN = 10;
+const TEN = 10;
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 
@@ -51,7 +51,10 @@ const mockedGameData: Game = {
 };
 const mockedMatchData: Match = {
     id: 'match123',
-    playerList: [],
+    playerList: [
+        { id: 'player1', name: 'Player 1', score: 0 },
+        { id: 'player2', name: 'Player 2', score: 0 },
+    ],
 };
 const updatedMatchDataWithPlayer: Match = {
     ...mockedMatchData,
@@ -234,5 +237,39 @@ describe('GamePageComponent', () => {
         expect(socketService.stopTimer).toHaveBeenCalled();
         expect(socketService.disconnect).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith(['/new-game']);
+    });
+
+    it('should alert an error message if match deletion fails', () => {
+        const mockError = new Error('Deletion failed');
+        matchService.deleteMatch.and.returnValue(throwError(() => mockError));
+        spyOn(window, 'alert');
+
+        component.handleGameLeave();
+
+        expect(window.alert).toHaveBeenCalledWith(mockError.message);
+    });
+
+    it('should update the player score on successful score update', () => {
+        component.currentMatch = mockedMatchData;
+        const initialScore = component.currentMatch.playerList[0].score;
+        const scoreFromQuestion = 10;
+        const updatedPlayer = { ...component.currentMatch.playerList[0], score: initialScore + scoreFromQuestion };
+        matchService.updatePlayerScore.and.returnValue(of(updatedPlayer));
+
+        component.updatePlayerScore(scoreFromQuestion);
+
+        expect(matchService.updatePlayerScore).toHaveBeenCalledWith(component.matchId, 'playertest', initialScore + scoreFromQuestion);
+        expect(component.currentMatch.playerList[0].score).toEqual(initialScore + scoreFromQuestion);
+    });
+
+    it('should alert an error message if updating player score fails', () => {
+        component.currentMatch = mockedMatchData;
+        const mockError = new Error('Failed to update score');
+        matchService.updatePlayerScore.and.returnValue(throwError(() => mockError));
+        spyOn(window, 'alert');
+
+        component.updatePlayerScore(TEN);
+
+        expect(window.alert).toHaveBeenCalledWith(mockError.message);
     });
 });
