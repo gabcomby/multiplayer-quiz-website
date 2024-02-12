@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AuthService } from '@app/services/auth.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -99,6 +100,25 @@ describe('MainPageComponent', () => {
         component.handleDialogClose('invalidPassword');
         expect(snackbarService.openSnackBar).toHaveBeenCalledWith('Mot de passe invalide');
         // Add checks for ServerErrorDialogComponent as needed
+    });
+
+    it('should open ServerErrorDialogComponent for non-password related errors', () => {
+        const errorResponse = new HttpErrorResponse({
+            error: { body: 'Unexpected error' },
+            status: 500,
+        });
+        spyOn(authService, 'authenticate').and.returnValue(throwError(() => errorResponse));
+        const dialogSpy = spyOn(dialog, 'open').and.callThrough();
+
+        // @ts-expect-error -- Accessing private method for testing
+        component.handleDialogClose('anyPassword');
+
+        fixture.detectChanges();
+        fixture.whenStable();
+
+        expect(dialogSpy).toHaveBeenCalledWith(ServerErrorDialogComponent, {
+            data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
+        });
     });
 
     @Component({ template: '' })

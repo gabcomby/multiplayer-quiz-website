@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
@@ -21,6 +21,7 @@ export class NewQuestionComponent {
     constructor(
         private questionService: QuestionService,
         private snackbarService: SnackbarService,
+        private router: Router,
         private questionValidationService: QuestionValidationService,
     ) {}
 
@@ -38,6 +39,7 @@ export class NewQuestionComponent {
                 }
             } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
+                this.router.navigate(['/question-bank']);
             }
         }
     }
