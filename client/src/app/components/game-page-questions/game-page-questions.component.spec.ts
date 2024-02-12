@@ -2,12 +2,6 @@ import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
-enum AnswerStatusEnum {
-    Correct,
-    Wrong,
-    Unanswered,
-}
-
 describe('GamePageQuestionsComponent', () => {
     let component: GamePageQuestionsComponent;
     let fixture: ComponentFixture<GamePageQuestionsComponent>;
@@ -31,34 +25,6 @@ describe('GamePageQuestionsComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should calculate score correctly for single choice questions', () => {
-        component.choices = [
-            { text: 'Answer 1', isCorrect: true },
-            { text: 'Answer 2', isCorrect: false },
-        ];
-
-        component.mark = 10;
-        component.selectedChoices = [0];
-        component.calculateScoreForTheQuestion();
-        expect(component.answerStatus).toEqual(AnswerStatusEnum.Correct);
-        // Uncomment the next line once we emit the score
-        // expect(component.scoreForTheQuestion.emit).toHaveBeenCalledWith(10);
-    });
-
-    it('should calculate score correctly for multiple choice questions', () => {
-        component.choices = [
-            { text: 'Answer 1', isCorrect: true },
-            { text: 'Answer 2', isCorrect: true },
-            { text: 'Answer 3', isCorrect: false },
-        ];
-        component.mark = 10;
-        component.selectedChoices = [0, 1];
-        component.calculateScoreForTheQuestion();
-        expect(component.answerStatus).toEqual(AnswerStatusEnum.Correct);
-        // Uncomment the next line once we emit the score
-        // expect(component.scoreForTheQuestion.emit).toHaveBeenCalledWith(10);
     });
 
     it('should not toggle any answer if timer has expired', () => {
@@ -91,14 +57,6 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.selectedChoices).toContain(0);
         component.toggleAnswer(0);
         expect(component.selectedChoices).not.toContain(0);
-    });
-
-    it('should calculate score after timer expiration', () => {
-        spyOn(component, 'calculateScoreForTheQuestion');
-        component.ngOnChanges({
-            timerExpired: new SimpleChange(null, true, false),
-        });
-        expect(component.calculateScoreForTheQuestion).toHaveBeenCalled();
     });
 
     it('should allow to choose answers with the keyboard', () => {

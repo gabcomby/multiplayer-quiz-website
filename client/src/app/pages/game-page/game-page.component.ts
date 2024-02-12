@@ -7,6 +7,8 @@ import { MatchService } from '@app/services/match.service';
 import { SocketService } from '@app/services/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -20,10 +22,14 @@ export class GamePageComponent implements OnInit {
     matchId: string;
     gameId: string;
     timerCountdown: number;
+    answerIsCorrect: boolean;
 
     gameScore: { name: string; score: number }[] = [];
 
     playerName: string;
+
+    private answerIdx: number[];
+    private previousQuestionIndex: number;
 
     constructor(
         private gameService: GameService,
@@ -109,6 +115,12 @@ export class GamePageComponent implements OnInit {
             // eslint-disable-next-line no-console
             console.log(data);
         });
+        this.socketService.onAnswerVerification((data) => {
+            this.answerIsCorrect = data;
+            if (data === true) {
+                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
+            }
+        });
     }
 
     updatePlayerScore(scoreFromQuestion: number): void {
@@ -138,6 +150,8 @@ export class GamePageComponent implements OnInit {
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
+        this.previousQuestionIndex = this.currentQuestionIndex;
+        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
         if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
@@ -155,6 +169,10 @@ export class GamePageComponent implements OnInit {
 
     getCurrentQuestion(): Question {
         return this.gameData.questions[this.currentQuestionIndex];
+    }
+
+    getAnswerIndex(answerIdx: number[]) {
+        this.answerIdx = answerIdx;
     }
 
     private handleNextQuestion(): void {

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IChoice extends Document {
+export interface IChoice extends Document {
     text: string;
     isCorrect?: boolean;
 }
