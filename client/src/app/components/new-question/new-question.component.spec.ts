@@ -192,12 +192,11 @@ describe('NewQuestionComponent', () => {
             text: 'Ceci est une question de test',
             points: 10,
             id: 'dsdsd',
-            choice: [
+            choices: [
                 { text: '1', isCorrect: false },
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
-            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(false);
@@ -208,12 +207,11 @@ describe('NewQuestionComponent', () => {
             text: 'Ceci est une question de test 2',
             points: 10,
             id: '1234',
-            choice: [
+            choices: [
                 { text: '1', isCorrect: false },
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
-            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(true);

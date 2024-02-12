@@ -29,6 +29,16 @@ describe('ChoiceComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should initialize choices with the input question if exist', () => {
+        component.question = [
+            { text: 'test1', isCorrect: false },
+            { text: 'test2', isCorrect: true },
+        ];
+
+        component.ngOnInit();
+        expect(component.choices).toEqual(component.question);
+    });
+
     it('should add a choice if length of choices is lower than MAX_CHOICES', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
@@ -54,14 +64,6 @@ describe('ChoiceComponent', () => {
         expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Maximum 4 choix');
     });
 
-    it('should not add a choice if choices is undefined', () => {
-        component.question = undefined;
-
-        component.addChoice(component.question);
-
-        expect(component.question).toBe(undefined);
-        expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
-    });
     it('should have a minimum of 2 choices and a maximum of 4 choices', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
@@ -182,10 +184,10 @@ describe('ChoiceComponent', () => {
 
         // spyOn(component, 'answerValid').and.returnValue(true);
         spyOn(component.registerAnswer, 'emit');
-
+        component.ngOnInit();
         component.addAnswer();
 
-        expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.answers);
+        expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.choices);
     });
 
     it('should not emit registerAnswer event when there is only good answers', () => {

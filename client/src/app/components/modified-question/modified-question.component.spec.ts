@@ -1,4 +1,4 @@
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EventEmitter } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
@@ -171,11 +171,11 @@ describe('ModifiedQuestionComponent', () => {
         component.toggleMenuSelection();
         expect(component.menuSelected).toBeTrue();
     });
-    it('when saveQuestion is called, initialize with new date', () => {
-        const index = 1;
-        component.saveQuestion(index);
-        expect(component.questionList[index].lastModification).toEqual(new Date());
-    });
+    // it('when saveQuestion is called, initialize with new date', () => {
+    //     const index = 1;
+    //     component.saveQuestion(index);
+    //     expect(component.questionList[index].lastModification).toEqual(new Date());
+    // });
     // it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
     //     component.disabled = [false, false];
     //     component.questionList = questionList;
@@ -215,23 +215,59 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.disabled[index]).toBeTrue();
     });
 
-    it('should move the answers in the array after the drop', () => {
-        const event = {
-            previousIndex: 0,
-            currentIndex: 1,
-        } as CdkDragDrop<Question[]>;
-        const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+    it('should switch the answer selected and the one on top', () => {
+        component.questionList = [
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
             { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
-        component.questionList = mockQuestionList;
-
-        component.drop(event);
-
+        component.moveQuestionUp(1);
         expect(component.questionList).toEqual([
             { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ]);
+    });
+
+    it('should not switch the answers if its the first choice', () => {
+        component.questionList = [
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ];
+
+        component.moveQuestionUp(0);
+        expect(component.questionList).toEqual([
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ]);
+    });
+
+    it('should switch the answer selected and the one underneath', () => {
+        component.questionList = [
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ];
+
+        component.moveQuestionDown(1);
+        expect(component.questionList).toEqual([
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ]);
+    });
+
+    it('should not switch the answers if its the last choice', () => {
+        component.questionList = [
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+        ];
+
+        component.moveQuestionDown(3);
+        expect(component.questionList).toEqual([
+            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 });

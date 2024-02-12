@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { Choice } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
@@ -10,18 +10,29 @@ const MAX_CHOICES = 4;
     templateUrl: './choice.component.html',
     styleUrls: ['./choice.component.scss'],
 })
-export class ChoiceComponent {
-    @Input() question: Choice[] | undefined;
+export class ChoiceComponent implements OnInit {
+    @Input() question: Choice[];
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
     answers: Choice[] = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
     ];
 
+    choices: Choice[];
+
     constructor(
         private snackbarService: SnackbarService,
         private questionValidationService: QuestionValidationService,
     ) {}
+
+    ngOnInit(): void {
+        if (this.question) {
+            this.choices = this.question;
+        } else {
+            this.choices = this.answers;
+        }
+    }
+
     addChoice(choices: Choice[] | undefined) {
         if (choices) {
             if (choices.length < MAX_CHOICES) {
