@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
@@ -9,6 +10,7 @@ import SpyObj = jasmine.SpyObj;
 
 describe('NewQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
+    let routerSpy: SpyObj<Router>;
     let snackbarServiceSpy: SpyObj<SnackbarService>;
     let questionValidationSpy: SpyObj<QuestionValidationService>;
     let component: NewQuestionComponent;
@@ -50,12 +52,15 @@ describe('NewQuestionComponent', () => {
     });
 
     beforeEach(() => {
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         snackbarServiceSpy = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion']);
+
         TestBed.configureTestingModule({
             declarations: [NewQuestionComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
+                { provide: Router, useValue: routerSpy },
                 { provide: SnackbarService, useValue: snackbarServiceSpy },
             ],
         });
@@ -87,10 +92,11 @@ describe('NewQuestionComponent', () => {
         expect(questionServiceSpy.addQuestion).toHaveBeenCalled();
         expect(component.resetComponent).toHaveBeenCalled();
     });
+
     it('should call addQuestionBank when coming from the question bank with valid data', async () => {
         questionValidationSpy.validateQuestion.and.returnValue(true);
-
         spyOn(component, 'validateQuestionExisting').and.returnValue(Promise.resolve(true));
+
         const newChoices: Choice[] = [
             { text: '1', isCorrect: false },
             { text: '2', isCorrect: true },
@@ -98,10 +104,13 @@ describe('NewQuestionComponent', () => {
 
         component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         const mockOnlyAddQuestionBank = true;
-        component.addQuestion(newChoices, mockOnlyAddQuestionBank).then(() => {
-            expect(questionServiceSpy.addQuestionBank).toHaveBeenCalled();
-        });
+
+        await component.addQuestion(newChoices, mockOnlyAddQuestionBank);
+
+        expect(questionServiceSpy.addQuestionBank).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/question-bank']);
     });
+
     it('should call addQuestion and addQuestionBank when coming from newGame and checkbox checked', async () => {
         // spyOn(component, 'validateQuestion').and.returnValue(true);
         questionValidationSpy.validateQuestion.and.returnValue(true);

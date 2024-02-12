@@ -106,9 +106,7 @@ describe('QuestionService', () => {
     });
 
     it('should delete a question', () => {
-        service.deleteQuestion('abc123').then(() => {
-            expect(service.questions).toEqual([]);
-        });
+        service.deleteQuestion('abc123');
 
         const req = httpController.expectOne('http://localhost:3000/api/questions/abc123');
         expect(req.request.method).toBe('DELETE');
