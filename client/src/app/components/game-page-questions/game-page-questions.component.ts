@@ -26,8 +26,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     answerGivenIsCorrect: boolean;
     answerStatusEnum = AnswerStatusEnum;
     answerStatus: AnswerStatusEnum;
-    // buttonPressed: string;
-    answerIsLocked: boolean;
+    answerIsLocked: boolean = false;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,

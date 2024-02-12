@@ -1,19 +1,22 @@
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AnswerStateService } from '@app/services/answer-state.service';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
 describe('GamePageQuestionsComponent', () => {
     let component: GamePageQuestionsComponent;
     let fixture: ComponentFixture<GamePageQuestionsComponent>;
+    let answerStateServiceSpy: jasmine.SpyObj<AnswerStateService>;
 
     beforeEach(() => {
+        answerStateServiceSpy = jasmine.createSpyObj('AnswerStateService', ['lockAnswer']);
         TestBed.configureTestingModule({
             declarations: [GamePageQuestionsComponent],
+            providers: [{ provide: AnswerStateService, useValue: answerStateServiceSpy }],
         });
         fixture = TestBed.createComponent(GamePageQuestionsComponent);
         component = fixture.componentInstance;
         component.question = 'Sample Question';
-        // component.choices = ['Answer 1', 'Answer 2'];
         component.choices = [
             { text: 'Choice 1', isCorrect: true },
             { text: 'Choice 2', isCorrect: false },
@@ -76,5 +79,14 @@ describe('GamePageQuestionsComponent', () => {
         });
         expect(component.selectedChoices.length).toBe(0);
         expect(component.answerIsLocked).toBe(false);
+    });
+
+    it('should lock the answer when submitAnswer is called', () => {
+        expect(component.answerIsLocked).toBeFalse(); // Ensure initial state is not locked
+
+        component.submitAnswer();
+
+        expect(component.answerIsLocked).toBeTrue(); // Check if answer is now locked
+        expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true); // Verify lockAnswer was called with true
     });
 });
