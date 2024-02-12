@@ -25,9 +25,9 @@ export class AdminPageComponent implements OnInit {
     constructor(
         private router: Router,
         private apiService: ApiService,
-        private gameService: GameService,
         private socketService: SocketService,
         private snackbarService: SnackbarService,
+        private gameService: GameService,
     ) {}
 
     ngOnInit() {
@@ -163,7 +163,7 @@ export class AdminPageComponent implements OnInit {
 
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.gameService, true)) return;
+        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
         assignNewGameAttributes(game);
     }
 }

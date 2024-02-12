@@ -4,8 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame, validateDeletedGame } from '@app/utils/is-valid-game';
+import { isValidGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -35,13 +36,13 @@ export class CreateQGamePageComponent implements OnInit {
         private gameService: GameService,
         private route: ActivatedRoute,
         private router: Router,
+        private snackbarService: SnackbarService,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
             name: new FormControl('', Validators.required),
             description: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            // visibility: new FormControl(false),
         });
     }
     async ngOnInit(): Promise<void> {
@@ -53,7 +54,7 @@ export class CreateQGamePageComponent implements OnInit {
                 this.insertIfExist();
                 this.dataReady = true;
             } catch (error) {
-                // console.error('Error fetching games:', error);
+                throw new Error(`Game with id ${this.gameId} not found`);
             }
         }
     }
@@ -72,8 +73,8 @@ export class CreateQGamePageComponent implements OnInit {
         const newGame: Game = this.createNewGame(true);
 
         if (this.gameId) {
-            this.gameValidationWhenModified();
-        } else if (await isValidGame(newGame, this.gameService, true)) {
+            await this.gameValidationWhenModified();
+        } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
             this.gameService.createGame(newGame);
             // je veux retourner a admin
             this.router.navigate(['/home']);
@@ -93,25 +94,16 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async gameValidationWhenModified() {
-        if (await isValidGame(this.gameFromDB, this.gameService, false)) {
-            if (await validateDeletedGame(this.gameFromDB, this.gameService)) {
-                this.gameService.patchGame(this.patchOldGame());
-                // console.log(this.patchOldGame());
+        const modifiedGame = this.createNewGame(false);
+        if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
+            if (await this.gameService.validateDeletedGame(modifiedGame)) {
+                this.gameService.patchGame(modifiedGame);
+                this.router.navigate(['/home']);
             } else {
-                this.gameService.createGame(this.gameFromDB);
+                this.gameService.createGame(modifiedGame);
+                this.router.navigate(['/home']);
             }
         }
-    }
-    patchOldGame() {
-        return {
-            id: this.gameFromDB.id,
-            title: this.gameForm.get('name')?.value,
-            description: this.gameForm.get('description')?.value,
-            isVisible: this.gameForm.get('visibility')?.value,
-            duration: this.gameForm.get('time')?.value,
-            lastModification: new Date(),
-            questions: this.gameFromDB.questions,
-        };
     }
 
     createNewGame(isNewGame: boolean) {
@@ -119,10 +111,10 @@ export class CreateQGamePageComponent implements OnInit {
             id: isNewGame ? generateNewId() : this.gameFromDB.id,
             title: this.gameForm.get('name')?.value,
             description: this.gameForm.get('description')?.value,
-            isVisible: false,
+            isVisible: isNewGame ? false : this.gameForm.get('visibility')?.value,
             duration: this.gameForm.get('time')?.value,
             lastModification: new Date(),
-            questions: this.questionService.getQuestion(),
+            questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
         };
     }
 }
