@@ -137,6 +137,25 @@ describe('NewGamePageComponent', () => {
         expect(result).toEqual(true);
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', gamesMock[0].id]);
     });
+    it('should return true if game is not deleted or not hidden PLAY', async () => {
+        const gamesMock1: Game[] = [
+            {
+                id: 'un',
+                title: 'game1',
+                description: 'description1',
+                isVisible: true,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+        ];
+        gameServiceSpy.getGames.and.resolveTo(gamesMock1);
+        routerSpy.navigate.and.callThrough();
+        const result = await component.isTheGameModifiedPlay(gamesMock1[0]);
+        expect(gameServiceSpy.getGames).toHaveBeenCalled();
+        expect(result).toEqual(true);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/gameWait', gamesMock[0].id]);
+    });
 
     it('should return false if game is deleted only game', async () => {
         const deletedGamesIdMock = ['un'];
@@ -308,25 +327,7 @@ describe('NewGamePageComponent', () => {
         );
         expect(result).toEqual(false);
     });
-    it('should return true if game is not deleted or not hidden PLAY', async () => {
-        const gamesMock1: Game[] = [
-            {
-                id: 'un',
-                title: 'game1',
-                description: 'description1',
-                isVisible: true,
-                lastModification: new Date(),
-                duration: 10,
-                questions: [],
-            },
-        ];
-        gameServiceSpy.getGames.and.resolveTo(gamesMock1);
-        routerSpy.navigate.and.callThrough();
-        const result = await component.isTheGameModifiedPlay(gamesMock[0]);
-        expect(gameServiceSpy.getGames).toHaveBeenCalled();
-        expect(result).toEqual(true);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/gameWait', gamesMock[0].id]);
-    });
+
     it('should return false if game is deleted only PLAY', async () => {
         const deletedGamesIdMock = ['un'];
         const gamesMock1: Game[] = [

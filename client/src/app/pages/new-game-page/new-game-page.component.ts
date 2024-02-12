@@ -6,6 +6,7 @@ import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Socket, io } from 'socket.io-client';
+const INDEXNOTFOUND = -1;
 
 @Component({
     selector: 'app-new-game-page',
@@ -62,8 +63,7 @@ export class NewGamePageComponent implements OnInit {
         let result = true;
         const newGameArray = await this.gameService.getGames();
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        if (this.deletedGamesId.indexOf(game.id) !== -1) {
+        if (this.deletedGamesId.indexOf(game.id) !== INDEXNOTFOUND) {
             const indexGame = this.games.indexOf(game);
             if (indexGame === this.games.length - 1) {
                 const newSuggestedGameCase1 = this.games[0];
