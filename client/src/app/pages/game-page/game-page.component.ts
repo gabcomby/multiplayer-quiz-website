@@ -143,7 +143,7 @@ export class GamePageComponent implements OnInit {
         this.questionHasExpired = true;
         this.previousQuestionIndex = this.currentQuestionIndex;
         this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
+        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
@@ -154,9 +154,9 @@ export class GamePageComponent implements OnInit {
         }
     }
 
-    getTotalQuestions(): number {
-        return this.gameData?.questions.length || 0;
-    }
+    // getTotalQuestions(): number {
+    //     return this.gameData?.questions.length || 0;
+    // }
 
     getCurrentQuestion(): Question {
         if (this.gameData.questions.length > 0) {
@@ -172,7 +172,7 @@ export class GamePageComponent implements OnInit {
         }
     }
 
-    getAnswerIndex(answerIdx: number[]) {
+    setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
 

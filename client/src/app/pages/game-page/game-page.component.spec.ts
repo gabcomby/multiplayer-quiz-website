@@ -142,31 +142,6 @@ describe('GamePageComponent', () => {
         expect(component.setupWebSocketEvents).toHaveBeenCalled();
     });
 
-    // it('should correctly handle timer countdown', () => {
-    //     spyOn(component, 'onTimerComplete').and.callThrough();
-
-    //     fixture.detectChanges();
-
-    //     fixture.whenStable().then(() => {
-    //         socketService.onTimerCountdown.calls.mostRecent().args[0](0);
-
-    //         expect(component.onTimerComplete).toHaveBeenCalled();
-    //     });
-    // });
-
-    // it('should correctly update player score', () => {
-    //     spyOn(component, 'updatePlayerScore').and.callThrough();
-
-    //     fixture.detectChanges();
-
-    //     fixture.whenStable().then(() => {
-    //         component.updatePlayerScore(TEN);
-
-    //         expect(matchService.updatePlayerScore).toHaveBeenCalledWith(component.matchId, 'playertest', TEN);
-    //         expect(component.updatePlayerScore).toHaveBeenCalledWith(TEN);
-    //     });
-    // });
-
     it('should fetch game data on init and handle errors', () => {
         const apiService = TestBed.inject(ApiService);
         spyOn(apiService, 'getGame').and.returnValue(throwError(() => new Error('Failed to fetch game data')));
@@ -335,5 +310,11 @@ describe('GamePageComponent', () => {
 
         expect(component.answerIsCorrect).toBeFalse();
         expect(component.updatePlayerScore).not.toHaveBeenCalled();
+    });
+
+    it('should set the answerIndex value correctly', () => {
+        const answerIndex = [0, 1];
+        component.setAnswerIndex(answerIndex);
+        expect(component.answerIdx).toEqual(answerIndex);
     });
 });

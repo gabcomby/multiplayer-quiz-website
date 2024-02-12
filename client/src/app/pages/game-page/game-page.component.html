@@ -22,7 +22,7 @@
             [mark]="getCurrentQuestion().points || 0"
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
-            (answerIdx)="getAnswerIndex($event)"
+            (answerIdx)="setAnswerIndex($event)"
             [answerIsCorrect]="answerIsCorrect"
         ></app-game-page-questions>
     </div>
