@@ -25,6 +25,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 10,
                     id: 'dsdsd',
                     lastModification: defaultDate,
+                    choices: [],
                 },
                 {
                     type: 'QCM',
@@ -32,6 +33,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 20,
                     id: '45',
                     lastModification: defaultDate,
+                    choices: [],
                 } as Question,
             ],
             getQuestions: [
@@ -41,6 +43,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 10,
                     id: 'dsdsd',
                     lastModification: defaultDate,
+                    choices: [],
                 },
                 {
                     type: 'QCM',
@@ -48,6 +51,7 @@ describe('ModifiedQuestionComponent', () => {
                     points: 20,
                     id: '45',
                     lastModification: defaultDate,
+                    choices: [],
                 } as Question,
             ],
             onQuestionAdded: {},
@@ -101,6 +105,7 @@ describe('ModifiedQuestionComponent', () => {
             points: 10,
             id: 'dsdsd',
             lastModification: defaultDate,
+            choices: [],
         };
         component.disabled = [];
         component.ngOnInit();
@@ -124,6 +129,7 @@ describe('ModifiedQuestionComponent', () => {
                 points: 10,
                 id: 'dsdsd',
                 lastModification: defaultDate,
+                choices: [],
             },
         ];
         component.setQuestionList();
@@ -162,11 +168,11 @@ describe('ModifiedQuestionComponent', () => {
     it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
-        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate };
+        const questionToRemove: Question = { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] };
 
         component.questionList = mockQuestionList;
         component.removeQuestion(questionToRemove, index);
@@ -182,8 +188,8 @@ describe('ModifiedQuestionComponent', () => {
             currentIndex: 1,
         } as CdkDragDrop<Question[]>;
         const mockQuestionList: Question[] = [
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
         ];
 
         component.questionList = mockQuestionList;
@@ -191,8 +197,8 @@ describe('ModifiedQuestionComponent', () => {
         component.drop(event);
 
         expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate },
-            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate },
+            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+            { id: '1', text: 'Question 1', type: '', points: 10, lastModification: defaultDate, choices: [] },
         ]);
     });
 });

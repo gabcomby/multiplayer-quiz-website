@@ -56,21 +56,6 @@ export class ChoiceComponent {
         }
     }
 
-    // verifyOneGoodAndBadAnswer(choices: Choice[]): boolean {
-    //     let goodAnswer = 0;
-    //     for (const choice of choices) {
-    //         if (choice.isCorrect) {
-    //             goodAnswer++;
-    //         }
-    //     }
-
-    //     if (goodAnswer < 1 || goodAnswer === choices.length) {
-    //         this.snackbarService.openSnackBar('Au moins une bonne réponse et une mauvaise réponse');
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
     addAnswer() {
         if (this.questionValidationService.verifyOneGoodAndBadAnswer(this.answers)) {
             if (this.questionValidationService.answerValid(this.answers)) {
@@ -78,14 +63,4 @@ export class ChoiceComponent {
             }
         }
     }
-    // answerValid(answer: Choice[]) {
-    //     let valid = true;
-    //     answer.forEach((elem) => {
-    //         if (elem.text === '') {
-    //             valid = false;
-    //             this.snackbarService.openSnackBar('tous les champs des choix de réponses doivent être remplis');
-    //         }
-    //     });
-    //     return valid;
-    // }
 }

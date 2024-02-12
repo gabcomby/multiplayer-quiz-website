@@ -32,34 +32,6 @@ export class QuestionValidationService {
         }
         return true;
     }
-    verifyOneGoodAndBadAnswer2(index: number, questionList: Question[]): boolean {
-        const question = questionList[index];
-
-        let goodAnswerCount = 0;
-        if (question.choices) {
-            for (const choice of question.choices) {
-                if (choice.isCorrect) {
-                    goodAnswerCount++;
-                }
-            }
-
-            if (goodAnswerCount < 1 || goodAnswerCount === question.choices.length) {
-                this.snackbarService.openSnackBar('Il doit y avoir au moins une bonne et mauvaise réponse');
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-    // validateQuestion(newQuestion: Question) {
-    //     if (newQuestion.text !== '' && newQuestion.points !== 0 && newQuestion.text.trim().length !== 0) {
-    //         if (newQuestion.choices) {
-    //             if (this.answerValid(newQuestion.choices)) return true;
-    //         }
-    //     } else this.snackbarService.openSnackBar('La question a besoin d une question, de point et pas juste des espaces');
-    //     return false;
-    // }
 
     validatePoints(newQuestion: Question) {
         const MAX_POINTS = 100;

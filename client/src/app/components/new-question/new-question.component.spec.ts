@@ -24,7 +24,7 @@ describe('NewQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
-                    choice: [
+                    choices: [
                         { text: '1', isCorrect: false },
                         { text: '2', isCorrect: true },
                     ],
@@ -37,7 +37,7 @@ describe('NewQuestionComponent', () => {
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
-                    choice: [
+                    choices: [
                         { text: '1', isCorrect: false },
                         { text: '2', isCorrect: true },
                     ],
