@@ -29,6 +29,7 @@ describe('QuestionService', () => {
             },
             {
                 text: 'int',
+                isCorrect: false,
             },
         ],
     };

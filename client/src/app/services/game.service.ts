@@ -40,8 +40,8 @@ export class GameService {
     }
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.getGames();
-        const titleExisting = gameList.find((element) => element.title === game.title && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description === game.description && element.id !== game.id);
+        const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
+        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
         if (titleExisting) {
             error.push('Il y a déjà un jeu avec ce nom');
         }

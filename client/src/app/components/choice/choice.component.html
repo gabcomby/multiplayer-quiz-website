@@ -1,16 +1,16 @@
 <div cdkDropList class="container">
-    <div *ngIf="!question">
-        <ng-container *ngFor="let answer of answers; let i = index">
+    <div>
+        <ng-container *ngFor="let choice of choices; let i = index">
             <div class="answer-container">
                 {{ i + 1 }}.
                 <mat-form-field>
-                    <input matInput type="text" [(ngModel)]="answer.text" placeholder="Entrer une réponse" />
+                    <input matInput type="text" [(ngModel)]="choice.text" placeholder="Entrer une réponse" />
                 </mat-form-field>
-                <mat-checkbox [(ngModel)]="answers[i].isCorrect">Correct</mat-checkbox>
-                <button mat-icon-button (click)="removeChoice(i, answers)">
+                <mat-checkbox [(ngModel)]="choices[i].isCorrect">Correct</mat-checkbox>
+                <button mat-icon-button (click)="removeChoice(i, choices)">
                     <mat-icon>remove_circle_outline</mat-icon>
                 </button>
-                <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="moveQuestionUp(i, answers)" *ngIf="i > 0">
+                <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="moveQuestionUp(i, choices)" *ngIf="i > 0">
                     <mat-icon>arrow_upward_alt</mat-icon>
                 </button>
 
@@ -19,8 +19,8 @@
                     class="buttonIcon"
                     color="primary"
                     aria-label="Move Down"
-                    (click)="moveQuestionDown(i, answers)"
-                    *ngIf="i < answers.length - 1"
+                    (click)="moveQuestionDown(i, choices)"
+                    *ngIf="i < choices.length - 1"
                 >
                     <mat-icon>arrow_downward_alt</mat-icon>
                 </button>
@@ -30,13 +30,14 @@
             <mat-icon>add</mat-icon>
         </button>
 
-        <div id="addQuestionButton">
+
+        <div *ngIf="!question"id="addQuestionButton">
             <button mat-raised-button color="accent" id="add" (click)="addAnswer()">Ajouter la question</button>
         </div>
     </div>
 </div>
 
-<div *ngIf="question">
+<!-- <div *ngIf="question">
     <ng-container *ngFor="let answer of question; let i = index">
         <div class="answer-container">
             {{ i + 1 }}.
@@ -67,4 +68,4 @@
     <button mat-mini-fab class="buttonIcon" color="accent" aria-label="add" (click)="addChoice(question)">
         <mat-icon>add</mat-icon>
     </button>
-</div>
+</div> -->
