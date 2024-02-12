@@ -106,14 +106,14 @@ export class GamePageComponent implements OnInit {
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
-        this.socketService.onTimerDuration((data) => {
-            // eslint-disable-next-line no-console
-            console.log(data);
-        });
-        this.socketService.onTimerUpdate((data) => {
-            // eslint-disable-next-line no-console
-            console.log(data);
-        });
+        // this.socketService.onTimerDuration((data) => {
+        //     // eslint-disable-next-line no-console
+        //     console.log(data);
+        // });
+        // this.socketService.onTimerUpdate((data) => {
+        //     // eslint-disable-next-line no-console
+        //     console.log(data);
+        // });
         this.socketService.onAnswerVerification((data) => {
             this.answerIsCorrect = data;
             if (data === true) {
