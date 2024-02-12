@@ -20,8 +20,10 @@ export class ChoiceComponent implements OnInit {
 
     choices: Choice[];
 
-    constructor(private snackbarService: SnackbarService,
-    private questionValidationService: QuestionValidationService,) {}
+    constructor(
+        private snackbarService: SnackbarService,
+        private questionValidationService: QuestionValidationService,
+    ) {}
 
     ngOnInit(): void {
         if (this.question) {
