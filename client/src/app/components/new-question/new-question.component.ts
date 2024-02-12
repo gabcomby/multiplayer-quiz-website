@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 // import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -22,6 +23,7 @@ export class NewQuestionComponent {
     constructor(
         private questionService: QuestionService,
         private snackbarService: SnackbarService,
+        private router: Router,
     ) {}
 
     async addQuestion(event: Choice[], onlyAddQuestionBank: boolean): Promise<void> {
@@ -38,6 +40,7 @@ export class NewQuestionComponent {
                 }
             } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
+                this.router.navigate(['/question-bank']);
             }
         }
     }
