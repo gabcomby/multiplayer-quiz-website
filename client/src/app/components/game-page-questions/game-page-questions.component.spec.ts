@@ -82,11 +82,11 @@ describe('GamePageQuestionsComponent', () => {
     });
 
     it('should lock the answer when submitAnswer is called', () => {
-        expect(component.answerIsLocked).toBeFalse(); // Ensure initial state is not locked
+        expect(component.answerIsLocked).toBeFalse();
 
         component.submitAnswer();
 
-        expect(component.answerIsLocked).toBeTrue(); // Check if answer is now locked
-        expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true); // Verify lockAnswer was called with true
+        expect(component.answerIsLocked).toBeTrue();
+        expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
     });
 });
