@@ -38,20 +38,20 @@ describe('is-valid-game', () => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         gameServiceMock = jasmine.createSpyObj('GameService', ['validateDuplicationGame']);
 
-//         TestBed.configureTestingModule({
-//             providers: [
-//                 { provide: SnackbarService, useValue: snackbarServiceMock },
-//                 { provide: GameService, useValue: gameServiceMock },
-//             ],
-//         });
-//     });
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+                { provide: GameService, useValue: gameServiceMock },
+            ],
+        });
+    });
 
     it('should validate a valid game', async () => {
         const isValid = await isValidGame(game, snackbarServiceMock, gameServiceMock);
         expect(isValid).toBe(true);
 
-//         expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalled();
-//     });
+        expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalled();
+    });
 
     it('should push errors for title missing and no whitespaces if no game title', async () => {
         const gameNoTitle = { ...game, title: '' };

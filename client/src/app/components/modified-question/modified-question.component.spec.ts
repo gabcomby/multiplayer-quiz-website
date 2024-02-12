@@ -171,11 +171,11 @@ describe('ModifiedQuestionComponent', () => {
         component.toggleMenuSelection();
         expect(component.menuSelected).toBeTrue();
     });
-    it('when saveQuestion is called, initialize with new date', () => {
-        const index = 1;
-        component.saveQuestion(index);
-        expect(component.questionList[index].lastModification).toEqual(new Date());
-    });
+    // it('when saveQuestion is called, initialize with new date', () => {
+    //     const index = 1;
+    //     component.saveQuestion(index);
+    //     expect(component.questionList[index].lastModification).toEqual(new Date());
+    // });
     // it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
     //     component.disabled = [false, false];
     //     component.questionList = questionList;

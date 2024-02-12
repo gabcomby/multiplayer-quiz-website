@@ -197,7 +197,6 @@ describe('NewQuestionComponent', () => {
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
-            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(false);
@@ -213,7 +212,6 @@ describe('NewQuestionComponent', () => {
                 { text: '2', isCorrect: true },
             ],
             lastModification: new Date(),
-            choices: [],
         };
         const valid = await component.validateQuestionExisting(newQuestion);
         expect(valid).toEqual(true);

@@ -1,8 +1,8 @@
-import { Game } from '@app/interfaces/game';
+import { Choice, Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
-// const MULTIPLE = 10;
+const MULTIPLE = 10;
 const MAX_DURATION = 60;
 const MIN_DURATION = 10;
 export const isValidGame = async (game: Game, snackbarService: SnackbarService, gameService: GameService): Promise<boolean> => {
