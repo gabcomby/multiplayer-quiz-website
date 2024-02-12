@@ -139,13 +139,13 @@ describe('NewGamePageComponent', () => {
         ];
         gameServiceSpy.getGames.and.resolveTo(gamesMock1);
         routerSpy.navigate.and.callThrough();
-        const result = await component.isTheGameModifiedPlay(gamesMock[0]);
+        const result = await component.isTheGameModifiedTest(gamesMock[0]);
         expect(gameServiceSpy.getGames).toHaveBeenCalled();
         expect(result).toEqual(true);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/gameWait', gamesMock[0].id]);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', gamesMock[0].id]);
     });
 
-    it('should return false if game is deleted', async () => {
+    it('should return false if game is deleted only', async () => {
         const deletedGamesIdMock = ['un'];
         const gamesMock1: Game[] = [
             {
@@ -161,7 +161,7 @@ describe('NewGamePageComponent', () => {
         component.games = gamesMock1;
         component.deletedGamesId = deletedGamesIdMock;
         gameServiceSpy.getGames.and.resolveTo(gamesMock1);
-        const result = await component.isTheGameModifiedPlay(gamesMock[0]);
+        const result = await component.isTheGameModifiedTest(gamesMock[0]);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
             'Game ' + gamesMock1[0].title + ' has been deleted' + ' we have no other games to suggest',
         );
@@ -169,7 +169,7 @@ describe('NewGamePageComponent', () => {
         expect(result).toEqual(false);
     });
 
-    it('should return false if game is hidden', async () => {
+    it('should return false if game is hidden only game', async () => {
         const gamesMock1: Game[] = [
             {
                 id: 'un',
@@ -183,11 +183,70 @@ describe('NewGamePageComponent', () => {
         ];
         gameServiceSpy.getGames.and.resolveTo(gamesMock1);
         component.games = gamesMock1;
-        const result = await component.isTheGameModifiedPlay(gamesMock[0]);
+        const result = await component.isTheGameModifiedTest(gamesMock[0]);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
             'Game ' + gamesMock1[0].title + ' has been hidden' + ' we have no other games to suggest',
         );
         expect(result).toEqual(false);
     });
 
+    it('should return false if game is hidden first', async () => {
+        const gamesMock3: Game[] = [
+            {
+                id: 'un',
+                title: 'game1',
+                description: 'description1',
+                isVisible: false,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+            {
+                id: 'deux',
+                title: 'game2',
+                description: 'description2',
+                isVisible: true,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+        ];
+        gameServiceSpy.getGames.and.resolveTo(gamesMock3);
+        component.games = gamesMock3;
+        const result = await component.isTheGameModifiedTest(gamesMock3[0]);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
+            'Game ' + gamesMock3[0].title + ' has been hidden' + ' we suggest you to play ' + gamesMock3[1].title,
+        );
+        expect(result).toEqual(false);
+    });
+
+    it('should return false if game is hidden last one', async () => {
+        const gamesMock4: Game[] = [
+            {
+                id: 'un',
+                title: 'game1',
+                description: 'description1',
+                isVisible: true,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+            {
+                id: 'deux',
+                title: 'game2',
+                description: 'description2',
+                isVisible: false,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+        ];
+        gameServiceSpy.getGames.and.resolveTo(gamesMock4);
+        component.games = gamesMock4;
+        const result = await component.isTheGameModifiedTest(gamesMock4[1]);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
+            'Game ' + gamesMock4[1].title + ' has been hidden' + ' we suggest to play ' + gamesMock4[0].title,
+        );
+        expect(result).toEqual(false);
+    });
 });
