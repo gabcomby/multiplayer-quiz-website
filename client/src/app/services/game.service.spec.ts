@@ -79,4 +79,24 @@ describe('GamesService', () => {
         expect(req.request.method).toBe('GET');
         req.flush(gamesMock);
     });
+
+    it('should get a game', () => {
+        service.getGame('123').subscribe((game) => {
+            expect(game).toEqual(gamesMock[0]);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/games/123');
+        expect(req.request.method).toBe('GET');
+        req.flush(gamesMock[0]);
+    });
+
+    it('should create a game', () => {
+        service.createGame(gamesMock[0]).then((game) => {
+            expect(game).toEqual(gamesMock[0]);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/api/games');
+        expect(req.request.method).toBe('POST');
+        req.flush(gamesMock[0]);
+    });
 });

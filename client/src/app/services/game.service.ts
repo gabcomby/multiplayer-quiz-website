@@ -28,18 +28,6 @@ export class GameService {
         return newGame;
     }
 
-    async toggleVisibility(gameId: string, isVisible: boolean): Promise<void> {
-        const game$ = this.getGame(gameId);
-        const game = await firstValueFrom(game$);
-        game.isVisible = isVisible;
-        await firstValueFrom(this.http.patch(`${this.apiUrl}/${gameId}`, game));
-    }
-
-    async addGame(game: Game): Promise<void> {
-        const game$ = this.http.post(this.apiUrl, game);
-        await firstValueFrom(game$);
-    }
-
     async deleteGame(gameId: string): Promise<void> {
         const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
         await firstValueFrom(game$);
