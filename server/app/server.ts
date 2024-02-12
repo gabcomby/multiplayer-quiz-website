@@ -1,4 +1,5 @@
 import { Application } from '@app/app';
+import type { IChoice } from '@app/model/questions.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
@@ -54,11 +55,8 @@ export class Server {
             socket.on('set-timer-duration', (duration) => {
                 if (parseInt(duration, 10) > 0) {
                     this.room.duration = parseInt(duration, 10);
-                    // eslint-disable-next-line no-console
-                    console.log('Set duration of time to', duration);
-                    this.io.emit('timer-duration', duration);
                 } else {
-                    this.io.emit('timer-duration', 'Invalid duration');
+                    throw new Error('Invalid duration');
                 }
             });
 
@@ -68,7 +66,6 @@ export class Server {
                 }
                 this.room.isRunning = true;
                 startCountdownTimer(this.room.duration);
-                this.io.emit('timer-update', 'Timer started');
             });
 
             socket.on('stop-timer', () => {
@@ -76,7 +73,26 @@ export class Server {
                     clearInterval(this.room.timerId);
                     this.room.isRunning = false;
                     this.room.currentTime = this.room.duration;
-                    this.io.emit('timer-update', 'Timer stopped');
+                }
+            });
+
+            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
+                if (answerIdx.length === 0) {
+                    this.io.emit('answer-verification', false);
+                    return;
+                }
+
+                const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+                const isMultipleAnswer = totalCorrectChoices > 1;
+
+                const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
+
+                if (!isMultipleAnswer) {
+                    this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                } else {
+                    const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+                    const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+                    this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
                 }
             });
 

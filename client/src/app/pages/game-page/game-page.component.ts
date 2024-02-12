@@ -2,92 +2,97 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
-import { GameService } from '@app/services/games.service';
+import { ApiService } from '@app/services/api.service';
 import { MatchService } from '@app/services/match.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { Observable, switchMap } from 'rxjs';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
-    gameData: Game;
+    gameData: Game = {
+        id: '',
+        title: '',
+        description: '',
+        isVisible: true,
+        duration: 0,
+        lastModification: new Date(),
+        questions: [],
+    };
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
-    currentMatch: Match;
+    currentMatch: Match = { id: '', playerList: [] };
     matchId: string;
     gameId: string;
     timerCountdown: number;
+    answerIsCorrect: boolean;
 
     gameScore: { name: string; score: number }[] = [];
 
     playerName: string;
 
+    answerIdx: number[];
+    previousQuestionIndex: number;
+
     constructor(
-        private gameService: GameService,
         private router: Router,
         private matchService: MatchService,
         private route: ActivatedRoute,
         private socketService: SocketService,
+        private apiService: ApiService,
+        private snackbarService: SnackbarService,
     ) {}
 
-    get questionTimer(): number {
-        return this.gameData?.duration;
-    }
-
-    async ngOnInit() {
+    ngOnInit() {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
         // Fetch the game data from the server
-        await this.fetchGameData(this.gameId);
-        // Create a new match and set up the match ID
-        await this.createAndSetupMatch();
-        // Set up the web socket events for the timer
-        this.setupWebSocketEvents();
-        // Start the timer
-        this.socketService.startTimer();
-    }
-
-    async fetchGameData(gameId: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.gameService.getGame(gameId).subscribe({
-                next: (gameData: Game) => {
-                    this.gameData = gameData;
-                    resolve();
-                },
-                error: (error) => {
-                    alert(error.message);
-                    reject(error);
-                },
-            });
+        this.apiService.getGame(this.gameId).subscribe({
+            next: (data) => {
+                this.gameData = data;
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+            },
         });
+        // Create a new match with a new player, and then setup the WebSocket events
+        this.createAndSetupMatch();
     }
 
-    async createAndSetupMatch(): Promise<void> {
-        this.matchId = crypto.randomUUID();
-        return new Promise((resolve, reject) => {
-            this.matchService.createNewMatch({ id: this.matchId, playerList: [] }).subscribe({
-                next: (matchData) => {
+    createAndSetupMatch() {
+        this.createMatch()
+            .pipe(
+                switchMap((matchData) => {
                     this.currentMatch = matchData;
-                    this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, this.matchId).subscribe({
-                        next: (data) => {
-                            this.currentMatch = data;
-                            resolve();
-                        },
-                        error: (error) => {
-                            alert(error.message);
-                            reject(error);
-                        },
-                    });
+                    return this.addPlayerToMatch(this.matchId);
+                }),
+            )
+            .subscribe({
+                next: (data) => {
+                    this.currentMatch = data;
+                    this.setupWebSocketEvents();
+                    this.socketService.startTimer();
                 },
                 error: (error) => {
                     alert(error.message);
-                    reject(error);
                 },
             });
-        });
+    }
+
+    createMatch(): Observable<Match> {
+        this.matchId = crypto.randomUUID();
+        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
+    }
+
+    addPlayerToMatch(matchId: string): Observable<Match> {
+        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
     }
 
     setupWebSocketEvents() {
@@ -101,13 +106,11 @@ export class GamePageComponent implements OnInit {
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
-        this.socketService.onTimerDuration((data) => {
-            // eslint-disable-next-line no-console
-            console.log(data);
-        });
-        this.socketService.onTimerUpdate((data) => {
-            // eslint-disable-next-line no-console
-            console.log(data);
+        this.socketService.onAnswerVerification((data) => {
+            this.answerIsCorrect = data;
+            if (data === true) {
+                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
+            }
         });
     }
 
@@ -138,7 +141,9 @@ export class GamePageComponent implements OnInit {
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
-        if (this.currentQuestionIndex < this.getTotalQuestions() - 1) {
+        this.previousQuestionIndex = this.currentQuestionIndex;
+        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
+        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
@@ -149,15 +154,25 @@ export class GamePageComponent implements OnInit {
         }
     }
 
-    getTotalQuestions(): number {
-        return this.gameData?.questions.length || 0;
-    }
-
     getCurrentQuestion(): Question {
-        return this.gameData.questions[this.currentQuestionIndex];
+        if (this.gameData.questions.length > 0) {
+            return this.gameData.questions[this.currentQuestionIndex];
+        } else {
+            return {
+                type: '',
+                text: '',
+                points: 0,
+                lastModification: new Date(),
+                id: '',
+            };
+        }
     }
 
-    private handleNextQuestion(): void {
+    setAnswerIndex(answerIdx: number[]) {
+        this.answerIdx = answerIdx;
+    }
+
+    handleNextQuestion(): void {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

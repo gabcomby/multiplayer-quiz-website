@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-question-bank',
@@ -18,7 +19,10 @@ export class QuestionBankComponent implements OnInit {
     // Track the selected row IDs
     selectedRowIds: string[] = [];
 
-    constructor(private questionService: QuestionService) {}
+    constructor(
+        private questionService: QuestionService,
+        private snackbarService: SnackbarService,
+    ) {}
 
     ngOnInit() {
         this.displayedColumns = this.fromCreateNewGame ? ['question', 'delete'] : this.defaultDisplayedColumns;
@@ -36,9 +40,20 @@ export class QuestionBankComponent implements OnInit {
     }
 
     deleteQuestion(questionId: string): void {
-        this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
-        this.questionService.deleteQuestion(questionId);
+        const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer cette question?');
+        if (!confirmDelete) return;
+
+        this.questionService
+            .deleteQuestion(questionId)
+            .then(() => {
+                this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            })
+            .catch((error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error.message || error}`);
+            });
     }
+
     addQuestionToGame() {
         this.registerQuestion.emit(this.questionToAdd);
         this.questionToAdd = [];

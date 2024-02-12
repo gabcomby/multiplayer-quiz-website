@@ -18,11 +18,12 @@
     </div>
     <div class="question" *ngIf="gameData">
         <app-game-page-questions
-            [question]="getCurrentQuestion().text"
-            [mark]="getCurrentQuestion().points"
+            [question]="getCurrentQuestion().text || ''"
+            [mark]="getCurrentQuestion().points || 0"
             [choices]="getCurrentQuestion().choices || []"
             [timerExpired]="questionHasExpired"
-            (scoreForTheQuestion)="updatePlayerScore($event)"
+            (answerIdx)="setAnswerIndex($event)"
+            [answerIsCorrect]="answerIsCorrect"
         ></app-game-page-questions>
     </div>
     <div class="score">

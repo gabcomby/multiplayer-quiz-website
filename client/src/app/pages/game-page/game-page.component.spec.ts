@@ -1,106 +1,320 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
-// import { Router } from '@angular/router';
-// import { RouterTestingModule } from '@angular/router/testing';
-// import { GameService } from '@app/services/games.service';
-// import { PlayerService } from '@app/services/player.service';
-// import { TimerService } from '@app/services/timer.service';
-// import { of } from 'rxjs';
-// import { GamePageComponent } from './game-page.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Game, Question } from '@app/interfaces/game';
+import { Match } from '@app/interfaces/match';
+import { ApiService } from '@app/services/api.service';
+import { MatchService } from '@app/services/match.service';
+import { SnackbarService } from '@app/services/snackbar.service';
+import { SocketService } from '@app/services/socket.service';
+import { of, throwError } from 'rxjs';
+import { GamePageComponent } from './game-page.component';
 
-// const mockGameData = {
-//     id: '1a2b3c',
-//     title: 'Test Game',
-//     description: 'Test game description',
-//     isVisible: true,
-//     duration: 30,
-//     lastModification: new Date(),
-//     questions: [
-//         {
-//             type: 'multiple-choice',
-//             text: 'What is the capital of France?',
-//             points: 10,
-//             choices: [{ text: 'Paris', isCorrect: true }, { text: 'London' }, { text: 'Berlin' }, { text: 'Madrid' }],
-//             previousIndex: 0,
-//             currentIndex: 0,
-//             lastModification: new Date(),
-//             id: '1a2b3c',
-//         },
-//     ],
-// };
+const TEN = 10;
 
-// describe('GamePageComponent', () => {
-//     let component: GamePageComponent;
-//     let fixture: ComponentFixture<GamePageComponent>;
-//     let gameServiceMock: jasmine.SpyObj<GameService>;
-//     let playerServiceMock: jasmine.SpyObj<PlayerService>;
-//     let timerServiceMock: jasmine.SpyObj<TimerService>;
-//     let router: Router;
+const TIME_BETWEEN_QUESTIONS = 3000;
 
-//     beforeEach(async () => {
-//         // Create mocks
-//         gameServiceMock = jasmine.createSpyObj('GameService', ['getGame']);
-//         playerServiceMock = jasmine.createSpyObj('PlayerService', ['getPlayerName']);
-//         timerServiceMock = jasmine.createSpyObj('TimerService', ['startTimer', 'killTimer']);
-//         timerServiceMock.startTimer.and.returnValue(of(0));
+const questionMock: Question[] = [
+    {
+        type: 'multiple-choice',
+        text: 'Question 1?',
+        points: 10,
+        choices: [
+            { text: 'Answer 1', isCorrect: false },
+            { text: 'Answer 2', isCorrect: true },
+        ],
+        lastModification: new Date(),
+        id: 'q1',
+    },
+    {
+        type: 'multiple-choice',
+        text: 'Question 2?',
+        points: 10,
+        choices: [
+            { text: 'Answer 1', isCorrect: true },
+            { text: 'Answer 2', isCorrect: false },
+        ],
+        lastModification: new Date(),
+        id: 'q2',
+    },
+];
+const mockedGameData: Game = {
+    id: 'game123',
+    title: 'Test Game',
+    description: 'Test Game Description',
+    isVisible: true,
+    duration: 10,
+    lastModification: new Date(),
+    questions: questionMock,
+};
+const mockedMatchData: Match = {
+    id: 'match123',
+    playerList: [
+        { id: 'player1', name: 'Player 1', score: 0 },
+        { id: 'player2', name: 'Player 2', score: 0 },
+    ],
+};
+const updatedMatchDataWithPlayer: Match = {
+    ...mockedMatchData,
+    playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
+};
 
-//         await TestBed.configureTestingModule({
-//             imports: [RouterTestingModule],
-//             declarations: [GamePageComponent],
-//             providers: [
-//                 { provide: GameService, useValue: gameServiceMock },
-//                 { provide: PlayerService, useValue: playerServiceMock },
-//                 { provide: TimerService, useValue: timerServiceMock },
-//                 // Remove the Router mock if not needed, or keep it if you have specific tests that require spying on navigate.
-//             ],
-//         }).compileComponents();
-//     });
+describe('GamePageComponent', () => {
+    let component: GamePageComponent;
+    let fixture: ComponentFixture<GamePageComponent>;
+    let matchService: jasmine.SpyObj<MatchService>;
+    let socketService: jasmine.SpyObj<SocketService>;
+    let router: Router;
 
-//     beforeEach(() => {
-//         fixture = TestBed.createComponent(GamePageComponent);
-//         component = fixture.componentInstance;
-//         router = TestBed.inject(Router); // Get the actual router instance
-//         fixture.detectChanges();
-//     });
+    beforeEach(async () => {
+        const mockActivatedRoute = {
+            snapshot: {
+                params: { id: 'testGameId' },
+            },
+        };
 
-//     it('should create', () => {
-//         expect(component).toBeTruthy();
-//     });
+        matchService = jasmine.createSpyObj('MatchService', ['createNewMatch', 'addPlayer', 'deleteMatch', 'updatePlayerScore']);
+        socketService = jasmine.createSpyObj('SocketService', [
+            'connect',
+            'disconnect',
+            'startTimer',
+            'stopTimer',
+            'onTimerCountdown',
+            'onAnswerVerification',
+            'setTimerDuration',
+            'verifyAnswers',
+        ]);
 
-//     describe('initializePlayerScore', () => {
-//         it('should initialize player score if player name exists', () => {
-//             const playerName = 'John Doe';
-//             playerServiceMock.getPlayerName.and.returnValue(playerName);
-//             component.initializePlayerScore();
-//             expect(component.gameScore.length).toBe(1);
-//             expect(component.gameScore[0].name).toEqual(playerName);
-//             expect(component.gameScore[0].score).toEqual(0);
-//         });
+        matchService.createNewMatch.and.returnValue(of(mockedMatchData));
+        matchService.addPlayer.and.returnValue(of(updatedMatchDataWithPlayer));
 
-//         it('should not initialize player score if player name does not exist', () => {
-//             playerServiceMock.getPlayerName.and.returnValue('');
-//             component.initializePlayerScore();
-//             expect(component.gameScore.length).toBe(0);
-//         });
-//     });
+        await TestBed.configureTestingModule({
+            declarations: [GamePageComponent],
+            imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule],
+            providers: [
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: MatchService, useValue: matchService },
+                { provide: SocketService, useValue: socketService },
+            ],
+        }).compileComponents();
 
-//     describe('fetchGameData', () => {
-//         it('should fetch game data successfully', () => {
-//             gameServiceMock.getGame.and.returnValue(of(mockGameData));
-//             spyOn(component, 'startQuestionTimer');
+        fixture = TestBed.createComponent(GamePageComponent);
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigate');
+        component = fixture.componentInstance;
+    });
 
-//             component.fetchGameData(mockGameData.id);
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-//             expect(gameServiceMock.getGame).toHaveBeenCalledWith(mockGameData.id);
-//             expect(component.gameData).toEqual(mockGameData);
-//             expect(component.startQuestionTimer).toHaveBeenCalled();
-//         });
-//     });
+    it('should correctly initialize match and add player on init', async () => {
+        spyOn(component, 'createMatch').and.callThrough();
+        spyOn(component, 'addPlayerToMatch').and.callThrough();
 
-//     it('should navigate to the home page after leaving the game', () => {
-//         const spy = spyOn(router, 'navigate');
-//         component.handleGameLeave();
-//         expect(spy).toHaveBeenCalledWith(['/']);
-//     });
+        fixture.detectChanges();
 
-//     // Add more tests for other methods and behaviors of the component...
-// });
+        await fixture.whenStable();
+
+        expect(matchService.createNewMatch).toHaveBeenCalledWith({ id: jasmine.any(String), playerList: [] });
+        expect(matchService.addPlayer).toHaveBeenCalledWith({ id: 'playertest', name: 'Player 1', score: 0 }, jasmine.any(String));
+
+        expect(component.currentMatch).toEqual(updatedMatchDataWithPlayer);
+
+        expect(component.createMatch).toHaveBeenCalled();
+        expect(component.addPlayerToMatch).toHaveBeenCalledWith(component.matchId);
+    });
+
+    it('should correctly setup WebSocket events', async () => {
+        spyOn(component, 'setupWebSocketEvents').and.callThrough();
+        component.gameData = mockedGameData;
+
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        expect(socketService.connect).toHaveBeenCalled();
+        expect(socketService.onTimerCountdown).toHaveBeenCalled();
+        expect(socketService.setTimerDuration).toHaveBeenCalledWith(component.gameData.duration);
+        expect(socketService.onAnswerVerification).toHaveBeenCalled();
+        expect(component.setupWebSocketEvents).toHaveBeenCalled();
+    });
+
+    it('should fetch game data on init and handle errors', () => {
+        const apiService = TestBed.inject(ApiService);
+        spyOn(apiService, 'getGame').and.returnValue(throwError(() => new Error('Failed to fetch game data')));
+        const snackbarService = TestBed.inject(SnackbarService);
+        spyOn(snackbarService, 'openSnackBar');
+
+        component.ngOnInit();
+
+        expect(apiService.getGame).toHaveBeenCalledWith('testGameId');
+        expect(snackbarService.openSnackBar).toHaveBeenCalledWith(jasmine.any(String));
+    });
+
+    it('should transition to the next question correctly', fakeAsync(() => {
+        component.gameData.questions = questionMock;
+        component.currentQuestionIndex = 0;
+
+        component.handleNextQuestion();
+        tick(TIME_BETWEEN_QUESTIONS);
+
+        expect(component.currentQuestionIndex).toBe(1);
+        expect(component.questionHasExpired).toBeFalse();
+        expect(socketService.startTimer).toHaveBeenCalled();
+    }));
+
+    it('should fetch game data on init and set gameData property', async () => {
+        const apiService = TestBed.inject(ApiService);
+
+        spyOn(apiService, 'getGame').and.returnValue(of(mockedGameData));
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(apiService.getGame).toHaveBeenCalledWith('testGameId');
+        expect(component.gameData).toEqual(mockedGameData);
+    });
+
+    it('should catch the error in createAndSetupMatch and show an alert', fakeAsync(() => {
+        const errorMessage = 'Test error message';
+        spyOn(component, 'createMatch').and.returnValue(throwError(() => new Error(errorMessage)));
+        spyOn(window, 'alert');
+
+        component.createAndSetupMatch();
+        tick();
+
+        expect(window.alert).toHaveBeenCalledWith(errorMessage);
+    }));
+
+    it('should handle timer countdown correctly', () => {
+        component.gameData = mockedGameData;
+        spyOn(component, 'onTimerComplete').and.callThrough();
+
+        socketService.onTimerCountdown.and.callFake((callback: (data: number) => void) => {
+            callback(1);
+            callback(0);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.onTimerComplete).toHaveBeenCalled();
+    });
+
+    it('should stop the timer, disconnect, and navigate to "/new-game" on successful match deletion', () => {
+        matchService.deleteMatch.and.returnValue(of(mockedMatchData));
+
+        component.handleGameLeave();
+
+        expect(matchService.deleteMatch).toHaveBeenCalledWith(component.matchId);
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(socketService.disconnect).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith(['/new-game']);
+    });
+
+    it('should alert an error message if match deletion fails', () => {
+        const mockError = new Error('Deletion failed');
+        matchService.deleteMatch.and.returnValue(throwError(() => mockError));
+        spyOn(window, 'alert');
+
+        component.handleGameLeave();
+
+        expect(window.alert).toHaveBeenCalledWith(mockError.message);
+    });
+
+    it('should update the player score on successful score update', () => {
+        component.currentMatch = mockedMatchData;
+        const initialScore = component.currentMatch.playerList[0].score;
+        const scoreFromQuestion = 10;
+        const updatedPlayer = { ...component.currentMatch.playerList[0], score: initialScore + scoreFromQuestion };
+        matchService.updatePlayerScore.and.returnValue(of(updatedPlayer));
+
+        component.updatePlayerScore(scoreFromQuestion);
+
+        expect(matchService.updatePlayerScore).toHaveBeenCalledWith(component.matchId, 'playertest', initialScore + scoreFromQuestion);
+        expect(component.currentMatch.playerList[0].score).toEqual(initialScore + scoreFromQuestion);
+    });
+
+    it('should alert an error message if updating player score fails', () => {
+        component.currentMatch = mockedMatchData;
+        const mockError = new Error('Failed to update score');
+        matchService.updatePlayerScore.and.returnValue(throwError(() => mockError));
+        spyOn(window, 'alert');
+
+        component.updatePlayerScore(TEN);
+
+        expect(window.alert).toHaveBeenCalledWith(mockError.message);
+    });
+
+    it('should call handleNextQuestion if more questions remain', fakeAsync(() => {
+        component.currentQuestionIndex = 0;
+        component.gameData = mockedGameData;
+        spyOn(component, 'handleNextQuestion');
+
+        component.onTimerComplete();
+        tick(TIME_BETWEEN_QUESTIONS);
+
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(component.questionHasExpired).toBeTrue();
+        expect(component.previousQuestionIndex).toBe(0);
+        expect(socketService.verifyAnswers).toHaveBeenCalledWith(jasmine.any(Object), component.answerIdx);
+        expect(component.handleNextQuestion).toHaveBeenCalled();
+    }));
+
+    it('should call handleGameLeave if no more questions remain', fakeAsync(() => {
+        component.currentQuestionIndex = 1;
+        component.gameData = mockedGameData;
+        spyOn(component, 'handleGameLeave');
+
+        component.onTimerComplete();
+        tick(TIME_BETWEEN_QUESTIONS);
+
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(component.questionHasExpired).toBeTrue();
+        expect(component.previousQuestionIndex).toBe(1);
+        expect(socketService.verifyAnswers).toHaveBeenCalledWith(jasmine.any(Object), component.answerIdx);
+        expect(component.handleGameLeave).toHaveBeenCalled();
+    }));
+
+    it('should update player score when the answer is correct', () => {
+        const answerIsCorrect = true;
+        const questionPoints = 10;
+        const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+        component.gameData = mockedGameData;
+        component.previousQuestionIndex = 0;
+        spyOn(component, 'updatePlayerScore');
+
+        socketService.onAnswerVerification.and.callFake((callback) => {
+            callback(answerIsCorrect);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.answerIsCorrect).toBeTrue();
+        expect(component.updatePlayerScore).toHaveBeenCalledWith(questionPoints * FIRST_TO_ANSWER_MULTIPLIER);
+    });
+
+    it('should not update player score when the answer is incorrect', () => {
+        const answerIsCorrect = false;
+        component.gameData = mockedGameData;
+        component.previousQuestionIndex = 0;
+        spyOn(component, 'updatePlayerScore');
+
+        socketService.onAnswerVerification.and.callFake((callback) => {
+            callback(answerIsCorrect);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.answerIsCorrect).toBeFalse();
+        expect(component.updatePlayerScore).not.toHaveBeenCalled();
+    });
+
+    it('should set the answerIndex value correctly', () => {
+        const answerIndex = [0, 1];
+        component.setAnswerIndex(answerIndex);
+        expect(component.answerIdx).toEqual(answerIndex);
+    });
+});
