@@ -168,4 +168,26 @@ describe('NewGamePageComponent', () => {
         expect(gameServiceSpy.getGames).toHaveBeenCalled();
         expect(result).toEqual(false);
     });
+
+    it('should return false if game is hidden', async () => {
+        const gamesMock1: Game[] = [
+            {
+                id: 'un',
+                title: 'game1',
+                description: 'description1',
+                isVisible: false,
+                lastModification: new Date(),
+                duration: 10,
+                questions: [],
+            },
+        ];
+        gameServiceSpy.getGames.and.resolveTo(gamesMock1);
+        component.games = gamesMock1;
+        const result = await component.isTheGameModifiedPlay(gamesMock[0]);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
+            'Game ' + gamesMock1[0].title + ' has been hidden' + ' we have no other games to suggest',
+        );
+        expect(result).toEqual(false);
+    });
+
 });
