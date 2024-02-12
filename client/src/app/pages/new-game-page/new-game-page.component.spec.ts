@@ -37,7 +37,7 @@ describe('NewGamePageComponent', () => {
     beforeEach(async () => {
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames']);
         const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        const socketObj = jasmine.createSpyObj('SocketService', ['connect']);
+        const socketObj = jasmine.createSpyObj('SocketService', ['connect', 'deleteId']);
         const socketIoObj = jasmine.createSpyObj('Socket', ['on']);
         const routerObj = jasmine.createSpyObj('Router', ['navigate']);
         await TestBed.configureTestingModule({
@@ -99,16 +99,20 @@ describe('NewGamePageComponent', () => {
     });
 
     it('should call the on method when initialized socket is called', async () => {
-        const initializeSocketSpy = spyOn(component, 'initializeSocket').and.callThrough();
+        const deleteGameEventSpy = spyOn(component, 'deleteGameEvent');
+        socketServiceSpy.deleteId();
+        spyOn(component, 'initializeSocket').and.callThrough();
+        component.initializeSocket();
         socketSpy.on('deleteId', async (gameId: string) => {
             await component.deleteGameEvent(gameId);
         });
-        spyOn(component, 'deleteGameEvent');
-        component.initializeSocket();
         component.deleteGameEvent('un');
-        expect(initializeSocketSpy).toHaveBeenCalled();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.initializeSocket).toHaveBeenCalled();
         expect(socketSpy.on).toHaveBeenCalled();
-        expect(component.deleteGameEvent).toHaveBeenCalledWith('un');
+        expect(socketServiceSpy.deleteId).toHaveBeenCalled();
+        expect(deleteGameEventSpy).toHaveBeenCalled();
     });
 
     it('should return the good index of the game', async () => {
