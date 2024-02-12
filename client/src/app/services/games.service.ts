@@ -15,5 +15,4 @@ export class GameService {
     getGame(gameId: string): Observable<Game> {
         return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
     }
-    
 }
