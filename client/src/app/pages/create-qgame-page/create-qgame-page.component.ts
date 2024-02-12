@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
@@ -37,6 +39,7 @@ export class CreateQGamePageComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private snackbarService: SnackbarService,
+        public dialog: MatDialog,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
@@ -117,4 +120,10 @@ export class CreateQGamePageComponent implements OnInit {
             questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
         };
     }
+
+    handleAuthenticationError = () => {
+        this.dialog.open(ServerErrorDialogComponent, {
+            data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
+        });
+    };
 }
