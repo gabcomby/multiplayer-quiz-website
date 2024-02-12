@@ -1,9 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Question } from '@app/interfaces/game';
+import { Game, Question } from '@app/interfaces/game';
+import { Match } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -39,7 +40,7 @@ const questionMock: Question[] = [
         id: 'q2',
     },
 ];
-const mockedGameData = {
+const mockedGameData: Game = {
     id: 'game123',
     title: 'Test Game',
     description: 'Test Game Description',
@@ -48,11 +49,11 @@ const mockedGameData = {
     lastModification: new Date(),
     questions: questionMock,
 };
-const mockedMatchData = {
+const mockedMatchData: Match = {
     id: 'match123',
     playerList: [],
 };
-const updatedMatchDataWithPlayer = {
+const updatedMatchDataWithPlayer: Match = {
     ...mockedMatchData,
     playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
 };
@@ -62,6 +63,7 @@ describe('GamePageComponent', () => {
     let fixture: ComponentFixture<GamePageComponent>;
     let matchService: jasmine.SpyObj<MatchService>;
     let socketService: jasmine.SpyObj<SocketService>;
+    let router: Router;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -96,6 +98,8 @@ describe('GamePageComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(GamePageComponent);
+        router = TestBed.inject(Router);
+        spyOn(router, 'navigate');
         component = fixture.componentInstance;
     });
 
@@ -206,4 +210,29 @@ describe('GamePageComponent', () => {
 
         expect(window.alert).toHaveBeenCalledWith(errorMessage);
     }));
+
+    it('should handle timer countdown correctly', () => {
+        component.gameData = mockedGameData;
+        spyOn(component, 'onTimerComplete').and.callThrough();
+
+        socketService.onTimerCountdown.and.callFake((callback: (data: number) => void) => {
+            callback(1);
+            callback(0);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.onTimerComplete).toHaveBeenCalled();
+    });
+
+    it('should stop the timer, disconnect, and navigate to "/new-game" on successful match deletion', () => {
+        matchService.deleteMatch.and.returnValue(of(mockedMatchData));
+
+        component.handleGameLeave();
+
+        expect(matchService.deleteMatch).toHaveBeenCalledWith(component.matchId);
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(socketService.disconnect).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith(['/new-game']);
+    });
 });
