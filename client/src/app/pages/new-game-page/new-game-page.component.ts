@@ -3,9 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Socket, io } from 'socket.io-client';
-import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-new-game-page',
@@ -58,8 +58,8 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    async isTheGameModifiedTest(game: Game): Promise<boolean> {
-        let result;
+    async isTheGameModified(game: Game): Promise<boolean> {
+        let result = true;
         const newGameArray = await this.gameService.getGames();
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -91,6 +91,15 @@ export class NewGamePageComponent implements OnInit {
                 this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
                 result = false;
             }
+        }
+        return result;
+    }
+
+    async isTheGameModifiedTest(game: Game): Promise<boolean> {
+        const isModified = await this.isTheGameModified(game);
+        let result;
+        if (!isModified) {
+            result = false;
         } else {
             this.router.navigate(['/game', game.id]);
             result = true;
@@ -99,38 +108,10 @@ export class NewGamePageComponent implements OnInit {
     }
 
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+        const isModified = await this.isTheGameModified(game);
         let result;
-        const newGameArray = await this.gameService.getGames();
-        const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        if (this.deletedGamesId.indexOf(game.id) !== -1) {
-            const indexGame = this.games.indexOf(game);
-            if (indexGame === this.games.length - 1) {
-                const newSuggestedGameCase1 = this.games[0];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we suggest to play ' + newSuggestedGameCase1.title);
-                result = false;
-            } else if (this.games.length === 1) {
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
-                result = false;
-            } else {
-                const newSuggestedGame = this.games[indexGame + 1];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
-                result = false;
-            }
-        } else if (newGameArray[indexG].isVisible === false) {
-            const indexGame = this.games.indexOf(game);
-            if (indexGame === this.games.length - 1) {
-                const newSuggestedGameCase1 = this.games[0];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we suggest to play ' + newSuggestedGameCase1.title);
-                result = false;
-            } else if (this.games.length === 1) {
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
-                result = false;
-            } else {
-                const newSuggestedGame = this.games[indexGame + 1];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
-                result = false;
-            }
+        if (!isModified) {
+            result = false;
         } else {
             this.router.navigate(['/gameWait', game.id]);
             result = true;
