@@ -1,4 +1,3 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Input, OnInit } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
@@ -107,17 +106,27 @@ export class ModifiedQuestionComponent implements OnInit {
         return valid;
     }
 
+    moveQuestionUp(index: number): void {
+        if (index > 0) {
+            const temp = this.questionList[index];
+            this.questionList[index] = this.questionList[index - 1];
+            this.questionList[index - 1] = temp;
+        }
+    }
+
+    moveQuestionDown(index: number): void {
+        if (index < this.questionList.length - 1) {
+            const temp = this.questionList[index];
+            this.questionList[index] = this.questionList[index + 1];
+            this.questionList[index + 1] = temp;
+        }
+    }
+
     removeQuestion(question: Question, index: number) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
         this.questionService.updateList(this.questionList);
         this.disabled[index] = true;
     }
-
-    drop(event: CdkDragDrop<Question[]>) {
-        moveItemInArray(this.questionList, event.previousIndex, event.currentIndex);
-        this.toggleMenuSelection();
-    }
-
     toggleMenuSelection(): void {
         this.menuSelected = !this.menuSelected;
     }

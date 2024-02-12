@@ -1,6 +1,6 @@
-<div id="list" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListDisabled]="!menuSelected">
+<div id="list">
     Liste de question:
-    <div *ngFor="let question of questionList; index as i" cdkDrag [cdkDragDisabled]="!menuSelected">
+    <div *ngFor="let question of questionList; index as i">
         <div class="container">
             <div *ngIf="disabled[i]">
                 {{ i + 1 }}
@@ -32,8 +32,19 @@
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
                 <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
             </button>
-            <button mat-mini-fab class="buttonIcon" color="primary" (click)="toggleMenuSelection()">
-                <mat-icon>menu</mat-icon>
+            <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="moveQuestionUp(i)" *ngIf="i > 0">
+                <mat-icon>arrow_upward_alt</mat-icon>
+            </button>
+
+            <button
+                mat-icon-button
+                class="buttonIcon"
+                color="primary"
+                aria-label="Move Down"
+                (click)="moveQuestionDown(i)"
+                *ngIf="i < questionList.length - 1"
+            >
+                <mat-icon>arrow_downward_alt</mat-icon>
             </button>
         </div>
     </div>

@@ -26,6 +26,16 @@ describe('ChoiceComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should initialize choices with the input question if exist', () => {
+        component.question = [
+            { text: 'test1', isCorrect: false },
+            { text: 'test2', isCorrect: true },
+        ];
+
+        component.ngOnInit();
+        expect(component.choices).toEqual(component.question);
+    });
+
     it('should add a choice if length of choices is lower than MAX_CHOICES', () => {
         component.answers = [
             { text: 'test1', isCorrect: false },
@@ -178,10 +188,10 @@ describe('ChoiceComponent', () => {
 
         spyOn(component, 'answerValid').and.returnValue(true);
         spyOn(component.registerAnswer, 'emit');
-
+        component.ngOnInit();
         component.addAnswer();
 
-        expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.answers);
+        expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.choices);
     });
 
     it('should not emit registerAnswer event when there is only good answers', () => {

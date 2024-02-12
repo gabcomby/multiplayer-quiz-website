@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { Choice } from '@app/interfaces/game';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -9,7 +9,7 @@ const MAX_CHOICES = 4;
     templateUrl: './choice.component.html',
     styleUrls: ['./choice.component.scss'],
 })
-export class ChoiceComponent {
+export class ChoiceComponent implements OnInit {
     @Input() question: Choice[] | undefined;
     @Output() registerAnswer: EventEmitter<Choice[]> = new EventEmitter();
     answers: Choice[] = [
@@ -17,7 +17,18 @@ export class ChoiceComponent {
         { text: '', isCorrect: false },
     ];
 
+    choices: Choice[];
+
     constructor(private snackbarService: SnackbarService) {}
+
+    ngOnInit(): void {
+        if (this.question) {
+            this.choices = this.question;
+        } else {
+            this.choices = this.answers;
+        }
+    }
+
     addChoice(choices: Choice[] | undefined) {
         if (choices) {
             if (choices.length < MAX_CHOICES) {
@@ -68,9 +79,9 @@ export class ChoiceComponent {
     }
 
     addAnswer() {
-        if (this.verifyOneGoodAndBadAnswer(this.answers)) {
-            if (this.answerValid(this.answers)) {
-                this.registerAnswer.emit(this.answers);
+        if (this.verifyOneGoodAndBadAnswer(this.choices)) {
+            if (this.answerValid(this.choices)) {
+                this.registerAnswer.emit(this.choices);
             }
         }
     }

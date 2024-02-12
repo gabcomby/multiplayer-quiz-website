@@ -2,9 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import isValidGame from '@app/utils/is-valid-game';
+import { isValidGame } from '@app/utils/is-valid-game';
 
-describe('isValidGame', () => {
+describe('is-valid-game', () => {
     let gameServiceMock: jasmine.SpyObj<GameService>;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
     beforeEach(() => {
