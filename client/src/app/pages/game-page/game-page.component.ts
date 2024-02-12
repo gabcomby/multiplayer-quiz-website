@@ -154,10 +154,6 @@ export class GamePageComponent implements OnInit {
         }
     }
 
-    // getTotalQuestions(): number {
-    //     return this.gameData?.questions.length || 0;
-    // }
-
     getCurrentQuestion(): Question {
         if (this.gameData.questions.length > 0) {
             return this.gameData.questions[this.currentQuestionIndex];
