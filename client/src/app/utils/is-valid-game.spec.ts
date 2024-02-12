@@ -239,7 +239,7 @@ describe('is-valid-game', () => {
         const questionIndex = 0;
         const errors: string[] = [];
         validateQuestionChoicesImport(gameHasChoiceIsCorrectUndefined.questions[0], questionIndex, errors);
-        expect(errors.length).toBe(1);
+        expect(errors.length).toBe(2);
     });
 
     it('should push error if the duration if points not a multiple of 10', async () => {
