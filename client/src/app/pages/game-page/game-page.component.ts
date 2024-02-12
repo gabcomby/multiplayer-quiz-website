@@ -38,8 +38,8 @@ export class GamePageComponent implements OnInit {
 
     playerName: string;
 
-    private answerIdx: number[];
-    private previousQuestionIndex: number;
+    answerIdx: number[];
+    previousQuestionIndex: number;
 
     constructor(
         private router: Router,

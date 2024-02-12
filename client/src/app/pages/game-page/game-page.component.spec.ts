@@ -272,4 +272,68 @@ describe('GamePageComponent', () => {
 
         expect(window.alert).toHaveBeenCalledWith(mockError.message);
     });
+
+    it('should call handleNextQuestion if more questions remain', fakeAsync(() => {
+        component.currentQuestionIndex = 0;
+        component.gameData = mockedGameData;
+        spyOn(component, 'handleNextQuestion');
+
+        component.onTimerComplete();
+        tick(TIME_BETWEEN_QUESTIONS);
+
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(component.questionHasExpired).toBeTrue();
+        expect(component.previousQuestionIndex).toBe(0);
+        expect(socketService.verifyAnswers).toHaveBeenCalledWith(jasmine.any(Object), component.answerIdx);
+        expect(component.handleNextQuestion).toHaveBeenCalled();
+    }));
+
+    it('should call handleGameLeave if no more questions remain', fakeAsync(() => {
+        component.currentQuestionIndex = 1;
+        component.gameData = mockedGameData;
+        spyOn(component, 'handleGameLeave');
+
+        component.onTimerComplete();
+        tick(TIME_BETWEEN_QUESTIONS);
+
+        expect(socketService.stopTimer).toHaveBeenCalled();
+        expect(component.questionHasExpired).toBeTrue();
+        expect(component.previousQuestionIndex).toBe(1);
+        expect(socketService.verifyAnswers).toHaveBeenCalledWith(jasmine.any(Object), component.answerIdx);
+        expect(component.handleGameLeave).toHaveBeenCalled();
+    }));
+
+    it('should update player score when the answer is correct', () => {
+        const answerIsCorrect = true;
+        const questionPoints = 10;
+        const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+        component.gameData = mockedGameData;
+        component.previousQuestionIndex = 0;
+        spyOn(component, 'updatePlayerScore');
+
+        socketService.onAnswerVerification.and.callFake((callback) => {
+            callback(answerIsCorrect);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.answerIsCorrect).toBeTrue();
+        expect(component.updatePlayerScore).toHaveBeenCalledWith(questionPoints * FIRST_TO_ANSWER_MULTIPLIER);
+    });
+
+    it('should not update player score when the answer is incorrect', () => {
+        const answerIsCorrect = false;
+        component.gameData = mockedGameData;
+        component.previousQuestionIndex = 0;
+        spyOn(component, 'updatePlayerScore');
+
+        socketService.onAnswerVerification.and.callFake((callback) => {
+            callback(answerIsCorrect);
+        });
+
+        component.setupWebSocketEvents();
+
+        expect(component.answerIsCorrect).toBeFalse();
+        expect(component.updatePlayerScore).not.toHaveBeenCalled();
+    });
 });
