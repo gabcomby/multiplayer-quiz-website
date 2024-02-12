@@ -17,7 +17,7 @@ export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
-    gamesId: string[] = [];
+    gamesUnderscoreId: string[] = [];
     deletedGamesId: string[] = [];
     constructor(
         private gameService: GameService,
@@ -30,9 +30,10 @@ export class NewGamePageComponent implements OnInit {
         this.gameService.getGames().then((games) => {
             this.games = games;
         });
-        this.gamesId = this.socketService.connect();
+        this.gamesUnderscoreId = this.socketService.connect();
         this.initializeSocket();
     }
+
     selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
@@ -45,8 +46,8 @@ export class NewGamePageComponent implements OnInit {
     }
 
     async deleteGameEvent(gameIdString: string) {
-        this.gamesId.push(gameIdString);
-        const index = this.gamesId[0].indexOf(gameIdString);
+        this.gamesUnderscoreId.push(gameIdString);
+        const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
         const gameD = this.games[index];
         this.deletedGamesId.push(gameD.id);
         const goodID = gameD.id;
