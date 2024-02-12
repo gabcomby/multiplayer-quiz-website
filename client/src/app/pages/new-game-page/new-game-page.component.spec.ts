@@ -493,4 +493,21 @@ describe('NewGamePageComponent', () => {
         expect(gameServiceSpy.getGames).toHaveBeenCalled();
         expect(result).toEqual(false);
     });
+
+    it('should add gameId to deletedGamesId and show snackbar if the game was selected', () => {
+        // Arrange
+        const gameIdToDelete = 'un';
+        component.games = gamesMock;
+        component.gameSelected = { [gameIdToDelete]: true };
+        component.gamesUnderscoreId = [];
+        snackbarServiceSpy.openSnackBar.calls.reset();
+
+        // Act
+        component.deleteGameEvent(gameIdToDelete);
+
+        // Assert
+        expect(component.gamesUnderscoreId).toContain(gameIdToDelete, 'gamesUnderscoreId should contain the new gameId');
+        expect(component.deletedGamesId).toContain(gameIdToDelete, 'deletedGamesId should contain the deleted gameId');
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game ' + gameIdToDelete + ' has been deleted');
+    });
 });
