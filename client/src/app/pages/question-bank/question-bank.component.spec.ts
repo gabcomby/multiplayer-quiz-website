@@ -130,7 +130,7 @@ describe('QuestionBankComponent', () => {
     it('should not delete a question nor show a snackbar message when deletion is cancelled', () => {
         spyOn(window, 'confirm').and.returnValue(false);
 
-        component.deleteQuestion('some-question-id');
+        component.deleteQuestion('abc123');
 
         expect(questionServiceMock.deleteQuestion).not.toHaveBeenCalled();
 
