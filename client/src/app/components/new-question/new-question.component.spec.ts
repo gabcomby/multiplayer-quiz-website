@@ -93,9 +93,6 @@ describe('NewQuestionComponent', () => {
         expect(component.resetComponent).toHaveBeenCalled();
     });
 
-    it('should call addQuestionBank and navigate to /question-bank when coming from the question bank with valid data', async () => {
-        spyOn(component, 'validateQuestion').and.returnValue(true);
-
     it('should call addQuestionBank when coming from the question bank with valid data', async () => {
         questionValidationSpy.validateQuestion.and.returnValue(true);
         spyOn(component, 'validateQuestionExisting').and.returnValue(Promise.resolve(true));
