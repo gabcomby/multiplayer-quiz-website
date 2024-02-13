@@ -88,7 +88,7 @@ export class AdminPageComponent implements OnInit {
             );
 
             if (newTitle === null) {
-                this.snackbarService.openSnackBar('Le nom du jeu est invalide.');
+                this.snackbarService.openSnackBar("L'importation a été annulée.");
                 return null;
             } else {
                 gameTitle = newTitle;
@@ -108,8 +108,10 @@ export class AdminPageComponent implements OnInit {
             });
 
             const game = JSON.parse(result);
+            const gameTitle = await this.getValidGameTitle(game);
+            if (!gameTitle) return;
 
-            game.title = await this.getValidGameTitle(game);
+            game.title = gameTitle;
             game.isVisible = false;
             this.prepareGameForImport(game);
             this.dataSource = [...this.dataSource, game];
