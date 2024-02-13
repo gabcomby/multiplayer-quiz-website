@@ -1,9 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { QuestionValidationService } from '@app/services/question-validation.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
-import { QuestionValidationService } from '@app/services/question-validation.service';
-// import { CdkDragDrop } from '@angular/cdk/drag-drop';
-// import { Question } from '@app/interfaces/game';
 
 const MAX_CHOICES = 4;
 
@@ -182,7 +180,6 @@ describe('ChoiceComponent', () => {
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
 
-        // spyOn(component, 'answerValid').and.returnValue(true);
         spyOn(component.registerAnswer, 'emit');
         component.ngOnInit();
         component.addAnswer();
@@ -197,7 +194,6 @@ describe('ChoiceComponent', () => {
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
 
-        // spyOn(component, 'answerValid').and.returnValue(false);
         spyOn(component.registerAnswer, 'emit');
 
         component.addAnswer();
@@ -212,7 +208,6 @@ describe('ChoiceComponent', () => {
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
 
-        // spyOn(component, 'answerValid').and.returnValue(false);
         spyOn(component.registerAnswer, 'emit');
 
         component.addAnswer();
@@ -226,8 +221,6 @@ describe('ChoiceComponent', () => {
             { text: 'test2', isCorrect: false },
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
-
-        // expect(component.answerValid(component.answers)).toBe(true);
     });
 
     it('should return false if at least one text attributes is empty', () => {
@@ -236,7 +229,5 @@ describe('ChoiceComponent', () => {
             { text: 'test2', isCorrect: false },
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
-
-        // expect(component.answerValid(component.answers)).toBe(false);
     });
 });
