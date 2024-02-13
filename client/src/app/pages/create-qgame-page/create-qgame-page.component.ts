@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
@@ -30,13 +32,14 @@ export class CreateQGamePageComponent implements OnInit {
     };
     gameForm: FormGroup;
     dataReady: boolean = false;
-
+    // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
         private route: ActivatedRoute,
         private router: Router,
         private snackbarService: SnackbarService,
+        public dialog: MatDialog,
     ) {
         this.questionService.resetQuestions();
         this.gameForm = new FormGroup({
@@ -54,7 +57,7 @@ export class CreateQGamePageComponent implements OnInit {
                 this.insertIfExist();
                 this.dataReady = true;
             } catch (error) {
-                throw new Error(`Game with id ${this.gameId} not found`);
+                this.handleServerError();
             }
         }
     }
@@ -63,21 +66,24 @@ export class CreateQGamePageComponent implements OnInit {
         const findGame = this.gamesFromDB.find((gameSelected) => gameSelected.id === gameId);
         if (findGame) {
             this.gameFromDB = findGame;
-        }
-        if (!this.gameFromDB) {
+        } else {
             throw new Error(`Game with id ${gameId} not found`);
         }
     }
 
     async onSubmit() {
         const newGame: Game = this.createNewGame(true);
+        try {
+            if (this.gameId) {
+                await this.gameValidationWhenModified();
+            } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
+                await this.gameService.createGame(newGame);
 
-        if (this.gameId) {
-            await this.gameValidationWhenModified();
-        } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
-            this.gameService.createGame(newGame);
-            // je veux retourner a admin
-            this.router.navigate(['/home']);
+                // je veux retourner a admin
+                this.router.navigate(['/home']);
+            }
+        } catch (error) {
+            this.handleServerError();
         }
     }
     toggleModifiedQuestion() {
@@ -95,14 +101,19 @@ export class CreateQGamePageComponent implements OnInit {
 
     async gameValidationWhenModified() {
         const modifiedGame = this.createNewGame(false);
-        if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
-            if (await this.gameService.validateDeletedGame(modifiedGame)) {
-                this.gameService.patchGame(modifiedGame);
-                this.router.navigate(['/home']);
-            } else {
-                this.gameService.createGame(modifiedGame);
-                this.router.navigate(['/home']);
+        try {
+            if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
+                if (await this.gameService.validateDeletedGame(modifiedGame)) {
+                    await this.gameService.patchGame(modifiedGame);
+
+                    this.router.navigate(['/home']);
+                } else {
+                    await this.gameService.createGame(modifiedGame);
+                    this.router.navigate(['/home']);
+                }
             }
+        } catch (error) {
+            this.handleServerError();
         }
     }
 
@@ -117,4 +128,10 @@ export class CreateQGamePageComponent implements OnInit {
             questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
         };
     }
+
+    handleServerError = () => {
+        this.dialog.open(ServerErrorDialogComponent, {
+            data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
+        });
+    };
 }

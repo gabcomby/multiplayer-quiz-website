@@ -22,6 +22,7 @@ export class AdminPageComponent implements OnInit {
     dataSource: Game[] = [];
     downloadJson = '';
 
+    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private apiService: ApiService,

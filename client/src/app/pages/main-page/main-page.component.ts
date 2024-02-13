@@ -15,6 +15,7 @@ import { SnackbarService } from '@app/services/snackbar.service';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
 
+    // eslint-disable-next-line max-params
     constructor(
         private authService: AuthService,
         private router: Router,

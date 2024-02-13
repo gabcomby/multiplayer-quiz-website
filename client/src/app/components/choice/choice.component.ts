@@ -33,7 +33,7 @@ export class ChoiceComponent implements OnInit {
         }
     }
 
-    addChoice(choices: Choice[] | undefined) {
+    addChoice(choices: Choice[]) {
         if (choices) {
             if (choices.length < MAX_CHOICES) {
                 choices.push({ text: '', isCorrect: false });

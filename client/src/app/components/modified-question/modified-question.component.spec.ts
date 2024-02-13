@@ -39,6 +39,7 @@ describe('ModifiedQuestionComponent', () => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
             updateList: {},
+            updateQuestion: {},
             getQuestion: [
                 {
                     type: 'QCM',
@@ -85,6 +86,7 @@ describe('ModifiedQuestionComponent', () => {
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
+                { provide: QuestionValidationService, useValue: questionValidationSpy },
             ],
             imports: [DragDropModule],
         }).compileComponents();
@@ -171,23 +173,40 @@ describe('ModifiedQuestionComponent', () => {
         component.toggleMenuSelection();
         expect(component.menuSelected).toBeTrue();
     });
-    // it('when saveQuestion is called, initialize with new date', () => {
-    //     const index = 1;
-    //     component.saveQuestion(index);
-    //     expect(component.questionList[index].lastModification).toEqual(new Date());
-    // });
-    // it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
-    //     component.disabled = [false, false];
-    //     component.questionList = questionList;
-    //     questionValidationSpy.validateQuestion.and.returnValue(true);
-    //     questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+    it('when saveQuestion is called, initialize with new date', () => {
+        const index = 1;
+        component.saveQuestion(index);
+        expect(component.questionList[index].lastModification).toEqual(new Date());
+    });
+    it('when saveQuestion is from questionBank, it should update list and disabled with valid data', () => {
+        component.disabled = [false, false];
+        component.listQuestionBank = true;
 
-    //     const index = 1;
-    //     component.saveQuestion(index);
-    //     expect(questionServiceSpy.updateList).toHaveBeenCalled();
-    //     expect(component.disabled[index]).toBeTrue();
-    // });
-    it('when saveQuestion is not from questionBank, it should not update list and disabled with valid data', () => {
+        component.questionList = questionList;
+        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+
+        questionValidationSpy.validateQuestion.and.returnValue(true);
+        const index = 1;
+        component.saveQuestion(index);
+        expect(questionServiceSpy.updateQuestion).toHaveBeenCalled();
+        expect(component.disabled[index]).toBeTrue();
+    });
+    it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
+        component.disabled = [false, false];
+        component.listQuestionBank = false;
+
+        component.questionList = questionList;
+        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+
+        questionValidationSpy.validateQuestion.and.returnValue(true);
+
+        const index = 1;
+        component.saveQuestion(index);
+        expect(questionServiceSpy.updateList).toHaveBeenCalled();
+        expect(component.disabled[index]).toBeTrue();
+    });
+
+    it('when saveQuestion with no valid data, it should not update list or update question', () => {
         component.disabled = [false, false];
         questionValidationSpy.validateQuestion.and.returnValue(false);
         questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
@@ -195,6 +214,7 @@ describe('ModifiedQuestionComponent', () => {
         component.questionList = questionList;
 
         expect(questionServiceSpy.updateList).not.toHaveBeenCalled();
+        expect(questionServiceSpy.updateQuestion).not.toHaveBeenCalled();
         expect(component.disabled[index]).toBeFalse();
     });
 
