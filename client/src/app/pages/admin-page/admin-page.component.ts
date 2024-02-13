@@ -60,7 +60,7 @@ export class AdminPageComponent implements OnInit {
     exportGameAsJson(game: Game): void {
         this.gameService.getGame(game.id).subscribe({
             next: (data) => {
-                const json = JSON.stringify(data);
+                const json = JSON.stringify(this.removeUnwantedFields(data as unknown as Record<string, unknown>));
                 this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
                 setTimeout(() => {
                     this.downloadLink.nativeElement.click();
@@ -149,6 +149,23 @@ export class AdminPageComponent implements OnInit {
             hour: '2-digit',
             minute: '2-digit',
         });
+    }
+
+    private removeUnwantedFields(data: Record<string, unknown>): unknown {
+        if (Array.isArray(data)) {
+            return data.map((item) => this.removeUnwantedFields(item));
+        } else if (typeof data === 'object' && data !== null) {
+            Object.keys(data).forEach((key) => {
+                if (key === '_id' || key === '__v') {
+                    delete data[key];
+                } else {
+                    data[key] = this.removeUnwantedFields(data[key] as Record<string, unknown>);
+                }
+            });
+            return data;
+        } else {
+            return data;
+        }
     }
 
     private isGameNameUnique(name: string): boolean {
