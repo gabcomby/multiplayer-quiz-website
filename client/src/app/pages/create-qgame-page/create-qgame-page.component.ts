@@ -57,6 +57,7 @@ export class CreateQGamePageComponent implements OnInit {
                 this.insertIfExist();
                 this.dataReady = true;
             } catch (error) {
+                this.handleServerError();
                 throw new Error(`Game with id ${this.gameId} not found`);
             }
         }
@@ -78,7 +79,13 @@ export class CreateQGamePageComponent implements OnInit {
         if (this.gameId) {
             await this.gameValidationWhenModified();
         } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
-            this.gameService.createGame(newGame);
+            try {
+                await this.gameService.createGame(newGame).catch(() => {
+                    this.handleServerError();
+                });
+            } catch (error) {
+                this.handleServerError();
+            }
             // je veux retourner a admin
             this.router.navigate(['/home']);
         }
@@ -99,12 +106,17 @@ export class CreateQGamePageComponent implements OnInit {
     async gameValidationWhenModified() {
         const modifiedGame = this.createNewGame(false);
         if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
-            if (await this.gameService.validateDeletedGame(modifiedGame)) {
-                this.gameService.patchGame(modifiedGame);
-                this.router.navigate(['/home']);
-            } else {
-                this.gameService.createGame(modifiedGame);
-                this.router.navigate(['/home']);
+            try {
+                if (await this.gameService.validateDeletedGame(modifiedGame)) {
+                    await this.gameService.patchGame(modifiedGame);
+
+                    this.router.navigate(['/home']);
+                } else {
+                    await this.gameService.createGame(modifiedGame);
+                    this.router.navigate(['/home']);
+                }
+            } catch (error) {
+                this.handleServerError();
             }
         }
     }
@@ -121,7 +133,7 @@ export class CreateQGamePageComponent implements OnInit {
         };
     }
 
-    handleAuthenticationError = () => {
+    private handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
         });

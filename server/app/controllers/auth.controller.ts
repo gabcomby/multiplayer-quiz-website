@@ -14,7 +14,46 @@ export class AuthController {
 
     private configureRouter(): void {
         this.router = Router();
+        /**
+         * @swagger
+         * tags:
+         *   - name: Authentication
+         *     description: Authentication endpoints
+         */
 
+        /**
+         * @swagger
+         * /api/auth:
+         *   post:
+         *     description: Authenticate user
+         *     tags:
+         *       - Authentication
+         *     produces:
+         *       - application/json
+         *     parameters:
+         *       - in: body
+         *         name: password
+         *         description: User password
+         *         required: true
+         *         schema:
+         *           type: object
+         *           properties:
+         *             password:
+         *               type: string
+         *     responses:
+         *       200:
+         *         description: Successful operation
+         *         schema:
+         *           $ref: '#/definitions/Message'
+         *       401:
+         *         description: Unauthorized
+         *         schema:
+         *           $ref: '#/definitions/Message'
+         *       400:
+         *         description: Bad request
+         *         schema:
+         *           $ref: '#/definitions/Message'
+         */
         this.router.post('/', (req: Request, res: Response) => {
             const password: string = req.body.password;
             if (typeof password === 'string') {
