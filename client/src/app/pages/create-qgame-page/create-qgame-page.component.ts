@@ -32,7 +32,7 @@ export class CreateQGamePageComponent implements OnInit {
     };
     gameForm: FormGroup;
     dataReady: boolean = false;
-
+    // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
@@ -51,14 +51,10 @@ export class CreateQGamePageComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.route.paramMap.subscribe((params) => (this.gameId = params.get('id')));
         if (this.gameId) {
-            try {
-                this.gamesFromDB = await this.gameService.getGames();
-                this.getGame(this.gameId);
-                this.insertIfExist();
-                this.dataReady = true;
-            } catch (error) {
-                throw new Error(`Game with id ${this.gameId} not found`);
-            }
+            this.gamesFromDB = await this.gameService.getGames();
+            this.getGame(this.gameId);
+            this.insertIfExist();
+            this.dataReady = true;
         }
     }
 
@@ -66,8 +62,7 @@ export class CreateQGamePageComponent implements OnInit {
         const findGame = this.gamesFromDB.find((gameSelected) => gameSelected.id === gameId);
         if (findGame) {
             this.gameFromDB = findGame;
-        }
-        if (!this.gameFromDB) {
+        } else {
             throw new Error(`Game with id ${gameId} not found`);
         }
     }

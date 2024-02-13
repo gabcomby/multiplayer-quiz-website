@@ -39,7 +39,7 @@ describe('ModifiedQuestionComponent', () => {
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             addQuestion: {},
             updateList: {},
-            updateQuestion:{},
+            updateQuestion: {},
             getQuestion: [
                 {
                     type: 'QCM',
