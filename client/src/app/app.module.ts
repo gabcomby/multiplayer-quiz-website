@@ -29,6 +29,7 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
+import { InputDialogComponent } from './components/input-dialog/input-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -60,6 +61,7 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         NewQuestionQbankComponent,
         ModifyQuestionQbankComponent,
         ServerErrorDialogComponent,
+        InputDialogComponent,
     ],
     imports: [
         AppMaterialModule,
