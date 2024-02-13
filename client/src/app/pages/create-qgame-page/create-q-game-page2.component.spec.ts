@@ -74,4 +74,13 @@ describe('CreateQGamePageComponent', () => {
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
     });
+    it('should throw error if submitting with the server down', async () => {
+        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+
+        try {
+            await component.onSubmit();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
+    });
 });

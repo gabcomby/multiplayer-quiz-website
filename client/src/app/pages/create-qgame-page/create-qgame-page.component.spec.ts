@@ -158,6 +158,14 @@ describe('CreateQGamePageComponent', () => {
         expect(component.insertIfExist).toHaveBeenCalled();
         expect(component.dataReady).toBeTrue();
     });
+    it('ngOnInit should initiliase if theres is an id', async () => {
+        gameServiceSpy.getGames.and.throwError('test error');
+        try {
+            await component.ngOnInit();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
+    });
     it('get game should find game with id in list should return game if found', () => {
         component.gamesFromDB = defaultGame;
         component.getGame('123');
@@ -283,6 +291,16 @@ describe('CreateQGamePageComponent', () => {
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
     });
+    it('should throw error if submitting with the server down', async () => {
+        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+
+        try {
+            await component.gameValidationWhenModified();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
+    });
+    
 
     it('should toggle modifiedQuestion property', () => {
         expect(component.modifiedQuestion).toBeFalse();
