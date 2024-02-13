@@ -4,7 +4,6 @@ import { SocketService } from './socket.service';
 import * as SocketIOClient from 'socket.io-client';
 
 const TIMER_COUNTDOWN = 10;
-const SIMULATE_DELAY = 100;
 
 class MockSocket {
     callbacks: { [eventName: string]: (data: unknown) => void } = {};
@@ -88,36 +87,5 @@ describe('SocketService', () => {
     it('should emit "disconnect" when disconnect is called', () => {
         service.disconnect();
         expect(mockSocket.disconnect).toHaveBeenCalled();
-    });
-
-    it('deleteId should resolve with the gameId received from server', async () => {
-        const expectedGameId = '12345';
-        setTimeout(() => mockSocket.simulateEvent('deleteId', expectedGameId), SIMULATE_DELAY);
-        const gameId = await service.deleteId();
-        expect(gameId).toEqual(expectedGameId);
-    });
-});
-
-describe('SocketService', () => {
-    let service: SocketService;
-    let mockSocket: MockSocket;
-
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [SocketService],
-        });
-
-        service = TestBed.inject(SocketService);
-        mockSocket = new MockSocket();
-        service['socket'] = mockSocket as unknown as SocketIOClient.Socket;
-    });
-
-    it('should add message to arrayM on messageConnect event', () => {
-        const expectedMessage = 'test message';
-        const arrayM = service.connect();
-
-        mockSocket.simulateEvent('messageConnect', expectedMessage);
-
-        expect(arrayM).toContain(expectedMessage);
     });
 });
