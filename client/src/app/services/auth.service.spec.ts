@@ -35,4 +35,27 @@ describe('AuthService', () => {
         expect(req.request.method).toEqual('POST');
         req.flush(testResponse);
     });
+
+    it('isAuthenticated$ should initially emit false', (done) => {
+        service.isAuthenticated$.subscribe((isAuthenticated) => {
+            expect(isAuthenticated).toBeFalse();
+            done();
+        });
+    });
+
+    it('checkAuthentication should return false initially', () => {
+        expect(service.checkAuthentication()).toBeFalse();
+    });
+
+    it('checkAuthentication should return true after authentication is set to true', () => {
+        service['isAuthenticated'].next(true);
+
+        expect(service.checkAuthentication()).toBeTrue();
+    });
+
+    it('checkAuthentication should return false after authentication is set to false', () => {
+        service['isAuthenticated'].next(false);
+
+        expect(service.checkAuthentication()).toBeFalse();
+    });
 });
