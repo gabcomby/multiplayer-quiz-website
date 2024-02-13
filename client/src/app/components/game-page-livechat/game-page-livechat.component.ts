@@ -2,6 +2,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 const DISAPPEAR_DELAY = 10000;
+const MESSAGE_NOT_FOUND = -1;
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -40,8 +41,7 @@ export class GamePageLivechatComponent {
     hideMessage(message: { text: string; sender: string; visible: boolean }): void {
         message.visible = false;
         const index = this.messages.indexOf(message);
-        /* eslint-disable-next-line */
-        if (index !== -1) {
+        if (index !== MESSAGE_NOT_FOUND) {
             this.messages.splice(index, 1);
         }
     }
