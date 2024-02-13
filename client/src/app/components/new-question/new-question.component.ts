@@ -18,6 +18,7 @@ export class NewQuestionComponent {
     question: Question = { type: 'QCM', text: '', points: 10, id: '12312312', lastModification: new Date(), choices: [] };
     addBankQuestion: boolean = false;
 
+    // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
         private snackbarService: SnackbarService,

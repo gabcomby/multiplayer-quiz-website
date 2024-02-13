@@ -123,6 +123,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
+                // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
             imports: [HttpClientTestingModule],
@@ -300,7 +301,6 @@ describe('CreateQGamePageComponent', () => {
             expect(component.handleServerError).toHaveBeenCalled();
         }
     });
-    
 
     it('should toggle modifiedQuestion property', () => {
         expect(component.modifiedQuestion).toBeFalse();

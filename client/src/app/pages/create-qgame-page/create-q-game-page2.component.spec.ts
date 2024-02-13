@@ -54,6 +54,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: null })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
+                // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
                 { provide: Router, useValue: routerSpy },
             ],
