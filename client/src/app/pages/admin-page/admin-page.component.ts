@@ -5,9 +5,13 @@ import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
+import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+import { firstValueFrom } from 'rxjs';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -28,6 +32,7 @@ export class AdminPageComponent implements OnInit {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
+        private dialog: MatDialog,
     ) {}
 
     async ngOnInit() {
@@ -84,11 +89,17 @@ export class AdminPageComponent implements OnInit {
         let gameTitle: string = originalGame.title;
 
         while (this.hasValidInput(gameTitle, originalGame.title)) {
-            const newTitle = await new Promise<string | null>((resolve) =>
-                resolve(window.prompt('Le nom de ce jeu existe déjà ou est invalide. Veuillez en choisir un autre :')),
-            );
+            const dialogRef = this.dialog.open(InputDialogComponent, {
+                width: '350px',
+                data: {
+                    title: 'Le nom de ce jeu existe déjà, ou est invalide. Veuillez en choisir un autre :',
+                    label: 'MAX 35 caractères',
+                },
+            });
 
-            if (newTitle === null) {
+            const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
+
+            if (newTitle === null || newTitle.trim() === '') {
                 this.snackbarService.openSnackBar("L'importation a été annulée.");
                 return null;
             } else {
@@ -125,18 +136,27 @@ export class AdminPageComponent implements OnInit {
     }
 
     deleteGame(gameId: string): void {
-        const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer ce jeu?');
-        if (!confirmDelete) return;
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '300px',
+            data: {
+                title: 'Confirmer la suppression',
+                message: 'Êtes-vous sûr de vouloir supprimer ce jeu?',
+            },
+        });
 
-        this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-        this.gameService
-            .deleteGame(gameId)
-            .then(() => {
-                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
-            })
-            .catch((error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            });
+        dialogRef.afterClosed().subscribe((confirmDelete) => {
+            if (!confirmDelete) return;
+
+            this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
+            this.gameService
+                .deleteGame(gameId)
+                .then(() => {
+                    this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+                })
+                .catch((error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
+                });
+        });
     }
 
     createGame(): void {
