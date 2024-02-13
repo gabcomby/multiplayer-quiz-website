@@ -1,5 +1,4 @@
 import { HttpException } from '@app/classes/http.exception';
-import { DateController } from '@app/controllers/date.controller';
 import { MatchController } from '@app/controllers/match.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
@@ -20,7 +19,6 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
     constructor(
-        private readonly dateController: DateController,
         private readonly gameController: GameController,
         private readonly authController: AuthController,
         private readonly questionsController: QuestionsController,
@@ -87,7 +85,6 @@ export class Application {
 
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
-        this.app.use('/api/date', this.dateController.router);
         this.app.use('/api/games', this.gameController.router);
         this.app.use('/api/questions', this.questionsController.router);
         this.app.use('/api/authenticate', this.authController.router);
