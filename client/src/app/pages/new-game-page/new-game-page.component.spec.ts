@@ -64,7 +64,6 @@ describe('NewGamePageComponent', () => {
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     });
-
     it('should create', () => {
         expect(component).toBeTruthy();
     });
