@@ -83,19 +83,23 @@ export class AdminPageComponent implements OnInit {
         this.snackbarService.openSnackBar(error);
     }
 
-    async getValidGameTitle(game: Game): Promise<string | null> {
-        if (!this.isGameNameUnique(game.title)) {
-            const newName = await new Promise<string | null>((resolve) =>
-                resolve(window.prompt('Le nom de ce jeu existe déjà. Veuillez en choisir un autre :')),
+    async getValidGameTitle(originalGame: Game): Promise<string | null> {
+        let gameTitle: string = originalGame.title;
+
+        while (this.hasValidInput(gameTitle, originalGame.title)) {
+            const newTitle = await new Promise<string | null>((resolve) =>
+                resolve(window.prompt('Le nom de ce jeu existe déjà ou est invalide. Veuillez en choisir un autre :')),
             );
 
-            if (!newName || newName === game.title || newName.length > MAX_GAME_NAME_LENGTH) {
+            if (newTitle === null) {
                 this.snackbarService.openSnackBar('Le nom du jeu est invalide.');
                 return null;
+            } else {
+                gameTitle = newTitle;
             }
-            return newName;
         }
-        return game.title;
+
+        return gameTitle;
     }
 
     async importGamesFromFile(file: File): Promise<void> {
@@ -108,10 +112,9 @@ export class AdminPageComponent implements OnInit {
             });
 
             const game = JSON.parse(result);
-            const validTitle = await this.getValidGameTitle(game);
-            if (!validTitle) return;
 
-            game.title = validTitle;
+            game.title = await this.getValidGameTitle(game);
+            game.isVisible = false;
             this.prepareGameForImport(game);
             this.dataSource = [...this.dataSource, game];
             this.gameService.createGame(game);
@@ -177,4 +180,8 @@ export class AdminPageComponent implements OnInit {
         if (!isValidGame(game, this.snackbarService, this.gameService)) return;
         assignNewGameAttributes(game);
     }
+
+    private hasValidInput = (input: string, title: string): boolean => {
+        return !this.isGameNameUnique(input) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
+    };
 }
