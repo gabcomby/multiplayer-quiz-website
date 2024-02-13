@@ -89,6 +89,13 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 
+    resetAnswerState(): void {
+        this.selectedChoices = [];
+        this.answerIdx.emit(this.selectedChoices);
+        this.answerIsLocked = false;
+        this.answerStateService.lockAnswer(this.answerIsLocked);
+    }
+
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
     }
@@ -110,12 +117,5 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     private checkIsNumber(buttonPressed: string): boolean {
         return !Number.isNaN(Number(buttonPressed));
-    }
-
-    private resetAnswerState(): void {
-        this.selectedChoices = [];
-        this.answerIdx.emit(this.selectedChoices);
-        this.answerIsLocked = false;
-        this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 }
