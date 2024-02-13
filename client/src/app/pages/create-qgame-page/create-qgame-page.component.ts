@@ -79,11 +79,10 @@ export class CreateQGamePageComponent implements OnInit {
             await this.gameValidationWhenModified();
         } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
             try {
-                await this.gameService.createGame(newGame).catch(() => {
-                    this.handleServerError();
-                });
+                await this.gameService.createGame(newGame);
             } catch (error) {
                 this.handleServerError();
+                throw error;
             }
             // je veux retourner a admin
             this.router.navigate(['/home']);
@@ -116,6 +115,7 @@ export class CreateQGamePageComponent implements OnInit {
                 }
             } catch (error) {
                 this.handleServerError();
+                throw error;
             }
         }
     }

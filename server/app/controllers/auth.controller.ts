@@ -25,7 +25,7 @@ export class AuthController {
          * @swagger
          * /api/auth:
          *   post:
-         *     description: Authenticate user
+         *     description: Authentificate user
          *     tags:
          *       - Authentication
          *     produces:
@@ -42,7 +42,7 @@ export class AuthController {
          *               type: string
          *     responses:
          *       200:
-         *         description: Successful operation
+         *         description: Authentification Successful
          *         schema:
          *           $ref: '#/definitions/Message'
          *       401:
@@ -50,7 +50,7 @@ export class AuthController {
          *         schema:
          *           $ref: '#/definitions/Message'
          *       400:
-         *         description: Bad request
+         *         description: Invalid Request
          *         schema:
          *           $ref: '#/definitions/Message'
          */
