@@ -128,4 +128,20 @@ describe('AdminPageComponent', () => {
         const result = component['removeUnwantedFields'](game);
         expect(result).toEqual(mockData);
     });
+
+    it("should remove unrecognized fields from game's json", () => {
+        const game = { ...mockData, _id: '1' };
+        gameServiceMock.patchGame.and.returnValue(Promise.resolve());
+        const result = component['removeUnwantedFields'](game);
+        expect(result).toEqual(mockData);
+    });
+
+    it('should navigate to create-qgame when createGame is called', () => {
+        component.createGame();
+        expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);
+    });
+
+    it('should format date string correctly in French Canadian format', () => {
+        expect(component.formatLastModificationDate('2024-02-12T14:48:55.329Z')).toEqual('2024-02-12 09 h 48');
+    });
 });
