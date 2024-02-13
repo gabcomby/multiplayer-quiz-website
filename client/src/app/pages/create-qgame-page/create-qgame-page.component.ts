@@ -58,7 +58,6 @@ export class CreateQGamePageComponent implements OnInit {
                 this.dataReady = true;
             } catch (error) {
                 this.handleServerError();
-                throw new Error(`Game with id ${this.gameId} not found`);
             }
         }
     }
@@ -74,18 +73,17 @@ export class CreateQGamePageComponent implements OnInit {
 
     async onSubmit() {
         const newGame: Game = this.createNewGame(true);
-
-        if (this.gameId) {
-            await this.gameValidationWhenModified();
-        } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
-            try {
+        try {
+            if (this.gameId) {
+                await this.gameValidationWhenModified();
+            } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
                 await this.gameService.createGame(newGame);
-            } catch (error) {
-                this.handleServerError();
-                throw error;
+
+                // je veux retourner a admin
+                this.router.navigate(['/home']);
             }
-            // je veux retourner a admin
-            this.router.navigate(['/home']);
+        } catch (error) {
+            this.handleServerError();
         }
     }
     toggleModifiedQuestion() {
@@ -103,8 +101,8 @@ export class CreateQGamePageComponent implements OnInit {
 
     async gameValidationWhenModified() {
         const modifiedGame = this.createNewGame(false);
-        if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
-            try {
+        try {
+            if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
                 if (await this.gameService.validateDeletedGame(modifiedGame)) {
                     await this.gameService.patchGame(modifiedGame);
 
@@ -113,10 +111,9 @@ export class CreateQGamePageComponent implements OnInit {
                     await this.gameService.createGame(modifiedGame);
                     this.router.navigate(['/home']);
                 }
-            } catch (error) {
-                this.handleServerError();
-                throw error;
             }
+        } catch (error) {
+            this.handleServerError();
         }
     }
 
@@ -132,7 +129,7 @@ export class CreateQGamePageComponent implements OnInit {
         };
     }
 
-    private handleServerError = () => {
+    handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
         });

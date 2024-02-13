@@ -123,6 +123,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
+                // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
             imports: [HttpClientTestingModule],
@@ -157,6 +158,14 @@ describe('CreateQGamePageComponent', () => {
         expect(component.getGame).toHaveBeenCalled();
         expect(component.insertIfExist).toHaveBeenCalled();
         expect(component.dataReady).toBeTrue();
+    });
+    it('ngOnInit should initiliase if theres is an id', async () => {
+        gameServiceSpy.getGames.and.throwError('test error');
+        try {
+            await component.ngOnInit();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
     });
     it('get game should find game with id in list should return game if found', () => {
         component.gamesFromDB = defaultGame;
@@ -282,6 +291,15 @@ describe('CreateQGamePageComponent', () => {
             fixture.detectChanges();
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
+    });
+    it('should throw error if submitting with the server down', async () => {
+        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+
+        try {
+            await component.gameValidationWhenModified();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
     });
 
     it('should toggle modifiedQuestion property', () => {

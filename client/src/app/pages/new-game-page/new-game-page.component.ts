@@ -19,6 +19,7 @@ export class NewGamePageComponent implements OnInit {
     socket: Socket;
     gamesUnderscoreId: string[] = [];
     deletedGamesId: string[] = [];
+    // eslint-disable-next-line max-params
     constructor(
         private gameService: GameService,
         private socketService: SocketService,

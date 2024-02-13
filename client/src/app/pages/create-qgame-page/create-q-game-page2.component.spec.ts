@@ -54,6 +54,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: null })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
+                // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
                 { provide: Router, useValue: routerSpy },
             ],
@@ -73,5 +74,14 @@ describe('CreateQGamePageComponent', () => {
             fixture.detectChanges();
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
+    });
+    it('should throw error if submitting with the server down', async () => {
+        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+
+        try {
+            await component.onSubmit();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
     });
 });

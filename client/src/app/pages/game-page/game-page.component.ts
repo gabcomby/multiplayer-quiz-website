@@ -41,6 +41,7 @@ export class GamePageComponent implements OnInit {
     answerIdx: number[];
     previousQuestionIndex: number;
 
+    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private matchService: MatchService,
