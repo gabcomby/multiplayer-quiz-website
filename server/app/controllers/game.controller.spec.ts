@@ -72,6 +72,14 @@ describe('GameController', () => {
         expressApp = app.app;
     });
 
+    it('should return a list of questions on GET request', async () => {
+        gameService.getGames.resolves([mockGameData.toObject()]);
+
+        const response = await supertest(expressApp).get('/api/games').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal([JSON.parse(JSON.stringify(mockGameData))]);
+    });
+
     it('should return an error status on GET request if service fails', async () => {
         gameService.getGames.rejects(new Error('Service Failure'));
 
@@ -81,6 +89,14 @@ describe('GameController', () => {
             .then((response) => {
                 chai.expect(response.body).to.deep.equal({ error: 'Error fetching games' });
             });
+    });
+
+    it('should create a game on POST request if service succeeds', async () => {
+        gameService.createGame.resolves(mockGameData.toObject());
+
+        const response = await supertest(expressApp).post('/api/games').send(mockGameData).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockGameData)));
     });
 
     it('should return an error status on POST request if service fails', async () => {
@@ -95,6 +111,14 @@ describe('GameController', () => {
             });
     });
 
+    it('should delete a game on DELETE request if service succeeds', async () => {
+        gameService.deleteGame.resolves(mockGameData.toObject());
+
+        const response = await supertest(expressApp).delete('/api/games/1a2b3c').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockGameData)));
+    });
+
     it('should return an error status on DELETE request if service fails', async () => {
         gameService.deleteGame.rejects(new Error('Service Failure'));
 
@@ -106,6 +130,14 @@ describe('GameController', () => {
             });
     });
 
+    it('should return a game on GET request if service succeeds', async () => {
+        gameService.getGame.resolves(mockGameData.toObject());
+
+        const response = await supertest(expressApp).get('/api/games/1a2b3c').expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockGameData)));
+    });
+
     it('should return an error status on GET request if service fails', async () => {
         gameService.getGame.rejects(new Error('Service Failure'));
 
@@ -115,6 +147,14 @@ describe('GameController', () => {
             .then((response) => {
                 chai.expect(response.body).to.deep.equal({ error: 'Error fetching game' });
             });
+    });
+
+    it('should update a game on PATCH request if service succeeds', async () => {
+        gameService.updateGame.resolves(mockGameData.toObject());
+
+        const response = await supertest(expressApp).patch('/api/games/1a2b3c').send(mockGameData).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockGameData)));
     });
 
     it('should return an error status on PATCH request if service fails', async () => {
