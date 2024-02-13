@@ -79,10 +79,6 @@ export class AdminPageComponent implements OnInit {
         this.importGamesFromFile(input.files[0]);
     }
 
-    handleError(error: string): void {
-        this.snackbarService.openSnackBar(error);
-    }
-
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
         let gameTitle: string = originalGame.title;
 
