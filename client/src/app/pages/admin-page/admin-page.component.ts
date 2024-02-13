@@ -42,11 +42,6 @@ export class AdminPageComponent implements OnInit {
         });
 
         this.socketService.connect();
-        this.socketService.onMessage();
-    }
-
-    sendMessage(): void {
-        this.socketService.sendMessage('Hello from client');
     }
 
     toggleVisibility(gameId: string, isVisible: boolean): void {
