@@ -11,6 +11,9 @@ import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
 import { QuestionsController } from './controllers/questions.controller';
+import { env } from './env';
+
+const DB_URL = env.dbUrl;
 
 @Service()
 export class Application {
@@ -44,13 +47,11 @@ export class Application {
     }
 
     connectToDatabase(): void {
-        const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
-        mongoose.connect(mongoDBUri);
+        mongoose.connect(DB_URL);
     }
 
     async getIdentification(): Promise<string[]> {
-        const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
-        mongoose.connect(mongoDBUri);
+        mongoose.connect(DB_URL);
         const db = mongoose.connection.useDb('test');
         const gameSchema = new mongoose.Schema({}, { strict: false });
         const game = db.model('Game', gameSchema, 'games');
@@ -65,15 +66,14 @@ export class Application {
 
     async watchDelete(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            const mongoDBUri = 'mongodb+srv://goffipro:goffipro@cluster0.rh9tycx.mongodb.net/?retryWrites=true&w=majority';
-            mongoose.connect(mongoDBUri);
+            mongoose.connect(DB_URL);
             const db = mongoose.connection.useDb('test');
             const gameSchema = new mongoose.Schema({}, { strict: false });
             const game = db.model('Game', gameSchema, 'games');
             const changeStream = game.watch();
             changeStream.on('change', (data) => {
                 if (data.operationType === 'delete') {
-                    // eslint-disable-next-line no-underscore-dangle
+                    // eslint-disable-next-line no-underscore-dangle -- underscore is used by MongoDB
                     const deleteId = data.documentKey._id;
                     resolve(deleteId.toString());
                 }
