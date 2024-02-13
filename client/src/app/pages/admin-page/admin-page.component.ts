@@ -10,6 +10,7 @@ import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 const MAX_GAME_NAME_LENGTH = 35;
+
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
@@ -21,7 +22,7 @@ export class AdminPageComponent implements OnInit {
     dataSource: Game[] = [];
     downloadJson = '';
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
         private socketService: SocketService,
@@ -29,7 +30,7 @@ export class AdminPageComponent implements OnInit {
         private gameService: GameService,
     ) {}
 
-    ngOnInit() {
+    async ngOnInit() {
         this.gameService
             .getGames()
             .then((games) => {
