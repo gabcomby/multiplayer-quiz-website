@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -69,14 +70,18 @@ describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
+
     const gameServiceMock = jasmine.createSpyObj('gameService', ['patchGame', 'getGames']);
     const snackbarServiceMock = jasmine.createSpyObj('snackbarService', ['openSnackBar']);
     const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
+    const dialogRefMock = {
+        close: jasmine.createSpy('close'),
+    };
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule],
             providers: [
                 {
                     provide: GameService,
@@ -90,6 +95,8 @@ describe('AdminPageComponent', () => {
                     provide: SocketService,
                     useValue: socketServiceMock,
                 },
+                { provide: MatDialogRef, useValue: dialogRefMock },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         }).compileComponents();
 
