@@ -20,7 +20,6 @@ import { GamePageTimerComponent } from './components/game-page-timer/game-page-t
 import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
-import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
@@ -57,7 +56,6 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         GameWaitComponent,
         PasswordDialogComponent,
         ModifiedQuestionComponent,
-        PlayerNameDialogComponent,
         QuestionBankComponent,
         NewQuestionQbankComponent,
         ModifyQuestionQbankComponent,
