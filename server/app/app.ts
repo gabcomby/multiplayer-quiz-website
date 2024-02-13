@@ -18,6 +18,7 @@ export class Application {
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private readonly gameController: GameController,
         private readonly authController: AuthController,
