@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game, Question } from '@app/interfaces/game';
 import { Match } from '@app/interfaces/match';
-import { ApiService } from '@app/services/api.service';
+import { GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -143,14 +143,14 @@ describe('GamePageComponent', () => {
     });
 
     it('should fetch game data on init and handle errors', () => {
-        const apiService = TestBed.inject(ApiService);
-        spyOn(apiService, 'getGame').and.returnValue(throwError(() => new Error('Failed to fetch game data')));
+        const gameService = TestBed.inject(GameService);
+        spyOn(gameService, 'getGame').and.returnValue(throwError(() => new Error('Failed to fetch game data')));
         const snackbarService = TestBed.inject(SnackbarService);
         spyOn(snackbarService, 'openSnackBar');
 
         component.ngOnInit();
 
-        expect(apiService.getGame).toHaveBeenCalledWith('testGameId');
+        expect(gameService.getGame).toHaveBeenCalledWith('testGameId');
         expect(snackbarService.openSnackBar).toHaveBeenCalledWith(jasmine.any(String));
     });
 
@@ -167,14 +167,14 @@ describe('GamePageComponent', () => {
     }));
 
     it('should fetch game data on init and set gameData property', async () => {
-        const apiService = TestBed.inject(ApiService);
+        const gameService = TestBed.inject(GameService);
 
-        spyOn(apiService, 'getGame').and.returnValue(of(mockedGameData));
+        spyOn(gameService, 'getGame').and.returnValue(of(mockedGameData));
 
         fixture.detectChanges();
         await fixture.whenStable();
 
-        expect(apiService.getGame).toHaveBeenCalledWith('testGameId');
+        expect(gameService.getGame).toHaveBeenCalledWith('testGameId');
         expect(component.gameData).toEqual(mockedGameData);
     });
 
