@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -122,6 +123,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
+                { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
             imports: [HttpClientTestingModule],
         }).compileComponents();
