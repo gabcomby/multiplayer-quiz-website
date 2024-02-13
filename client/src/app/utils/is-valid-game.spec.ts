@@ -13,6 +13,7 @@ import {
 describe('is-valid-game', () => {
     let gameServiceMock: jasmine.SpyObj<GameService>;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
+
     const game: Game = {
         id: '123456',
         title: 'Valid Game',
@@ -313,5 +314,19 @@ describe('is-valid-game', () => {
 
         expect(errors.length).toBe(1);
         expect(errors[0]).toBe('Existing error');
+    });
+
+    it('should return early if question type is QRL', () => {
+        const question = {
+            id: 'test123',
+            type: 'QRL',
+            choices: [],
+        } as unknown as Game['questions'][0];
+
+        const errors: string[] = [];
+
+        validateQuestionChoicesImport(question, 0, errors);
+
+        expect(errors.length).toBe(0);
     });
 });
