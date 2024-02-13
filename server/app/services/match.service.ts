@@ -34,7 +34,7 @@ export class MatchService {
     }
 
     async updatePlayerScore(matchId: string, playerId: string, score: number): Promise<IPlayer> {
-        /*eslint-disable */
+        /* eslint-disable */ /*Disabled because it wouldn't accept elem.id because it lacks camelCase */
         const match: IMatch = await matchModel.findOneAndUpdate(
             { id: matchId },
             { $set: { 'playerList.$[elem].score': score } },

@@ -89,4 +89,16 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.answerIsLocked).toBeTrue();
         expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
     });
+
+    it('should call resetAnswerState when choices change', () => {
+        spyOn(component, 'resetAnswerState'); // Spy on the resetAnswerState method
+        const newChoices = [
+            { text: 'Paris', isCorrect: true },
+            { text: 'London', isCorrect: false },
+        ];
+        component.ngOnChanges({
+            choices: new SimpleChange([], newChoices, false),
+        });
+        expect(component.resetAnswerState).toHaveBeenCalled(); // Verify resetAnswerState was called
+    });
 });
