@@ -7,7 +7,6 @@ describe('PasswordDialogComponent', () => {
     let component: PasswordDialogComponent;
     let fixture: ComponentFixture<PasswordDialogComponent>;
 
-    // Mock the MatDialogRef
     const dialogRefMock = {
         close: jasmine.createSpy('close'),
     };
