@@ -67,7 +67,7 @@
     <div class="action-buttons">
         <button mat-raised-button routerLink="/create-qgame" (click)="createGame()">Créer un jeu</button>
         <button mat-raised-button routerLink="/question-bank">Accéder à la banque de questions</button>
-        <button mat-raised-button (click)="fileInput.click()">Importer des jeux</button>
+        <button mat-raised-button (click)="fileInput.click()">Importer un jeu</button>
         <input type="file" accept=".json" (change)="onFileSelected($event)" style="display: none" #fileInput />
     </div>
 </main>
