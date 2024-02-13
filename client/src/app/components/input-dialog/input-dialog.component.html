@@ -1,8 +1,11 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
+<h1 mat-dialog-title>{{ data.title }}</h1>
 <div mat-dialog-content>
-    <p>Your dynamic content here</p>
+    <mat-form-field appearance="fill">
+        <mat-label>{{ data.label }}</mat-label>
+        <input matInput [(ngModel)]="inputValue" />
+    </mat-form-field>
 </div>
 <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Annuler</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Valider</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button [mat-dialog-close]="inputValue" cdkFocusInitial>OK</button>
 </div>
