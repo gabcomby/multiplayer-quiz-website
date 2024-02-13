@@ -3,6 +3,8 @@ import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDest
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
 
+const MESSAGE_NOT_FOUND = -1;
+
 enum AnswerStatusEnum {
     Correct,
     Wrong,
@@ -69,8 +71,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.selectedChoices = [];
         }
         const answerIdx = this.selectedChoices.indexOf(index);
-        /* eslint-disable-next-line */
-        if (answerIdx > -1) {
+        if (answerIdx > MESSAGE_NOT_FOUND) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
