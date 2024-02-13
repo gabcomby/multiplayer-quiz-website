@@ -159,6 +159,7 @@ describe('ModifiedQuestionComponent', () => {
 
         expect(component.questionList).toEqual(component.gameQuestions);
     });
+
     it('should enable modification', () => {
         const index = 0;
         component.disabled = [true];

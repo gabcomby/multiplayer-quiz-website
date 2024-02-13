@@ -1,76 +1,85 @@
-// import { TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { Question } from '@app/interfaces/game';
+import { QuestionValidationService } from './question-validation.service';
+import { SnackbarService } from './snackbar.service';
 
-// import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-// import { Question } from '@app/interfaces/game';
-// import { QuestionValidationService } from './question-validation.service';
-// import { SnackbarService } from './snackbar.service';
+describe('QuestionValidationService', () => {
+    let service: QuestionValidationService;
+    let snackbarSpy: jasmine.SpyObj<SnackbarService>;
 
-// describe('QuestionValidationService', () => {
-//     let service: QuestionValidationService;
-//     let httpController: HttpTestingController;
-//     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
-//     const defaultDate = new Date();
-//     const question: Question = {
-//         type: 'QCM',
-//         id: 'abc123',
-//         lastModification: defaultDate,
-//         text: 'Parmi les mots suivants, lesquels sont des mots clés réservés en JS?',
-//         points: 40,
-//         choices: [
-//             {
-//                 text: 'var',
-//                 isCorrect: true,
-//             },
-//             {
-//                 text: 'self',
-//                 isCorrect: false,
-//             },
-//             {
-//                 text: 'this',
-//                 isCorrect: true,
-//             },
-//             {
-//                 text: 'int',
-//             },
-//         ],
-//     };
+    beforeEach(() => {
+        snackbarSpy = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
-//     beforeEach(() => {
-//         TestBed.configureTestingModule({
-//             imports: [HttpClientTestingModule],
-//             providers: [QuestionValidationService],
-//         });
-//         service = TestBed.inject(QuestionValidationService);
-//         httpController = TestBed.inject(HttpTestingController);
-//         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-//     });
+        TestBed.configureTestingModule({
+            providers: [QuestionValidationService, { provide: SnackbarService, useValue: snackbarSpy }],
+        });
 
-//     afterEach(() => {
-//         httpController.verify();
-//         // service.questions = [];
-//     });
+        service = TestBed.inject(QuestionValidationService);
+    });
 
-//     it('should be created', () => {
-//         expect(service).toBeTruthy();
-//     });
-//     it('should return true when validateQuestion with valid data', () => {
-//         // const newQuestion = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-//         const valid = service.validateQuestion(question);
-//         expect(valid).toEqual(true);
-//     });
-//     it('should return false when validateQuestion with no text in question', () => {
-//         // const question = { type: 'QCM', text: '', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-//         const valid = service.validateQuestion(question);
-//         expect(valid).toEqual(false);
-//     });
-//     it('should return false when validateQuestion with no points in question', () => {
-//         // const question = { type: 'QCM', text: 'allo', points: 0, id: '12312312', choices: [], lastModification: defaultDate };
-//         const valid = service.validateQuestion(question);
-//         expect(valid).toEqual(false);
-//     });
-//     it('should return false when validateQuestion with just whitespaces in question text', () => {
-//         // const question = { type: 'QCM', text: '   ', points: 10, id: '12312312', choices: [], lastModification: defaultDate };
-//         const valid = service.validateQuestion(question);
-//         expect(valid).toEqual(false);
-//     });
-// });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
+    describe('answerValid', () => {
+        it('should return true for valid answers', () => {
+            const validAnswers = [{ text: 'Answer 1', isCorrect: true }];
+            expect(service.answerValid(validAnswers)).toBeTrue();
+            expect(snackbarSpy.openSnackBar).not.toHaveBeenCalled();
+        });
+
+        it('should return false and show snackbar for empty answer text', () => {
+            const invalidAnswers = [{ text: '', isCorrect: false }];
+            expect(service.answerValid(invalidAnswers)).toBeFalse();
+            expect(snackbarSpy.openSnackBar).toHaveBeenCalledWith('tous les champs des choix de réponses doivent être remplis');
+        });
+    });
+
+    describe('verifyOneGoodAndBadAnswer', () => {
+        it('should return true if there is at least one correct and one incorrect answer', () => {
+            const choices = [
+                { text: 'Good', isCorrect: true },
+                { text: 'Bad', isCorrect: false },
+            ];
+            expect(service.verifyOneGoodAndBadAnswer(choices)).toBeTrue();
+        });
+
+        it('should return false and show snackbar if all answers are either correct or incorrect', () => {
+            const allCorrect = [
+                { text: 'Good', isCorrect: true },
+                { text: 'Also Good', isCorrect: true },
+            ];
+            expect(service.verifyOneGoodAndBadAnswer(allCorrect)).toBeFalse();
+            expect(snackbarSpy.openSnackBar).toHaveBeenCalledWith('Au moins une bonne réponse et une mauvaise réponse');
+        });
+    });
+
+    describe('validatePoints', () => {
+        it('should return true for valid points', () => {
+            const question = { text: 'Question', points: 20, choices: [] } as Partial<Question>;
+            expect(service.validatePoints(question as Question)).toBeTrue();
+        });
+
+        it('should return false for invalid points', () => {
+            const question = { text: 'Question', points: 5, choices: [] } as Partial<Question>;
+            expect(service.validatePoints(question as Question)).toBeFalse();
+        });
+    });
+
+    describe('validateQuestion', () => {
+        it('should return true for a valid question', () => {
+            const validQuestion = { text: 'Valid Question', points: 30, choices: [{ text: 'Answer 1', isCorrect: true }] } as Partial<Question>;
+            spyOn(service, 'answerValid').and.returnValue(true);
+            expect(service.validateQuestion(validQuestion as Question)).toBeTrue();
+            expect(snackbarSpy.openSnackBar).not.toHaveBeenCalled();
+        });
+
+        it('should return false and show snackbar for an invalid question', () => {
+            const invalidQuestion = { text: '', points: 30, choices: [{ text: 'Answer 1', isCorrect: true }] } as Partial<Question>;
+            expect(service.validateQuestion(invalidQuestion as Question)).toBeFalse();
+            expect(snackbarSpy.openSnackBar).toHaveBeenCalledWith(
+                'la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces',
+            );
+        });
+    });
+});

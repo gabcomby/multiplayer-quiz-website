@@ -15,7 +15,6 @@ export class SocketService {
         this.socket = io(this.url, { autoConnect: true });
         const arrayM: string[] = [];
         this.socket.on('messageConnect', (mesage) => {
-            // eslint-disable-next-line no-console
             arrayM.push(mesage);
         });
         return arrayM;
@@ -25,17 +24,6 @@ export class SocketService {
         if (this.socket) {
             this.socket.disconnect();
         }
-    }
-
-    sendMessage(message: string): void {
-        this.socket.emit('message', message);
-    }
-
-    onMessage(): void {
-        this.socket.on('message', (data: unknown) => {
-            // eslint-disable-next-line no-console
-            console.log(data);
-        });
     }
 
     async deleteId(): Promise<string> {

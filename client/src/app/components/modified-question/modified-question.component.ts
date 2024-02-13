@@ -10,6 +10,7 @@ import { QuestionService } from '@app/services/question.service';
 })
 export class ModifiedQuestionComponent implements OnInit {
     @Input() gameQuestions: Question[];
+    // TODO: remove modifiedShown is not used ???
     @Input() modifiedShown: boolean;
     @Input() listQuestionBank: boolean;
 
@@ -33,6 +34,7 @@ export class ModifiedQuestionComponent implements OnInit {
             this.disabled.push(true);
         });
     }
+
     setQuestionList() {
         if (!this.gameQuestions) {
             this.questionList = this.questionService.getQuestion().map((item) => ({ ...item }));
@@ -43,6 +45,7 @@ export class ModifiedQuestionComponent implements OnInit {
             });
         }
     }
+
     async loadQuestionsFromBank() {
         this.questionList = await this.questionService.getQuestions();
         this.disabled = this.questionList.map(() => true);
@@ -87,6 +90,8 @@ export class ModifiedQuestionComponent implements OnInit {
         this.questionService.updateList(this.questionList);
         this.disabled[index] = true;
     }
+
+    // TODO: remove this function is not used ??
     toggleMenuSelection(): void {
         this.menuSelected = !this.menuSelected;
     }
