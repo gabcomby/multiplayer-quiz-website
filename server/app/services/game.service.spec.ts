@@ -159,4 +159,14 @@ describe('Game service', () => {
         expect(result).to.be.null;
         expect(findOneAndDeleteStub.calledWith({ id: 'nonExistingId' })).to.be.true;
     });
+
+    it('should update a specific game', async () => {
+        findOneStub.withArgs({ id: gameInstance.id }).resolves(gameInstance);
+        createStub.withArgs(gameInstance).resolves(gameInstance);
+
+        const result = await gameService.updateGame(gameInstance);
+        expect(result).to.eql(gameInstance);
+        expect(findOneStub.calledWith({ id: gameInstance.id })).to.be.true;
+        expect(createStub.calledWith(gameInstance)).to.be.true;
+    });
 });
