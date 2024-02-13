@@ -32,7 +32,7 @@ export class CreateQGamePageComponent implements OnInit {
     };
     gameForm: FormGroup;
     dataReady: boolean = false;
-
+    // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
@@ -67,8 +67,7 @@ export class CreateQGamePageComponent implements OnInit {
         const findGame = this.gamesFromDB.find((gameSelected) => gameSelected.id === gameId);
         if (findGame) {
             this.gameFromDB = findGame;
-        }
-        if (!this.gameFromDB) {
+        } else {
             throw new Error(`Game with id ${gameId} not found`);
         }
     }

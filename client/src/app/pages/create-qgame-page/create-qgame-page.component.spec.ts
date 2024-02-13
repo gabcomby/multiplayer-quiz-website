@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -122,6 +123,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
+                { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
             imports: [HttpClientTestingModule],
         }).compileComponents();
@@ -147,7 +149,16 @@ describe('CreateQGamePageComponent', () => {
         expect(component.gameForm.get('description')).toBeTruthy();
         expect(component.gameForm.get('time')).toBeTruthy();
     });
-    it('find game with id in list should return game if found', () => {
+    it('ngOnInit should initiliase if theres is an id', async () => {
+        spyOn(component, 'getGame');
+        spyOn(component, 'insertIfExist');
+
+        await component.ngOnInit();
+        expect(component.getGame).toHaveBeenCalled();
+        expect(component.insertIfExist).toHaveBeenCalled();
+        expect(component.dataReady).toBeTrue();
+    });
+    it('get game should find game with id in list should return game if found', () => {
         component.gamesFromDB = defaultGame;
         component.getGame('123');
         expect(component.gameFromDB).toEqual({
@@ -172,7 +183,7 @@ describe('CreateQGamePageComponent', () => {
             ],
         });
     });
-    it('find game with id in list should return undefined if not found', () => {
+    it('get game should return undefined game with id if not found', () => {
         component.gameFromDB = {
             id: '',
             title: '',
@@ -183,7 +194,11 @@ describe('CreateQGamePageComponent', () => {
             questions: [],
         };
         component.gamesFromDB = defaultGame;
-        component.getGame('124');
+        try {
+            component.getGame('124');
+        } catch (error) {
+            expect(error).toEqual(new Error('Game with id 124 not found'));
+        }
         expect(component.gameFromDB).toEqual({
             id: '',
             title: '',
@@ -244,7 +259,7 @@ describe('CreateQGamePageComponent', () => {
         expect(newGame.questions).toEqual(questionServiceSpy.getQuestion());
     });
 
-    it('should call gameValidationWhenModified when gameID is not null', async () => {
+    it('should call gameValidationWhenModified when gameID is not null in onSubmit', async () => {
         spyOn(component, 'gameValidationWhenModified');
         await component.onSubmit().then(async () => {
             expect(component.gameId).toBe('123');
@@ -252,7 +267,7 @@ describe('CreateQGamePageComponent', () => {
             expect(component.gameValidationWhenModified).toHaveBeenCalled();
         });
     });
-    it('should call patch when gameID is not null and validateDeletedGame return true', async () => {
+    it('should call patch when gameID is not null and validateDeletedGame return true in gameValidationModified', async () => {
         spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
         gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(true));
         component.gameValidationWhenModified().then(() => {
@@ -260,7 +275,7 @@ describe('CreateQGamePageComponent', () => {
             expect(gameServiceSpy.patchGame).toHaveBeenCalled();
         });
     });
-    it('should call create when gameID is not null and validateDeletedGame return false', async () => {
+    it('should call createGame when gameID is not null and validateDeletedGame return false in gameValidationModified', async () => {
         spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
         gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(false));
         await component.gameValidationWhenModified().then(async () => {
@@ -268,6 +283,7 @@ describe('CreateQGamePageComponent', () => {
             expect(gameServiceSpy.createGame).toHaveBeenCalled();
         });
     });
+
     it('should toggle modifiedQuestion property', () => {
         expect(component.modifiedQuestion).toBeFalse();
 
