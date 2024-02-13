@@ -12,6 +12,7 @@ describe('Game service', () => {
     let findOneStub: SinonStub;
     let createStub: SinonStub;
     let findOneAndDeleteStub: SinonStub;
+    let findOneAndUpdateStub: SinonStub;
 
     const gameInstance = new gameModel({
         id: '1a2b3c',
@@ -98,6 +99,7 @@ describe('Game service', () => {
         findOneStub = sandbox.stub(gameModel, 'findOne');
         createStub = sandbox.stub(gameModel, 'create');
         findOneAndDeleteStub = sandbox.stub(gameModel, 'findOneAndDelete');
+        findOneAndUpdateStub = sandbox.stub(gameModel, 'findOneAndUpdate');
     });
 
     afterEach(() => {
@@ -160,13 +162,11 @@ describe('Game service', () => {
         expect(findOneAndDeleteStub.calledWith({ id: 'nonExistingId' })).to.be.true;
     });
 
-    it('should update a specific game', async () => {
-        findOneStub.withArgs({ id: gameInstance.id }).resolves(gameInstance);
-        createStub.withArgs(gameInstance).resolves(gameInstance);
+    it('should update a question', async () => {
+        findOneAndUpdateStub.withArgs({ id: gameInstance.id }, { $set: gameInstance }, { new: true }).resolves(gameInstance);
 
         const result = await gameService.updateGame(gameInstance);
         expect(result).to.eql(gameInstance);
-        expect(findOneStub.calledWith({ id: gameInstance.id })).to.be.true;
-        expect(createStub.calledWith(gameInstance)).to.be.true;
+        expect(findOneAndUpdateStub.calledWith({ id: gameInstance.id }, { $set: gameInstance }, { new: true })).to.be.true;
     });
 });
