@@ -73,7 +73,7 @@ export class Application {
             const changeStream = game.watch();
             changeStream.on('change', (data) => {
                 if (data.operationType === 'delete') {
-                    // eslint-disable-next-line no-underscore-dangle
+                    // eslint-disable-next-line no-underscore-dangle -- underscore is used by MongoDB
                     const deleteId = data.documentKey._id;
                     resolve(deleteId.toString());
                 }
