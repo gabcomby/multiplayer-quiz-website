@@ -89,4 +89,19 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.answerIsLocked).toBeTrue();
         expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
     });
+
+    it('should reset question and answer status on choices change', () => {
+        const newChoices = [
+            { text: 'New Choice 1', isCorrect: false },
+            { text: 'New Choice 2', isCorrect: true },
+            { text: 'New Choice 3', isCorrect: false },
+        ];
+
+        component.ngOnChanges({
+            choices: new SimpleChange(component.choices, newChoices, false),
+        });
+
+        expect(component.selectedChoices.length).toBe(0);
+        expect(component.answerIsLocked).toBe(false);
+    });
 });
