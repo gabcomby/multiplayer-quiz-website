@@ -321,6 +321,7 @@ describe('is-valid-game', () => {
             id: 'test123',
             type: 'QRL',
             choices: [],
+            // eslint-disable-next-line -- we need to get first question
         } as unknown as Game['questions'][0];
 
         const errors: string[] = [];
