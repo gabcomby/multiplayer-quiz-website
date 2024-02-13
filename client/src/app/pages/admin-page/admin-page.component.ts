@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
-import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -25,21 +24,20 @@ export class AdminPageComponent implements OnInit {
     // eslint-disable-next-line max-params
     constructor(
         private router: Router,
-        private apiService: ApiService,
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
     ) {}
 
     ngOnInit() {
-        this.apiService.getGames().subscribe({
-            next: (data) => {
-                this.dataSource = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
-            },
-        });
+        this.gameService
+            .getGames()
+            .then((games) => {
+                this.dataSource = games;
+            })
+            .catch((error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
+            });
 
         this.socketService.connect();
     }
@@ -49,18 +47,18 @@ export class AdminPageComponent implements OnInit {
         if (!game) return;
 
         game.isVisible = isVisible;
-        this.apiService.updateGame(game).subscribe({
-            next: () => {
+        this.gameService
+            .patchGame(game)
+            .then(() => {
                 this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
-            },
-            error: (error) => {
+            })
+            .catch((error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            },
-        });
+            });
     }
 
     exportGameAsJson(game: Game): void {
-        this.apiService.getGame(game.id).subscribe({
+        this.gameService.getGame(game.id).subscribe({
             next: (data) => {
                 const json = JSON.stringify(data);
                 this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
@@ -116,7 +114,7 @@ export class AdminPageComponent implements OnInit {
             game.title = validTitle;
             this.prepareGameForImport(game);
             this.dataSource = [...this.dataSource, game];
-            this.apiService.createGame(game);
+            this.gameService.createGame(game);
 
             this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
         } catch (error) {
@@ -129,14 +127,14 @@ export class AdminPageComponent implements OnInit {
         if (!confirmDelete) return;
 
         this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-        this.apiService.deleteGame(gameId).subscribe({
-            next: () => {
+        this.gameService
+            .deleteGame(gameId)
+            .then(() => {
                 this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
-            },
-        });
+            })
+            .catch((error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
+            });
     }
 
     createGame(): void {
