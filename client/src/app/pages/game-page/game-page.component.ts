@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
-import { ApiService } from '@app/services/api.service';
+import { GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -47,7 +47,7 @@ export class GamePageComponent implements OnInit {
         private matchService: MatchService,
         private route: ActivatedRoute,
         private socketService: SocketService,
-        private apiService: ApiService,
+        private gameService: GameService,
         private snackbarService: SnackbarService,
     ) {}
 
@@ -55,7 +55,7 @@ export class GamePageComponent implements OnInit {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
         // Fetch the game data from the server
-        this.apiService.getGame(this.gameId).subscribe({
+        this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameData = data;
             },

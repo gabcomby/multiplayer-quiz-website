@@ -8,13 +8,13 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
         </ng-container>
 
         <!-- isVisible Column -->
         <ng-container matColumnDef="isVisible">
-            <mat-header-cell *matHeaderCellDef> Visible </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Visibilité </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element.id, $event.checked)"> </mat-slide-toggle>
             </mat-cell>
@@ -28,7 +28,7 @@
 
         <!-- Export Column -->
         <ng-container matColumnDef="export">
-            <mat-header-cell *matHeaderCellDef> Export </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Exporter </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <button mat-icon-button (click)="exportGameAsJson(element)">
                     <mat-icon>file_download</mat-icon>
@@ -53,7 +53,7 @@
 
         <!-- Delete Column -->
         <ng-container matColumnDef="delete">
-            <mat-header-cell *matHeaderCellDef> Delete </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Supprimer </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <button mat-icon-button (click)="deleteGame(element.id)">
                     <mat-icon>delete</mat-icon>
@@ -67,7 +67,7 @@
     <div class="action-buttons">
         <button mat-raised-button routerLink="/create-qgame" (click)="createGame()">Créer un jeu</button>
         <button mat-raised-button routerLink="/question-bank">Accéder à la banque de questions</button>
-        <button mat-raised-button (click)="fileInput.click()">Importer des jeux</button>
+        <button mat-raised-button (click)="fileInput.click()">Importer un jeu</button>
         <input type="file" accept=".json" (change)="onFileSelected($event)" style="display: none" #fileInput />
     </div>
 </main>

@@ -63,7 +63,7 @@
                 },
                 {
                     "text": "Oui",
-                    "isCorrect": null
+                    "isCorrect": false
                 }
             ]
         }
