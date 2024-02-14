@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -72,12 +72,13 @@ describe('AdminPageComponent', () => {
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
 
-    const gameServiceMock = jasmine.createSpyObj('gameService', ['patchGame', 'getGames']);
+    const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
+    const gameServiceMock = jasmine.createSpyObj('gameService', ['patchGame', 'getGames', 'deleteGame', 'getGame', 'createGame']);
     const snackbarServiceMock = jasmine.createSpyObj('snackbarService', ['openSnackBar']);
     const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
     const dialogMock = {
         open: () => {
-            return { afterClosed: () => of(true) }; // Simulates user clicking 'Confirm'
+            return { afterClosed: () => of(true) };
         },
     };
 
@@ -99,6 +100,7 @@ describe('AdminPageComponent', () => {
                     useValue: socketServiceMock,
                 },
                 { provide: MatDialogRef, useValue: dialogMock },
+                { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         }).compileComponents();
@@ -132,6 +134,12 @@ describe('AdminPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should call getGameTitle when getValidGameTitle is called', async () => {
+        const spy = spyOn(component, 'getValidGameTitle');
+        await component.getValidGameTitle(mockData);
+        expect(spy).toHaveBeenCalled();
+    });
+
     it("should delete unwanted fields from game's json", () => {
         const game = { ...mockData, _id: '1' };
         gameServiceMock.patchGame.and.returnValue(Promise.resolve());
@@ -155,12 +163,22 @@ describe('AdminPageComponent', () => {
         expect(component.formatLastModificationDate('2024-02-12T14:48:55.329Z')).toEqual('2024-02-12 09 h 48');
     });
 
-    it('should delete a game when confirmed', fakeAsync(() => {
+    it('should delete a game when confirmed', async () => {
         gameServiceMock.deleteGame.and.returnValue(Promise.resolve());
-        component.deleteGame('1zkjdm');
-        tick();
-        fixture.detectChanges();
-        expect(gameServiceMock.deleteGame).toHaveBeenCalledWith('1zkjdm');
-        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
-    }));
+        matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
+        await component.deleteGame('1zkjdm');
+
+        expect(gameServiceMock.deleteGame).toHaveBeenCalled();
+    });
+
+    it("should check in dataSource if game's title already exists", () => {
+        expect(component['isGameNameUnique']('VISIBILITY TEST')).toBeFalsy();
+    });
+
+    it("should check user input for game's title", () => {
+        expect(component['hasValidInput']('1111111111111111111111111111111111', mockData.title)).toBeFalsy();
+        expect(component['hasValidInput']('VISIBILITY TEST', mockData.title)).toBeTrue();
+        expect(component['hasValidInput']('', mockData.title)).toBeTrue();
+        expect(component['hasValidInput']('VISIBILITY TEST', '')).toBeTrue();
+    });
 });

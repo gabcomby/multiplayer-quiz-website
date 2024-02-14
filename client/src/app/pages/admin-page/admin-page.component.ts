@@ -99,7 +99,7 @@ export class AdminPageComponent implements OnInit {
 
             const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
 
-            if (newTitle === null || newTitle.trim() === '') {
+            if (newTitle === null || newTitle === '') {
                 this.snackbarService.openSnackBar("L'importation a été annulée.");
                 return null;
             } else {
@@ -131,11 +131,11 @@ export class AdminPageComponent implements OnInit {
 
             this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
         } catch (error) {
-            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error)}`);
         }
     }
 
-    deleteGame(gameId: string): void {
+    deleteGame(gameId: string) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '300px',
             data: {
