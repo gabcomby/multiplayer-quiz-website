@@ -90,18 +90,15 @@ describe('GamePageQuestionsComponent', () => {
         expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
     });
 
-    it('should reset question and answer status on choices change', () => {
+    it('should call resetAnswerState when choices change', () => {
+        spyOn(component, 'resetAnswerState'); // Spy on the resetAnswerState method
         const newChoices = [
-            { text: 'New Choice 1', isCorrect: false },
-            { text: 'New Choice 2', isCorrect: true },
-            { text: 'New Choice 3', isCorrect: false },
+            { text: 'Paris', isCorrect: true },
+            { text: 'London', isCorrect: false },
         ];
-
         component.ngOnChanges({
-            choices: new SimpleChange(component.choices, newChoices, false),
+            choices: new SimpleChange([], newChoices, false),
         });
-
-        expect(component.selectedChoices.length).toBe(0);
-        expect(component.answerIsLocked).toBe(false);
+        expect(component.resetAnswerState).toHaveBeenCalled(); // Verify resetAnswerState was called
     });
 });

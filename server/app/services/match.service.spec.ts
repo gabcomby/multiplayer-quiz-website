@@ -142,16 +142,13 @@ describe('MatchService', () => {
         const matchId = '1a2b3c';
         const playerId = 'player1';
         const score = 1000;
-        /* eslint-disable */
+        /* eslint-disable */ /*Disabled because it wouldn't accept elem.id because it lacks camelCase */
         findOneAndUpdateStub
             .withArgs({ id: matchId }, { $set: { 'playerList.$[elem].score': score } }, { arrayFilters: [{ 'elem.id': playerId }], new: true })
             .resolves(matchInstance);
-        /* eslint-enable */
-
         const result = await matchService.updatePlayerScore(matchId, playerId, score);
         expect(result).to.eql(matchInstance.playerList.find((player) => player.id === playerId));
         expect(
-            /* eslint-disable */
             findOneAndUpdateStub.calledWith(
                 { id: matchId },
                 { $set: { 'playerList.$[elem].score': score } },

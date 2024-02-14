@@ -102,6 +102,8 @@ export class NewGamePageComponent implements OnInit {
         const isModified = await this.isTheGameModified(game);
         let result;
         if (!isModified) {
+            this.gameSelected[game.id] = false;
+            this.ngOnInit();
             result = false;
         } else {
             this.router.navigate(['/game', game.id]);
@@ -114,6 +116,8 @@ export class NewGamePageComponent implements OnInit {
         const isModified = await this.isTheGameModified(game);
         let result;
         if (!isModified) {
+            this.gameSelected[game.id] = false;
+            this.ngOnInit();
             result = false;
         } else {
             this.router.navigate(['/gameWait', game.id]);
