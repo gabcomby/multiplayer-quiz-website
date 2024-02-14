@@ -79,8 +79,7 @@ export class CreateQGamePageComponent implements OnInit {
             } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
                 await this.gameService.createGame(newGame);
 
-                // je veux retourner a admin
-                this.router.navigate(['/home']);
+                this.router.navigate(['/admin']);
             }
         } catch (error) {
             this.handleServerError();
@@ -106,10 +105,10 @@ export class CreateQGamePageComponent implements OnInit {
                 if (await this.gameService.validateDeletedGame(modifiedGame)) {
                     await this.gameService.patchGame(modifiedGame);
 
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/admin']);
                 } else {
                     await this.gameService.createGame(modifiedGame);
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/admin']);
                 }
             }
         } catch (error) {
