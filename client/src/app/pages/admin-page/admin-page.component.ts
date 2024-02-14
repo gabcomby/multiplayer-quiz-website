@@ -36,14 +36,9 @@ export class AdminPageComponent implements OnInit {
     ) {}
 
     async ngOnInit() {
-        this.gameService
-            .getGames()
-            .then((games) => {
-                this.dataSource = games;
-            })
-            .catch((error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            });
+        this.gameService.getGames().then((games) => {
+            this.dataSource = games;
+        });
 
         this.socketService.connect();
     }
@@ -53,14 +48,9 @@ export class AdminPageComponent implements OnInit {
         if (!game) return;
 
         game.isVisible = isVisible;
-        this.gameService
-            .patchGame(game)
-            .then(() => {
-                this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
-            })
-            .catch((error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            });
+        this.gameService.patchGame(game).then(() => {
+            this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
+        });
     }
 
     exportGameAsJson(game: Game): void {
@@ -100,7 +90,6 @@ export class AdminPageComponent implements OnInit {
             const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
 
             if (newTitle === null || newTitle === '') {
-                this.snackbarService.openSnackBar("L'importation a été annulée.");
                 return null;
             } else {
                 gameTitle = newTitle;
@@ -111,7 +100,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     async importGamesFromFile(file: File): Promise<void> {
-        try {
+        if (file.name.endsWith('.json')) {
             const reader = new FileReader();
             reader.readAsText(file);
             const result = await new Promise<string>((resolve, reject) => {
@@ -130,9 +119,9 @@ export class AdminPageComponent implements OnInit {
             this.gameService.createGame(game);
 
             this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
-        } catch (error) {
-            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error)}`);
         }
+
+        return;
     }
 
     deleteGame(gameId: string) {
@@ -148,14 +137,9 @@ export class AdminPageComponent implements OnInit {
             if (!confirmDelete) return;
 
             this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-            this.gameService
-                .deleteGame(gameId)
-                .then(() => {
-                    this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
-                })
-                .catch((error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-                });
+            this.gameService.deleteGame(gameId).then(() => {
+                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            });
         });
     }
 

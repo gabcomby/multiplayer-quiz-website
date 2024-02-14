@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angu
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -71,10 +72,17 @@ describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
+    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
-    const gameServiceMock = jasmine.createSpyObj('gameService', ['patchGame', 'getGames', 'deleteGame', 'getGame', 'createGame']);
-    const snackbarServiceMock = jasmine.createSpyObj('snackbarService', ['openSnackBar']);
+    const gameServiceMock = jasmine.createSpyObj('gameService', [
+        'patchGame',
+        'getGames',
+        'deleteGame',
+        'getGame',
+        'createGame',
+        'validateDuplicationGame',
+    ]);
     const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
     const dialogMock = {
         open: () => {
@@ -82,8 +90,10 @@ describe('AdminPageComponent', () => {
         },
     };
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+
+        await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
             imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule],
             providers: [
@@ -91,10 +101,7 @@ describe('AdminPageComponent', () => {
                     provide: GameService,
                     useValue: gameServiceMock,
                 },
-                {
-                    provide: SnackbarService,
-                    useValue: snackbarServiceMock,
-                },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
                 {
                     provide: SocketService,
                     useValue: socketServiceMock,
@@ -115,6 +122,12 @@ describe('AdminPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it("should populate dataSource with games' data", async () => {
+        gameServiceMock.getGames.and.returnValue(Promise.resolve([mockData]));
+        await component.ngOnInit();
+        expect(component.dataSource).toEqual([mockData]);
     });
 
     it('should toggle visibility', () => {
@@ -180,5 +193,53 @@ describe('AdminPageComponent', () => {
         expect(component['hasValidInput']('VISIBILITY TEST', mockData.title)).toBeTrue();
         expect(component['hasValidInput']('', mockData.title)).toBeTrue();
         expect(component['hasValidInput']('VISIBILITY TEST', '')).toBeTrue();
+    });
+
+    it("should prepare game's json for import", () => {
+        const game = { ...mockData, idNewGame: '1bn3C' };
+        component['prepareGameForImport'](game);
+        expect(game.idNewGame).toBe('1bn3C');
+    });
+
+    it("should validate game's title", async () => {
+        const spy = spyOn(component, 'getValidGameTitle');
+        await component.getValidGameTitle(mockData);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should return a new valid game title immediately', async () => {
+        matDialogMock.open.and.returnValue({
+            afterClosed: () => of('New Valid Title'),
+        });
+
+        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
+        const newTitle = await component.getValidGameTitle(originalGame as Game);
+
+        expect(newTitle).toEqual('New Valid Title');
+        expect(matDialogMock.open).toHaveBeenCalled();
+    });
+
+    it('should handle cancellation', async () => {
+        matDialogMock.open.and.returnValue({
+            afterClosed: () => of(null),
+        });
+
+        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
+        const newTitle = await component.getValidGameTitle(originalGame as Game);
+
+        expect(newTitle).toBeNull();
+        expect(matDialogMock.open).toHaveBeenCalled();
+    });
+
+    it('should handle empty string', async () => {
+        matDialogMock.open.and.returnValue({
+            afterClosed: () => of(''),
+        });
+
+        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
+        const newTitle = await component.getValidGameTitle(originalGame as Game);
+
+        expect(newTitle).toBeNull();
+        expect(matDialogMock.open).toHaveBeenCalled();
     });
 });
