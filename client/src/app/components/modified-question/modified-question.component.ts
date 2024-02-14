@@ -10,7 +10,6 @@ import { QuestionService } from '@app/services/question.service';
 })
 export class ModifiedQuestionComponent implements OnInit {
     @Input() gameQuestions: Question[];
-    // TODO: remove modifiedShown is not used ???
     @Input() modifiedShown: boolean;
     @Input() listQuestionBank: boolean;
 
@@ -91,7 +90,6 @@ export class ModifiedQuestionComponent implements OnInit {
         this.disabled[index] = true;
     }
 
-    // TODO: remove this function is not used ??
     toggleMenuSelection(): void {
         this.menuSelected = !this.menuSelected;
     }

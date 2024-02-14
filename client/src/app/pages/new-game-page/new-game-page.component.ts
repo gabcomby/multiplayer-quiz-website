@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
