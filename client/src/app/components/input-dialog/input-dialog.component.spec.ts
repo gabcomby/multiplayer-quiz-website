@@ -27,4 +27,9 @@ describe('InputDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should dismiss', () => {
+        component.onCancel();
+        expect(dialogRefMock.close).toHaveBeenCalled();
+    });
 });

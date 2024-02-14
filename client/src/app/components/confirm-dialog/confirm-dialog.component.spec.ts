@@ -27,4 +27,9 @@ describe('ConfirmDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should dismiss', () => {
+        component.onDismiss();
+        expect(dialogRefMock.close).toHaveBeenCalledWith(false);
+    });
 });

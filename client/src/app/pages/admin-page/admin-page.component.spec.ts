@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
 const mockData = {
@@ -74,8 +75,10 @@ describe('AdminPageComponent', () => {
     const gameServiceMock = jasmine.createSpyObj('gameService', ['patchGame', 'getGames']);
     const snackbarServiceMock = jasmine.createSpyObj('snackbarService', ['openSnackBar']);
     const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
-    const dialogRefMock = {
-        close: jasmine.createSpy('close'),
+    const dialogMock = {
+        open: () => {
+            return { afterClosed: () => of(true) }; // Simulates user clicking 'Confirm'
+        },
     };
 
     beforeEach(() => {
@@ -95,7 +98,7 @@ describe('AdminPageComponent', () => {
                     provide: SocketService,
                     useValue: socketServiceMock,
                 },
-                { provide: MatDialogRef, useValue: dialogRefMock },
+                { provide: MatDialogRef, useValue: dialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
         }).compileComponents();
@@ -151,4 +154,13 @@ describe('AdminPageComponent', () => {
     it('should format date string correctly in French Canadian format', () => {
         expect(component.formatLastModificationDate('2024-02-12T14:48:55.329Z')).toEqual('2024-02-12 09 h 48');
     });
+
+    it('should delete a game when confirmed', fakeAsync(() => {
+        gameServiceMock.deleteGame.and.returnValue(Promise.resolve());
+        component.deleteGame('1zkjdm');
+        tick();
+        fixture.detectChanges();
+        expect(gameServiceMock.deleteGame).toHaveBeenCalledWith('1zkjdm');
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
+    }));
 });
