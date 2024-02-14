@@ -14,7 +14,6 @@ import { AdminPageComponent } from './admin-page.component';
 const mockData = {
     id: '1zkjdm',
     title: 'VISIBILITY TEST',
-    isVisible: false,
     description: 'asdfasdfasdfasd',
     duration: 10,
     lastModification: new Date('2024-02-12T14:48:55.329Z'),
@@ -66,7 +65,7 @@ const mockData = {
             ],
         },
     ],
-};
+} as Game;
 
 describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
@@ -117,7 +116,7 @@ describe('AdminPageComponent', () => {
         router = TestBed.inject(Router);
         spyOn(router, 'navigate');
         fixture.detectChanges();
-        component.dataSource = [mockData];
+        component.dataSource = [mockData as Game];
     });
 
     it('should create', () => {
@@ -154,14 +153,7 @@ describe('AdminPageComponent', () => {
     });
 
     it("should delete unwanted fields from game's json", () => {
-        const game = { ...mockData, _id: '1' };
-        gameServiceMock.patchGame.and.returnValue(Promise.resolve());
-        const result = component['removeUnwantedFields'](game);
-        expect(result).toEqual(mockData);
-    });
-
-    it("should remove unrecognized fields from game's json", () => {
-        const game = { ...mockData, _id: '1' };
+        const game = { ...mockData, _id: '1', isVisible: true };
         gameServiceMock.patchGame.and.returnValue(Promise.resolve());
         const result = component['removeUnwantedFields'](game);
         expect(result).toEqual(mockData);

@@ -6,7 +6,6 @@ import { CreateQGamePageComponent } from '@app/pages/create-qgame-page/create-qg
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { ModifyQuestionQbankComponent } from '@app/pages/modify-question-qbank/modify-question-qbank.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from '@app/pages/new-question-qbank/new-question-qbank.component';
@@ -16,7 +15,6 @@ const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
-    { path: 'material', component: MaterialPageComponent },
     { path: 'admin', component: AdminPageComponent, canActivate: [authGuard] },
     { path: 'new-game', component: NewGamePageComponent },
     { path: 'create-qgame', component: CreateQGamePageComponent },

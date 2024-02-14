@@ -11,12 +11,13 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { ChoiceComponent } from './components/choice/choice.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
 import { GamePageQuestionsComponent } from './components/game-page-questions/game-page-questions.component';
 import { GamePageScoresheetComponent } from './components/game-page-scoresheet/game-page-scoresheet.component';
 import { GamePageTimerComponent } from './components/game-page-timer/game-page-timer.component';
+import { InputDialogComponent } from './components/input-dialog/input-dialog.component';
 import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
@@ -29,8 +30,6 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
-import { InputDialogComponent } from './components/input-dialog/input-dialog.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -43,7 +42,6 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
         AppComponent,
         GamePageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         GamePageLivechatComponent,
         AdminPageComponent,
         NewGamePageComponent,
