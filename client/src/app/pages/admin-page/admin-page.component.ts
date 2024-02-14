@@ -162,7 +162,7 @@ export class AdminPageComponent implements OnInit {
             return data.map((item) => this.removeUnwantedFields(item));
         } else if (typeof data === 'object' && data !== null) {
             Object.keys(data).forEach((key) => {
-                if (key === '_id' || key === '__v') {
+                if (key === '_id' || key === '__v' || key === 'isVisible') {
                     delete data[key];
                 } else {
                     data[key] = this.removeUnwantedFields(data[key] as Record<string, unknown>);
