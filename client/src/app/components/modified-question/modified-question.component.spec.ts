@@ -2,6 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { Question } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
@@ -97,7 +98,7 @@ describe('ModifiedQuestionComponent', () => {
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: QuestionValidationService, useValue: questionValidationSpy },
             ],
-            imports: [DragDropModule, FormsModule],
+            imports: [DragDropModule, FormsModule, MatIconModule],
         }).compileComponents();
     }));
 

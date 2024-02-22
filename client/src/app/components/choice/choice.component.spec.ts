@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
@@ -17,6 +18,7 @@ describe('ChoiceComponent', () => {
         TestBed.configureTestingModule({
             declarations: [ChoiceComponent],
             providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
+            imports: [MatDialogModule],
         });
         fixture = TestBed.createComponent(ChoiceComponent);
         component = fixture.componentInstance;
