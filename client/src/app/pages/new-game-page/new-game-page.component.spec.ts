@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -135,7 +136,7 @@ describe('NewGamePageComponent', () => {
                 { provide: Socket, useValue: socketIoObj },
                 { provide: Router, useValue: routerObj },
             ],
-            imports: [HttpClientModule],
+            imports: [HttpClientModule, MatIconModule],
         }).compileComponents();
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;

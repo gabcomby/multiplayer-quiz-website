@@ -1,6 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game, Question } from '@app/interfaces/game';
@@ -92,7 +94,7 @@ describe('GamePageComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent],
-            imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule],
+            imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule, MatIconModule, MatToolbarModule],
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: MatchService, useValue: matchService },
