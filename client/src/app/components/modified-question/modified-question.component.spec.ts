@@ -1,12 +1,21 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { Question } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
+
+@Component({
+    selector: 'app-choice',
+    template: '',
+})
+class AppChoiceStubComponent {
+    @Input() question: unknown;
+}
 
 describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
@@ -82,13 +91,13 @@ describe('ModifiedQuestionComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [ModifiedQuestionComponent],
+            declarations: [ModifiedQuestionComponent, AppChoiceStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: QuestionValidationService, useValue: questionValidationSpy },
             ],
-            imports: [DragDropModule],
+            imports: [DragDropModule, FormsModule],
         }).compileComponents();
     }));
 

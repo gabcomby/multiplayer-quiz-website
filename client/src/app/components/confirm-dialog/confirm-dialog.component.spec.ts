@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
 describe('ConfirmDialogComponent', () => {
@@ -18,6 +18,7 @@ describe('ConfirmDialogComponent', () => {
                 { provide: MatDialogRef, useValue: dialogRefMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
+            imports: [MatDialogModule],
         });
         fixture = TestBed.createComponent(ConfirmDialogComponent);
         component = fixture.componentInstance;
