@@ -36,12 +36,12 @@ export class MatchLobbyService {
         );
     }
 
-    async removePlayer(lobbyId: string, playerName: string): Promise<ILobby> {
+    async removePlayer(lobbyId: string, playerId: string): Promise<ILobby> {
         return await matchLobbyModel.findOneAndUpdate(
             { id: lobbyId },
             {
                 $pull: {
-                    playerList: { name: playerName },
+                    playerList: { id: playerId },
                 },
             },
             { new: true },

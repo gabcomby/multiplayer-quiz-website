@@ -59,9 +59,9 @@ export class MatchLobbyController {
             }
         });
 
-        this.router.delete('/:id/players/:name', async (req: Request, res: Response) => {
+        this.router.delete('/:id/players/:playerId', async (req: Request, res: Response) => {
             try {
-                const lobby = await this.matchLobbyService.removePlayer(req.params.id, req.params.name);
+                const lobby = await this.matchLobbyService.removePlayer(req.params.id, req.params.playerId);
                 res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error removing player from lobby' });
