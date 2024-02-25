@@ -1,5 +1,5 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { Component, EventEmitter, Input } from '@angular/core';
+import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -99,6 +99,7 @@ describe('ModifiedQuestionComponent', () => {
                 { provide: QuestionValidationService, useValue: questionValidationSpy },
             ],
             imports: [DragDropModule, FormsModule, MatIconModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
