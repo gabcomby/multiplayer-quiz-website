@@ -43,4 +43,26 @@ export class MatchLobbyService {
             { new: true },
         );
     }
+
+    async getBannedPlayers(lobbyId: string): Promise<string[]> {
+        const lobby = await matchLobbyModel.findOne({ id: lobbyId });
+
+        if (lobby) {
+            return lobby.bannedNames;
+        } else {
+            return [];
+        }
+    }
+
+    async banPlayer(lobbyId: string, playerName: string): Promise<ILobby> {
+        return await matchLobbyModel.findOneAndUpdate(
+            { id: lobbyId },
+            {
+                $push: {
+                    bannedNames: playerName,
+                },
+            },
+            { new: true },
+        );
+    }
 }

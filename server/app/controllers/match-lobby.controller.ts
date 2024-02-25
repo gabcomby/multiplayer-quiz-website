@@ -50,7 +50,7 @@ export class MatchLobbyController {
             }
         });
 
-        this.router.post('/:id/players', async (req: Request, res: Response) => {
+        this.router.patch('/:id/players', async (req: Request, res: Response) => {
             try {
                 const lobby = await this.matchLobbyService.addPlayer(req.params.id, req.body);
                 res.json(lobby);
@@ -65,6 +65,24 @@ export class MatchLobbyController {
                 res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error removing player from lobby' });
+            }
+        });
+
+        this.router.get('/:id/ban', async (req: Request, res: Response) => {
+            try {
+                const banned = await this.matchLobbyService.getBannedPlayers(req.params.id);
+                res.json(banned);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching banned players from lobby' });
+            }
+        });
+
+        this.router.patch('/:id/ban/:name', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.banPlayer(req.params.id, req.params.name);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error banning player from lobby' });
             }
         });
     }
