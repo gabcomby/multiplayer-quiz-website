@@ -1,6 +1,6 @@
 /* eslint-disable -- Remove rules due to stub class + max lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -140,7 +140,7 @@ describe('GamePageComponent', () => {
                 { provide: MatchService, useValue: matchService },
                 { provide: SocketService, useValue: socketService },
             ],
-            schemas: [NO_ERRORS_SCHEMA],
+            schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
 
         fixture = TestBed.createComponent(GamePageComponent);
