@@ -1,7 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { API_BASE_URL } from '@app/app.module';
 import type { Match, Player } from '@app/interfaces/match';
-import { API_BASE_URL, MatchService } from '@app/services/match.service';
+import { MatchService } from '@app/services/match.service';
 
 describe('MatchService', () => {
     let service: MatchService;

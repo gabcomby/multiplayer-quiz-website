@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { environment } from '@env/environment.prod';
+import { Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
-export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,7 +11,7 @@ export class AuthService {
 
     constructor(
         private http: HttpClient,
-        @Inject(API_BASE_URL) apiBaseURL: string = environment.serverUrl,
+        @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/api`;
     }

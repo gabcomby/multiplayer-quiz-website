@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Inject, Injectable, InjectionToken } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
-import { environment } from '@env/environment.prod';
 import { Observable, firstValueFrom } from 'rxjs';
-
-export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +15,7 @@ export class QuestionService {
 
     constructor(
         private http: HttpClient,
-        @Inject(API_BASE_URL) apiBaseURL: string = environment.serverUrl,
+        @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/api/questions`;
     }

@@ -1,6 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { API_BASE_URL, AuthService } from './auth.service';
+import { API_BASE_URL } from '@app/app.module';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
     let service: AuthService;
