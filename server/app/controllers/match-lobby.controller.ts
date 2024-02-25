@@ -85,5 +85,14 @@ export class MatchLobbyController {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error banning player from lobby' });
             }
         });
+
+        this.router.get('/joinLobby/:code', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.getLobbyByCode(req.params.code);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching lobby by code' });
+            }
+        });
     }
 }

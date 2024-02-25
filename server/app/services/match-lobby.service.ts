@@ -12,6 +12,10 @@ export class MatchLobbyService {
         return await matchLobbyModel.findOne({ id: lobbyId });
     }
 
+    async getLobbyByCode(lobbyCode: string): Promise<ILobby> {
+        return await matchLobbyModel.findOne({ code: lobbyCode });
+    }
+
     async createLobby(lobbyData: ILobby): Promise<ILobby> {
         return await matchLobbyModel.create(lobbyData);
     }
