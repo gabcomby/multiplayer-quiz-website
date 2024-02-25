@@ -1,4 +1,4 @@
-// pour autre route
+/* eslint-disable max-classes-per-file */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
@@ -18,6 +18,14 @@ import { CreateQGamePageComponent } from './create-qgame-page.component';
 })
 class AppModifiedQuestionStubComponent {
     @Input() questions: unknown[];
+}
+
+@Component({
+    selector: 'app-new-question',
+    template: '',
+})
+class AppNewQuestionStubComponent {
+    @Input() formBank: unknown[];
 }
 
 import SpyObj = jasmine.SpyObj;
@@ -57,7 +65,7 @@ describe('CreateQGamePageComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent],
+            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },

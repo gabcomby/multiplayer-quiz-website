@@ -24,6 +24,14 @@ class AppModifiedQuestionStubComponent {
     @Input() questions: unknown[];
 }
 
+@Component({
+    selector: 'app-new-question',
+    template: '',
+})
+class AppNewQuestionStubComponent {
+    @Input() formBank: unknown[];
+}
+
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let gameServiceSpy: SpyObj<GameService>;
@@ -127,7 +135,7 @@ describe('CreateQGamePageComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent],
+            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },

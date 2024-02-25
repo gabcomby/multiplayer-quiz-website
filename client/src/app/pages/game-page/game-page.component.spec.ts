@@ -1,4 +1,4 @@
-/* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
+/* eslint-disable -- Remove rules due to stub class + max lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
