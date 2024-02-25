@@ -1,5 +1,6 @@
 // pour autre route
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -10,6 +11,14 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import * as gameUtilsModule from '@app/utils/is-valid-game';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
+
+@Component({
+    selector: 'app-modified-question',
+    template: '',
+})
+class AppModifiedQuestionStubComponent {
+    @Input() questions: unknown[];
+}
 
 import SpyObj = jasmine.SpyObj;
 describe('CreateQGamePageComponent', () => {
@@ -48,7 +57,7 @@ describe('CreateQGamePageComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQGamePageComponent],
+            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },

@@ -1,4 +1,6 @@
+/* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -17,6 +19,38 @@ import { GamePageComponent } from './game-page.component';
 const TEN = 10;
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+
+@Component({
+    selector: 'app-game-page-scoresheet',
+    template: '',
+})
+class AppGamePageScoresheetStubComponent {
+    @Input() players: unknown[];
+}
+
+@Component({
+    selector: 'app-game-page-questions',
+    template: '',
+})
+class AppGamePageQuestionsStubComponent {
+    @Input() answerIsCorrect: unknown;
+}
+
+@Component({
+    selector: 'app-game-page-timer',
+    template: '',
+})
+class AppGamePageTimerStubComponent {
+    @Input() timer: unknown;
+}
+
+@Component({
+    selector: 'app-game-page-livechat',
+    template: '',
+})
+class AppGamePageChatStubComponent {
+    @Input() timer: unknown;
+}
 
 const questionMock: Question[] = [
     {
@@ -93,7 +127,13 @@ describe('GamePageComponent', () => {
         matchService.addPlayer.and.returnValue(of(updatedMatchDataWithPlayer));
 
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent],
+            declarations: [
+                GamePageComponent,
+                AppGamePageScoresheetStubComponent,
+                AppGamePageQuestionsStubComponent,
+                AppGamePageTimerStubComponent,
+                AppGamePageChatStubComponent,
+            ],
             imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule, MatIconModule, MatToolbarModule],
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },

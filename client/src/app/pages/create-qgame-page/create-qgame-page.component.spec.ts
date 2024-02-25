@@ -1,4 +1,6 @@
+/* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +15,14 @@ import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
 import SpyObj = jasmine.SpyObj;
+
+@Component({
+    selector: 'app-modified-question',
+    template: '',
+})
+class AppModifiedQuestionStubComponent {
+    @Input() questions: unknown[];
+}
 
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
@@ -117,7 +127,7 @@ describe('CreateQGamePageComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQGamePageComponent],
+            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
