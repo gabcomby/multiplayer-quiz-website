@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { lastValueFrom } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -26,6 +29,7 @@ export class NewGamePageComponent implements OnInit {
         private socketService: SocketService,
         private router: Router,
         private snackbarService: SnackbarService,
+        private dialog: MatDialog,
     ) {}
 
     async ngOnInit() {
@@ -111,6 +115,11 @@ export class NewGamePageComponent implements OnInit {
     }
 
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+        const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
+            width: '250px',
+        });
+        const userName = await lastValueFrom(dialogRef.afterClosed());
+        if (!userName) return false;
         const isModified = await this.isTheGameModified(game);
         let result;
         if (!isModified) {
@@ -118,7 +127,8 @@ export class NewGamePageComponent implements OnInit {
             this.ngOnInit();
             result = false;
         } else {
-            this.router.navigate(['/gameWait', game.id]);
+            console.log('Yes!');
+            this.router.navigate(['/gameWait', game.id, userName]);
             result = true;
         }
         return result;
