@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game, Question } from '@app/interfaces/game';
 import { Match } from '@app/interfaces/match';
-import { GameService } from '@app/services/game.service';
+import { API_BASE_URL, GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -139,6 +139,7 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: MatchService, useValue: matchService },
                 { provide: SocketService, useValue: socketService },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();

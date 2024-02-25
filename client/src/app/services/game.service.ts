@@ -1,16 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 
 import type { Game } from '@app/interfaces/game';
+import { environment } from '@env/environment';
+
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    private apiUrl = 'http://localhost:3000/api/games';
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string = environment.serverUrl,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/games`;
+    }
 
     getGame(gameId: string): Observable<Game> {
         return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
