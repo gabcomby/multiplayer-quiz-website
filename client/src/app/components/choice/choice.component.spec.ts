@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ describe('ChoiceComponent', () => {
             declarations: [ChoiceComponent],
             providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
             imports: [MatDialogModule, MatCheckboxModule, MatIconModule],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            schemas: [NO_ERRORS_SCHEMA],
         });
         fixture = TestBed.createComponent(ChoiceComponent);
         component = fixture.componentInstance;

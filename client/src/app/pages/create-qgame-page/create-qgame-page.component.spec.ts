@@ -1,6 +1,6 @@
 /* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input } from '@angular/core';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -146,6 +146,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
             imports: [HttpClientTestingModule, MatToolbarModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
     beforeEach(() => {

@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input } from '@angular/core';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -76,6 +76,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: Router, useValue: routerSpy },
             ],
             imports: [HttpClientTestingModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
     beforeEach(() => {
