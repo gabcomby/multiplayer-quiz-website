@@ -1,14 +1,23 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import type { Match, Player } from '@app/interfaces/match';
+import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
+
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 @Injectable({
     providedIn: 'root',
 })
 export class MatchService {
-    private apiUrl = 'http://localhost:3000/api/matches';
-    constructor(private http: HttpClient) {}
+    private apiUrl: string;
+
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string = environment.serverUrl,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/matches`;
+    }
 
     getAllMatches(): Observable<Match[]> {
         return this.http.get<Match[]>(`${this.apiUrl}/`);

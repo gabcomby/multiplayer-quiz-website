@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import type { Match, Player } from '@app/interfaces/match';
-import { MatchService } from '@app/services/match.service';
+import { API_BASE_URL, MatchService } from '@app/services/match.service';
 
 describe('MatchService', () => {
     let service: MatchService;
@@ -11,7 +11,7 @@ describe('MatchService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [MatchService],
+            providers: [MatchService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
         });
         service = TestBed.inject(MatchService);
         httpMock = TestBed.inject(HttpTestingController);
