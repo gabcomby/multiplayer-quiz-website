@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -126,7 +127,7 @@ describe('CreateQGamePageComponent', () => {
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, MatToolbarModule],
         }).compileComponents();
     }));
     beforeEach(() => {

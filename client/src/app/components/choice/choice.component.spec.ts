@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
@@ -18,7 +20,7 @@ describe('ChoiceComponent', () => {
         TestBed.configureTestingModule({
             declarations: [ChoiceComponent],
             providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
-            imports: [MatDialogModule],
+            imports: [MatDialogModule, MatCheckboxModule, MatIconModule],
         });
         fixture = TestBed.createComponent(ChoiceComponent);
         component = fixture.componentInstance;
