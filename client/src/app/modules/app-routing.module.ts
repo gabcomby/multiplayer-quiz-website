@@ -21,7 +21,7 @@ const routes: Routes = [
     { path: 'create-qgame/:id', component: CreateQGamePageComponent },
     { path: 'question-bank', component: QuestionBankComponent },
     { path: 'game/:id', component: GamePageComponent },
-    { path: 'gameWait/:id', component: GameWaitComponent },
+    { path: 'gameWait/:matchLobbyId', component: GameWaitComponent },
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
     { path: '**', redirectTo: '/home' },

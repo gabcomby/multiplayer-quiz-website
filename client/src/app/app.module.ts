@@ -31,6 +31,7 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
+import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -65,6 +66,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         ServerErrorDialogComponent,
         InputDialogComponent,
         ConfirmDialogComponent,
+        PlayerNameDialogComponent,
     ],
     imports: [
         AppMaterialModule,
