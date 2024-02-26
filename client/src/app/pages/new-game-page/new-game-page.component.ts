@@ -3,10 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { lastValueFrom } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -29,6 +31,7 @@ export class NewGamePageComponent implements OnInit {
         private socketService: SocketService,
         private router: Router,
         private snackbarService: SnackbarService,
+        private matchLobbyService: MatchLobbyService,
         private dialog: MatDialog,
     ) {}
 
@@ -127,14 +130,20 @@ export class NewGamePageComponent implements OnInit {
             this.ngOnInit();
             result = false;
         } else {
-            console.log('Yes!');
-            this.router.navigate(['/gameWait', game.id, userName]);
+            this.createNewMatchLobby(userName).subscribe({
+                next: (matchLobby) => {
+                    this.router.navigate(['/gameWait', game.id, matchLobby.id]);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
+                },
+            });
             result = true;
         }
         return result;
     }
 
-    // async createNewMatchLobby() {
-
-    // }
+    createNewMatchLobby(playerName: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createLobby(playerName);
+    }
 }

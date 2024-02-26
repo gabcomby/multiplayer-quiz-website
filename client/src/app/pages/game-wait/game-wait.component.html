@@ -1,7 +1,6 @@
 <div>
     <app-game-page-scoresheet></app-game-page-scoresheet>
     <app-game-page-livechat></app-game-page-livechat>
-    <p>Welcome {{ playerName }}, invite your friends to join your game!</p>
-    <p>Code to join the match: {{ matchCode }}</p>
+    <p>Code to join the match: {{ matchLobby.lobbyCode }}</p>
     <button mat-raised-button color="accent" (click)="handleGameLaunch()">Start the game</button>
 </div>

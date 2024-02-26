@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
-const NINE_THOUSAND = 9000;
-const ONE_THOUSAND = 1000;
+import { MatchLobby } from '@app/interfaces/match-lobby';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 
 @Component({
     selector: 'app-game-wait',
@@ -10,17 +10,25 @@ const ONE_THOUSAND = 1000;
     styleUrls: ['./game-wait.component.scss'],
 })
 export class GameWaitComponent implements OnInit {
-    matchCode: string;
-    playerName: string;
+    matchLobby: MatchLobby;
     private gameId: string;
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private matchLobbyService: MatchLobbyService,
+        private snackbarService: SnackbarService,
     ) {}
     ngOnInit() {
         this.gameId = this.route.snapshot.params['gameId'];
-        this.playerName = this.route.snapshot.params['userName'];
-        this.matchCode = Math.floor(Math.random() * NINE_THOUSAND + ONE_THOUSAND).toString();
+        const matchLobbyId = this.route.snapshot.params['matchLobbyId'];
+        this.matchLobbyService.getLobby(matchLobbyId).subscribe({
+            next: (data) => {
+                this.matchLobby = data;
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar('Error' + error + 'fetching match lobby');
+            },
+        });
     }
 
     handleGameLaunch() {
