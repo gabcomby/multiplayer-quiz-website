@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import type { Match, Player } from '@app/interfaces/match';
 import { Observable } from 'rxjs';
 
@@ -7,8 +8,14 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class MatchService {
-    private apiUrl = 'http://localhost:3000/api/matches';
-    constructor(private http: HttpClient) {}
+    private apiUrl: string;
+
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/matches`;
+    }
 
     getAllMatches(): Observable<Match[]> {
         return this.http.get<Match[]>(`${this.apiUrl}/`);

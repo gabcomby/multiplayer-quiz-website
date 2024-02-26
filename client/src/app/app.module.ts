@@ -1,6 +1,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { InjectionToken, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
+import { environment } from '@env/environment.prod';
 import { ChoiceComponent } from './components/choice/choice.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
@@ -30,6 +31,8 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
+
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 /**
  * Main module that is used in main.ts.
@@ -76,7 +79,7 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         MatListModule,
         RouterModule,
     ],
-    providers: [],
+    providers: [{ provide: API_BASE_URL, useValue: environment.serverUrl }],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
