@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { Observable, lastValueFrom } from 'rxjs';
 import { environment } from '@env/environment.prod';
 import { Socket, io } from 'socket.io-client';
 
@@ -27,6 +32,8 @@ export class NewGamePageComponent implements OnInit {
         private socketService: SocketService,
         private router: Router,
         private snackbarService: SnackbarService,
+        private matchLobbyService: MatchLobbyService,
+        private dialog: MatDialog,
     ) {}
 
     async ngOnInit() {
@@ -111,17 +118,39 @@ export class NewGamePageComponent implements OnInit {
         return result;
     }
 
+    // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+        const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
+            width: '300px',
+            data: {
+                isShown: false,
+            },
+        });
+        const result = await lastValueFrom(dialogRef.afterClosed());
+        if (!result || this.isEmpyDialog(result)) return false;
         const isModified = await this.isTheGameModified(game);
-        let result;
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            result = false;
+            return false;
         } else {
-            this.router.navigate(['/gameWait', game.id]);
-            result = true;
+            this.createNewMatchLobby(result.userName, game.id).subscribe({
+                next: (matchLobby) => {
+                    this.router.navigate(['/gameWait', matchLobby.id]);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
+                },
+            });
+            return true;
         }
-        return result;
+    }
+
+    createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createLobby(playerName, gameId);
+    }
+
+    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+        return result.userName.trim() === '';
     }
 }

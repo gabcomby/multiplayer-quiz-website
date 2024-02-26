@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Enter Your Name</h2>
+<div mat-dialog-content>
+    <mat-form-field *ngIf="isShown">
+        <input matInput [(ngModel)]="lobbyCode" placeholder="Code de lobby de votre ami.e" />
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput [(ngModel)]="userName" placeholder="Votre nom" />
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onSubmit()">Submit</button>
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+</div>
