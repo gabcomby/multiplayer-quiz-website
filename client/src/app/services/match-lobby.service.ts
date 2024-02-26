@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class MatchLobbyService {
+    // TODO: Change this to the actual server URL
     private apiUrl = 'http://localhost:3000/api/lobbies';
     constructor(private http: HttpClient) {}
 
