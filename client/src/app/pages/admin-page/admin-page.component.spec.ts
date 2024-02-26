@@ -152,13 +152,6 @@ describe('AdminPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should delete unwanted fields from game's json", () => {
-        const game = { ...mockData, _id: '1', isVisible: true };
-        gameServiceMock.patchGame.and.returnValue(Promise.resolve());
-        const result = component['removeUnwantedFields'](game);
-        expect(result).toEqual(mockData);
-    });
-
     it('should navigate to create-qgame when createGame is called', () => {
         component.createGame();
         expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);

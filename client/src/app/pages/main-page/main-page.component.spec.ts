@@ -1,5 +1,6 @@
 /* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,12 +42,13 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: 'admin', component: DummyAdminComponent }])],
+            imports: [RouterTestingModule.withRoutes([{ path: 'admin', component: DummyAdminComponent }]), HttpClientTestingModule],
             declarations: [MainPageComponent, DummyAdminComponent],
             providers: [
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: MatDialog, useClass: MatDialogMock },
                 { provide: SnackbarService, useClass: SnackbarServiceMock },
+                { provide: HttpClient, useValue: {} },
             ],
         }).compileComponents();
 
