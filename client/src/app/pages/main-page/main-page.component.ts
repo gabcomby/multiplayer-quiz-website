@@ -8,7 +8,7 @@ import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/
 import { AuthService } from '@app/services/auth.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 
 @Component({
     selector: 'app-main-page',
@@ -34,16 +34,17 @@ export class MainPageComponent {
 
     async handleGameJoin(): Promise<void> {
         const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
-            width: '250px',
+            width: '300px',
             data: {
-                showLobbyCodePrompt: true,
+                isShown: true,
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-        if (result.userName.trim() === '' || result.lobbyCode.trim() === '') {
+        if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
+        // TODO: Refactor this code to remove the nested subscribe (Pierre-Emmanuel)
         if (result.lobbyCode) {
             this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
                 next: (lobby) => {
@@ -65,6 +66,10 @@ export class MainPageComponent {
                 },
             });
         }
+    }
+
+    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+        return result.userName.trim() === '' || result.lobbyCode.trim() === '';
     }
 
     private handleDialogClose = (password: string) => {

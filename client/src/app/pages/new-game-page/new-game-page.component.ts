@@ -117,23 +117,23 @@ export class NewGamePageComponent implements OnInit {
         return result;
     }
 
+    // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
         const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
-            width: '250px',
+            width: '300px',
             data: {
-                showLobbyCodePrompt: false,
+                isShown: false,
             },
         });
-        const userName = (await lastValueFrom(dialogRef.afterClosed())).userName;
-        if (!userName) return false;
+        const result = await lastValueFrom(dialogRef.afterClosed());
+        if (!result || this.isEmpyDialog(result)) return false;
         const isModified = await this.isTheGameModified(game);
-        let result;
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            result = false;
+            return false;
         } else {
-            this.createNewMatchLobby(userName, game.id).subscribe({
+            this.createNewMatchLobby(result.userName, game.id).subscribe({
                 next: (matchLobby) => {
                     this.router.navigate(['/gameWait', matchLobby.id]);
                 },
@@ -141,12 +141,15 @@ export class NewGamePageComponent implements OnInit {
                     this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
                 },
             });
-            result = true;
+            return true;
         }
-        return result;
     }
 
     createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
         return this.matchLobbyService.createLobby(playerName, gameId);
+    }
+
+    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+        return result.userName.trim() === '';
     }
 }

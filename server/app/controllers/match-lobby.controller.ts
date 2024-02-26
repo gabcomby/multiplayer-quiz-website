@@ -16,7 +16,7 @@ export class MatchLobbyController {
 
         this.router.get('/', async (req: Request, res: Response) => {
             try {
-                const lobbies = await this.matchLobbyService.getAllLobbies();
+                const lobbies = await this.matchLobbyService.getLobbies();
                 res.json(lobbies);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching all lobbies from server' });

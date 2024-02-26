@@ -2,10 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable } from 'rxjs';
-
-const NINE_THOUSAND = 9000;
-const ONE_THOUSAND = 1000;
 
 @Injectable({
     providedIn: 'root',
@@ -24,16 +22,16 @@ export class MatchLobbyService {
 
     createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
         const player: Player = {
-            id: crypto.randomUUID(),
+            id: generateNewId(),
             name: creatorName,
             score: 0,
         };
         const lobby: MatchLobby = {
-            id: crypto.randomUUID(),
+            id: generateNewId(),
             playerList: [player],
             gameId,
             bannedNames: [],
-            lobbyCode: Math.floor(Math.random() * NINE_THOUSAND + ONE_THOUSAND).toString(),
+            lobbyCode: generateLobbyId(),
             isLocked: false,
         };
         return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
@@ -45,7 +43,7 @@ export class MatchLobbyService {
 
     addPlayer(playerName: string, lobbyId: string) {
         const player: Player = {
-            id: crypto.randomUUID(),
+            id: generateNewId(),
             name: playerName,
             score: 0,
         };
