@@ -1,5 +1,7 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { GamePageLivechatComponent } from './game-page-livechat.component';
 
 const DISAPPEAR_DELAY = 10000;
@@ -11,7 +13,8 @@ describe('GamePageLivechatComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageLivechatComponent],
-            imports: [FormsModule],
+            imports: [FormsModule, MatIconModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 

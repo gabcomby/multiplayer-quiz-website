@@ -1,7 +1,10 @@
+/* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Game, Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -12,6 +15,22 @@ import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
 import SpyObj = jasmine.SpyObj;
+
+@Component({
+    selector: 'app-modified-question',
+    template: '',
+})
+class AppModifiedQuestionStubComponent {
+    @Input() questions: unknown[];
+}
+
+@Component({
+    selector: 'app-new-question',
+    template: '',
+})
+class AppNewQuestionStubComponent {
+    @Input() formBank: unknown[];
+}
 
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
@@ -116,7 +135,7 @@ describe('CreateQGamePageComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQGamePageComponent],
+            declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
@@ -126,7 +145,8 @@ describe('CreateQGamePageComponent', () => {
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
             ],
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, MatToolbarModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
     beforeEach(() => {

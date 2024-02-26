@@ -33,7 +33,7 @@ export class Server {
 
         this.io = new SocketIoServer(this.server, {
             cors: {
-                origin: 'http://localhost:4200',
+                origin: '*',
                 methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
             },
         });

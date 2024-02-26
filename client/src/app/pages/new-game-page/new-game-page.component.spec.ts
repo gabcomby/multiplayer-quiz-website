@@ -2,6 +2,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -141,7 +143,11 @@ describe('NewGamePageComponent', () => {
                 { provide: Router, useValue: routerObj },
                 { provide: MatDialogRef, useValue: dialogRefMock },
             ],
+<<<<<<< client/src/app/pages/new-game-page/new-game-page.component.spec.ts
             imports: [HttpClientModule, MatDialogModule],
+=======
+            imports: [HttpClientModule, MatIconModule, MatToolbarModule],
+>>>>>>> client/src/app/pages/new-game-page/new-game-page.component.spec.ts
         }).compileComponents();
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;

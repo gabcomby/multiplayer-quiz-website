@@ -1,16 +1,22 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 
+import { API_BASE_URL } from '@app/app.module';
 import type { Game } from '@app/interfaces/game';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    private apiUrl = 'http://localhost:3000/api/games';
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/games`;
+    }
 
     getGame(gameId: string): Observable<Game> {
         return this.http.get<Game>(`${this.apiUrl}/${gameId}`);

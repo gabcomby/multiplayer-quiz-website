@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from './question.service';
 
@@ -37,7 +38,7 @@ describe('QuestionService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [QuestionService],
+            providers: [QuestionService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
         });
         service = TestBed.inject(QuestionService);
         httpController = TestBed.inject(HttpTestingController);

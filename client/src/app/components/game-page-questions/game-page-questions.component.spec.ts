@@ -1,7 +1,15 @@
-import { SimpleChange } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
+
+@Component({
+    selector: 'app-game-page-questions',
+    template: '',
+})
+class AppGamePageQuestionsStubComponent {
+    @Input() timerExpired: unknown;
+}
 
 describe('GamePageQuestionsComponent', () => {
     let component: GamePageQuestionsComponent;
@@ -11,8 +19,9 @@ describe('GamePageQuestionsComponent', () => {
     beforeEach(() => {
         answerStateServiceSpy = jasmine.createSpyObj('AnswerStateService', ['lockAnswer']);
         TestBed.configureTestingModule({
-            declarations: [GamePageQuestionsComponent],
+            declarations: [GamePageQuestionsComponent, AppGamePageQuestionsStubComponent],
             providers: [{ provide: AnswerStateService, useValue: answerStateServiceSpy }],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         fixture = TestBed.createComponent(GamePageQuestionsComponent);
         component = fixture.componentInstance;
