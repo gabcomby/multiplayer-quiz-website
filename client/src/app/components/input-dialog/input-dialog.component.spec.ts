@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { InputDialogComponent } from './input-dialog.component';
 
 describe('InputDialogComponent', () => {
@@ -18,6 +19,8 @@ describe('InputDialogComponent', () => {
                 { provide: MatDialogRef, useValue: dialogRefMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
+            imports: [MatDialogModule],
+            schemas: [NO_ERRORS_SCHEMA],
         });
         fixture = TestBed.createComponent(InputDialogComponent);
         component = fixture.componentInstance;

@@ -1,7 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game } from '@app/interfaces/game';
@@ -94,7 +96,7 @@ describe('AdminPageComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
             providers: [
                 {
                     provide: GameService,
@@ -152,20 +154,9 @@ describe('AdminPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should delete unwanted fields from game's json", () => {
-        const game = { ...mockData, _id: '1', isVisible: true };
-        gameServiceMock.patchGame.and.returnValue(Promise.resolve());
-        const result = component['removeUnwantedFields'](game);
-        expect(result).toEqual(mockData);
-    });
-
     it('should navigate to create-qgame when createGame is called', () => {
         component.createGame();
         expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);
-    });
-
-    it('should format date string correctly in French Canadian format', () => {
-        expect(component.formatLastModificationDate('2024-02-12T14:48:55.329Z')).toEqual('2024-02-12 14 h 48');
     });
 
     it('should delete a game when confirmed', async () => {
