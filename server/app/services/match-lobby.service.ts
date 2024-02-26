@@ -4,7 +4,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class MatchLobbyService {
-    async getAllLobbies(): Promise<ILobby[]> {
+    async getLobbies(): Promise<ILobby[]> {
         return await matchLobbyModel.find();
     }
 

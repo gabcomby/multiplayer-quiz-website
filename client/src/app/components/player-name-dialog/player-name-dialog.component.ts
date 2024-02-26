@@ -7,23 +7,19 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./player-name-dialog.component.scss'],
 })
 export class PlayerNameDialogComponent {
-    @Input() showLobbyCodePrompt: boolean = false;
+    @Input() isShown: boolean = false;
 
     userName: string = '';
     lobbyCode: string = '';
 
     constructor(
         public dialogRef: MatDialogRef<PlayerNameDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { showLobbyCodePrompt: boolean },
+        @Inject(MAT_DIALOG_DATA) public data: { isShown: boolean },
     ) {
-        this.showLobbyCodePrompt = data.showLobbyCodePrompt;
+        this.isShown = data.isShown;
     }
 
     onSubmit(): void {
-        const result = {
-            userName: this.userName,
-            lobbyCode: this.lobbyCode,
-        };
-        this.dialogRef.close(result);
+        this.dialogRef.close({ userName: this.userName, lobbyCode: this.lobbyCode });
     }
 }

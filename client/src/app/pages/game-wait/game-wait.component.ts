@@ -19,6 +19,7 @@ export class GameWaitComponent implements OnInit {
         isLocked: false,
     };
     private gameId: string;
+    // eslint-disable-next-line max-params
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -26,14 +27,13 @@ export class GameWaitComponent implements OnInit {
         private snackbarService: SnackbarService,
     ) {}
     ngOnInit() {
-        this.gameId = this.route.snapshot.params['gameId'];
-        const matchLobbyId = this.route.snapshot.params['matchLobbyId'];
-        this.matchLobbyService.getLobby(matchLobbyId).subscribe({
+        this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
             next: (data) => {
                 this.matchLobby = data;
+                this.gameId = this.matchLobby.gameId;
             },
             error: (error) => {
-                this.snackbarService.openSnackBar('Error' + error + 'fetching match lobby');
+                this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
             },
         });
     }

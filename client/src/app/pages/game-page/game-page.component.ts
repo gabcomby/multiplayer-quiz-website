@@ -6,6 +6,7 @@ import { GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable, switchMap } from 'rxjs';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -88,7 +89,7 @@ export class GamePageComponent implements OnInit {
     }
 
     createMatch(): Observable<Match> {
-        this.matchId = crypto.randomUUID();
+        this.matchId = generateNewId();
         return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
     }
 
