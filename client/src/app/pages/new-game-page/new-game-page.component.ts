@@ -9,6 +9,7 @@ import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Observable, lastValueFrom } from 'rxjs';
+import { environment } from '@env/environment.prod';
 import { Socket, io } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -48,7 +49,7 @@ export class NewGamePageComponent implements OnInit {
     }
 
     initializeSocket() {
-        this.socket = io('http://localhost:3000');
+        this.socket = io(environment.serverUrl);
         this.socket.on('deleteId', async (gameId: string) => {
             await this.deleteGameEvent(gameId);
         });

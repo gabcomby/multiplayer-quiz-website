@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { API_BASE_URL } from '@app/app.module';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -9,7 +10,7 @@ describe('AuthService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [AuthService],
+            providers: [AuthService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
         });
         service = TestBed.inject(AuthService);
         httpController = TestBed.inject(HttpTestingController);

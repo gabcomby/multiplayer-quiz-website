@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
 import { Observable, firstValueFrom } from 'rxjs';
 
@@ -10,9 +11,14 @@ export class QuestionService {
     questions: Question[] = [];
 
     onQuestionAdded: EventEmitter<Question> = new EventEmitter();
-    private apiUrl = 'http://localhost:3000/api/questions';
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/questions`;
+    }
 
     resetQuestions() {
         this.questions = [];

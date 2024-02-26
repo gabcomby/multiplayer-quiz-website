@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { GamePageTimerComponent } from './game-page-timer.component';
 
@@ -10,6 +11,7 @@ describe('GamePageTimerComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageTimerComponent],
             providers: [AnswerStateService],
+            imports: [MatProgressSpinnerModule],
         }).compileComponents();
     });
 

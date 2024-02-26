@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { PasswordDialogComponent } from './password-dialog.component';
 
 describe('PasswordDialogComponent', () => {
@@ -15,6 +17,8 @@ describe('PasswordDialogComponent', () => {
         TestBed.configureTestingModule({
             declarations: [PasswordDialogComponent],
             providers: [{ provide: MatDialogRef, useValue: dialogRefMock }],
+            imports: [MatDialogModule, FormsModule],
+            schemas: [NO_ERRORS_SCHEMA],
         });
 
         fixture = TestBed.createComponent(PasswordDialogComponent);

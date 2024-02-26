@@ -1,8 +1,13 @@
+/* eslint-disable -- Remove rules due to stub class + max lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { API_BASE_URL } from '@app/app.module';
 import { Game, Question } from '@app/interfaces/game';
 import { Match } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
@@ -15,6 +20,38 @@ import { GamePageComponent } from './game-page.component';
 const TEN = 10;
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+
+@Component({
+    selector: 'app-game-page-scoresheet',
+    template: '',
+})
+class AppGamePageScoresheetStubComponent {
+    @Input() players: unknown[];
+}
+
+@Component({
+    selector: 'app-game-page-questions',
+    template: '',
+})
+class AppGamePageQuestionsStubComponent {
+    @Input() answerIsCorrect: unknown;
+}
+
+@Component({
+    selector: 'app-game-page-timer',
+    template: '',
+})
+class AppGamePageTimerStubComponent {
+    @Input() timer: unknown;
+}
+
+@Component({
+    selector: 'app-game-page-livechat',
+    template: '',
+})
+class AppGamePageChatStubComponent {
+    @Input() timer: unknown;
+}
 
 const questionMock: Question[] = [
     {
@@ -91,13 +128,21 @@ describe('GamePageComponent', () => {
         matchService.addPlayer.and.returnValue(of(updatedMatchDataWithPlayer));
 
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent],
-            imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule],
+            declarations: [
+                GamePageComponent,
+                AppGamePageScoresheetStubComponent,
+                AppGamePageQuestionsStubComponent,
+                AppGamePageTimerStubComponent,
+                AppGamePageChatStubComponent,
+            ],
+            imports: [RouterTestingModule, HttpClientTestingModule, MatSnackBarModule, MatIconModule, MatToolbarModule],
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: MatchService, useValue: matchService },
                 { provide: SocketService, useValue: socketService },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
+            schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
 
         fixture = TestBed.createComponent(GamePageComponent);

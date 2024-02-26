@@ -1,15 +1,20 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '@env/environment';
+import { Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private isAuthenticated = new BehaviorSubject<boolean>(false);
-    private readonly apiUrl = environment.serverUrl;
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api`;
+    }
 
     get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticated.asObservable();

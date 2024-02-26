@@ -1,5 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -44,7 +49,7 @@ describe('QuestionBankComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [QuestionBankComponent],
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
             providers: [
                 { provide: QuestionService, useValue: questionServiceMock },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
