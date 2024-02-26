@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
@@ -9,8 +10,15 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class MatchLobbyService {
-    private apiUrl = 'http://localhost:3000/api/lobbies';
-    constructor(private http: HttpClient) {}
+    // TODO: Change this to the actual server URL
+    // private apiUrl = 'http://localhost:3000/api/lobbies';
+    private apiUrl: string;
+    constructor(
+        private http: HttpClient,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/api/lobbies`;
+    }
 
     getAllLobbies() {
         return this.http.get(`${this.apiUrl}/`);
