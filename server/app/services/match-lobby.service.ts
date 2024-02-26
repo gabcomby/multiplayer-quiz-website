@@ -13,7 +13,7 @@ export class MatchLobbyService {
     }
 
     async getLobbyByCode(lobbyCode: string): Promise<ILobby> {
-        return await matchLobbyModel.findOne({ code: lobbyCode });
+        return await matchLobbyModel.findOne({ lobbyCode });
     }
 
     async createLobby(lobbyData: ILobby): Promise<ILobby> {

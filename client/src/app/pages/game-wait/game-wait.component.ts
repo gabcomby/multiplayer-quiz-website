@@ -10,7 +10,14 @@ import { SnackbarService } from '@app/services/snackbar.service';
     styleUrls: ['./game-wait.component.scss'],
 })
 export class GameWaitComponent implements OnInit {
-    matchLobby: MatchLobby;
+    matchLobby: MatchLobby = {
+        id: '',
+        playerList: [],
+        gameId: '',
+        bannedNames: [],
+        lobbyCode: '',
+        isLocked: false,
+    };
     private gameId: string;
     constructor(
         private route: ActivatedRoute,

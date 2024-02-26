@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Input } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-player-name-dialog',
@@ -7,11 +7,23 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./player-name-dialog.component.scss'],
 })
 export class PlayerNameDialogComponent {
-    userName: string = '';
+    @Input() showLobbyCodePrompt: boolean = false;
 
-    constructor(public dialogRef: MatDialogRef<PlayerNameDialogComponent>) {}
+    userName: string = '';
+    lobbyCode: string = '';
+
+    constructor(
+        public dialogRef: MatDialogRef<PlayerNameDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: { showLobbyCodePrompt: boolean },
+    ) {
+        this.showLobbyCodePrompt = data.showLobbyCodePrompt;
+    }
 
     onSubmit(): void {
-        this.dialogRef.close(this.userName);
+        const result = {
+            userName: this.userName,
+            lobbyCode: this.lobbyCode,
+        };
+        this.dialogRef.close(result);
     }
 }

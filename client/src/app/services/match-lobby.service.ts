@@ -22,7 +22,7 @@ export class MatchLobbyService {
         return this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
     }
 
-    createLobby(creatorName: string): Observable<MatchLobby> {
+    createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
         const player: Player = {
             id: crypto.randomUUID(),
             name: creatorName,
@@ -31,6 +31,7 @@ export class MatchLobbyService {
         const lobby: MatchLobby = {
             id: crypto.randomUUID(),
             playerList: [player],
+            gameId,
             bannedNames: [],
             lobbyCode: Math.floor(Math.random() * NINE_THOUSAND + ONE_THOUSAND).toString(),
             isLocked: false,
@@ -53,5 +54,9 @@ export class MatchLobbyService {
 
     removePlayer(playerId: string, lobbyId: string) {
         return this.http.delete(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
+    }
+
+    getLobbyByCode(lobbyCode: string): Observable<MatchLobby> {
+        return this.http.get<MatchLobby>(`${this.apiUrl}/joinLobby/${lobbyCode}`);
     }
 }

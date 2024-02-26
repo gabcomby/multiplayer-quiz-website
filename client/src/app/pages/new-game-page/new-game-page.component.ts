@@ -120,8 +120,11 @@ export class NewGamePageComponent implements OnInit {
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
         const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
             width: '250px',
+            data: {
+                showLobbyCodePrompt: false,
+            },
         });
-        const userName = await lastValueFrom(dialogRef.afterClosed());
+        const userName = (await lastValueFrom(dialogRef.afterClosed())).userName;
         if (!userName) return false;
         const isModified = await this.isTheGameModified(game);
         let result;
@@ -130,9 +133,9 @@ export class NewGamePageComponent implements OnInit {
             this.ngOnInit();
             result = false;
         } else {
-            this.createNewMatchLobby(userName).subscribe({
+            this.createNewMatchLobby(userName, game.id).subscribe({
                 next: (matchLobby) => {
-                    this.router.navigate(['/gameWait', game.id, matchLobby.id]);
+                    this.router.navigate(['/gameWait', matchLobby.id]);
                 },
                 error: (error) => {
                     this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
@@ -143,7 +146,7 @@ export class NewGamePageComponent implements OnInit {
         return result;
     }
 
-    createNewMatchLobby(playerName: string): Observable<MatchLobby> {
-        return this.matchLobbyService.createLobby(playerName);
+    createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createLobby(playerName, gameId);
     }
 }
