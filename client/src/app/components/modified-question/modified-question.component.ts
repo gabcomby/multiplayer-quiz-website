@@ -55,17 +55,18 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     saveQuestion(index: number) {
-        this.questionList[index].lastModification = new Date();
-        const validated =
-            this.questionValidationService.verifyOneGoodAndBadAnswer(this.questionList[index].choices) &&
-            this.questionValidationService.validateQuestion(this.questionList[index]);
+        const validated = this.questionService.saveQuestion(index, this.questionList, this.listQuestionBank);
+        // this.questionList[index].lastModification = new Date();
+        // const validated =
+        //     this.questionValidationService.verifyOneGoodAndBadAnswer(this.questionList[index].choices) &&
+        //     this.questionValidationService.validateQuestion(this.questionList[index]);
         this.disabled[index] = validated;
 
-        if (this.listQuestionBank && validated) {
-            this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
-        } else if (validated) {
-            this.questionService.updateList(this.questionList);
-        }
+        // if (this.listQuestionBank && validated) {
+        //     this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
+        // } else if (validated) {
+        //     this.questionService.updateList(this.questionList);
+        // }
     }
 
     moveQuestionUp(index: number): void {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Question } from '@app/interfaces/game';
+import { Choice, Question } from '@app/interfaces/game';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
@@ -13,7 +13,9 @@ export class HandlerNewQuestionService {
         private questionValidationService: QuestionValidationService,
         private questionService: QuestionService,
     ) {}
-    async addQuestion(newQuestion: Question, onlyAddQuestionBank: boolean, addToBank: boolean): Promise<boolean> {
+    async addQuestion(choices: Choice[], question: Question, onlyAddQuestionBank: boolean, addToBank: boolean): Promise<boolean> {
+        const newQuestion = this.createNewQuestion(choices, question);
+
         if (this.questionValidationService.validateQuestion(newQuestion)) {
             if (!onlyAddQuestionBank) {
                 if (addToBank && (await this.validateQuestionExisting(newQuestion))) {
@@ -22,10 +24,8 @@ export class HandlerNewQuestionService {
                 } else if (!addToBank) {
                     this.questionService.addQuestion(newQuestion);
                 }
-
             } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
-                // this.router.navigate(['/question-bank']);
             }
             return true;
         }
@@ -40,6 +40,17 @@ export class HandlerNewQuestionService {
             return false;
         }
         return true;
+    }
+    createNewQuestion(choices: Choice[], question: Question) {
+        return {
+            type: question.type,
+            text: question.text,
+            points: question.points,
+            // id: generateNewId(),
+            id: '123',
+            choices: choices.map((item: Choice) => ({ ...item })),
+            lastModification: new Date(),
+        };
     }
 }
 

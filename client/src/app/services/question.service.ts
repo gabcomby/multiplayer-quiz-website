@@ -3,6 +3,7 @@ import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
 import { Observable, firstValueFrom } from 'rxjs';
+import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,6 +16,7 @@ export class QuestionService {
 
     constructor(
         private http: HttpClient,
+        private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/api/questions`;
@@ -28,11 +30,6 @@ export class QuestionService {
         this.questions.push(question);
         this.onQuestionAdded.emit(question);
     }
-
-    // addQuestion2(question: Question, addToBank: boolean = false) {
-    //     this.questions.push(question);
-    //     this.onQuestionAdded.emit(question);
-    // }
 
     getQuestion() {
         return this.questions;
@@ -66,5 +63,19 @@ export class QuestionService {
     updateList(question: Question[]) {
         this.questions = [];
         this.questions = question.map((item) => ({ ...item }));
+    }
+    saveQuestion(index: number, questionList: Question[], listQuestionBank: boolean): boolean {
+        questionList[index].lastModification = new Date();
+        const validated =
+            this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices) &&
+            this.questionValidationService.validateQuestion(questionList[index]);
+        // this.disabled[index] = validated;
+
+        if (listQuestionBank && validated) {
+            this.updateQuestion(questionList[index].id, questionList[index]);
+        } else if (validated) {
+            this.updateList(questionList);
+        }
+        return validated;
     }
 }

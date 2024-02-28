@@ -20,8 +20,8 @@ export class CreateQGamePageComponent implements OnInit {
     fromBank: boolean = false;
     modifiedQuestion: boolean = false;
     gameId: string | null;
-    gamesFromDB: Game[] = [];
-    gameFromDB: Game = {
+    games: Game[] = [];
+    gameModified: Game = {
         id: '',
         title: '',
         description: '',
@@ -52,7 +52,7 @@ export class CreateQGamePageComponent implements OnInit {
         this.route.paramMap.subscribe((params) => (this.gameId = params.get('id')));
         if (this.gameId) {
             try {
-                this.gamesFromDB = await this.gameService.getGames();
+                this.games = await this.gameService.getGames();
                 this.getGame(this.gameId);
                 this.insertIfExist();
                 this.dataReady = true;
@@ -63,24 +63,23 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     getGame(gameId: string): void {
-        const findGame = this.gamesFromDB.find((gameSelected) => gameSelected.id === gameId);
+        const findGame = this.games.find((gameSelected) => gameSelected.id === gameId);
         if (findGame) {
-            this.gameFromDB = findGame;
+            this.gameModified = findGame;
         } else {
             throw new Error(`Game with id ${gameId} not found`);
         }
     }
 
     async onSubmit() {
-        const newGame: Game = this.createNewGame(true);
+        const newGame: Game = this.gameService.createNewGame(true, this.gameForm, this.gameModified);
         try {
             if (this.gameId) {
-                await this.gameValidationWhenModified();
+                await this.gameService.gameValidationWhenModified(this.gameForm, this.gameModified);
             } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
                 await this.gameService.createGame(newGame);
-
-                this.router.navigate(['/admin']);
             }
+            this.router.navigate(['/admin']);
         } catch (error) {
             this.handleServerError();
         }
@@ -91,42 +90,42 @@ export class CreateQGamePageComponent implements OnInit {
 
     insertIfExist() {
         this.gameForm.patchValue({
-            name: this.gameFromDB.title,
-            description: this.gameFromDB.description,
-            time: this.gameFromDB.duration,
-            visibility: this.gameFromDB.isVisible,
+            name: this.gameModified.title,
+            description: this.gameModified.description,
+            time: this.gameModified.duration,
+            visibility: this.gameModified.isVisible,
         });
     }
 
-    async gameValidationWhenModified() {
-        const modifiedGame = this.createNewGame(false);
-        try {
-            if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
-                if (await this.gameService.validateDeletedGame(modifiedGame)) {
-                    await this.gameService.patchGame(modifiedGame);
+    // async gameValidationWhenModified() {
+    //     const modifiedGame = this.createNewGame(false);
+    //     try {
+    //         if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
+    //             if (await this.gameService.validateDeletedGame(modifiedGame)) {
+    //                 await this.gameService.patchGame(modifiedGame);
 
-                    this.router.navigate(['/admin']);
-                } else {
-                    await this.gameService.createGame(modifiedGame);
-                    this.router.navigate(['/admin']);
-                }
-            }
-        } catch (error) {
-            this.handleServerError();
-        }
-    }
+    //                 this.router.navigate(['/admin']);
+    //             } else {
+    //                 await this.gameService.createGame(modifiedGame);
+    //                 this.router.navigate(['/admin']);
+    //             }
+    //         }
+    //     } catch (error) {
+    //         this.handleServerError();
+    //     }
+    // }
 
-    createNewGame(isNewGame: boolean) {
-        return {
-            id: isNewGame ? generateNewId() : this.gameFromDB.id,
-            title: this.gameForm.get('name')?.value,
-            description: this.gameForm.get('description')?.value,
-            isVisible: isNewGame ? false : this.gameFromDB.isVisible,
-            duration: this.gameForm.get('time')?.value,
-            lastModification: new Date(),
-            questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
-        };
-    }
+    // createNewGame(isNewGame: boolean) {
+    //     return {
+    //         id: isNewGame ? generateNewId() : this.gameModified.id,
+    //         title: this.gameForm.get('name')?.value,
+    //         description: this.gameForm.get('description')?.value,
+    //         isVisible: isNewGame ? false : this.gameFromDB.isVisible,
+    //         duration: this.gameForm.get('time')?.value,
+    //         lastModification: new Date(),
+    //         questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
+    //     };
+    // }
 
     handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {

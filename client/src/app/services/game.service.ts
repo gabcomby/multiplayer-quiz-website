@@ -2,8 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 
+import { FormGroup } from '@angular/forms';
 import { API_BASE_URL } from '@app/app.module';
 import type { Game } from '@app/interfaces/game';
+import { QuestionService } from './question.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,6 +15,7 @@ export class GameService {
 
     constructor(
         private http: HttpClient,
+        private questionService: QuestionService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/api/games`;
@@ -63,5 +66,34 @@ export class GameService {
         } else {
             return false;
         }
+    }
+    async gameValidationWhenModified(gameForm: FormGroup, gameModified: Game) {
+        const modifiedGame = this.createNewGame(false, gameForm, gameModified);
+        try {
+            if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
+                if (await this.validateDeletedGame(modifiedGame)) {
+                    await this.patchGame(modifiedGame);
+
+                    // this.router.navigate(['/admin']);
+                } else {
+                    await this.createGame(modifiedGame);
+                    // this.router.navigate(['/admin']);
+                }
+            }
+        } catch (error) {
+            throw new Error('handling error');
+            // this.handleServerError();
+        }
+    }
+    createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
+        return {
+            id: isNewGame ? generateNewId() : gameModified.id,
+            title: gameForm.get('name')?.value,
+            description: gameForm.get('description')?.value,
+            isVisible: isNewGame ? false : gameModified.isVisible,
+            duration: gameForm.get('time')?.value,
+            lastModification: new Date(),
+            questions: isNewGame ? this.questionService.getQuestion() : gameModified.questions,
+        };
     }
 }

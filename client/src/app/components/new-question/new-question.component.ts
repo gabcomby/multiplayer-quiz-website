@@ -5,7 +5,7 @@ import { HandlerNewQuestionService } from '@app/services/handler-new-question.se
 // import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 // import { SnackbarService } from '@app/services/snackbar.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
+// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',
@@ -29,8 +29,8 @@ export class NewQuestionComponent {
     ) {}
 
     async addQuestion(event: Choice[], onlyAddQuestionBank: boolean): Promise<void> {
-        const newQuestion = this.createNewQuestion(event);
-        const questionValidated = await this.handlerQuestionService.addQuestion(newQuestion, onlyAddQuestionBank, this.addBankQuestion);
+        // const newQuestion = this.createNewQuestion(event);
+        const questionValidated = await this.handlerQuestionService.addQuestion(event, this.question, onlyAddQuestionBank, this.addBankQuestion);
         if (questionValidated) {
             if (!onlyAddQuestionBank) {
                 this.resetComponent(event);
@@ -70,16 +70,16 @@ export class NewQuestionComponent {
         });
         this.addBankQuestion = false;
     }
-    createNewQuestion(choices: Choice[]) {
-        return {
-            type: this.question.type,
-            text: this.question.text,
-            points: this.question.points,
-            id: generateNewId(),
-            choices: choices.map((item: Choice) => ({ ...item })),
-            lastModification: new Date(),
-        };
-    }
+    // createNewQuestion(choices: Choice[]) {
+    //     return {
+    //         type: this.question.type,
+    //         text: this.question.text,
+    //         points: this.question.points,
+    //         id: generateNewId(),
+    //         choices: choices.map((item: Choice) => ({ ...item })),
+    //         lastModification: new Date(),
+    //     };
+    // }
 
     // async validateQuestionExisting(question: Question): Promise<boolean> {
     //     const questionInBank = await this.questionService.getQuestions();
