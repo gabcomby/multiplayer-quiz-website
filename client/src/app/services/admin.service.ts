@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+
 import { Game } from '@app/interfaces/game';
-import { GameService } from './game.service';
-import { SnackbarService } from './snackbar.service';
+import { GameService } from '@app/services/game.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 
 @Injectable({
     providedIn: 'root',

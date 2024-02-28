@@ -55,7 +55,7 @@
         <ng-container matColumnDef="delete">
             <mat-header-cell *matHeaderCellDef> Supprimer </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button (click)="deleteGame(element.id)">
+                <button mat-icon-button (click)="deleteGame(element)">
                     <mat-icon>delete</mat-icon>
                 </button>
             </mat-cell>
