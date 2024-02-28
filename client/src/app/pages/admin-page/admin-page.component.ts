@@ -8,6 +8,7 @@ import { SocketService } from '@app/services/socket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
+import { AdminService } from '@app/services/admin.service';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
@@ -33,6 +34,7 @@ export class AdminPageComponent implements OnInit {
         private snackbarService: SnackbarService,
         private gameService: GameService,
         private dialog: MatDialog,
+        private adminService: AdminService,
     ) {}
 
     async ngOnInit() {
@@ -43,14 +45,8 @@ export class AdminPageComponent implements OnInit {
         this.socketService.connect();
     }
 
-    toggleVisibility(gameId: string, isVisible: boolean): void {
-        const game = this.dataSource.find((g) => g.id === gameId);
-        if (!game) return;
-
-        game.isVisible = isVisible;
-        this.gameService.patchGame(game).then(() => {
-            this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
-        });
+    toggleVisibility(game: Game, isVisible: boolean) {
+        this.adminService.toggleVisibility(game, isVisible);
     }
 
     exportGameAsJson(game: Game): void {

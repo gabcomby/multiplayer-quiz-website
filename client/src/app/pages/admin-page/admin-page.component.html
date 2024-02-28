@@ -16,7 +16,7 @@
         <ng-container matColumnDef="isVisible">
             <mat-header-cell *matHeaderCellDef> Visibilité </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element.id, $event.checked)"> </mat-slide-toggle>
+                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element, $event.checked)"> </mat-slide-toggle>
             </mat-cell>
         </ng-container>
 
