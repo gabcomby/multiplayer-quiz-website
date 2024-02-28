@@ -17,7 +17,7 @@ export class MatchLobbyService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/lobbies`;
+        this.apiUrl = `${apiBaseURL}/lobbies`;
     }
 
     getAllLobbies() {
