@@ -29,6 +29,11 @@ export class QuestionService {
         this.onQuestionAdded.emit(question);
     }
 
+    // addQuestion2(question: Question, addToBank: boolean = false) {
+    //     this.questions.push(question);
+    //     this.onQuestionAdded.emit(question);
+    // }
+
     getQuestion() {
         return this.questions;
     }
