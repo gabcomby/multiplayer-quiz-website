@@ -136,7 +136,7 @@ export class NewGamePageComponent implements OnInit {
         } else {
             this.createNewMatchLobby(result.userName, game.id).subscribe({
                 next: (matchLobby) => {
-                    this.router.navigate(['/gameWait', matchLobby.id]);
+                    this.router.navigate(['/gameWait', matchLobby.id, true]);
                 },
                 error: (error) => {
                     this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');

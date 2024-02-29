@@ -22,11 +22,12 @@ const routes: Routes = [
     { path: 'create-qgame', component: CreateQGamePageComponent },
     { path: 'create-qgame/:id', component: CreateQGamePageComponent },
     { path: 'question-bank', component: QuestionBankComponent },
+    // { path: 'game/:id/:idLobby', component: GamePageComponent },
     { path: 'game/:id', component: GamePageComponent },
-    { path: 'gameWait/:id', component: GameWaitComponent },
+    { path: 'gameWait/:id/:host', component: GameWaitComponent },
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
-    { path: 'gameTimer/:id', component: GameTimerPageComponent },
+    { path: 'gameTimer/:id/:idLobby', component: GameTimerPageComponent },
 
     { path: '**', redirectTo: '/home' },
 ];

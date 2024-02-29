@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
-import type { Match } from '@app/interfaces/match';
+import type { Match, Player } from '@app/interfaces/match';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
@@ -38,9 +38,11 @@ export class GamePageComponent implements OnInit {
 
     gameScore: { name: string; score: number }[] = [];
     playerName: string;
-
+    currentPlayer: Player;
+    // allLocked: number = 0;
     answerIdx: number[];
     previousQuestionIndex: number;
+    // idLobby: StaticRange;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -56,6 +58,8 @@ export class GamePageComponent implements OnInit {
     ngOnInit() {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
+        // this.idLobby = this.route.snapshot.params['idLobby'];
+
         // Fetch the game data from the server
         this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
@@ -67,6 +71,7 @@ export class GamePageComponent implements OnInit {
         });
         // Create a new match with a new player, and then setup the WebSocket events
         this.createAndSetupMatch();
+        this.allAnswerlocked();
     }
 
     createAndSetupMatch() {
@@ -95,7 +100,8 @@ export class GamePageComponent implements OnInit {
     }
 
     addPlayerToMatch(matchId: string): Observable<Match> {
-        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
+        this.currentPlayer = { id: generateNewId(), name: this.playerName, score: 0, isLocked: false };
+        return this.matchService.addPlayer(this.currentPlayer, matchId);
     }
 
     setupWebSocketEvents() {
@@ -103,6 +109,9 @@ export class GamePageComponent implements OnInit {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
+            if (this.answerStateService.allLocked >= this.currentMatch.playerList.length) {
                 this.onTimerComplete();
             }
         });
@@ -179,7 +188,16 @@ export class GamePageComponent implements OnInit {
     handleNextQuestion(): void {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
+        this.answerStateService.allLocked = 0;
         this.socketService.startTimer();
     }
-    
+
+    allAnswerlocked() {
+        this.answerStateService.answerLocked.subscribe((locked) => {
+            this.currentPlayer.isLocked = locked;
+            if (locked === true) {
+                this.answerStateService.allLocked += 1;
+            }
+        });
+    }
 }

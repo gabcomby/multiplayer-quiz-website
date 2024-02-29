@@ -41,6 +41,7 @@ export class MatchLobbyService {
             bannedNames: [],
             lobbyCode: generateLobbyId(),
             isLocked: false,
+            hostId: generateNewId(),
         };
         return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
     }
@@ -54,6 +55,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: playerName,
             score: 0,
+            isLocked: false,
         };
         return this.http.patch(`${this.apiUrl}/${lobbyId}/players`, player);
     }

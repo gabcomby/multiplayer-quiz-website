@@ -7,5 +7,5 @@ export interface Player {
     id: string;
     name: string;
     score: number;
-    isLocked: boolean;
+    isLocked?: boolean;
 }

@@ -12,6 +12,7 @@ export class GameTimerPageComponent implements OnInit {
     gameId: string;
     timerCountdown: number;
     gameTitle: string;
+    idLobby: string;
 
     constructor(
         private socketService: SocketService,
@@ -21,6 +22,7 @@ export class GameTimerPageComponent implements OnInit {
     ) {}
     ngOnInit() {
         this.gameId = this.route.snapshot.params['id'];
+        this.idLobby = this.route.snapshot.params['idLobby'];
         this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameTitle = data.title;

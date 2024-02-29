@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
+// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-game-wait',
@@ -17,7 +18,9 @@ export class GameWaitComponent implements OnInit {
         bannedNames: [],
         lobbyCode: '',
         isLocked: false,
+        hostId: '',
     };
+    isHost: boolean;
     private gameId: string;
     // eslint-disable-next-line max-params
     constructor(
@@ -36,9 +39,12 @@ export class GameWaitComponent implements OnInit {
                 this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
             },
         });
+        this.isHost = this.route.snapshot.params['host'] === 'true';
+        console.log(this.isHost);
     }
 
     handleGameLaunch() {
-        this.router.navigate(['/gameTimer', this.gameId]);
+        // this.hostId = generateNewId();
+        this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id]);
     }
 }
