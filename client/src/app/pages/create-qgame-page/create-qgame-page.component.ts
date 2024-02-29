@@ -4,11 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
+// import { GameValidationService } from '@app/services/game-validation.service';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+// import { SnackbarService } from '@app/services/snackbar.service';
+// import { generateNewId } from '@app/utils/assign-new-game-attributes';
+// import { isValidGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -38,7 +39,8 @@ export class CreateQGamePageComponent implements OnInit {
         private gameService: GameService,
         private route: ActivatedRoute,
         private router: Router,
-        private snackbarService: SnackbarService,
+        // private snackbarService: SnackbarService,
+        // private gameValidationService: GameValidationService,
         public dialog: MatDialog,
     ) {
         this.questionService.resetQuestions();
@@ -75,11 +77,13 @@ export class CreateQGamePageComponent implements OnInit {
         const newGame: Game = this.gameService.createNewGame(true, this.gameForm, this.gameModified);
         try {
             if (this.gameId) {
-                await this.gameService.gameValidationWhenModified(this.gameForm, this.gameModified);
-            } else if (await isValidGame(newGame, this.snackbarService, this.gameService)) {
+                if (await this.gameService.gameValidationWhenModified(this.gameForm, this.gameModified)) {
+                    this.router.navigate(['/admin']);
+                }
+            } else if (await this.gameService.isValidGame(newGame)) {
                 await this.gameService.createGame(newGame);
+                this.router.navigate(['/admin']);
             }
-            this.router.navigate(['/admin']);
         } catch (error) {
             this.handleServerError();
         }

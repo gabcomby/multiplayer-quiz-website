@@ -3,6 +3,7 @@ import { Choice, Question } from '@app/interfaces/game';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Injectable({
     providedIn: 'root',
@@ -21,13 +22,17 @@ export class HandlerNewQuestionService {
                 if (addToBank && (await this.validateQuestionExisting(newQuestion))) {
                     this.questionService.addQuestionBank(newQuestion);
                     this.questionService.addQuestion(newQuestion);
+                    return true;
                 } else if (!addToBank) {
                     this.questionService.addQuestion(newQuestion);
+                    return true;
                 }
+                return false;
             } else if (await this.validateQuestionExisting(newQuestion)) {
                 this.questionService.addQuestionBank(newQuestion);
+                return true;
             }
-            return true;
+            return false;
         }
         return false;
     }
@@ -46,8 +51,8 @@ export class HandlerNewQuestionService {
             type: question.type,
             text: question.text,
             points: question.points,
-            // id: generateNewId(),
-            id: '123',
+            id: generateNewId(),
+            // id: '123',
             choices: choices.map((item: Choice) => ({ ...item })),
             lastModification: new Date(),
         };

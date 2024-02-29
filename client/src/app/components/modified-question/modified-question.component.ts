@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 
 @Component({
@@ -18,8 +17,7 @@ export class ModifiedQuestionComponent implements OnInit {
     menuSelected: boolean = false;
 
     constructor(
-        private questionService: QuestionService,
-        private questionValidationService: QuestionValidationService,
+        private questionService: QuestionService, // private questionValidationService: QuestionValidationService,
     ) {}
 
     ngOnInit() {

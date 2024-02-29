@@ -12,6 +12,7 @@ import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 import { firstValueFrom } from 'rxjs';
+// import { GameValidationService } from '@app/services/game-validation.service';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -32,7 +33,7 @@ export class AdminPageComponent implements OnInit {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
-        private dialog: MatDialog,
+        private dialog: MatDialog, // private gameValidationService: GameValidationService,
     ) {}
 
     async ngOnInit() {
