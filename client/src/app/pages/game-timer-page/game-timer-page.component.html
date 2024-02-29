@@ -1,0 +1,16 @@
+<div id="container">
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" >
+                <mat-icon>logout</mat-icon>
+            </button>
+            <span class="large-bar-spacer"></span>
+            <span class="large-bar-spacer"></span>
+            <span class="top-bar-text">{{ gameTitle }}</span>
+        </mat-toolbar>
+    </div>
+    <div class="timer">
+        <app-game-page-timer [timerCountdown]="timerCountdown" [totalTimer]="5"></app-game-page-timer>
+    </div>
+
+</div>

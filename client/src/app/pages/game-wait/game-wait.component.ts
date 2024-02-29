@@ -39,6 +39,6 @@ export class GameWaitComponent implements OnInit {
     }
 
     handleGameLaunch() {
-        this.router.navigate(['/game', this.gameId]);
+        this.router.navigate(['/gameTimer', this.gameId]);
     }
 }

@@ -4,6 +4,8 @@ import { authGuard } from '@app/guards/auth.guard';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from '@app/pages/create-qgame-page/create-qgame-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { GameTimerPageComponent } from '@app/pages/game-timer-page/game-timer-page.component';
+// import { GameTimerPageComponent } from '@app/pages/game-timer-page/game-timer-page.component';
 import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { ModifyQuestionQbankComponent } from '@app/pages/modify-question-qbank/modify-question-qbank.component';
@@ -24,6 +26,8 @@ const routes: Routes = [
     { path: 'gameWait/:id', component: GameWaitComponent },
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
+    { path: 'gameTimer/:id', component: GameTimerPageComponent },
+
     { path: '**', redirectTo: '/home' },
 ];
 

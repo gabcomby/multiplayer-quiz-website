@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
+import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -29,14 +30,13 @@ export class GamePageComponent implements OnInit {
     };
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
-    currentMatch: Match = { id: '', playerList: [] };
+    currentMatch: Match = { id: '', playerList: [] }; // faut faire une interface pour les joueurs et avoir un host
     matchId: string;
     gameId: string;
     timerCountdown: number;
     answerIsCorrect: boolean;
 
     gameScore: { name: string; score: number }[] = [];
-
     playerName: string;
 
     answerIdx: number[];
@@ -50,6 +50,7 @@ export class GamePageComponent implements OnInit {
         private socketService: SocketService,
         private gameService: GameService,
         private snackbarService: SnackbarService,
+        private answerStateService: AnswerStateService,
     ) {}
 
     ngOnInit() {
@@ -180,4 +181,5 @@ export class GamePageComponent implements OnInit {
         this.questionHasExpired = false;
         this.socketService.startTimer();
     }
+    
 }
