@@ -9,10 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 import { firstValueFrom } from 'rxjs';
-// import { GameValidationService } from '@app/services/game-validation.service';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -33,7 +31,7 @@ export class AdminPageComponent implements OnInit {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
-        private dialog: MatDialog, // private gameValidationService: GameValidationService,
+        private dialog: MatDialog,
     ) {}
 
     async ngOnInit() {
@@ -181,7 +179,7 @@ export class AdminPageComponent implements OnInit {
 
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
+        if (!this.gameService.isValidGame(game)) return;
         assignNewGameAttributes(game);
     }
 
