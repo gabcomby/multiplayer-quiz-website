@@ -1,0 +1,21 @@
+<div class="palmares-container">
+    <mat-table [dataSource]="dataSource">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+        </ng-container>
+
+        <!-- Score Column -->
+        <ng-container matColumnDef="score">
+            <mat-header-cell *matHeaderCellDef> Score </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.score }} </mat-cell>
+        </ng-container>
+
+        <!-- Define column order -->
+        <mat-header-row *matHeaderRowDef="['name', 'score']"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: ['name', 'score']"></mat-row>
+
+        <!-- Ajouter nombre de fois bonus -->
+    </mat-table>
+</div>

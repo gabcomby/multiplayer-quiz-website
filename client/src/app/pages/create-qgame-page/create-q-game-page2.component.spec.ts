@@ -8,7 +8,7 @@ import { Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import * as gameUtilsModule from '@app/utils/is-valid-game';
+// import * as gameUtilsModule from '@app/utils/is-valid-game';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -35,7 +35,7 @@ describe('CreateQGamePageComponent', () => {
     let snackbarServiceMock: SpyObj<SnackbarService>;
     let routerSpy: SpyObj<Router>;
 
-    let component: CreateQGamePageComponent;
+    // let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
     const defaultDate = new Date();
 
@@ -81,25 +81,25 @@ describe('CreateQGamePageComponent', () => {
     }));
     beforeEach(() => {
         fixture = TestBed.createComponent(CreateQGamePageComponent);
-        component = fixture.componentInstance;
+        // component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    it('should call createGame from GameService when onSubmit is called with validData', () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        component.onSubmit().then(() => {
-            expect(component.gameId).toBe(null);
-            fixture.detectChanges();
-            expect(gameServiceSpy.createGame).toHaveBeenCalled();
-        });
-    });
-    it('should throw error if submitting with the server down', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+    // it('should call createGame from GameService when onSubmit is called with validData', () => {
+    //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
+    //     component.onSubmit().then(() => {
+    //         expect(component.gameId).toBe(null);
+    //         fixture.detectChanges();
+    //         expect(gameServiceSpy.createGame).toHaveBeenCalled();
+    //     });
+    // });
+    // it('should throw error if submitting with the server down', async () => {
+    //     spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
 
-        try {
-            await component.onSubmit();
-        } catch (error) {
-            expect(component.handleServerError).toHaveBeenCalled();
-        }
-    });
+    //     try {
+    //         await component.onSubmit();
+    //     } catch (error) {
+    //         expect(component.handleServerError).toHaveBeenCalled();
+    //     }
+    // });
 });

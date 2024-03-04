@@ -33,6 +33,8 @@ import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-questi
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 import { GameTimerPageComponent } from './pages/game-timer-page/game-timer-page.component';
+import { ResultsViewComponent } from './components/results-view/results-view.component';
+import { HistogramComponent } from './components/histogram/histogram.component';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -69,6 +71,8 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         ConfirmDialogComponent,
         PlayerNameDialogComponent,
         GameTimerPageComponent,
+        ResultsViewComponent,
+        HistogramComponent,
     ],
     imports: [
         AppMaterialModule,

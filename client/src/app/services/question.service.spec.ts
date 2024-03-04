@@ -3,10 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from './question.service';
+import { SnackbarService } from './snackbar.service';
 
 describe('QuestionService', () => {
     let service: QuestionService;
     let httpController: HttpTestingController;
+    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
     const defaultDate = new Date();
 
     const question: Question = {
@@ -36,9 +38,15 @@ describe('QuestionService', () => {
     };
 
     beforeEach(() => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [QuestionService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [
+                QuestionService,
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
         });
         service = TestBed.inject(QuestionService);
         httpController = TestBed.inject(HttpTestingController);
@@ -190,5 +198,65 @@ describe('QuestionService', () => {
         ];
         service.updateList(questions);
         expect(service.questions).toEqual(questions);
+    });
+
+    it('should switch the answer selected and the one on top', () => {
+        const answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        service.moveQuestionUp(1, answers);
+        expect(answers).toEqual([
+            { text: 'test2', isCorrect: false },
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
+
+    it('should not switch the answers if its the first choice', () => {
+        const answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        service.moveQuestionUp(0, answers);
+        expect(answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ]);
+    });
+
+    it('should switch the answer selected and the one underneath', () => {
+        const answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        service.moveQuestionDown(1, answers);
+        expect(answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test3', isCorrect: false },
+            { text: 'test2', isCorrect: false },
+        ]);
+    });
+
+    it('should not switch the answers if its the last choice', () => {
+        const answers = [
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ];
+
+        service.moveQuestionDown(3, answers);
+        expect(answers).toEqual([
+            { text: 'test1', isCorrect: true },
+            { text: 'test2', isCorrect: false },
+            { text: 'test3', isCorrect: false },
+        ]);
     });
 });

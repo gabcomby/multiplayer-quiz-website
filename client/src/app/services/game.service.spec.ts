@@ -3,10 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Game } from '@app/interfaces/game';
 import { GameService } from './game.service';
+import { SnackbarService } from './snackbar.service';
 
 describe('GamesService', () => {
     let service: GameService;
     let httpController: HttpTestingController;
+    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
+
     const defaultDate = new Date();
 
     const gamesMock: Game[] = [
@@ -55,8 +58,15 @@ describe('GamesService', () => {
     ];
 
     beforeEach(() => {
+        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+
         TestBed.configureTestingModule({
-            providers: [GameService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [
+                GameService,
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
+                SnackbarService,
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameService);
