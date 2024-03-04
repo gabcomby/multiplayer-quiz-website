@@ -117,6 +117,8 @@ export class GameService {
         this.answerIdx = answerIdx;
     }
 
+    // HTTP REQUEST HANDLING STARTS HERE =============================================================================
+
     getGame(gameId: string): Observable<Game> {
         return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
     }
@@ -163,6 +165,8 @@ export class GameService {
             return false;
         }
     }
+
+    // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
     initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
@@ -258,7 +262,6 @@ export class GameService {
         });
     }
 
-    // TODO: Inside of function should be moved to a service
     private onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
