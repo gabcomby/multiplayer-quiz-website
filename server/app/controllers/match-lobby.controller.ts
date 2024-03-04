@@ -115,8 +115,8 @@ export class MatchLobbyController {
 
         this.router.patch('/:id/players/:playerId', async (req: Request, res: Response) => {
             try {
-                const player = await this.matchLobbyService.updatePlayerScore(req.params.id, req.params.playerId, req.body);
-                res.json(player);
+                const lobby = await this.matchLobbyService.updatePlayerScore(req.params.id, req.params.playerId, req.body);
+                res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
             }

@@ -69,4 +69,21 @@ export class MatchLobbyService {
             { new: true },
         );
     }
+
+    async getPlayers(lobbyId: string): Promise<IPlayer[]> {
+        const lobby = await matchLobbyModel.findOne({ id: lobbyId });
+        return lobby.playerList;
+    }
+
+    async getPlayer(lobbyId: string, playerId: string): Promise<IPlayer> {
+        const lobby = await matchLobbyModel.findOne({ id: lobbyId });
+        return lobby.playerList.find((player) => player.id === playerId);
+    }
+
+    async updatePlayerScore(lobbyId: string, playerId: string, incr: number): Promise<ILobby> {
+        const lobby = await this.getLobby(lobbyId);
+        const index = lobby.playerList.findIndex((player) => player.id === playerId);
+        lobby.playerList[index].score += incr;
+        return await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby);
+    }
 }

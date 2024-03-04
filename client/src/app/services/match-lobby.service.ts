@@ -66,13 +66,8 @@ export class MatchLobbyService {
         return this.http.get<Player>(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
     }
 
-    updatePlayerScore(lobbyId: string, playerId: string, incr: number) {
-        this.getPlayer(lobbyId, playerId).subscribe({
-            next: (player) => {
-                player.score += incr;
-                this.http.patch(`${this.apiUrl}/${lobbyId}/players/${playerId}`, player);
-            },
-        });
+    updatePlayerScore(lobbyId: string, playerId: string, incr: number): Observable<MatchLobby> {
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players/${playerId}`, { incr });
     }
 
     removePlayer(playerId: string, lobbyId: string) {
