@@ -65,7 +65,7 @@ export class GamePageComponent implements OnInit {
         private matchLobbyService: MatchLobbyService,
     ) {}
 
-    // THIS IS REFACTORED
+    // REFACTOR DONE
     ngOnInit() {
         this.lobbyId = this.route.snapshot.params['lobbyId'];
         this.currentPlayerId = this.route.snapshot.params['playerId'];
@@ -89,6 +89,7 @@ export class GamePageComponent implements OnInit {
         });
     }
 
+    // REFACTOR DONE
     setupWebSocketEvents() {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
@@ -102,33 +103,33 @@ export class GamePageComponent implements OnInit {
         }
         this.socketService.onAnswerVerification((data) => {
             this.answerIsCorrect = data;
-            // THIS SHOULD BE MOVED TO A SERVICE
             if (data === true) {
                 this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
             }
         });
     }
 
+    // REFACTOR DONE
     updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
             next: (data) => {
-                this.currentMatch.playerList[0] = data;
+                this.lobbyData = data;
             },
             error: (error) => {
-                alert(error.message);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
             },
         });
     }
 
+    // REFACTOR DONE
     handleGameLeave() {
-        this.matchService.deleteMatch(this.matchId).subscribe({
+        this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
             next: () => {
-                this.socketService.stopTimer();
                 this.socketService.disconnect();
                 this.router.navigate(['/new-game']);
             },
             error: (error) => {
-                alert(error.message);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
             },
         });
     }
