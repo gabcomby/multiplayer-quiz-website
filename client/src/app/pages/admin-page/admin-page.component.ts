@@ -54,7 +54,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
-        let gameTitle: string = originalGame.title;
+        const gameTitle: string = originalGame.title;
 
         while (this.adminService.hasValidInput(gameTitle, originalGame.title, this.dataSource)) {
             const dialogRef = this.dialog.open(InputDialogComponent, {
@@ -66,12 +66,7 @@ export class AdminPageComponent implements OnInit {
             });
 
             const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
-
-            if (newTitle === null || newTitle === '') {
-                return null;
-            } else {
-                gameTitle = newTitle;
-            }
+            return newTitle === null || newTitle === '' ? null : newTitle;
         }
 
         return gameTitle;
