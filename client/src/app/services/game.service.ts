@@ -15,7 +15,7 @@ export class GameService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/games`;
+        this.apiUrl = `${apiBaseURL}/games`;
     }
 
     getGame(gameId: string): Observable<Game> {

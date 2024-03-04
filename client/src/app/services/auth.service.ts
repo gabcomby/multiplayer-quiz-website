@@ -13,7 +13,7 @@ export class AuthService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api`;
+        this.apiUrl = `${apiBaseURL}`;
     }
 
     get isAuthenticated$(): Observable<boolean> {

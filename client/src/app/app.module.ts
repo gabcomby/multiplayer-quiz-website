@@ -11,7 +11,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { environment } from '@env/environment.prod';
+import { environment } from '@env/environment';
 import { ChoiceComponent } from './components/choice/choice.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';

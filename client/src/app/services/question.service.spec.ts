@@ -38,7 +38,7 @@ describe('QuestionService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [QuestionService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [QuestionService, { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' }],
         });
         service = TestBed.inject(QuestionService);
         httpController = TestBed.inject(HttpTestingController);
