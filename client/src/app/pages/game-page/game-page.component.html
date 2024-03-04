@@ -11,7 +11,7 @@
         </mat-toolbar>
     </div>
     <div class="live-chat">
-        <app-game-page-livechat [playerName]="playerName" id="sidebar"></app-game-page-livechat>
+        <app-game-page-livechat [playerName]="currentPlayerName" id="sidebar"></app-game-page-livechat>
     </div>
     <div class="timer">
         <app-game-page-timer [timerCountdown]="timerCountdown" [totalTimer]="gameData.duration"></app-game-page-timer>
@@ -27,6 +27,6 @@
         ></app-game-page-questions>
     </div>
     <div class="score">
-        <app-game-page-scoresheet [playerList]="currentMatch.playerList"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="lobbyData.playerList"></app-game-page-scoresheet>
     </div>
 </div>

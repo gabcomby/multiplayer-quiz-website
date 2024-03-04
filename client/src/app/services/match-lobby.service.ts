@@ -58,8 +58,20 @@ export class MatchLobbyService {
         return this.http.patch(`${this.apiUrl}/${lobbyId}/players`, player);
     }
 
-    removePlayer(playerId: string, lobbyId: string) {
-        return this.http.delete(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
+    getPlayers(lobbyId: string): Observable<Player[]> {
+        return this.http.get<Player[]>(`${this.apiUrl}/${lobbyId}/players`);
+    }
+
+    getPlayer(lobbyId: string, playerId: string): Observable<Player> {
+        return this.http.get<Player>(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
+    }
+
+    updatePlayerScore(lobbyId: string, playerId: string, incr: number): Observable<MatchLobby> {
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players/${playerId}`, { incr });
+    }
+
+    removePlayer(playerId: string, lobbyId: string): Observable<MatchLobby> {
+        return this.http.delete<MatchLobby>(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
     }
 
     getLobbyByCode(lobbyCode: string): Observable<MatchLobby> {

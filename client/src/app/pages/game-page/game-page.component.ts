@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { MatchService } from '@app/services/match.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
+// import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable, switchMap } from 'rxjs';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
@@ -27,17 +27,28 @@ export class GamePageComponent implements OnInit {
         lastModification: new Date(),
         questions: [],
     };
+    lobbyData: MatchLobby = {
+        id: '',
+        playerList: [],
+        gameId: '',
+        bannedNames: [],
+        lobbyCode: '',
+        isLocked: false,
+    };
+    lobbyId: string;
+    gameId: string;
+    currentPlayerId: string;
+    currentPlayerName: string;
+
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
     currentMatch: Match = { id: '', playerList: [] };
     matchId: string;
-    gameId: string;
+
     timerCountdown: number;
     answerIsCorrect: boolean;
 
     gameScore: { name: string; score: number }[] = [];
-
-    playerName: string;
 
     answerIdx: number[];
     previousQuestionIndex: number;
@@ -45,58 +56,41 @@ export class GamePageComponent implements OnInit {
     // eslint-disable-next-line max-params
     constructor(
         private router: Router,
-        private matchService: MatchService,
+        // private matchService: MatchService,
         private route: ActivatedRoute,
         private socketService: SocketService,
         private gameService: GameService,
         private snackbarService: SnackbarService,
+        private matchLobbyService: MatchLobbyService,
     ) {}
 
+    // REFACTOR DONE
     ngOnInit() {
-        // Get the game ID from the URL
-        this.gameId = this.route.snapshot.params['id'];
-        // Fetch the game data from the server
-        this.gameService.getGame(this.gameId).subscribe({
-            next: (data) => {
-                this.gameData = data;
+        this.lobbyId = this.route.snapshot.params['lobbyId'];
+        this.currentPlayerId = this.route.snapshot.params['playerId'];
+        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
+            next: (lobbyData) => {
+                this.lobbyData = lobbyData;
+                const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
+                this.gameService.getGame(this.lobbyData.gameId).subscribe({
+                    next: (gameData) => {
+                        this.gameData = gameData;
+                        this.setupWebSocketEvents();
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
+                    },
+                });
             },
             error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
             },
         });
-        // Create a new match with a new player, and then setup the WebSocket events
-        this.createAndSetupMatch();
     }
 
-    createAndSetupMatch() {
-        this.createMatch()
-            .pipe(
-                switchMap((matchData) => {
-                    this.currentMatch = matchData;
-                    return this.addPlayerToMatch(this.matchId);
-                }),
-            )
-            .subscribe({
-                next: (data) => {
-                    this.currentMatch = data;
-                    this.setupWebSocketEvents();
-                    this.socketService.startTimer();
-                },
-                error: (error) => {
-                    alert(error.message);
-                },
-            });
-    }
-
-    createMatch(): Observable<Match> {
-        this.matchId = generateNewId();
-        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
-    }
-
-    addPlayerToMatch(matchId: string): Observable<Match> {
-        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
-    }
-
+    // REFACTOR DONE
     setupWebSocketEvents() {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
@@ -116,30 +110,48 @@ export class GamePageComponent implements OnInit {
         });
     }
 
+    // REFACTOR DONE
     updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
             next: (data) => {
-                this.currentMatch.playerList[0] = data;
+                this.lobbyData = data;
             },
             error: (error) => {
-                alert(error.message);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
             },
         });
     }
 
+    // REFACTOR DONE
+    // TODO: Delete the game and kick everyone out when the host leaves or when 0 players are left or when the game is over
     handleGameLeave() {
-        this.matchService.deleteMatch(this.matchId).subscribe({
-            next: () => {
-                this.socketService.stopTimer();
-                this.socketService.disconnect();
-                this.router.navigate(['/new-game']);
+        this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
+            next: (data) => {
+                this.lobbyData = data;
+                if (this.lobbyData.playerList.length === 0) {
+                    this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                        next: () => {
+                            this.socketService.disconnect();
+                            this.router.navigate(['/new-game']);
+                        },
+                        error: (error) => {
+                            this.snackbarService.openSnackBar(
+                                `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
+                            );
+                        },
+                    });
+                } else {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/new-game']);
+                }
             },
             error: (error) => {
-                alert(error.message);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
             },
         });
     }
 
+    // TODO: Inside of function should be moved to a service
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;

@@ -3,14 +3,6 @@ import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDest
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
 
-const MESSAGE_NOT_FOUND = -1;
-
-enum AnswerStatusEnum {
-    Correct,
-    Wrong,
-    Unanswered,
-}
-
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -26,8 +18,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
-    answerStatusEnum = AnswerStatusEnum;
-    answerStatus: AnswerStatusEnum;
     answerIsLocked: boolean = false;
 
     constructor(
@@ -71,7 +61,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.selectedChoices = [];
         }
         const answerIdx = this.selectedChoices.indexOf(index);
-        if (answerIdx > MESSAGE_NOT_FOUND) {
+        // eslint-disable-next-line
+        if (answerIdx > -1) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
