@@ -12,6 +12,7 @@ import { ModifyQuestionQbankComponent } from '@app/pages/modify-question-qbank/m
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from '@app/pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from '@app/pages/question-bank/question-bank.component';
+import { ResultsViewComponent } from '@app/components/results-view/results-view.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -28,6 +29,9 @@ const routes: Routes = [
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
     { path: 'gameTimer/:id/:idLobby/:idPlayer', component: GameTimerPageComponent },
+    { path: 'gameTimer/:id/:idLobby', component: GameTimerPageComponent },
+    // { path: 'resultsView/:idLobby', component: ResultsViewComponent },
+    { path: 'resultsView', component: ResultsViewComponent },
 
     { path: '**', redirectTo: '/home' },
 ];
