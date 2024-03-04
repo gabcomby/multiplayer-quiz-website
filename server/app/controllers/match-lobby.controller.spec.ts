@@ -88,6 +88,44 @@ describe('MatchLobbyController', () => {
         chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
     });
 
+    it('should get lobby by code on GET /joinLobby/:code', async () => {
+        matchLobbyService.getLobbyByCode.resolves(mockLobbyData.toObject());
+
+        const response = await supertest(expressApp).get(`/api/lobbies/joinLobby/${mockLobbyData.id}`).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should return an error status on GET /joinLobby/:code if service fails', async () => {
+        matchLobbyService.getLobbyByCode.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .get(`/api/lobbies/joinLobby/${mockLobbyData.id}`)
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching lobby by code' });
+            });
+    });
+
+    it('should return all players from lobby on GET /:id/players', async () => {
+        matchLobbyService.getPlayers.resolves(mockLobbyData.toObject());
+
+        const response = await supertest(expressApp).get(`/api/lobbies/${mockLobbyData.id}/players`).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should return an error status on GET /:id/players if service fails', async () => {
+        matchLobbyService.getPlayers.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .get(`/api/lobbies/${mockLobbyData.id}/players`)
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching players from lobby' });
+            });
+    });
+
     it('should return an error status on PATCH request if service fails', async () => {
         matchLobbyService.addPlayer.rejects(new Error('Service Failure'));
 

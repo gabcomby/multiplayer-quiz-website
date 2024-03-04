@@ -15,10 +15,12 @@ describe('MatchLobbyService', () => {
     let findOneAndDeleteStub: SinonStub;
     let findOneAndUpdateStub: SinonStub;
 
+    const playerInstance = { id: 'player123', name: 'John Doe', score: 0 };
+
     const lobbyInstance = new matchLobbyModel({
         id: 'lobby123',
         name: 'Test Lobby',
-        playerList: [],
+        playerList: [playerInstance],
         bannedNames: ['mike', 'john', 'jane'],
         lobbyCode: 'ABCD',
         isLocked: false,
