@@ -70,8 +70,8 @@ export class MatchLobbyService {
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players/${playerId}`, { incr });
     }
 
-    removePlayer(playerId: string, lobbyId: string) {
-        return this.http.delete(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
+    removePlayer(playerId: string, lobbyId: string): Observable<MatchLobby> {
+        return this.http.delete<MatchLobby>(`${this.apiUrl}/${lobbyId}/players/${playerId}`);
     }
 
     getLobbyByCode(lobbyCode: string): Observable<MatchLobby> {

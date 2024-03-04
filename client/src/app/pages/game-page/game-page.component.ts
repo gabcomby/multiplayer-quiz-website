@@ -122,11 +122,27 @@ export class GamePageComponent implements OnInit {
     }
 
     // REFACTOR DONE
+    // TODO: Delete the game and kick everyone out when the host leaves or when 0 players are left or when the game is over
     handleGameLeave() {
         this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
-            next: () => {
-                this.socketService.disconnect();
-                this.router.navigate(['/new-game']);
+            next: (data) => {
+                this.lobbyData = data;
+                if (this.lobbyData.playerList.length === 0) {
+                    this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                        next: () => {
+                            this.socketService.disconnect();
+                            this.router.navigate(['/new-game']);
+                        },
+                        error: (error) => {
+                            this.snackbarService.openSnackBar(
+                                `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
+                            );
+                        },
+                    });
+                } else {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/new-game']);
+                }
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
