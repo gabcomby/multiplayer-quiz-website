@@ -17,7 +17,7 @@ export class ModifiedQuestionComponent implements OnInit {
     menuSelected: boolean = false;
 
     constructor(
-        private questionService: QuestionService, // private questionValidationService: QuestionValidationService,
+        protected questionService: QuestionService, // private questionValidationService: QuestionValidationService,
     ) {}
 
     ngOnInit() {
@@ -67,21 +67,21 @@ export class ModifiedQuestionComponent implements OnInit {
         // }
     }
 
-    moveQuestionUp(index: number): void {
-        if (index > 0) {
-            const temp = this.questionList[index];
-            this.questionList[index] = this.questionList[index - 1];
-            this.questionList[index - 1] = temp;
-        }
-    }
+    // moveQuestionUp(index: number): void {
+    //     if (index > 0) {
+    //         const temp = this.questionList[index];
+    //         this.questionList[index] = this.questionList[index - 1];
+    //         this.questionList[index - 1] = temp;
+    //     }
+    // }
 
-    moveQuestionDown(index: number): void {
-        if (index < this.questionList.length - 1) {
-            const temp = this.questionList[index];
-            this.questionList[index] = this.questionList[index + 1];
-            this.questionList[index + 1] = temp;
-        }
-    }
+    // moveQuestionDown(index: number): void {
+    //     if (index < this.questionList.length - 1) {
+    //         const temp = this.questionList[index];
+    //         this.questionList[index] = this.questionList[index + 1];
+    //         this.questionList[index + 1] = temp;
+    //     }
+    // }
 
     removeQuestion(question: Question, index: number) {
         this.questionList = this.questionList.filter((element) => element.id !== question.id);
