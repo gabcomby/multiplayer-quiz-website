@@ -1,4 +1,3 @@
-
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,7 +9,6 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
 
 const MAX_CHOICES = 4;
-
 
 describe('ChoiceComponent', () => {
     let questionServiceSpy: jasmine.SpyObj<QuestionService>;
@@ -35,7 +33,6 @@ describe('ChoiceComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
-
 
     it('should create', () => {
         expect(component).toBeTruthy();
@@ -127,15 +124,12 @@ describe('ChoiceComponent', () => {
         expect(component.answers.length).toBe(2);
     });
 
-
-
     it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {
         component.answers = [
             { text: 'test1', isCorrect: true },
             { text: 'test2', isCorrect: false },
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
-
 
         spyOn(component.registerAnswer, 'emit');
         component.ngOnInit();
