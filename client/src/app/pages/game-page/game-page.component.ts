@@ -42,7 +42,8 @@ export class GamePageComponent implements OnInit {
     // allLocked: number = 0;
     answerIdx: number[];
     previousQuestionIndex: number;
-    // idLobby: StaticRange;
+    idLobby: string;
+    idPlayer: string;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -58,7 +59,8 @@ export class GamePageComponent implements OnInit {
     ngOnInit() {
         // Get the game ID from the URL
         this.gameId = this.route.snapshot.params['id'];
-        // this.idLobby = this.route.snapshot.params['idLobby'];
+        this.idLobby = this.route.snapshot.params['idLobby'];
+        this.idPlayer = this.route.snapshot.params['idPlayer'];
 
         // Fetch the game data from the server
         this.gameService.getGame(this.gameId).subscribe({

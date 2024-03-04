@@ -2,7 +2,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-// import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -40,50 +40,50 @@ describe('CreateQGamePageComponent', () => {
     let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
     const defaultDate = new Date();
-    // const defaultGame = [
-    //     {
-    //         id: '123',
-    //         title: 'allo',
-    //         description: 'test',
-    //         isVisible: false,
-    //         duration: 10,
-    //         lastModification: defaultDate,
-    //         questions: [
-    //             {
-    //                 type: 'QCM',
-    //                 text: 'Ceci est une question de test',
-    //                 points: 10,
-    //                 id: 'dsdsd',
-    //                 choices: [
-    //                     { text: '1', isCorrect: false },
-    //                     { text: '2', isCorrect: true },
-    //                 ],
-    //                 lastModification: defaultDate,
-    //             },
-    //         ],
-    //     },
-    //     {
-    //         id: '125',
-    //         title: 'bonjour',
-    //         description: 'test2',
-    //         isVisible: false,
-    //         duration: 20,
-    //         lastModification: defaultDate,
-    //         questions: [
-    //             {
-    //                 type: 'QCM',
-    //                 text: 'Ceci est une question de test',
-    //                 points: 10,
-    //                 id: 'dsdsd',
-    //                 choices: [
-    //                     { text: '1', isCorrect: false },
-    //                     { text: '2', isCorrect: true },
-    //                 ],
-    //                 lastModification: defaultDate,
-    //             },
-    //         ],
-    //     },
-    // ];
+    const defaultGame = [
+        {
+            id: '123',
+            title: 'allo',
+            description: 'test',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    choices: [
+                        { text: '1', isCorrect: false },
+                        { text: '2', isCorrect: true },
+                    ],
+                    lastModification: defaultDate,
+                },
+            ],
+        },
+        {
+            id: '125',
+            title: 'bonjour',
+            description: 'test2',
+            isVisible: false,
+            duration: 20,
+            lastModification: defaultDate,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    choices: [
+                        { text: '1', isCorrect: false },
+                        { text: '2', isCorrect: true },
+                    ],
+                    lastModification: defaultDate,
+                },
+            ],
+        },
+    ];
 
     beforeEach(() => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -130,6 +130,8 @@ describe('CreateQGamePageComponent', () => {
             } as Game),
             validateDeletedGame: Promise.resolve({}),
             validateDuplicationGame: {},
+            gameValidationWhenModified: {},
+            createNewGame: {},
         });
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
     });
@@ -158,12 +160,12 @@ describe('CreateQGamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('should initialize with default values', () => {
-    //     expect(component.modifiedQuestion).toBeFalse();
-    //     expect(component.gamesFromDB).toEqual([]);
-    //     expect(component.dataReady).toBeFalse();
-    //     expect(component.gamesFromDB).toEqual([]);
-    // });
+    it('should initialize with default values', () => {
+        expect(component.modifiedQuestion).toBeFalse();
+        expect(component.games).toEqual([]);
+        expect(component.dataReady).toBeFalse();
+        // expect(component.gamesFromDB).toEqual([]);
+    });
 
     it('initialize forms controls', () => {
         expect(component.gameForm.get('name')).toBeTruthy();
@@ -187,85 +189,90 @@ describe('CreateQGamePageComponent', () => {
             expect(component.handleServerError).toHaveBeenCalled();
         }
     });
-    // it('get game should find game with id in list should return game if found', () => {
-    //     component.gamesFromDB = defaultGame;
-    //     component.getGame('123');
-    //     expect(component.gameFromDB).toEqual({
-    //         id: '123',
-    //         title: 'allo',
-    //         description: 'test',
-    //         isVisible: false,
-    //         duration: 10,
-    //         lastModification: defaultDate,
-    //         questions: [
-    //             {
-    //                 type: 'QCM',
-    //                 text: 'Ceci est une question de test',
-    //                 points: 10,
-    //                 id: 'dsdsd',
-    //                 choices: [
-    //                     { text: '1', isCorrect: false },
-    //                     { text: '2', isCorrect: true },
-    //                 ],
-    //                 lastModification: defaultDate,
-    //             },
-    //         ],
-    //     });
-    // });
-    // it('get game should return undefined game with id if not found', () => {
-    //     component.gameFromDB = {
-    //         id: '',
-    //         title: '',
-    //         description: '',
-    //         isVisible: false,
-    //         duration: 10,
-    //         lastModification: defaultDate,
-    //         questions: [],
-    //     };
-    //     component.gamesFromDB = defaultGame;
-    //     try {
-    //         component.getGame('124');
-    //     } catch (error) {
-    //         expect(error).toEqual(new Error('Game with id 124 not found'));
-    //     }
-    //     expect(component.gameFromDB).toEqual({
-    //         id: '',
-    //         title: '',
-    //         description: '',
-    //         isVisible: false,
-    //         duration: 10,
-    //         lastModification: defaultDate,
-    //         questions: [],
-    //     });
-    // });
+    it('get game should find game with id in list should return game if found', () => {
+        component.games = defaultGame;
+        component.getGame('123');
+        expect(component.gameModified).toEqual({
+            id: '123',
+            title: 'allo',
+            description: 'test',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    choices: [
+                        { text: '1', isCorrect: false },
+                        { text: '2', isCorrect: true },
+                    ],
+                    lastModification: defaultDate,
+                },
+            ],
+        });
+    });
+    it('get game should return undefined game with id if not found', () => {
+        component.gameModified = {
+            id: '',
+            title: '',
+            description: '',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [],
+        };
+        component.games = defaultGame;
+        try {
+            component.getGame('124');
+        } catch (error) {
+            expect(error).toEqual(new Error('Game with id 124 not found'));
+        }
+        expect(component.gameModified).toEqual({
+            id: '',
+            title: '',
+            description: '',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [],
+        });
+    });
 
-    // it('initialize forms controls with value when gameId is not null', () => {
-    //     const MAGIC_NUMB = 10;
-    //     component.gameForm = new FormGroup({
-    //         name: new FormControl(''),
-    //         description: new FormControl(''),
-    //         time: new FormControl(''),
-    //     });
-    //     component.gameFromDB = defaultGame[0];
-    //     component.insertIfExist();
-    //     expect(component.gameForm).toBeTruthy();
-    //     expect(component.gameForm.get('name')?.value).toBe('allo');
-    //     expect(component.gameForm.get('description')?.value).toBe('test');
-    //     expect(component.gameForm.get('time')?.value).toBe(MAGIC_NUMB);
-    // });
+    it('initialize forms controls with value when gameId is not null', () => {
+        const MAGIC_NUMB = 10;
+        component.gameForm = new FormGroup({
+            name: new FormControl(''),
+            description: new FormControl(''),
+            time: new FormControl(''),
+        });
+        component.gameModified = defaultGame[0];
+        component.insertIfExist();
+        expect(component.gameForm).toBeTruthy();
+        expect(component.gameForm.get('name')?.value).toBe('allo');
+        expect(component.gameForm.get('description')?.value).toBe('test');
+        expect(component.gameForm.get('time')?.value).toBe(MAGIC_NUMB);
+    });
 
-    // it('should call createNewGame when onSubmit', async () => {
-    //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-    //     component.gameForm = new FormGroup({
-    //         name: new FormControl('allo'),
-    //         description: new FormControl('chose'),
-    //         time: new FormControl('10'),
-    //     });
-    //     spyOn(component, 'createNewGame');
-    //     await component.onSubmit();
-    //     fixture.detectChanges();
-    //     expect(component.createNewGame).toHaveBeenCalled();
-    // });
+    it('should call createNewGame from service when onSubmit', async () => {
+        // spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
+        // component.gameForm = new FormGroup({
+        //     name: new FormControl('allo'),
+        //     description: new FormControl('chose'),
+        //     time: new FormControl('10'),
+        // });
+        // spyOn(component, 'createNewGame');
+        // await component.onSubmit();
+        // fixture.detectChanges();
+        // expect(component.createNewGame).toHaveBeenCalled();
+        gameServiceSpy.gameValidationWhenModified.and.returnValue(Promise.resolve(true));
+
+        await component.onSubmit();
+        // expect(gameServiceSpy.createNewGame).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalled();
+    });
     // it('should create new game when calling createNewGame', () => {
     //     component.gameForm = new FormGroup({
     //         name: new FormControl(''),
@@ -289,7 +296,7 @@ describe('CreateQGamePageComponent', () => {
     // });
 
     // it('should call gameValidationWhenModified when gameID is not null in onSubmit', async () => {
-    //     spyOn(component, 'gameValidationWhenModified');
+    //     // spyOn(component, 'gameValidationWhenModified');
     //     await component.onSubmit().then(async () => {
     //         expect(component.gameId).toBe('123');
     //         fixture.detectChanges();
@@ -299,7 +306,7 @@ describe('CreateQGamePageComponent', () => {
     // it('should call patch when gameID is not null and validateDeletedGame return true in gameValidationModified', async () => {
     //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
     //     gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(true));
-    //     component.gameValidationWhenModified().then(() => {
+    //     gameServiceSpy.gameValidationWhenModified.then(() => {
     //         fixture.detectChanges();
     //         expect(gameServiceSpy.patchGame).toHaveBeenCalled();
     //     });
@@ -307,20 +314,20 @@ describe('CreateQGamePageComponent', () => {
     // it('should call createGame when gameID is not null and validateDeletedGame return false in gameValidationModified', async () => {
     //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
     //     gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(false));
-    //     await component.gameValidationWhenModified().then(async () => {
+    //     await gameServiceSpy.gameValidationWhenModified().then(async () => {
     //         fixture.detectChanges();
     //         expect(gameServiceSpy.createGame).toHaveBeenCalled();
     //     });
     // });
-    // it('should throw error if submitting with the server down', async () => {
-    //     spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
-
-    //     try {
-    //         await component.gameValidationWhenModified();
-    //     } catch (error) {
-    //         expect(component.handleServerError).toHaveBeenCalled();
-    //     }
-    // });
+    it('should throw error if submitting with the server down', async () => {
+        // spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
+        gameServiceSpy.gameValidationWhenModified.and.throwError('error');
+        try {
+            await component.onSubmit();
+        } catch (error) {
+            expect(component.handleServerError).toHaveBeenCalled();
+        }
+    });
 
     it('should toggle modifiedQuestion property', () => {
         expect(component.modifiedQuestion).toBeFalse();

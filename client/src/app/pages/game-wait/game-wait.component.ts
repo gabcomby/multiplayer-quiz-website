@@ -20,6 +20,7 @@ export class GameWaitComponent implements OnInit {
         isLocked: false,
         hostId: '',
     };
+    playerId: string;
     isHost: boolean;
     private gameId: string;
     // eslint-disable-next-line max-params
@@ -30,21 +31,21 @@ export class GameWaitComponent implements OnInit {
         private snackbarService: SnackbarService,
     ) {}
     ngOnInit() {
+        this.playerId = this.route.snapshot.params['host'];
+
         this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
             next: (data) => {
                 this.matchLobby = data;
+                this.isHost = this.playerId === `${this.matchLobby.hostId}`;
                 this.gameId = this.matchLobby.gameId;
             },
             error: (error) => {
                 this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
             },
         });
-        this.isHost = this.route.snapshot.params['host'] === 'true';
-        console.log(this.isHost);
     }
 
     handleGameLaunch() {
-        // this.hostId = generateNewId();
-        this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id]);
+        this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
     }
 }

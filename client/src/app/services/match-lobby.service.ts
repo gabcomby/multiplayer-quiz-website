@@ -29,14 +29,14 @@ export class MatchLobbyService {
     }
 
     createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
-        const player: Player = {
-            id: generateNewId(),
-            name: creatorName,
-            score: 0,
-        };
+        // const player: Player = {
+        //     id: generateNewId(),
+        //     name: creatorName,
+        //     score: 0,
+        // };
         const lobby: MatchLobby = {
             id: generateNewId(),
-            playerList: [player],
+            playerList: [],
             gameId,
             bannedNames: [],
             lobbyCode: generateLobbyId(),
