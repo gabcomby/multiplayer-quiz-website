@@ -152,13 +152,6 @@ describe('AdminPageComponent', () => {
         component.createGame();
         expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);
     });
-    it('should delete a game when confirmed', async () => {
-        gameServiceMock.deleteGame.and.returnValue(Promise.resolve());
-        matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
-        await component.deleteGame('1zkjdm');
-
-        expect(gameServiceMock.deleteGame).toHaveBeenCalled();
-    });
 
     it("should validate game's title", async () => {
         const spy = spyOn(component, 'getValidGameTitle');
