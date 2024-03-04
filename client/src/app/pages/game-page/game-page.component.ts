@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
 import type { Match } from '@app/interfaces/match';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable, switchMap } from 'rxjs';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
@@ -27,11 +27,22 @@ export class GamePageComponent implements OnInit {
         lastModification: new Date(),
         questions: [],
     };
+    lobbyData: MatchLobby = {
+        id: '',
+        playerList: [],
+        gameId: '',
+        bannedNames: [],
+        lobbyCode: '',
+        isLocked: false,
+    };
+    lobbyId: string;
+    gameId: string;
+
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
     currentMatch: Match = { id: '', playerList: [] };
     matchId: string;
-    gameId: string;
+
     timerCountdown: number;
     answerIsCorrect: boolean;
 
@@ -50,51 +61,31 @@ export class GamePageComponent implements OnInit {
         private socketService: SocketService,
         private gameService: GameService,
         private snackbarService: SnackbarService,
+        private matchLobbyService: MatchLobbyService,
     ) {}
 
+    // THIS IS REFACTORED
     ngOnInit() {
         // Get the game ID from the URL
-        this.gameId = this.route.snapshot.params['id'];
-        // Fetch the game data from the server
-        this.gameService.getGame(this.gameId).subscribe({
-            next: (data) => {
-                this.gameData = data;
+        this.lobbyId = this.route.snapshot.params['lobbyId'];
+        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
+            next: (lobbyData) => {
+                this.lobbyData = lobbyData;
+                this.gameService.getGame(this.lobbyData.gameId).subscribe({
+                    next: (gameData) => {
+                        this.gameData = gameData;
+                        this.setupWebSocketEvents();
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
+                    },
+                });
             },
             error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
             },
         });
-        // Create a new match with a new player, and then setup the WebSocket events
-        this.createAndSetupMatch();
-    }
-
-    createAndSetupMatch() {
-        this.createMatch()
-            .pipe(
-                switchMap((matchData) => {
-                    this.currentMatch = matchData;
-                    return this.addPlayerToMatch(this.matchId);
-                }),
-            )
-            .subscribe({
-                next: (data) => {
-                    this.currentMatch = data;
-                    this.setupWebSocketEvents();
-                    this.socketService.startTimer();
-                },
-                error: (error) => {
-                    alert(error.message);
-                },
-            });
-    }
-
-    createMatch(): Observable<Match> {
-        this.matchId = generateNewId();
-        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
-    }
-
-    addPlayerToMatch(matchId: string): Observable<Match> {
-        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
     }
 
     setupWebSocketEvents() {
@@ -140,6 +131,7 @@ export class GamePageComponent implements OnInit {
         });
     }
 
+    // TODO: Inside of function should be moved to a service
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
