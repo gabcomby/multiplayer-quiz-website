@@ -15,7 +15,7 @@ describe('MatchLobbyController', () => {
         id: 'lobby123',
         name: 'Test Lobby',
         playerList: [],
-        bannedNames: [],
+        bannedNames: ['mike', 'john', 'jane'],
         lobbyCode: 'ABCD',
         isLocked: false,
     });
@@ -59,5 +59,100 @@ describe('MatchLobbyController', () => {
         const response = await supertest(expressApp).delete(`/api/lobbies/${mockLobbyData.id}`).expect(StatusCodes.OK);
 
         chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should add a player to a lobby on PATCH /:id/players', async () => {
+        matchLobbyService.addPlayer.resolves(mockLobbyData.toObject());
+
+        const response = await supertest(expressApp)
+            .patch(`/api/lobbies/${mockLobbyData.id}/players`)
+            .send({ name: 'Player 1' })
+            .expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should remove a player from a lobby on DELETE /:id/players/:playerId', async () => {
+        matchLobbyService.removePlayer.resolves(mockLobbyData.toObject());
+
+        const response = await supertest(expressApp).delete(`/api/lobbies/${mockLobbyData.id}/players/123`).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should return all banned players on GET /:id/ban', async () => {
+        matchLobbyService.getBannedPlayers.resolves(mockLobbyData.toObject());
+
+        const response = await supertest(expressApp).get(`/api/lobbies/${mockLobbyData.id}/ban`).expect(StatusCodes.OK);
+
+        chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
+    });
+
+    it('should return an error status on PATCH request if service fails', async () => {
+        matchLobbyService.addPlayer.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .patch(`/api/lobbies/${mockLobbyData.id}/players`)
+            .send({ name: 'Player 1' })
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error adding player to lobby' });
+            });
+    });
+
+    it('should return an error status on GET request if service fails', async () => {
+        matchLobbyService.getLobbies.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .get('/api/lobbies')
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching all lobbies from server' });
+            });
+    });
+
+    it('should return an error status on GET request if service fails', async () => {
+        matchLobbyService.getLobby.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .get(`/api/lobbies/${mockLobbyData.id}`)
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error fetching lobby from server' });
+            });
+    });
+
+    it('should return an error status on POST request if service fails', async () => {
+        matchLobbyService.createLobby.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .post('/api/lobbies')
+            .send({ name: 'New Lobby' })
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error creating lobby' });
+            });
+    });
+
+    it('should return an error status on DELETE request if service fails', async () => {
+        matchLobbyService.deleteLobby.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .delete(`/api/lobbies/${mockLobbyData.id}`)
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error deleting lobby' });
+            });
+    });
+
+    it('should return an error status on DELETE player request if service fails', async () => {
+        matchLobbyService.removePlayer.rejects(new Error('Service Failure'));
+
+        return supertest(expressApp)
+            .delete(`/api/lobbies/${mockLobbyData.id}/players/123`)
+            .expect(StatusCodes.NOT_FOUND)
+            .then((response) => {
+                chai.expect(response.body).to.deep.equal({ error: 'Error removing player from lobby' });
+            });
     });
 });
