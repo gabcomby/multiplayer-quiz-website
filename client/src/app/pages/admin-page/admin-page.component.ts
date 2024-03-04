@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
@@ -18,10 +18,8 @@ import { firstValueFrom } from 'rxjs';
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
-    @ViewChild('downloadLink') downloadLink: ElementRef<HTMLAnchorElement>;
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     dataSource: Game[] = [];
-    downloadJson = '';
 
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
