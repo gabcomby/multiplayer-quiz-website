@@ -84,6 +84,6 @@ export class MatchLobbyService {
         const lobby = await this.getLobby(lobbyId);
         const index = lobby.playerList.findIndex((player) => player.id === playerId);
         lobby.playerList[index].score += incr;
-        return await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby);
+        return await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby, { new: true });
     }
 }

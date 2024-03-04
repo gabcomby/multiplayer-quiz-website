@@ -11,7 +11,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { environment } from '@env/environment.prod';
 import { ChoiceComponent } from './components/choice/choice.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
@@ -81,7 +80,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         MatListModule,
         RouterModule,
     ],
-    providers: [{ provide: API_BASE_URL, useValue: environment.serverUrl }],
+    providers: [{ provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
