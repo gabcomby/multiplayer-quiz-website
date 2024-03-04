@@ -12,7 +12,7 @@ describe('MatchService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [MatchService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [MatchService, { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' }],
         });
         service = TestBed.inject(MatchService);
         httpMock = TestBed.inject(HttpTestingController);

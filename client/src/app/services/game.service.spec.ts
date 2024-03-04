@@ -56,7 +56,7 @@ describe('GamesService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [GameService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [GameService, { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' }],
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameService);
