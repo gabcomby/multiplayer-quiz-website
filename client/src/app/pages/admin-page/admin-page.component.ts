@@ -104,7 +104,7 @@ export class AdminPageComponent implements OnInit {
         return;
     }
 
-    deleteGame(gameId: string) {
+    deleteGame(gameId: string): void {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '300px',
             data: {
@@ -112,13 +112,10 @@ export class AdminPageComponent implements OnInit {
                 message: 'Êtes-vous sûr de vouloir supprimer ce jeu?',
             },
         });
-
         dialogRef.afterClosed().subscribe((confirmDelete) => {
             if (!confirmDelete) return;
-
-            this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-            this.gameService.deleteGame(gameId).then(() => {
-                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            this.adminService.deleteGame(gameId).then(() => {
+                this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
             });
         });
     }

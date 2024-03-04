@@ -47,6 +47,17 @@ export class AdminService {
         });
     }
 
+    async deleteGame(gameId: string): Promise<void> {
+        return this.gameService
+            .deleteGame(gameId)
+            .then(() => {
+                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            })
+            .catch(() => {
+                this.snackbarService.openSnackBar('Erreur lors de la suppression du jeu.');
+            });
+    }
+
     hasValidInput = (input: string, title: string, dataSource: Game[]): boolean => {
         return !this.isGameNameUnique(input, dataSource) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
     };
