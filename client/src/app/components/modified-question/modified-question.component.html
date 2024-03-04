@@ -32,7 +32,7 @@
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
                 <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
             </button>
-            <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="moveQuestionUp(i)" *ngIf="i > 0">
+            <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="questionService.moveQuestionUp(i, questionList)" *ngIf="i > 0">
                 <mat-icon>arrow_upward_alt</mat-icon>
             </button>
 
@@ -41,7 +41,7 @@
                 class="buttonIcon"
                 color="primary"
                 aria-label="Move Down"
-                (click)="moveQuestionDown(i)"
+                (click)="questionService.moveQuestionDown(i, questionList)"
                 *ngIf="i < questionList.length - 1"
             >
                 <mat-icon>arrow_downward_alt</mat-icon>

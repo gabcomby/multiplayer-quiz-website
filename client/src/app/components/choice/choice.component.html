@@ -10,7 +10,7 @@
                 <button mat-icon-button (click)="removeChoice(i, choices)">
                     <mat-icon>remove_circle_outline</mat-icon>
                 </button>
-                <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="moveQuestionUp(i, choices)" *ngIf="i > 0">
+                <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="questionService.moveQuestionUp(i, choices)" *ngIf="i > 0">
                     <mat-icon>arrow_upward_alt</mat-icon>
                 </button>
 
@@ -19,7 +19,7 @@
                     class="buttonIcon"
                     color="primary"
                     aria-label="Move Down"
-                    (click)="moveQuestionDown(i, choices)"
+                    (click)="questionService.moveQuestionDown(i,choices)"
                     *ngIf="i < choices.length - 1"
                 >
                     <mat-icon>arrow_downward_alt</mat-icon>
