@@ -5,7 +5,7 @@ import type { Match } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { MatchService } from '@app/services/match.service';
+// import { MatchService } from '@app/services/match.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
@@ -38,6 +38,7 @@ export class GamePageComponent implements OnInit {
     lobbyId: string;
     gameId: string;
     currentPlayerId: string;
+    currentPlayerName: string;
 
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
@@ -49,15 +50,13 @@ export class GamePageComponent implements OnInit {
 
     gameScore: { name: string; score: number }[] = [];
 
-    playerName: string;
-
     answerIdx: number[];
     previousQuestionIndex: number;
 
     // eslint-disable-next-line max-params
     constructor(
         private router: Router,
-        private matchService: MatchService,
+        // private matchService: MatchService,
         private route: ActivatedRoute,
         private socketService: SocketService,
         private gameService: GameService,
@@ -72,6 +71,8 @@ export class GamePageComponent implements OnInit {
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
+                const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
                 this.gameService.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
