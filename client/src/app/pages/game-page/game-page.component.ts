@@ -37,6 +37,7 @@ export class GamePageComponent implements OnInit {
     };
     lobbyId: string;
     gameId: string;
+    currentPlayerId: string;
 
     currentQuestionIndex: number = 0;
     questionHasExpired: boolean = false;
@@ -66,8 +67,8 @@ export class GamePageComponent implements OnInit {
 
     // THIS IS REFACTORED
     ngOnInit() {
-        // Get the game ID from the URL
         this.lobbyId = this.route.snapshot.params['lobbyId'];
+        this.currentPlayerId = this.route.snapshot.params['playerId'];
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
@@ -101,6 +102,7 @@ export class GamePageComponent implements OnInit {
         }
         this.socketService.onAnswerVerification((data) => {
             this.answerIsCorrect = data;
+            // THIS SHOULD BE MOVED TO A SERVICE
             if (data === true) {
                 this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
             }
