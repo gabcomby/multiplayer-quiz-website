@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
+import { SocketService } from '@app/services/socket.service';
 
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import { isValidGame } from '@app/utils/is-valid-game';
@@ -17,8 +18,14 @@ export class AdminService {
     constructor(
         private gameService: GameService,
         private snackbarService: SnackbarService,
+        private socketService: SocketService,
     ) {}
 
+    async init(): Promise<Game[]> {
+        const games = await this.fetchGames();
+        this.connectSocket();
+        return games;
+    }
     toggleVisibility(game: Game, isVisible: boolean): void {
         if (!this.gameService.getGame(game.id)) return;
 
@@ -66,6 +73,20 @@ export class AdminService {
         removeUnrecognizedAttributes(game);
         if (!isValidGame(game, this.snackbarService, this.gameService)) return;
         assignNewGameAttributes(game);
+    }
+
+    private async fetchGames(): Promise<Game[]> {
+        try {
+            const games = await this.gameService.getGames();
+            return games;
+        } catch (error) {
+            this.snackbarService.openSnackBar('Erreur lors de la récupération des jeux.');
+            return [];
+        }
+    }
+
+    private connectSocket(): void {
+        this.socketService.connect();
     }
 
     private isGameNameUnique(name: string, dataSource: Game[]): boolean {

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
@@ -24,7 +23,6 @@ export class AdminPageComponent implements OnInit {
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
-        private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
         private dialog: MatDialog,
@@ -32,11 +30,7 @@ export class AdminPageComponent implements OnInit {
     ) {}
 
     async ngOnInit() {
-        this.gameService.getGames().then((games) => {
-            this.dataSource = games;
-        });
-
-        this.socketService.connect();
+        this.dataSource = await this.adminService.init();
     }
 
     toggleVisibility(game: Game, isVisible: boolean) {
@@ -54,7 +48,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
-        const gameTitle: string = originalGame.title;
+        let gameTitle: string = originalGame.title;
 
         while (this.adminService.hasValidInput(gameTitle, originalGame.title, this.dataSource)) {
             const dialogRef = this.dialog.open(InputDialogComponent, {
@@ -66,7 +60,9 @@ export class AdminPageComponent implements OnInit {
             });
 
             const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
-            return newTitle === null || newTitle === '' ? null : newTitle;
+
+            if (newTitle === null || newTitle === '') return null;
+            else gameTitle = newTitle;
         }
 
         return gameTitle;
