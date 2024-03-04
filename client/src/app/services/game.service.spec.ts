@@ -118,7 +118,7 @@ describe('GamesService', () => {
             expect().nothing();
         });
 
-        const req = httpController.expectOne(${service['apiUrl']}/${gameId});
+        const req = httpController.expectOne(`${service['apiUrl']}/${gameId}`);
         expect(req.request.method).toEqual('DELETE');
         req.flush({});
     });
@@ -130,7 +130,7 @@ describe('GamesService', () => {
             expect().nothing();
         });
 
-        const req = httpController.expectOne(${service['apiUrl']}/${game.id});
+        const req = httpController.expectOne(`${service['apiUrl']}/${game.id}`);
         expect(req.request.method).toEqual('PATCH');
         req.flush(game);
     });
