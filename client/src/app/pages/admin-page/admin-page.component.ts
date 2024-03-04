@@ -50,19 +50,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     exportGameAsJson(game: Game): void {
-        this.gameService.getGame(game.id).subscribe({
-            next: (data) => {
-                const json = JSON.stringify(this.removeUnwantedFields(data as unknown as Record<string, unknown>));
-                this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
-                setTimeout(() => {
-                    this.downloadLink.nativeElement.click();
-                });
-                this.snackbarService.openSnackBar('Le jeu a été exporté avec succès.');
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            },
-        });
+        this.adminService.exportGameAsJson(game);
     }
 
     onFileSelected(event: Event): void {
@@ -151,23 +139,6 @@ export class AdminPageComponent implements OnInit {
             hour: '2-digit',
             minute: '2-digit',
         });
-    }
-
-    private removeUnwantedFields(data: Record<string, unknown>): unknown {
-        if (Array.isArray(data)) {
-            return data.map((item) => this.removeUnwantedFields(item));
-        } else if (typeof data === 'object' && data !== null) {
-            Object.keys(data).forEach((key) => {
-                if (key === '_id' || key === '__v' || key === 'isVisible') {
-                    delete data[key];
-                } else {
-                    data[key] = this.removeUnwantedFields(data[key] as Record<string, unknown>);
-                }
-            });
-            return data;
-        } else {
-            return data;
-        }
     }
 
     private isGameNameUnique(name: string): boolean {
