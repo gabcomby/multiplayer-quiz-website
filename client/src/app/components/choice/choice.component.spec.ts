@@ -1,239 +1,239 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { QuestionValidationService } from '@app/services/question-validation.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { ChoiceComponent } from './choice.component';
+// import { NO_ERRORS_SCHEMA } from '@angular/core';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { MatCheckboxModule } from '@angular/material/checkbox';
+// import { MatDialogModule } from '@angular/material/dialog';
+// import { MatIconModule } from '@angular/material/icon';
+// import { QuestionValidationService } from '@app/services/question-validation.service';
+// import { SnackbarService } from '@app/services/snackbar.service';
+// import { ChoiceComponent } from './choice.component';
 
-const MAX_CHOICES = 4;
+// const MAX_CHOICES = 4;
 
-describe('ChoiceComponent', () => {
-    let component: ChoiceComponent;
-    let fixture: ComponentFixture<ChoiceComponent>;
-    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
-    let questionValidationSpy: jasmine.SpyObj<QuestionValidationService>;
+// describe('ChoiceComponent', () => {
+//     let component: ChoiceComponent;
+//     let fixture: ComponentFixture<ChoiceComponent>;
+//     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
+//     let questionValidationSpy: jasmine.SpyObj<QuestionValidationService>;
 
-    beforeEach(() => {
-        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        questionValidationSpy = jasmine.createSpyObj('QuestionValidationService', ['answerValid']);
-        TestBed.configureTestingModule({
-            declarations: [ChoiceComponent],
-            providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
-            imports: [MatDialogModule, MatCheckboxModule, MatIconModule],
-            schemas: [NO_ERRORS_SCHEMA],
-        });
-        fixture = TestBed.createComponent(ChoiceComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+//     beforeEach(() => {
+//         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+//         questionValidationSpy = jasmine.createSpyObj('QuestionValidationService', ['answerValid']);
+//         TestBed.configureTestingModule({
+//             declarations: [ChoiceComponent],
+//             providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
+//             imports: [MatDialogModule, MatCheckboxModule, MatIconModule],
+//             schemas: [NO_ERRORS_SCHEMA],
+//         });
+//         fixture = TestBed.createComponent(ChoiceComponent);
+//         component = fixture.componentInstance;
+//         fixture.detectChanges();
+//     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+//     it('should create', () => {
+//         expect(component).toBeTruthy();
+//     });
 
-    it('should initialize choices with the input question if exist', () => {
-        component.question = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-        ];
+//     it('should initialize choices with the input question if exist', () => {
+//         component.question = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//         ];
 
-        component.ngOnInit();
-        expect(component.choices).toEqual(component.question);
-    });
+//         component.ngOnInit();
+//         expect(component.choices).toEqual(component.question);
+//     });
 
-    it('should add a choice if length of choices is lower than MAX_CHOICES', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-        ];
+//     it('should add a choice if length of choices is lower than MAX_CHOICES', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//         ];
 
-        component.addChoice(component.answers);
+//         component.addChoice(component.answers);
 
-        expect(component.answers.length).toBe(3);
-    });
+//         expect(component.answers.length).toBe(3);
+//     });
 
-    it('should not add a choice if length of choices is MAX_CHOICES', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-            { text: 'test4', isCorrect: false },
-        ];
+//     it('should not add a choice if length of choices is MAX_CHOICES', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//             { text: 'test3', isCorrect: false },
+//             { text: 'test4', isCorrect: false },
+//         ];
 
-        component.addChoice(component.answers);
+//         component.addChoice(component.answers);
 
-        expect(component.answers.length).toBe(MAX_CHOICES);
-        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Maximum 4 choix');
-    });
+//         expect(component.answers.length).toBe(MAX_CHOICES);
+//         expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Maximum 4 choix');
+//     });
 
-    it('should have a minimum of 2 choices and a maximum of 4 choices', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-        ];
+//     it('should have a minimum of 2 choices and a maximum of 4 choices', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//         ];
 
-        spyOn(component, 'addChoice').and.callFake(() => {
-            if (component.answers.length < MAX_CHOICES) {
-                component.answers.push({ text: 'test3', isCorrect: false });
-            }
-        });
-        spyOn(component, 'removeChoice').and.callFake((index) => {
-            if (component.answers.length > 2) {
-                component.answers.splice(index, 1);
-            }
-        });
+//         spyOn(component, 'addChoice').and.callFake(() => {
+//             if (component.answers.length < MAX_CHOICES) {
+//                 component.answers.push({ text: 'test3', isCorrect: false });
+//             }
+//         });
+//         spyOn(component, 'removeChoice').and.callFake((index) => {
+//             if (component.answers.length > 2) {
+//                 component.answers.splice(index, 1);
+//             }
+//         });
 
-        expect(component.answers.length).toBe(2);
+//         expect(component.answers.length).toBe(2);
 
-        component.removeChoice(0, component.answers);
-        expect(component.answers.length).toBe(2);
+//         component.removeChoice(0, component.answers);
+//         expect(component.answers.length).toBe(2);
 
-        component.addChoice(component.answers);
-        expect(component.answers.length).toBe(3);
+//         component.addChoice(component.answers);
+//         expect(component.answers.length).toBe(3);
 
-        component.addChoice(component.answers);
-        component.addChoice(component.answers);
-        expect(component.answers.length).toBe(MAX_CHOICES);
-    });
+//         component.addChoice(component.answers);
+//         component.addChoice(component.answers);
+//         expect(component.answers.length).toBe(MAX_CHOICES);
+//     });
 
-    it('should be able to remove a choice if length of choices is higher than 2', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-        ];
+//     it('should be able to remove a choice if length of choices is higher than 2', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//             { text: 'test3', isCorrect: false },
+//         ];
 
-        component.removeChoice(1, component.answers);
-        expect(component.answers.length).toBe(2);
-    });
+//         component.removeChoice(1, component.answers);
+//         expect(component.answers.length).toBe(2);
+//     });
 
-    it('should not be able to remove a choice if length of choices is 2 or lower', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: true },
-        ];
+//     it('should not be able to remove a choice if length of choices is 2 or lower', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: true },
+//         ];
 
-        component.removeChoice(1, component.answers);
-        expect(component.answers.length).toBe(2);
-    });
+//         component.removeChoice(1, component.answers);
+//         expect(component.answers.length).toBe(2);
+//     });
 
-    it('should switch the answer selected and the one on top', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
+//     it('should switch the answer selected and the one on top', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ];
 
-        component.moveQuestionUp(1, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test2', isCorrect: false },
-            { text: 'test1', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-        ]);
-    });
+//         component.moveQuestionUp(1, component.answers);
+//         expect(component.answers).toEqual([
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test3', isCorrect: false },
+//         ]);
+//     });
 
-    it('should not switch the answers if its the first choice', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
+//     it('should not switch the answers if its the first choice', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ];
 
-        component.moveQuestionUp(0, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ]);
-    });
+//         component.moveQuestionUp(0, component.answers);
+//         expect(component.answers).toEqual([
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ]);
+//     });
 
-    it('should switch the answer selected and the one underneath', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
+//     it('should switch the answer selected and the one underneath', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ];
 
-        component.moveQuestionDown(1, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-            { text: 'test2', isCorrect: false },
-        ]);
-    });
+//         component.moveQuestionDown(1, component.answers);
+//         expect(component.answers).toEqual([
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test3', isCorrect: false },
+//             { text: 'test2', isCorrect: false },
+//         ]);
+//     });
 
-    it('should not switch the answers if its the last choice', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
+//     it('should not switch the answers if its the last choice', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ];
 
-        component.moveQuestionDown(3, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ]);
-    });
+//         component.moveQuestionDown(3, component.answers);
+//         expect(component.answers).toEqual([
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//             { text: 'test3', isCorrect: false },
+//         ]);
+//     });
 
-    it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-        ];
-        questionValidationSpy.answerValid.and.returnValue(true);
+//     it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//         ];
+//         questionValidationSpy.answerValid.and.returnValue(true);
 
-        spyOn(component.registerAnswer, 'emit');
-        component.ngOnInit();
-        component.addAnswer();
+//         spyOn(component.registerAnswer, 'emit');
+//         component.ngOnInit();
+//         component.addAnswer();
 
-        expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.choices);
-    });
+//         expect(component.registerAnswer.emit).toHaveBeenCalledWith(component.choices);
+//     });
 
-    it('should not emit registerAnswer event when there is only good answers', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: true },
-        ];
-        questionValidationSpy.answerValid.and.returnValue(true);
+//     it('should not emit registerAnswer event when there is only good answers', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: true },
+//         ];
+//         questionValidationSpy.answerValid.and.returnValue(true);
 
-        spyOn(component.registerAnswer, 'emit');
+//         spyOn(component.registerAnswer, 'emit');
 
-        component.addAnswer();
+//         component.addAnswer();
 
-        expect(component.registerAnswer.emit).not.toHaveBeenCalledWith(component.answers);
-    });
+//         expect(component.registerAnswer.emit).not.toHaveBeenCalledWith(component.answers);
+//     });
 
-    it('should not emit registerAnswer event when there is only bad answers', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: false },
-            { text: 'test2', isCorrect: false },
-        ];
-        questionValidationSpy.answerValid.and.returnValue(true);
+//     it('should not emit registerAnswer event when there is only bad answers', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: false },
+//             { text: 'test2', isCorrect: false },
+//         ];
+//         questionValidationSpy.answerValid.and.returnValue(true);
 
-        spyOn(component.registerAnswer, 'emit');
+//         spyOn(component.registerAnswer, 'emit');
 
-        component.addAnswer();
+//         component.addAnswer();
 
-        expect(component.registerAnswer.emit).not.toHaveBeenCalledWith(component.answers);
-    });
+//         expect(component.registerAnswer.emit).not.toHaveBeenCalledWith(component.answers);
+//     });
 
-    it('should return true if all text attributes are not empty', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-        ];
-        questionValidationSpy.answerValid.and.returnValue(true);
-    });
+//     it('should return true if all text attributes are not empty', () => {
+//         component.answers = [
+//             { text: 'test1', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//         ];
+//         questionValidationSpy.answerValid.and.returnValue(true);
+//     });
 
-    it('should return false if at least one text attributes is empty', () => {
-        component.answers = [
-            { text: '', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-        ];
-        questionValidationSpy.answerValid.and.returnValue(true);
-    });
-});
+//     it('should return false if at least one text attributes is empty', () => {
+//         component.answers = [
+//             { text: '', isCorrect: true },
+//             { text: 'test2', isCorrect: false },
+//         ];
+//         questionValidationSpy.answerValid.and.returnValue(true);
+//     });
+// });

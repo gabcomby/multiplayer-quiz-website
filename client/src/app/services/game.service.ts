@@ -78,7 +78,6 @@ export class GameService {
             if (await this.isValidGame(modifiedGame)) {
                 if (await this.validateDeletedGame(modifiedGame)) {
                     await this.patchGame(modifiedGame);
-
                 } else {
                     await this.createGame(modifiedGame);
                 }
@@ -102,18 +101,21 @@ export class GameService {
     }
     async isValidGame(game: Game) {
         const errors: string[] = [];
-
-        this.validateBasicGameProperties(game, errors);
-        for (const question of game.questions) {
-            if (!this.questionValidationService.validateQuestion(question)) {
-                return false;
+        try {
+            this.validateBasicGameProperties(game, errors);
+            for (const question of game.questions) {
+                if (!this.questionValidationService.validateQuestion(question)) {
+                    return false;
+                }
+                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                    return false;
+                }
+                if (!this.questionValidationService.answerValid(question.choices)) {
+                    return false;
+                }
             }
-            if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                return false;
-            }
-            if (!this.questionValidationService.answerValid(question.choices)) {
-                return false;
-            }
+        } catch (error) {
+            throw new Error('handling error');
         }
 
         await this.validateDuplicationGame(game, errors);

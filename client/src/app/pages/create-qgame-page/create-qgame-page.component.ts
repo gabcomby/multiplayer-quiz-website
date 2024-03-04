@@ -101,35 +101,6 @@ export class CreateQGamePageComponent implements OnInit {
         });
     }
 
-    // async gameValidationWhenModified() {
-    //     const modifiedGame = this.createNewGame(false);
-    //     try {
-    //         if (await isValidGame(modifiedGame, this.snackbarService, this.gameService)) {
-    //             if (await this.gameService.validateDeletedGame(modifiedGame)) {
-    //                 await this.gameService.patchGame(modifiedGame);
-
-    //                 this.router.navigate(['/admin']);
-    //             } else {
-    //                 await this.gameService.createGame(modifiedGame);
-    //                 this.router.navigate(['/admin']);
-    //             }
-    //         }
-    //     } catch (error) {
-    //         this.handleServerError();
-    //     }
-    // }
-
-    // createNewGame(isNewGame: boolean) {
-    //     return {
-    //         id: isNewGame ? generateNewId() : this.gameModified.id,
-    //         title: this.gameForm.get('name')?.value,
-    //         description: this.gameForm.get('description')?.value,
-    //         isVisible: isNewGame ? false : this.gameFromDB.isVisible,
-    //         duration: this.gameForm.get('time')?.value,
-    //         lastModification: new Date(),
-    //         questions: isNewGame ? this.questionService.getQuestion() : this.gameFromDB.questions,
-    //     };
-    // }
 
     handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {

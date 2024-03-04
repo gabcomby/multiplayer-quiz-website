@@ -59,13 +59,4 @@ export class HandlerNewQuestionService {
     }
 }
 
-// createNewQuestion(choices: Choice[]) {
-//   return {
-//       type: this.question.type,
-//       text: this.question.text,
-//       points: this.question.points,
-//       id: generateNewId(),
-//       choices: choices.map((item: Choice) => ({ ...item })),
-//       lastModification: new Date(),
-//   };
-// }
+

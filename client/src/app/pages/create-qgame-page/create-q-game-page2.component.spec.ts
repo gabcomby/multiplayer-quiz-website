@@ -8,7 +8,7 @@ import { Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import * as gameUtilsModule from '@app/utils/is-valid-game';
+// import * as gameUtilsModule from '@app/utils/is-valid-game';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -59,8 +59,9 @@ describe('CreateQGamePageComponent', () => {
         });
         gameServiceSpy = jasmine.createSpyObj('GameService', {
             getGames: [],
-
+            isValidGame: {},
             createGame: {},
+            createNewGame: {},
         });
     });
     beforeEach(waitForAsync(() => {
@@ -85,17 +86,17 @@ describe('CreateQGamePageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should call createGame from GameService when onSubmit is called with validData', () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        component.onSubmit().then(() => {
-            expect(component.gameId).toBe(null);
-            fixture.detectChanges();
-            expect(gameServiceSpy.createGame).toHaveBeenCalled();
-        });
+    it('should call createGame from GameService when onSubmit is called with validData', async () => {
+        component.gameId = null;
+        gameServiceSpy.isValidGame.and.returnValue(Promise.resolve(true));
+        await component.onSubmit();
+        expect(gameServiceSpy.createNewGame).toHaveBeenCalled();
+        expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalled();
     });
     it('should throw error if submitting with the server down', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
-
+        gameServiceSpy.isValidGame.and.throwError('test error');
+        spyOn(component, 'handleServerError');
         try {
             await component.onSubmit();
         } catch (error) {
