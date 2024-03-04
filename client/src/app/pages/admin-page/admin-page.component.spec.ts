@@ -75,7 +75,6 @@ describe('AdminPageComponent', () => {
     let router: Router;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
-
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
     const gameServiceMock = jasmine.createSpyObj('gameService', [
         'patchGame',

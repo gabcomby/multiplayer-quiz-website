@@ -239,6 +239,4 @@ describe('NewQuestionComponent', () => {
 
         expect(component.addBankQuestion).toBeFalse();
     });
-
-
 });

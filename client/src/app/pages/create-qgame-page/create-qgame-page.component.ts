@@ -101,7 +101,6 @@ export class CreateQGamePageComponent implements OnInit {
         });
     }
 
-
     handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },

@@ -41,8 +41,8 @@ export class GameTimerPageComponent implements OnInit {
                 this.onTimerComplete();
             }
         });
-
-        this.socketService.setTimerDuration(5);
+        const timer = 5;
+        this.socketService.setTimerDuration(timer);
     }
 
     onTimerComplete(): void {
