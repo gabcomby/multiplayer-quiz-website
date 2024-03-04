@@ -46,6 +46,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
 
+    // eslint-disable-next-line max-params
     constructor(
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
