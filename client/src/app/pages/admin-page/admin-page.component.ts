@@ -14,8 +14,6 @@ import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 import { firstValueFrom } from 'rxjs';
 
-const MAX_GAME_NAME_LENGTH = 35;
-
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
@@ -62,7 +60,7 @@ export class AdminPageComponent implements OnInit {
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
         let gameTitle: string = originalGame.title;
 
-        while (this.hasValidInput(gameTitle, originalGame.title)) {
+        while (this.adminService.hasValidInput(gameTitle, originalGame.title, this.dataSource)) {
             const dialogRef = this.dialog.open(InputDialogComponent, {
                 width: '350px',
                 data: {
@@ -140,18 +138,9 @@ export class AdminPageComponent implements OnInit {
             minute: '2-digit',
         });
     }
-
-    private isGameNameUnique(name: string): boolean {
-        return !this.dataSource.some((game) => game.title === name);
-    }
-
     private prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
         if (!isValidGame(game, this.snackbarService, this.gameService)) return;
         assignNewGameAttributes(game);
     }
-
-    private hasValidInput = (input: string, title: string): boolean => {
-        return !this.isGameNameUnique(input) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
-    };
 }

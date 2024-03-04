@@ -4,6 +4,8 @@ import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
+const MAX_GAME_NAME_LENGTH = 35;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -39,6 +41,14 @@ export class AdminService {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
             },
         });
+    }
+
+    hasValidInput = (input: string, title: string, dataSource: Game[]): boolean => {
+        return !this.isGameNameUnique(input, dataSource) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
+    };
+
+    private isGameNameUnique(name: string, dataSource: Game[]): boolean {
+        return !dataSource.some((game) => game.title === name);
     }
 
     private removeUnwantedFields(data: Record<string, unknown>): unknown {
