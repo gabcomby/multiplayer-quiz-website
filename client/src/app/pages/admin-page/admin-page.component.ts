@@ -9,9 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
 import { AdminService } from '@app/services/admin.service';
-import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
-import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -96,7 +94,7 @@ export class AdminPageComponent implements OnInit {
 
             game.title = gameTitle;
             game.isVisible = false;
-            this.prepareGameForImport(game);
+            this.adminService.prepareGameForImport(game);
             this.dataSource = [...this.dataSource, game];
             this.gameService.createGame(game);
 
@@ -137,10 +135,5 @@ export class AdminPageComponent implements OnInit {
             hour: '2-digit',
             minute: '2-digit',
         });
-    }
-    private prepareGameForImport(game: Game): void {
-        removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
-        assignNewGameAttributes(game);
     }
 }

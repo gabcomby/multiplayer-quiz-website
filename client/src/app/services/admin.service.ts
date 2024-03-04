@@ -4,6 +4,10 @@ import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
+import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
+import { isValidGame } from '@app/utils/is-valid-game';
+import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+
 const MAX_GAME_NAME_LENGTH = 35;
 
 @Injectable({
@@ -46,6 +50,12 @@ export class AdminService {
     hasValidInput = (input: string, title: string, dataSource: Game[]): boolean => {
         return !this.isGameNameUnique(input, dataSource) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
     };
+
+    prepareGameForImport(game: Game): void {
+        removeUnrecognizedAttributes(game);
+        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
+        assignNewGameAttributes(game);
+    }
 
     private isGameNameUnique(name: string, dataSource: Game[]): boolean {
         return !dataSource.some((game) => game.title === name);
