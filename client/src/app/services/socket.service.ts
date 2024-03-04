@@ -2,8 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import type { Choice } from '@app/interfaces/game';
-// import { environment } from '@env/environment.prod';
-import { environment } from '@env/environment';
+import { environment } from '@env/environment.prod';
 import { io, Socket } from 'socket.io-client';
 
 @Injectable({
@@ -11,8 +10,7 @@ import { io, Socket } from 'socket.io-client';
 })
 export class SocketService {
     private socket: Socket;
-    // private readonly url: string = environment.serverUrl;
-    private readonly url: string = environment.socketUrl;
+    private readonly url: string = environment.serverUrl;
 
     connect(): string[] {
         this.socket = io(this.url, { autoConnect: true });
