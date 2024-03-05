@@ -64,6 +64,14 @@ export class GamePageComponent implements OnInit {
         this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
     }
 
+    // allAnswerlocked() {
+    //     this.answerStateService.answerLocked.subscribe((locked) => {
+    //         this.currentPlayer.isLocked = locked;
+    //         if (locked === true) {
+    //             this.answerStateService.allLocked += 1;
+    //         }
+    //     });
+    // }
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }

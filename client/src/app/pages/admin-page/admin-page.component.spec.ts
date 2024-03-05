@@ -83,6 +83,7 @@ describe('AdminPageComponent', () => {
         'getGame',
         'createGame',
         'validateDuplicationGame',
+        'isValidGame',
     ]);
     const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
     const dialogMock = {

@@ -40,6 +40,7 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
+
         if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
@@ -50,8 +51,9 @@ export class MainPageComponent {
                 next: (lobby) => {
                     if (lobby) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
-                            next: () => {
-                                this.router.navigate(['/gameWait', lobby.id]);
+                            next: (lobbyUpdated) => {
+                                const newPlayer = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                this.router.navigate(['/gameWait', lobby.id, newPlayer]);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");

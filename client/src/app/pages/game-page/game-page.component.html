@@ -1,3 +1,5 @@
+
+
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
@@ -18,7 +20,7 @@
     </div>
     <div class="question">
         <app-game-page-questions
-            [question]="currentQuestion.text || ''"
+            [question]="currentQuestion.text || '' "
             [mark]="currentQuestion.points || 0"
             [choices]="currentQuestion.choices || []"
             [timerExpired]="questionHasExpiredValue"

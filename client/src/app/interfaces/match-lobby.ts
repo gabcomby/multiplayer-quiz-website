@@ -6,4 +6,5 @@ export interface MatchLobby {
     bannedNames: string[];
     lobbyCode: string;
     isLocked: boolean;
+    hostId: string;
 }
