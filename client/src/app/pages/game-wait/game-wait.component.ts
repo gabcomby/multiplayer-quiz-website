@@ -48,4 +48,15 @@ export class GameWaitComponent implements OnInit {
     handleGameLaunch() {
         this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
     }
+
+    handleGameLeave() {
+        this.matchLobbyService.removePlayer(this.playerId, this.matchLobby.id).subscribe({
+            next: () => {
+                this.router.navigate(['/']);
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar('Erreur' + error + 'lors de la suppression du joueur');
+            },
+        });
+    }
 }
