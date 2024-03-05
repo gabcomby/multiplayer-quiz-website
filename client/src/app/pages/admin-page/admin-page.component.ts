@@ -7,9 +7,7 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
-
 import { AdminService } from '@app/services/admin.service';
-
 
 import { firstValueFrom } from 'rxjs';
 
@@ -124,38 +122,4 @@ export class AdminPageComponent implements OnInit {
             minute: '2-digit',
         });
     }
-<<<<<<< client/src/app/pages/admin-page/admin-page.component.ts
-
-    private removeUnwantedFields(data: Record<string, unknown>): unknown {
-        if (Array.isArray(data)) {
-            return data.map((item) => this.removeUnwantedFields(item));
-        } else if (typeof data === 'object' && data !== null) {
-            Object.keys(data).forEach((key) => {
-                if (key === '_id' || key === '__v' || key === 'isVisible') {
-                    delete data[key];
-                } else {
-                    data[key] = this.removeUnwantedFields(data[key] as Record<string, unknown>);
-                }
-            });
-            return data;
-        } else {
-            return data;
-        }
-    }
-
-    private isGameNameUnique(name: string): boolean {
-        return !this.dataSource.some((game) => game.title === name);
-    }
-
-    private prepareGameForImport(game: Game): void {
-        removeUnrecognizedAttributes(game);
-        if (!this.gameService.isValidGame(game)) return;
-        assignNewGameAttributes(game);
-    }
-
-    private hasValidInput = (input: string, title: string): boolean => {
-        return !this.isGameNameUnique(input) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
-    };
-=======
->>>>>>> client/src/app/pages/admin-page/admin-page.component.ts
 }

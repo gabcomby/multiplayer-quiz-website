@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -5,7 +6,6 @@ import { API_BASE_URL } from '@app/app.module';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
-
 
 import { Router } from '@angular/router';
 import type { Game, Question } from '@app/interfaces/game';
@@ -19,15 +19,11 @@ import { SocketService } from './socket.service';
 const TIME_BETWEEN_QUESTIONS = 3000;
 const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 
-
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-
-    private apiUrl: string;
-    private minDuration: number;
-    private maxDuration: number;
+    // private apiUrl: string;
 
     apiUrl: string;
     timerCountdown: number;
@@ -47,6 +43,7 @@ export class GameService {
         bannedNames: [],
         lobbyCode: '',
         isLocked: false,
+        hostId: '',
     };
     lobbyId: string;
     gameId: string;
@@ -57,7 +54,8 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
-
+    private minDuration: number;
+    private maxDuration: number;
     // eslint-disable-next-line max-params
     constructor(
         private http: HttpClient,
@@ -243,7 +241,6 @@ export class GameService {
         }
         if (!game.lastModification) errors.push('La date de mise à jour est requise');
         if (game.questions.length < 1) errors.push('Au moins une question');
-
     }
     // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 

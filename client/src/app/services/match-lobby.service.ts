@@ -50,14 +50,14 @@ export class MatchLobbyService {
         return this.http.delete(`${this.apiUrl}/${lobbyId}`);
     }
 
-    addPlayer(playerName: string, lobbyId: string) {
+    addPlayer(playerName: string, lobbyId: string): Observable<MatchLobby> {
         const player: Player = {
             id: generateNewId(),
             name: playerName,
             score: 0,
             isLocked: false,
         };
-        return this.http.patch(`${this.apiUrl}/${lobbyId}/players`, player);
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players`, player);
     }
 
     getPlayers(lobbyId: string): Observable<Player[]> {

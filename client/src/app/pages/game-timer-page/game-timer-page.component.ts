@@ -24,7 +24,7 @@ export class GameTimerPageComponent implements OnInit {
     ngOnInit() {
         this.gameId = this.route.snapshot.params['id'];
         this.idLobby = this.route.snapshot.params['idLobby'];
-        this.idPlayer = this.route.snapshot.params['idplayer'];
+        this.idPlayer = this.route.snapshot.params['idPlayer'];
         this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameTitle = data.title;
@@ -47,6 +47,6 @@ export class GameTimerPageComponent implements OnInit {
 
     onTimerComplete(): void {
         this.socketService.stopTimer();
-        this.router.navigate(['/game', this.gameId, this.idLobby, this.idPlayer]);
+        this.router.navigate(['/game', this.idLobby, this.idPlayer]);
     }
 }

@@ -6,7 +6,7 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-import { isValidGame } from '@app/utils/is-valid-game';
+// import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 const MAX_GAME_NAME_LENGTH = 35;
@@ -71,7 +71,7 @@ export class AdminService {
 
     prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!isValidGame(game, this.snackbarService, this.gameService)) return;
+        if (!this.gameService.isValidGame(game)) return;
         assignNewGameAttributes(game);
     }
 

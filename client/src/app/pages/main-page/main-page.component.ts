@@ -51,8 +51,9 @@ export class MainPageComponent {
                 next: (lobby) => {
                     if (lobby) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
-                            next: () => {
-                                this.router.navigate(['/gameWait', lobby.id, lobby.playerList.pop()]);
+                            next: (lobbyUpdated) => {
+                                const newPlayer = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                this.router.navigate(['/gameWait', lobby.id, newPlayer]);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
