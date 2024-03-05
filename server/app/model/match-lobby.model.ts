@@ -8,6 +8,7 @@ export interface ILobby extends Document {
     bannedNames: string[];
     lobbyCode: string;
     isLocked: boolean;
+    hostId: string;
 }
 
 const lobbySchema: Schema = new Schema({
@@ -17,6 +18,7 @@ const lobbySchema: Schema = new Schema({
     bannedNames: { type: [String], required: true },
     lobbyCode: { type: String, required: true },
     isLocked: { type: Boolean, required: true },
+    hostId: { type: String, required: true },
 });
 
 export default mongoose.model<ILobby>('Lobby', lobbySchema);

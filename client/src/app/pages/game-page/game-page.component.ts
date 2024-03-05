@@ -11,6 +11,7 @@ import { GameService } from '@app/services/game.service';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
+    isHost: boolean;
     constructor(
         private route: ActivatedRoute,
         private gameService: GameService, // private answerStateService: AnswerStateService,
@@ -63,11 +64,7 @@ export class GamePageComponent implements OnInit {
     // REFACTOR DONE
     ngOnInit() {
         this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
-        // this.answerStateService.answerLocked.subscribe({
-        //     next: ()=>{
-        //         this.
-        //     }
-        // })
+        this.isHost = this.route.snapshot.params['playerId'] === 
     }
 
     handleGameLeave(): void {

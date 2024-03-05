@@ -17,6 +17,7 @@ export class Server {
         timerId: 0,
         currentTime: 0,
         isRunning: false,
+        id: '',
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -95,7 +96,14 @@ export class Server {
                     this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
                 }
             });
-
+            socket.on('start', () => {
+                if (this.room) {
+                    this.io.emit('game-timer');
+                }
+            });
+            // socket.on('joinRoom', (lobbyId) => {
+            //     socket.join(lobbyId);
+            // });
             const startCountdownTimer = (duration: number): void => {
                 this.room.currentTime = duration;
                 this.io.emit('timer-countdown', duration);

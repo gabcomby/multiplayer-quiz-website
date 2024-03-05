@@ -261,19 +261,13 @@ export class GameService {
                 this.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
-                        this.setupWebSocketEvents();
+                        if (currentPlayer) {
+                            this.setupWebSocketEvents(currentPlayer, lobbyData);
+                        }
                         this.socketService.startTimer();
                     },
                     error: (error) => {
                         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
-                    },
-                });
-                this.answerStateService.answerLocked.subscribe({
-                    next: () => {
-                        if (currentPlayer) {
-                            currentPlayer.isLocked = true;
-                            this.allAnswerlocked(lobbyData);
-                        }
                     },
                 });
             },
@@ -305,6 +299,7 @@ export class GameService {
         const allLocked = lobby.playerList.every((player) => player.isLocked === true);
         if (allLocked) {
             this.onTimerComplete();
+            // console.log('what');
         }
     }
 
@@ -334,13 +329,21 @@ export class GameService {
             },
         });
     }
-    private setupWebSocketEvents() {
+    private setupWebSocketEvents(currentPlayer: Player, lobbyData: MatchLobby) {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
                 this.onTimerComplete();
             }
+        });
+        this.answerStateService.answerLocked.subscribe({
+            next: (isLocked) => {
+                if (currentPlayer) {
+                    currentPlayer.isLocked = isLocked;
+                    this.allAnswerlocked(lobbyData);
+                }
+            },
         });
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
@@ -385,5 +388,4 @@ export class GameService {
             },
         });
     }
-    
 }
