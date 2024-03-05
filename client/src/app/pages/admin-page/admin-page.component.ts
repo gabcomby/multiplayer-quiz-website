@@ -69,28 +69,18 @@ export class AdminPageComponent implements OnInit {
     }
 
     async importGamesFromFile(file: File): Promise<void> {
-        if (file.name.endsWith('.json')) {
-            const reader = new FileReader();
-            reader.readAsText(file);
-            const result = await new Promise<string>((resolve, reject) => {
-                reader.onload = (e) => resolve((e.target as FileReader).result as string);
-                reader.onerror = () => reject('Error reading file');
-            });
+        const game = (await this.adminService.readFileFromInput(file)) as Game;
 
-            const game = JSON.parse(result);
-            const gameTitle = await this.getValidGameTitle(game);
-            if (!gameTitle) return;
+        const gameTitle = await this.getValidGameTitle(game);
+        if (!gameTitle) return;
 
-            game.title = gameTitle;
-            game.isVisible = false;
-            this.adminService.prepareGameForImport(game);
-            this.dataSource = [...this.dataSource, game];
-            this.gameService.createGame(game);
+        game.title = gameTitle;
+        game.isVisible = false;
+        this.adminService.prepareGameForImport(game);
+        this.dataSource = [...this.dataSource, game];
+        this.gameService.createGame(game);
 
-            this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
-        }
-
-        return;
+        this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
     }
 
     deleteGame(gameId: string): void {
@@ -113,13 +103,7 @@ export class AdminPageComponent implements OnInit {
         this.router.navigate(['/create-qgame']);
     }
 
-    formatLastModificationDate(date: string): string {
-        return new Date(date).toLocaleString('fr-CA', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+    formatDate(date: string): string {
+        return this.adminService.formatLastModificationDate(date);
     }
 }

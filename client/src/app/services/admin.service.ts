@@ -6,7 +6,6 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-// import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 const MAX_GAME_NAME_LENGTH = 35;
@@ -73,6 +72,30 @@ export class AdminService {
         removeUnrecognizedAttributes(game);
         if (!this.gameService.isValidGame(game)) return;
         assignNewGameAttributes(game);
+    }
+
+    formatLastModificationDate(date: string): string {
+        return new Date(date).toLocaleString('fr-CA', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    async readFileFromInput(file: File): Promise<Game | void> {
+        if (!file.name.endsWith('.json')) {
+            this.snackbarService.openSnackBar('Le fichier doit être un fichier JSON.');
+            return Promise.resolve();
+        }
+
+        const reader = new FileReader();
+        reader.readAsText(file);
+        return new Promise((resolve, reject) => {
+            reader.onload = (e) => resolve(JSON.parse((e.target as FileReader).result as string));
+            reader.onerror = () => reject('Error reading file');
+        });
     }
 
     private async fetchGames(): Promise<Game[]> {
