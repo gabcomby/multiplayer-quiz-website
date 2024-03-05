@@ -2,7 +2,7 @@
 /*
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog'; // MatDialogModule,
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
@@ -144,11 +144,7 @@ describe('NewGamePageComponent', () => {
                 { provide: Router, useValue: routerObj },
                 { provide: MatDialogRef, useValue: dialogRefMock },
             ],
-<<<<<<< client/src/app/pages/new-game-page/new-game-page.component.spec.ts
-            imports: [HttpClientModule, MatDialogModule],
-=======
             imports: [HttpClientModule, MatIconModule, MatToolbarModule],
->>>>>>> client/src/app/pages/new-game-page/new-game-page.component.spec.ts
         }).compileComponents();
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;
@@ -230,7 +226,8 @@ describe('NewGamePageComponent', () => {
         component.games = gamesMockIsVisibleTrue;
         component.deletedGamesId = deletedGamesIdMock;
         gameServiceSpy.getGames.and.resolveTo(gamesMockIsVisibleTrue);
-        component.ngOnInit();
+        // component.ngOnInit(); je pense que le probleme vient du deploiement a voir avec acces a internet
+        // jasmine.createSpyObj('page', ['ngOnInit']);
         component.gameSelected = gameSelectedMockTestModified;
         await component.isTheGameModifiedTest(gamesMock[0]);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
@@ -354,4 +351,4 @@ describe('NewGamePageComponent', () => {
         expect(component.deletedGamesId).toContain(gameIdToDelete);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game ' + gameIdToDelete + ' has been deleted');
     });
-}); */
+});*/
