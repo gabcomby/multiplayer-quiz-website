@@ -63,4 +63,12 @@ export class SocketService {
             callback(data);
         });
     }
+    startGame(): void {
+        this.socket.emit('start');
+    }
+    onTimerGame(callback: () => void): void {
+        this.socket.on('game-timer', () => {
+            callback();
+        });
+    }
 }

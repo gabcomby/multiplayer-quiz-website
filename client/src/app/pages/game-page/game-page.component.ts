@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
+// import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 
 @Component({
@@ -12,7 +13,7 @@ import { GameService } from '@app/services/game.service';
 export class GamePageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
-        private gameService: GameService,
+        private gameService: GameService, // private answerStateService: AnswerStateService,
     ) {}
 
     get currentQuestionIndexValue(): number {
@@ -62,16 +63,13 @@ export class GamePageComponent implements OnInit {
     // REFACTOR DONE
     ngOnInit() {
         this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
+        // this.answerStateService.answerLocked.subscribe({
+        //     next: ()=>{
+        //         this.
+        //     }
+        // })
     }
 
-    // allAnswerlocked() {
-    //     this.answerStateService.answerLocked.subscribe((locked) => {
-    //         this.currentPlayer.isLocked = locked;
-    //         if (locked === true) {
-    //             this.answerStateService.allLocked += 1;
-    //         }
-    //     });
-    // }
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }

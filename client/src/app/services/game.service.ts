@@ -13,6 +13,7 @@ import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, firstValueFrom } from 'rxjs';
+import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -66,6 +67,7 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
+        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -266,6 +268,14 @@ export class GameService {
                         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
                     },
                 });
+                this.answerStateService.answerLocked.subscribe({
+                    next: () => {
+                        if (currentPlayer) {
+                            currentPlayer.isLocked = true;
+                            this.allAnswerlocked(lobbyData);
+                        }
+                    },
+                });
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
@@ -290,6 +300,12 @@ export class GameService {
 
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+    }
+    allAnswerlocked(lobby: MatchLobby) {
+        const allLocked = lobby.playerList.every((player) => player.isLocked === true);
+        if (allLocked) {
+            this.onTimerComplete();
+        }
     }
 
     handleGameLeave() {
@@ -318,7 +334,6 @@ export class GameService {
             },
         });
     }
-
     private setupWebSocketEvents() {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
@@ -370,4 +385,5 @@ export class GameService {
             },
         });
     }
+    
 }
