@@ -6,12 +6,12 @@ import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 
 const ONE_SECOND_IN_MS = 1000;
+const BASE_TEN = 10;
 
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    private static readonly baseDix: number = 10;
+
     room = {
         duration: 0,
         timerId: 0,
@@ -23,7 +23,7 @@ export class Server {
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
+        const port: number = typeof val === 'string' ? parseInt(val, BASE_TEN) : val;
         return isNaN(port) ? val : port >= 0 ? port : false;
     }
     init(): void {

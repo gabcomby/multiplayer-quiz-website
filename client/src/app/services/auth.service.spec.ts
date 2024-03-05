@@ -10,7 +10,7 @@ describe('AuthService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [AuthService, { provide: API_BASE_URL, useValue: 'http://localhost:3000' }],
+            providers: [AuthService, { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' }],
         });
         service = TestBed.inject(AuthService);
         httpController = TestBed.inject(HttpTestingController);

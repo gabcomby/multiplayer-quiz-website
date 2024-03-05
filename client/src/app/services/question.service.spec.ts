@@ -42,11 +42,7 @@ describe('QuestionService', () => {
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                QuestionService,
-                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
-                { provide: SnackbarService, useValue: snackbarServiceMock },
-            ],
+            providers: [QuestionService, { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' }],
         });
         service = TestBed.inject(QuestionService);
         httpController = TestBed.inject(HttpTestingController);

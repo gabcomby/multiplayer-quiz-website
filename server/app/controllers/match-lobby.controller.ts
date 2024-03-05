@@ -94,5 +94,32 @@ export class MatchLobbyController {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching lobby by code' });
             }
         });
+
+        this.router.get('/:id/players', async (req: Request, res: Response) => {
+            try {
+                const players = await this.matchLobbyService.getPlayers(req.params.id);
+                res.json(players);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching players from lobby' });
+            }
+        });
+
+        this.router.get('/:id/players/:playerId', async (req: Request, res: Response) => {
+            try {
+                const player = await this.matchLobbyService.getPlayer(req.params.id, req.params.playerId);
+                res.json(player);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching player from lobby' });
+            }
+        });
+
+        this.router.patch('/:id/players/:playerId', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.updatePlayerScore(req.params.id, req.params.playerId, req.body.incr);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
+            }
+        });
     }
 }

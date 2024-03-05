@@ -132,12 +132,6 @@ describe('AdminPageComponent', () => {
         expect(component.dataSource).toEqual([mockData]);
     });
 
-    it('should toggle visibility', () => {
-        gameServiceMock.patchGame.and.returnValue(Promise.resolve());
-        component.toggleVisibility('1zkjdm', true);
-        expect(gameServiceMock.patchGame).toHaveBeenCalled();
-    });
-
     it('should call importGamesFromFile when onFileSelected is called', () => {
         const event = {
             target: {
@@ -158,35 +152,6 @@ describe('AdminPageComponent', () => {
     it('should navigate to create-qgame when createGame is called', () => {
         component.createGame();
         expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);
-    });
-
-    // it('should format date string correctly in French Canadian format', () => {
-    //     expect(component.formatLastModificationDate('2024-02-12T14:48:55.329Z')).toEqual('2024-02-12 09 h 48');
-    // });
-
-    it('should delete a game when confirmed', async () => {
-        gameServiceMock.deleteGame.and.returnValue(Promise.resolve());
-        matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
-        await component.deleteGame('1zkjdm');
-
-        expect(gameServiceMock.deleteGame).toHaveBeenCalled();
-    });
-
-    it("should check in dataSource if game's title already exists", () => {
-        expect(component['isGameNameUnique']('VISIBILITY TEST')).toBeFalsy();
-    });
-
-    it("should check user input for game's title", () => {
-        expect(component['hasValidInput']('1111111111111111111111111111111111', mockData.title)).toBeFalsy();
-        expect(component['hasValidInput']('VISIBILITY TEST', mockData.title)).toBeTrue();
-        expect(component['hasValidInput']('', mockData.title)).toBeTrue();
-        expect(component['hasValidInput']('VISIBILITY TEST', '')).toBeTrue();
-    });
-
-    it("should prepare game's json for import", () => {
-        const game = { ...mockData, idNewGame: '1bn3C' };
-        component['prepareGameForImport'](game);
-        expect(game.idNewGame).toBe('1bn3C');
     });
 
     it("should validate game's title", async () => {

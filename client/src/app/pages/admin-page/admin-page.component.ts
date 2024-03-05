@@ -1,18 +1,17 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
-import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
-import { firstValueFrom } from 'rxjs';
 
-const MAX_GAME_NAME_LENGTH = 35;
+import { AdminService } from '@app/services/admin.service';
+
+
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-admin-page',
@@ -20,52 +19,28 @@ const MAX_GAME_NAME_LENGTH = 35;
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent implements OnInit {
-    @ViewChild('downloadLink') downloadLink: ElementRef<HTMLAnchorElement>;
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     dataSource: Game[] = [];
-    downloadJson = '';
 
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
-        private socketService: SocketService,
         private snackbarService: SnackbarService,
         private gameService: GameService,
         private dialog: MatDialog,
+        private adminService: AdminService,
     ) {}
 
     async ngOnInit() {
-        this.gameService.getGames().then((games) => {
-            this.dataSource = games;
-        });
-
-        this.socketService.connect();
+        this.dataSource = await this.adminService.init();
     }
 
-    toggleVisibility(gameId: string, isVisible: boolean): void {
-        const game = this.dataSource.find((g) => g.id === gameId);
-        if (!game) return;
-
-        game.isVisible = isVisible;
-        this.gameService.patchGame(game).then(() => {
-            this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
-        });
+    toggleVisibility(game: Game, isVisible: boolean) {
+        this.adminService.toggleVisibility(game, isVisible);
     }
 
     exportGameAsJson(game: Game): void {
-        this.gameService.getGame(game.id).subscribe({
-            next: (data) => {
-                const json = JSON.stringify(this.removeUnwantedFields(data as unknown as Record<string, unknown>));
-                this.downloadJson = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
-                setTimeout(() => {
-                    this.downloadLink.nativeElement.click();
-                });
-                this.snackbarService.openSnackBar('Le jeu a été exporté avec succès.');
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
-            },
-        });
+        this.adminService.exportGameAsJson(game);
     }
 
     onFileSelected(event: Event): void {
@@ -77,7 +52,7 @@ export class AdminPageComponent implements OnInit {
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
         let gameTitle: string = originalGame.title;
 
-        while (this.hasValidInput(gameTitle, originalGame.title)) {
+        while (this.adminService.hasValidInput(gameTitle, originalGame.title, this.dataSource)) {
             const dialogRef = this.dialog.open(InputDialogComponent, {
                 width: '350px',
                 data: {
@@ -88,11 +63,8 @@ export class AdminPageComponent implements OnInit {
 
             const newTitle: string | null = await firstValueFrom(dialogRef.afterClosed());
 
-            if (newTitle === null || newTitle === '') {
-                return null;
-            } else {
-                gameTitle = newTitle;
-            }
+            if (newTitle === null || newTitle === '') return null;
+            else gameTitle = newTitle;
         }
 
         return gameTitle;
@@ -113,7 +85,7 @@ export class AdminPageComponent implements OnInit {
 
             game.title = gameTitle;
             game.isVisible = false;
-            this.prepareGameForImport(game);
+            this.adminService.prepareGameForImport(game);
             this.dataSource = [...this.dataSource, game];
             this.gameService.createGame(game);
 
@@ -123,7 +95,7 @@ export class AdminPageComponent implements OnInit {
         return;
     }
 
-    deleteGame(gameId: string) {
+    deleteGame(gameId: string): void {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '300px',
             data: {
@@ -131,13 +103,10 @@ export class AdminPageComponent implements OnInit {
                 message: 'Êtes-vous sûr de vouloir supprimer ce jeu?',
             },
         });
-
         dialogRef.afterClosed().subscribe((confirmDelete) => {
             if (!confirmDelete) return;
-
-            this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
-            this.gameService.deleteGame(gameId).then(() => {
-                this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
+            this.adminService.deleteGame(gameId).then(() => {
+                this.dataSource = this.dataSource.filter((game) => game.id !== gameId);
             });
         });
     }
@@ -155,6 +124,7 @@ export class AdminPageComponent implements OnInit {
             minute: '2-digit',
         });
     }
+<<<<<<< client/src/app/pages/admin-page/admin-page.component.ts
 
     private removeUnwantedFields(data: Record<string, unknown>): unknown {
         if (Array.isArray(data)) {
@@ -186,4 +156,6 @@ export class AdminPageComponent implements OnInit {
     private hasValidInput = (input: string, title: string): boolean => {
         return !this.isGameNameUnique(input) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
     };
+=======
+>>>>>>> client/src/app/pages/admin-page/admin-page.component.ts
 }

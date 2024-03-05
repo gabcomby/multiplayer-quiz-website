@@ -19,7 +19,7 @@ export class QuestionService {
         private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/questions`;
+        this.apiUrl = `${apiBaseURL}/questions`;
     }
 
     resetQuestions() {

@@ -14,7 +14,7 @@ export class MatchService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/matches`;
+        this.apiUrl = `${apiBaseURL}/matches`;
     }
 
     getAllMatches(): Observable<Match[]> {

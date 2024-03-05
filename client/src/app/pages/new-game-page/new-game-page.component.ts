@@ -8,8 +8,8 @@ import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { environment } from '@env/environment';
 import { Observable, lastValueFrom } from 'rxjs';
-import { environment } from '@env/environment.prod';
 import { Socket, io } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -106,16 +106,21 @@ export class NewGamePageComponent implements OnInit {
 
     async isTheGameModifiedTest(game: Game): Promise<boolean> {
         const isModified = await this.isTheGameModified(game);
-        let result;
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            result = false;
+            return false;
         } else {
-            this.router.navigate(['/game', game.id]);
-            result = true;
+            this.createNewMatchLobby('Test Player', game.id).subscribe({
+                next: (matchLobby) => {
+                    this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
+                },
+            });
+            return true;
         }
-        return result;
     }
 
     // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
