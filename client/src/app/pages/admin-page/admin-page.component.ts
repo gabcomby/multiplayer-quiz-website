@@ -18,7 +18,6 @@ export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     dataSource: Game[] = [];
 
-    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
         private dialog: MatDialog,
