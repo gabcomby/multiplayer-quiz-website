@@ -46,6 +46,24 @@ export class MatchLobbyService {
         return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
     }
 
+    createTestLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
+        const player: Player = {
+            id: generateNewId(),
+            name: creatorName,
+            score: 0,
+        };
+        const lobby: MatchLobby = {
+            id: generateNewId(),
+            playerList: [player],
+            gameId,
+            bannedNames: [],
+            lobbyCode: generateLobbyId(),
+            isLocked: false,
+            hostId: '0',
+        };
+        return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
+    }
+
     deleteLobby(lobbyId: string) {
         return this.http.delete(`${this.apiUrl}/${lobbyId}`);
     }

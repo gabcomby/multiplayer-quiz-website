@@ -111,7 +111,7 @@ export class NewGamePageComponent implements OnInit {
             this.ngOnInit();
             return false;
         } else {
-            this.createNewMatchLobby('Test Player', game.id).subscribe({
+            this.createNewTestLobby('Test Player', game.id).subscribe({
                 next: (matchLobby) => {
                     this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
                 },
@@ -153,6 +153,10 @@ export class NewGamePageComponent implements OnInit {
 
     createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
         return this.matchLobbyService.createLobby(playerName, gameId);
+    }
+
+    createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createTestLobby(playerName, gameId);
     }
 
     private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
