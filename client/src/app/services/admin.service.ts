@@ -25,6 +25,7 @@ export class AdminService {
         this.connectSocket();
         return games;
     }
+
     toggleVisibility(game: Game, isVisible: boolean): void {
         if (!this.gameService.getGame(game.id)) return;
 
@@ -51,6 +52,16 @@ export class AdminService {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${JSON.stringify(error.message)}`);
             },
         });
+    }
+
+    addGame(game: Game, gameTitle: string, dataSource: Game[]): Game[] {
+        game.title = gameTitle;
+        game.isVisible = false;
+        this.prepareGameForImport(game);
+        dataSource = [...dataSource, game];
+        this.gameService.createGame(game);
+        this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
+        return dataSource;
     }
 
     async deleteGame(gameId: string): Promise<void> {

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
-import { SnackbarService } from '@app/services/snackbar.service';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
@@ -23,8 +21,6 @@ export class AdminPageComponent implements OnInit {
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
-        private snackbarService: SnackbarService,
-        private gameService: GameService,
         private dialog: MatDialog,
         private adminService: AdminService,
     ) {}
@@ -47,6 +43,15 @@ export class AdminPageComponent implements OnInit {
         this.importGamesFromFile(input.files[0]);
     }
 
+    async importGamesFromFile(file: File): Promise<void> {
+        const game = (await this.adminService.readFileFromInput(file)) as Game;
+
+        const gameTitle = await this.getValidGameTitle(game);
+        if (!gameTitle) return;
+
+        this.dataSource = this.adminService.addGame(game, gameTitle, this.dataSource);
+    }
+
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
         let gameTitle: string = originalGame.title;
 
@@ -66,21 +71,6 @@ export class AdminPageComponent implements OnInit {
         }
 
         return gameTitle;
-    }
-
-    async importGamesFromFile(file: File): Promise<void> {
-        const game = (await this.adminService.readFileFromInput(file)) as Game;
-
-        const gameTitle = await this.getValidGameTitle(game);
-        if (!gameTitle) return;
-
-        game.title = gameTitle;
-        game.isVisible = false;
-        this.adminService.prepareGameForImport(game);
-        this.dataSource = [...this.dataSource, game];
-        this.gameService.createGame(game);
-
-        this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
     }
 
     deleteGame(gameId: string): void {
