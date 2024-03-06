@@ -103,9 +103,8 @@ export class AdminService {
 
         const reader = new FileReader();
         reader.readAsText(file);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             reader.onload = (e) => resolve(JSON.parse((e.target as FileReader).result as string));
-            reader.onerror = () => reject('Error reading file');
         });
     }
 
@@ -127,9 +126,9 @@ export class AdminService {
         return !dataSource.some((game) => game.title === name);
     }
 
-    private removeUnwantedFields(data: Record<string, unknown>): unknown {
+    private removeUnwantedFields(data: Record<string, unknown> | unknown[]): unknown {
         if (Array.isArray(data)) {
-            return data.map((item) => this.removeUnwantedFields(item));
+            return data.map((item) => this.removeUnwantedFields(item as Record<string, unknown>));
         } else if (typeof data === 'object' && data !== null) {
             Object.keys(data).forEach((key) => {
                 if (key === '_id' || key === '__v' || key === 'isVisible') {

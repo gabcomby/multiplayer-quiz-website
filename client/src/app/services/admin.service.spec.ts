@@ -18,15 +18,15 @@ describe('AdminService', () => {
     let gameMock = {} as unknown as Game;
 
     beforeEach(() => {
-        const SpyGameService = jasmine.createSpyObj('GameService', ['getGame', 'patchGame', 'isValidGame', 'createGame']);
-        const SnackbarService = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['getGame', 'patchGame', 'isValidGame', 'createGame', 'deleteGame']);
+        const SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
         TestBed.configureTestingModule({
             providers: [
                 AdminService,
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
-                { provide: GameService, useValue: SpyGameService },
-                { provide: SnackbarService, useValue: SnackbarService },
+                { provide: GameService, useValue: SPY_GAME_SERVICE },
+                { provide: SnackbarService, useValue: SNACKBAR_SERVICE },
             ],
             imports: [HttpClientTestingModule, MatSnackBarModule, BrowserAnimationsModule],
         });
@@ -84,5 +84,79 @@ describe('AdminService', () => {
         const dataSource = [gameMock];
         service.addGame(gameMock, 'title', dataSource);
         expect(gameServiceSpy.createGame).toHaveBeenCalled();
+    });
+
+    it('should delete game', fakeAsync(() => {
+        gameServiceSpy.deleteGame.and.returnValue(Promise.resolve());
+        snackbarServiceSpy.openSnackBar.and.returnValue();
+
+        service.deleteGame('1').then(() => {
+            expect(gameServiceSpy.deleteGame).toHaveBeenCalled();
+            expect().nothing();
+        });
+
+        flush();
+    }));
+
+    it('should render an error if game does not exist', (done) => {
+        const errorMessage = 'Game not found';
+        gameServiceSpy.deleteGame.and.returnValue(Promise.reject(new Error(errorMessage)));
+        snackbarServiceSpy.openSnackBar.and.returnValue();
+
+        service.deleteGame('1').then(() => {
+            expect(gameServiceSpy.deleteGame).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should prepare game for import and assign a new id', () => {
+        const game = {} as Game;
+        gameServiceSpy.isValidGame.and.returnValue(Promise.resolve(true));
+        service.prepareGameForImport(game);
+        expect(game.id).toBeDefined();
+    });
+
+    it('should format date last modification date', () => {
+        const date = new Date().toISOString();
+        const formattedDate = service.formatLastModificationDate(date);
+        expect(formattedDate).toBeDefined();
+    });
+
+    it('should not read file from input if it is not a json', fakeAsync(() => {
+        const file = new File([''], 'filename', { type: 'text/plain' });
+        const result = service.readFileFromInput(file);
+        expect(result).toBeDefined();
+
+        flush();
+    }));
+
+    it('should read file from input', fakeAsync(() => {
+        const file = new File([JSON.stringify({ key: 'value' })], 'filename.json', { type: 'application/json' });
+        const result = service.readFileFromInput(file);
+        expect(result).toBeDefined();
+
+        flush();
+    }));
+
+    it('should handle error when fetching games fails', fakeAsync(() => {
+        try {
+            service['fetchGames']();
+        } catch (error) {
+            expect(error).toBeDefined();
+        }
+
+        flush();
+    }));
+
+    it('should remove unwanted fields from array of objects', () => {
+        const inputData = [
+            { _id: '123', name: 'Game A', isVisible: true },
+            { _id: '456', name: 'Game B', isVisible: false },
+        ];
+
+        const expectedOutput = [{ name: 'Game A' }, { name: 'Game B' }];
+
+        const result = service['removeUnwantedFields'](inputData as unknown[]);
+        expect(result).toEqual(expectedOutput);
     });
 });
