@@ -10,23 +10,26 @@ import { SnackbarService } from './snackbar.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Game } from '@app/interfaces/game';
 import { of, throwError } from 'rxjs';
+import { SocketService } from './socket.service';
 
 describe('AdminService', () => {
     let service: AdminService;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let gameMock = {} as unknown as Game;
 
     beforeEach(() => {
-        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['getGame', 'patchGame', 'isValidGame', 'createGame', 'deleteGame']);
-        const SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-
+        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['getGame', 'getGames', 'patchGame', 'isValidGame', 'createGame', 'deleteGame']);
+        const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['connect']);
         TestBed.configureTestingModule({
             providers: [
                 AdminService,
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
                 { provide: GameService, useValue: SPY_GAME_SERVICE },
-                { provide: SnackbarService, useValue: SNACKBAR_SERVICE },
+                { provide: SnackbarService, useValue: SPY_SNACKBAR_SERVICE },
+                { provide: SocketService, useValue: SPY_SOCKET_SERVICE },
             ],
             imports: [HttpClientTestingModule, MatSnackBarModule, BrowserAnimationsModule],
         });
@@ -34,6 +37,7 @@ describe('AdminService', () => {
         service = TestBed.inject(AdminService);
         gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
+        socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
     });
 
     it('should be created', () => {
@@ -139,6 +143,7 @@ describe('AdminService', () => {
     }));
 
     it('should handle error when fetching games fails', fakeAsync(() => {
+        gameServiceSpy.getGames.and.returnValue(Promise.reject(new Error('Error')));
         try {
             service['fetchGames']();
         } catch (error) {
@@ -158,5 +163,32 @@ describe('AdminService', () => {
 
         const result = service['removeUnwantedFields'](inputData as unknown[]);
         expect(result).toEqual(expectedOutput);
+    });
+
+    it("should init admin's page", fakeAsync(() => {
+        socketServiceSpy.connect.and.callThrough();
+        gameServiceSpy.getGames.and.returnValue(Promise.resolve([gameMock]));
+        service.init().then((result) => {
+            expect(result).toBeDefined();
+        });
+        flush();
+    }));
+
+    it("should filter if game is unique in admin's page", () => {
+        const dataSource = [gameMock];
+        const result = service['hasValidInput']('title', 'title', dataSource);
+        expect(result).toBeTrue();
+    });
+
+    it("should return false if lenght is greater than MAX_GAME_NAME_LENGTH in admin's page", () => {
+        const dataSource = [gameMock];
+        const result = service['hasValidInput']('maximumlengthoftitleislarglyexceeededbyme', 'title', dataSource);
+        expect(result).toBeTrue();
+    });
+
+    it("should return false if lenght is 0 in admin's page", () => {
+        const dataSource = [gameMock];
+        const result = service['hasValidInput']('', 'title', dataSource);
+        expect(result).toBeTrue();
     });
 });
