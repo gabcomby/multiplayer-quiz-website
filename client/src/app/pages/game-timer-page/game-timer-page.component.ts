@@ -48,7 +48,6 @@ export class GameTimerPageComponent implements OnInit {
     onTimerComplete(): void {
         this.socketService.stopTimer();
         this.socketService.disconnect();
-        console.log(this.idPlayer);
         this.router.navigate(['/game', this.idLobby, this.idPlayer]);
     }
 }

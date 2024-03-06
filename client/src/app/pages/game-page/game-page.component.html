@@ -1,5 +1,7 @@
 
-
+<div *ngIf="isHost">
+    <p>Je suis administrateur</p>
+</div>
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
@@ -12,10 +14,10 @@
             <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
-    <div *ngIf="!isHost" class="live-chat">
+    <div class="live-chat">
         <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar"></app-game-page-livechat>
     </div>
-    <div *ngIf="!isHost" class="timer">
+    <div  class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
     <div class="question">
@@ -28,7 +30,7 @@
             [answerIsCorrect]="answerIsCorrectValue"
         ></app-game-page-questions>
     </div>
-    <div class="score">
-        <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
+    <div class="score" *ngIf="lobby">
+        <app-game-page-scoresheet [playerList]="lobby.playerList"></app-game-page-scoresheet>
     </div>
 </div>

@@ -12,7 +12,7 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, switchMap } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -253,31 +253,55 @@ export class GameService {
         this.previousQuestionIndex = 0;
         this.answerIdx = [];
         this.questionHasExpired = false;
-
-        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
-            next: (lobbyData) => {
-                this.lobbyData = lobbyData;
-                const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-                this.getGame(this.lobbyData.gameId).subscribe({
-                    next: (gameData) => {
-                        this.gameData = gameData;
-                        if (currentPlayer) {
-                            this.setupWebSocketEvents(lobbyData, currentPlayer);
-                        } else {
-                            this.setupWebSocketEvents(lobbyData);
-                        }
-                        this.socketService.startTimer();
-                    },
-                    error: (error) => {
-                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
-                    },
-                });
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-            },
-        });
+        let currentPlayer: Player | undefined;
+        // this.matchLobbyService.getLobby(this.lobbyId).subscribe({
+        //     next: (lobbyData) => {
+        //         this.lobbyData = lobbyData;
+        //         const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+        //         this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
+        //         this.getGame(this.lobbyData.gameId).subscribe({
+        //             next: (gameData) => {
+        //                 this.gameData = gameData;
+        //                 if (currentPlayer) {
+        //                     this.setupWebSocketEvents(lobbyData, currentPlayer);
+        //                 } else {
+        //                     this.setupWebSocketEvents(lobbyData);
+        //                 }
+        //                 this.socketService.startTimer();
+        //             },
+        //             error: (error) => {
+        //                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
+        //             },
+        //         });
+        //     },
+        //     error: (error) => {
+        //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+        //     },
+        // });
+        this.matchLobbyService
+            .getLobby(this.lobbyId)
+            .pipe(
+                switchMap((lobbyData) => {
+                    this.lobbyData = lobbyData;
+                    currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                    this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
+                    return this.getGame(this.lobbyData.gameId);
+                }),
+            )
+            .subscribe({
+                next: (gameData) => {
+                    this.gameData = gameData;
+                    if (currentPlayer) {
+                        this.setupWebSocketEvents(this.lobbyData, currentPlayer);
+                    } else {
+                        this.setupWebSocketEvents(this.lobbyData);
+                    }
+                    this.socketService.startTimer();
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+                },
+            });
     }
 
     getCurrentQuestion(): Question {
@@ -340,6 +364,7 @@ export class GameService {
             }
         });
         if (currentPlayer) {
+            this.socketService.playerCreated(currentPlayer.id);
             this.checkAllAnswersLocker(currentPlayer, lobbyData);
         } else {
             this.socketService.adminCreated(lobbyData.hostId);
@@ -358,6 +383,7 @@ export class GameService {
             this.router.navigate(['/home']);
         });
         this.socketService.onPlayerDisconnect(() => {
+            this.snackbarService.openSnackBar('playeroyt');
             this.router.navigate(['/home']);
         });
     }

@@ -18,7 +18,7 @@ export class Server {
         currentTime: 0,
         isRunning: false,
         idAdmin: '',
-        nbPlayer: 0,
+        player: new Map(),
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -49,14 +49,15 @@ export class Server {
         this.io.on('connect', (socket) => {
             this.application.getIdentification().then((pair) => {
                 this.io.emit('messageConnect', pair);
-                this.room.nbPlayer += 1;
-                console.log(this.room.nbPlayer);
             });
             this.application.watchDelete().then((deletedId) => {
                 this.io.emit('deleteId', deletedId);
             });
             socket.on('registerAsAdmin', () => {
                 this.room.idAdmin = socket.id;
+            });
+            socket.on('registerAsPlayer', (idPlayer) => {
+                this.room.player.set(idPlayer, socket.id);
             });
 
             socket.on('set-timer-duration', (duration) => {
@@ -110,11 +111,20 @@ export class Server {
             });
             socket.on('disconnect', () => {
                 if (this.room) {
-                    this.room.nbPlayer -= 1;
                     if (this.room.idAdmin === socket.id) {
                         this.io.emit('adminDisconnected', socket.id);
-                    } else if (this.room.nbPlayer < 2) {
-                        this.io.emit('playerDisconnected');
+                    } else {
+                        const players: string[] = [];
+                        this.room.player.forEach((value, key) => {
+                            if (value === socket.id) {
+                                this.room.player.delete(key);
+                            } else {
+                                players.push(key);
+                            }
+                        });
+                        if (players.length === 0) {
+                            this.io.emit('playerDisconnected');
+                        }
                     }
                 }
                 this.room.idAdmin = '';
@@ -133,7 +143,6 @@ export class Server {
                 );
                 this.room.timerId = timerId;
             };
-            
         });
 
         this.server.listen(Server.appPort);
