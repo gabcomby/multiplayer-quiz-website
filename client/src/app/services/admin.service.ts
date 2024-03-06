@@ -26,7 +26,7 @@ export class AdminService {
         return games;
     }
 
-    toggleVisibility(game: Game, isVisible: boolean): void {
+    async toggleVisibility(game: Game, isVisible: boolean): Promise<void> {
         if (!this.gameService.getGame(game.id)) return;
 
         game.isVisible = isVisible;
