@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 // import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 
 @Component({
     selector: 'app-game-page',
@@ -12,9 +14,12 @@ import { GameService } from '@app/services/game.service';
 })
 export class GamePageComponent implements OnInit {
     isHost: boolean;
+    lobby: MatchLobby;
     constructor(
         private route: ActivatedRoute,
-        private gameService: GameService, // private answerStateService: AnswerStateService,
+        private gameService: GameService,
+        // private answerStateService: AnswerStateService,
+        private matchLobbyService: MatchLobbyService,
     ) {}
 
     get currentQuestionIndexValue(): number {
@@ -64,7 +69,11 @@ export class GamePageComponent implements OnInit {
     // REFACTOR DONE
     ngOnInit() {
         this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
-        this.isHost = this.route.snapshot.params['playerId'] === 
+        this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId']).subscribe({
+            next: (lobby) => {
+                this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
+            },
+        });
     }
 
     handleGameLeave(): void {

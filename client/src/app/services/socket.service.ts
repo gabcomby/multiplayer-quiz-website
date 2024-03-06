@@ -71,4 +71,17 @@ export class SocketService {
             callback();
         });
     }
+    onDisconnect(callback: () => void): void {
+        this.socket.on('adminDisconnected', () => {
+            callback();
+        });
+    }
+    adminCreated(idAdmin: string): void {
+        this.socket.emit('registerAsAdmin', idAdmin);
+    }
+    onPlayerDisconnect(callback: () => void) {
+        this.socket.on('playerDisconnected', () => {
+            callback();
+        });
+    }
 }

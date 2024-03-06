@@ -17,7 +17,8 @@ export class Server {
         timerId: 0,
         currentTime: 0,
         isRunning: false,
-        id: '',
+        idAdmin: '',
+        nbPlayer: 0,
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -48,9 +49,14 @@ export class Server {
         this.io.on('connect', (socket) => {
             this.application.getIdentification().then((pair) => {
                 this.io.emit('messageConnect', pair);
+                this.room.nbPlayer += 1;
+                console.log(this.room.nbPlayer);
             });
             this.application.watchDelete().then((deletedId) => {
                 this.io.emit('deleteId', deletedId);
+            });
+            socket.on('registerAsAdmin', () => {
+                this.room.idAdmin = socket.id;
             });
 
             socket.on('set-timer-duration', (duration) => {
@@ -65,6 +71,7 @@ export class Server {
                 if (this.room.isRunning) {
                     clearInterval(this.room.timerId);
                 }
+
                 this.room.isRunning = true;
                 startCountdownTimer(this.room.duration);
             });
@@ -101,9 +108,17 @@ export class Server {
                     this.io.emit('game-timer');
                 }
             });
-            // socket.on('joinRoom', (lobbyId) => {
-            //     socket.join(lobbyId);
-            // });
+            socket.on('disconnect', () => {
+                if (this.room) {
+                    this.room.nbPlayer -= 1;
+                    if (this.room.idAdmin === socket.id) {
+                        this.io.emit('adminDisconnected', socket.id);
+                    } else if (this.room.nbPlayer < 2) {
+                        this.io.emit('playerDisconnected');
+                    }
+                }
+                this.room.idAdmin = '';
+            });
             const startCountdownTimer = (duration: number): void => {
                 this.room.currentTime = duration;
                 this.io.emit('timer-countdown', duration);
@@ -118,6 +133,7 @@ export class Server {
                 );
                 this.room.timerId = timerId;
             };
+            
         });
 
         this.server.listen(Server.appPort);

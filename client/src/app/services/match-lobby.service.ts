@@ -47,6 +47,7 @@ export class MatchLobbyService {
             isLocked: false,
             hostId: generateNewId(),
         };
+
         return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
     }
 
