@@ -9,7 +9,7 @@ import { SnackbarService } from './snackbar.service';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Game } from '@app/interfaces/game';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('AdminService', () => {
     let service: AdminService;
@@ -18,7 +18,7 @@ describe('AdminService', () => {
     let gameMock = {} as unknown as Game;
 
     beforeEach(() => {
-        const SpyGameService = jasmine.createSpyObj('GameService', ['getGame', 'patchGame']);
+        const SpyGameService = jasmine.createSpyObj('GameService', ['getGame', 'patchGame', 'isValidGame', 'createGame']);
         const SnackbarService = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
         TestBed.configureTestingModule({
@@ -51,7 +51,7 @@ describe('AdminService', () => {
         expect(gameServiceSpy.patchGame).toHaveBeenCalled();
     }));
 
-    it("shouldn't toggle visibility", fakeAsync(() => {
+    it("shouldn't toggle visibility if game does not exist", fakeAsync(() => {
         gameServiceSpy.patchGame.and.returnValue(Promise.resolve(gameMock));
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
@@ -69,4 +69,20 @@ describe('AdminService', () => {
         flush();
         expect(gameServiceSpy.getGame).toHaveBeenCalled();
     }));
+
+    it("should render an error if game doesn't exist", (done) => {
+        snackbarServiceSpy.openSnackBar.and.returnValue();
+        const errorMessage = 'Game not found';
+        gameServiceSpy.getGame.and.returnValue(throwError(() => new Error(errorMessage)));
+
+        service.exportGameAsJson(gameMock);
+        expect(gameServiceSpy.getGame).toHaveBeenCalled();
+        done();
+    });
+
+    it('should add game', () => {
+        const dataSource = [gameMock];
+        service.addGame(gameMock, 'title', dataSource);
+        expect(gameServiceSpy.createGame).toHaveBeenCalled();
+    });
 });
