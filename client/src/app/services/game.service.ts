@@ -12,7 +12,7 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, firstValueFrom, switchMap } from 'rxjs';
+import { Observable, Subscription, firstValueFrom, switchMap } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -55,6 +55,7 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
+    subscription: Subscription;
     private minDuration: number;
     private maxDuration: number;
     // eslint-disable-next-line max-params
@@ -246,7 +247,7 @@ export class GameService {
     }
     // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
-    initializeLobbyAndGame(lobbyId: string, playerId: string): void {
+    initializeLobbyAndGame(lobbyId: string, playerId: string): Subscription[] {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
@@ -254,6 +255,7 @@ export class GameService {
         this.answerIdx = [];
         this.questionHasExpired = false;
         let currentPlayer: Player | undefined;
+        const arraySubscription: Subscription[] = [];
         // this.matchLobbyService.getLobby(this.lobbyId).subscribe({
         //     next: (lobbyData) => {
         //         this.lobbyData = lobbyData;
@@ -278,30 +280,31 @@ export class GameService {
         //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
         //     },
         // });
-        this.matchLobbyService
-            .getLobby(this.lobbyId)
-            .pipe(
-                switchMap((lobbyData) => {
-                    this.lobbyData = lobbyData;
-                    currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                    this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-                    return this.getGame(this.lobbyData.gameId);
+        arraySubscription.push(
+            this.matchLobbyService
+                .getLobby(this.lobbyId)
+                .pipe(
+                    switchMap((lobbyData) => {
+                        this.lobbyData = lobbyData;
+                        currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                        this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
+                        return this.getGame(this.lobbyData.gameId);
+                    }),
+                )
+                .subscribe({
+                    next: (gameData) => {
+                        this.gameData = gameData;
+
+                        this.setupWebSocketEvents(this.lobbyData, arraySubscription, currentPlayer);
+
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+                    },
                 }),
-            )
-            .subscribe({
-                next: (gameData) => {
-                    this.gameData = gameData;
-                    if (currentPlayer) {
-                        this.setupWebSocketEvents(this.lobbyData, currentPlayer);
-                    } else {
-                        this.setupWebSocketEvents(this.lobbyData);
-                    }
-                    this.socketService.startTimer();
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-                },
-            });
+        );
+        return arraySubscription;
     }
 
     getCurrentQuestion(): Question {
@@ -330,7 +333,7 @@ export class GameService {
     }
 
     handleGameLeave() {
-        this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
+        return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
             next: (data) => {
                 this.lobbyData = data;
                 if (this.lobbyData.playerList.length === 0) {
@@ -355,7 +358,7 @@ export class GameService {
             },
         });
     }
-    private setupWebSocketEvents(lobbyData: MatchLobby, currentPlayer?: Player) {
+    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
         this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
@@ -363,12 +366,6 @@ export class GameService {
                 this.onTimerComplete();
             }
         });
-        if (currentPlayer) {
-            this.socketService.playerCreated(currentPlayer.id);
-            this.checkAllAnswersLocker(currentPlayer, lobbyData);
-        } else {
-            this.socketService.adminCreated(lobbyData.hostId);
-        }
 
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
@@ -386,9 +383,15 @@ export class GameService {
             this.snackbarService.openSnackBar('playeroyt');
             this.router.navigate(['/home']);
         });
+        if (currentPlayer) {
+            this.socketService.playerCreated(currentPlayer.id);
+            arraySubscription.push(this.checkAllAnswersLocker(currentPlayer, lobbyData));
+        } else {
+            this.socketService.adminCreated(lobbyData.hostId);
+        }
     }
-    private checkAllAnswersLocker(currentPlayer: Player, lobbyData: MatchLobby): void {
-        this.answerStateService.answerLocked.subscribe({
+    private checkAllAnswersLocker(currentPlayer: Player, lobbyData: MatchLobby): Subscription {
+        return this.answerStateService.answerLocked.subscribe({
             next: (isLocked) => {
                 if (currentPlayer) {
                     currentPlayer.isLocked = isLocked;

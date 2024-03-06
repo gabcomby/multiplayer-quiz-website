@@ -6,7 +6,7 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 // import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
@@ -16,6 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class GamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     lobby: MatchLobby;
+    unsubscribeSubject: Subscription[];
     private destroy = new Subject<void>();
     constructor(
         private route: ActivatedRoute,
@@ -70,7 +71,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     // REFACTOR DONE
     ngOnInit() {
-        this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
+        this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
+            this.route.snapshot.params['lobbyId'],
+            this.route.snapshot.params['playerId'],
+        );
         // this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId']).subscribe({
         //     next: (lobby) => {
         //         this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
@@ -92,8 +96,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy.next();
         this.destroy.complete();
+        this.unsubscribeSubject.forEach((subject) => {
+            subject.unsubscribe();
+        });
     }
     handleGameLeave(): void {
-        this.gameService.handleGameLeave();
+        this.unsubscribeSubject.push(this.gameService.handleGameLeave());
     }
 }
