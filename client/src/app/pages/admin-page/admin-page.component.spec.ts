@@ -195,4 +195,23 @@ describe('AdminPageComponent', () => {
         expect(newTitle).toBeNull();
         expect(matDialogMock.open).toHaveBeenCalled();
     });
+
+    it('should toggleVisibility', () => {
+        gameServiceMock.getGame.and.returnValue(of(mockData));
+        gameServiceMock.patchGame.and.returnValue(Promise.resolve(mockData));
+        component.toggleVisibility(mockData, false);
+        expect(gameServiceMock.getGame).toHaveBeenCalled();
+        expect(gameServiceMock.patchGame).toHaveBeenCalled();
+    });
+
+    it('should export game as json', () => {
+        gameServiceMock.getGame.and.returnValue(of(mockData));
+        component.exportGameAsJson(mockData);
+        expect(gameServiceMock.getGame).toHaveBeenCalled();
+    });
+
+    it('should return nothing if the input lenght is 0', () => {
+        const result = component.onFileSelected({ target: { files: [] } } as unknown as Event);
+        expect(result).toBeUndefined();
+    });
 });
