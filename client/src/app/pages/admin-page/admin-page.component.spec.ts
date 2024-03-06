@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game } from '@app/interfaces/game';
+import { AdminService } from '@app/services/admin.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -92,6 +93,18 @@ describe('AdminPageComponent', () => {
         },
     };
 
+    const adminServiceMock = jasmine.createSpyObj('AdminService', [
+        'init',
+        'toggleVisibility',
+        'exportGameAsJson',
+        'importGamesFromFile',
+        'getValidGameTitle',
+        'createGame',
+        'deleteGame',
+        'readFileFromInput',
+        'hasValidInput',
+    ]);
+
     beforeEach(async () => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
@@ -111,6 +124,7 @@ describe('AdminPageComponent', () => {
                 { provide: MatDialogRef, useValue: dialogMock },
                 { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
+                { provide: AdminService, useValue: adminServiceMock },
             ],
         }).compileComponents();
 
@@ -213,5 +227,15 @@ describe('AdminPageComponent', () => {
     it('should return nothing if the input lenght is 0', () => {
         const result = component.onFileSelected({ target: { files: [] } } as unknown as Event);
         expect(result).toBeUndefined();
+    });
+
+    it("should import game's data from file", async () => {
+        adminServiceMock.readFileFromInput.and.returnValue(Promise.resolve(mockData));
+        adminServiceMock.getValidGameTitle.and.returnValue(Promise.resolve('New Title'));
+        adminServiceMock.addGame.and.returnValue([mockData]);
+        await component.importGamesFromFile({} as File);
+        expect(adminServiceMock.readFileFromInput).toHaveBeenCalled();
+        expect(adminServiceMock.getValidGameTitle).toHaveBeenCalled();
+        expect(adminServiceMock.addGame).toHaveBeenCalled();
     });
 });
