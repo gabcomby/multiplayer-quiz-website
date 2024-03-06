@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { API_BASE_URL } from '@app/app.module';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
@@ -8,7 +8,7 @@ import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 
 import { Router } from '@angular/router';
-import type { Game, Question } from '@app/interfaces/game';
+import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
@@ -24,7 +24,9 @@ const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 })
 export class GameService {
     // private apiUrl: string;
-
+    finalResultsEmitter: EventEmitter<Player[]> = new EventEmitter<Player[]>();
+    answersSelected: EventEmitter<AnswersPlayer> = new EventEmitter<AnswersPlayer>();
+    playerChoice: AnswersPlayer;
     apiUrl: string;
     timerCountdown: number;
     gameData: Game = {
@@ -54,6 +56,7 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
+    endGame = false;
     private minDuration: number;
     private maxDuration: number;
     // eslint-disable-next-line max-params
@@ -127,6 +130,11 @@ export class GameService {
 
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+    }
+
+    calculateFinalResults(): void {
+        const finalResults: Player[] = this.playerListFromLobby;
+        this.finalResultsEmitter.emit(finalResults);
     }
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
@@ -348,13 +356,16 @@ export class GameService {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
-            setTimeout(() => {
-                this.handleGameLeave();
-            }, TIME_BETWEEN_QUESTIONS);
+            this.calculateFinalResults();
+            // setTimeout(() => {
+            //     this.handleGameLeave();
+            // }, TIME_BETWEEN_QUESTIONS);
         }
     }
 
     private handleNextQuestion(): void {
+        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        this.answersSelected.emit(this.playerChoice);
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

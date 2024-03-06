@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Player } from '@app/interfaces/match';
 
 @Component({
@@ -7,15 +7,12 @@ import { Player } from '@app/interfaces/match';
     styleUrls: ['./results-view.component.scss'],
 })
 export class ResultsViewComponent implements OnInit {
+    @Input() finalResults: Player[];
+
     dataSource: Player[] = [];
 
     async ngOnInit() {
-        this.dataSource = [
-            { id: 'player1', name: 'Alice', score: 10, isLocked: false },
-            { id: 'player2', name: 'Bob', score: 15, isLocked: true },
-            { id: 'player3', name: 'Charlie', score: 20, isLocked: false },
-            { id: 'player4', name: 'David', score: 15, isLocked: true },
-        ];
+        this.dataSource = this.finalResults;
         this.dataSource.sort((a, b) => {
             if (b.score !== a.score) {
                 return b.score - a.score;
