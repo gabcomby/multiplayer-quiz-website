@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { API_BASE_URL } from '@app/app.module';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
@@ -12,7 +12,7 @@ import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, ReplaySubject, firstValueFrom } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -24,9 +24,14 @@ const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 })
 export class GameService {
     // private apiUrl: string;
-    finalResultsEmitter: EventEmitter<Player[]> = new EventEmitter<Player[]>();
-    answersSelected: EventEmitter<AnswersPlayer> = new EventEmitter<AnswersPlayer>();
-    playerChoice: AnswersPlayer;
+    finalResultsEmitter = new ReplaySubject<Player[]>(1);
+    answersSelected = new ReplaySubject<AnswersPlayer>(1);
+
+    questionGame = new ReplaySubject<Question[]>(1);
+    questions: Question[] = [];
+
+    playerChoice: AnswersPlayer = new Map<string, number[]>();
+
     apiUrl: string;
     timerCountdown: number;
     gameData: Game = {
@@ -134,7 +139,7 @@ export class GameService {
 
     calculateFinalResults(): void {
         const finalResults: Player[] = this.playerListFromLobby;
-        this.finalResultsEmitter.emit(finalResults);
+        this.finalResultsEmitter.next(finalResults);
     }
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
@@ -356,6 +361,10 @@ export class GameService {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
+            this.questions.push(this.currentQuestion);
+            this.questionGame.next(this.questions);
+            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+            this.answersSelected.next(this.playerChoice);
             this.calculateFinalResults();
             // setTimeout(() => {
             //     this.handleGameLeave();
@@ -365,7 +374,8 @@ export class GameService {
 
     private handleNextQuestion(): void {
         this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        this.answersSelected.emit(this.playerChoice);
+        this.answersSelected.next(this.playerChoice);
+        this.questions.push(this.currentQuestion);
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

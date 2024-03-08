@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import type { AnswersPlayer, Question } from '@app/interfaces/game';
+import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
 
@@ -10,10 +10,7 @@ import { GameService } from '@app/services/game.service';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit {
-    finalScore: Player[];
     endGame = false;
-    answersQuestions: AnswersPlayer;
-
     constructor(
         private route: ActivatedRoute,
         private gameService: GameService,
@@ -67,31 +64,14 @@ export class GamePageComponent implements OnInit {
     ngOnInit() {
         this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'], this.route.snapshot.params['playerId']);
 
-        this.gameService.finalResultsEmitter.subscribe((finalResults: Player[]) => {
+        this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
-            this.finalScore = finalResults;
-        });
-
-        this.gameService.answersSelected.subscribe((answers: AnswersPlayer) => {
-            const keys = Array.from(answers.keys());
-            for (const questionKey of keys) {
-                if (questionKey) {
-                    const choices = answers.get(questionKey);
-                    if (choices) {
-                        let questionAnswers = this.answersQuestions.get(questionKey);
-                        if (!questionAnswers) {
-                            questionAnswers = [];
-                        }
-                        for (const choice of choices) {
-                            questionAnswers.push(choice);
-                        }
-                        this.answersQuestions.set(questionKey, questionAnswers);
-                    }
-                }
-            }
         });
     }
 
+    // ngOnDestroy(): void {
+    //     this.gameService.finalResultsEmitter.unsubscribe();
+    // }
     // allAnswerlocked() {
     //     this.answerStateService.answerLocked.subscribe((locked) => {
     //         this.currentPlayer.isLocked = locked;

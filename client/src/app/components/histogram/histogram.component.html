@@ -1,1 +1,6 @@
-
+<div *ngFor="let answer of answerCounts | keyvalue">
+    <h3>{{ answer.key }}</h3>
+    <ul>
+        <li *ngFor="let count of answer.value | keyvalue">{{ count.key.text }}: {{ count.value }}</li>
+    </ul>
+</div>
