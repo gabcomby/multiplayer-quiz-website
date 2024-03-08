@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import type { Game } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
-import { SnackbarService } from '@app/services/snackbar.service';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
@@ -20,11 +18,8 @@ export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     dataSource: Game[] = [];
 
-    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
-        private snackbarService: SnackbarService,
-        private gameService: GameService,
         private dialog: MatDialog,
         private adminService: AdminService,
     ) {}
@@ -45,6 +40,15 @@ export class AdminPageComponent implements OnInit {
         const input = event.target as HTMLInputElement;
         if (!input?.files?.length) return;
         this.importGamesFromFile(input.files[0]);
+    }
+
+    async importGamesFromFile(file: File): Promise<void> {
+        const game = (await this.adminService.readFileFromInput(file)) as Game;
+
+        const gameTitle = await this.getValidGameTitle(game);
+        if (!gameTitle) return;
+
+        this.dataSource = this.adminService.addGame(game, gameTitle, this.dataSource);
     }
 
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
@@ -68,31 +72,6 @@ export class AdminPageComponent implements OnInit {
         return gameTitle;
     }
 
-    async importGamesFromFile(file: File): Promise<void> {
-        if (file.name.endsWith('.json')) {
-            const reader = new FileReader();
-            reader.readAsText(file);
-            const result = await new Promise<string>((resolve, reject) => {
-                reader.onload = (e) => resolve((e.target as FileReader).result as string);
-                reader.onerror = () => reject('Error reading file');
-            });
-
-            const game = JSON.parse(result);
-            const gameTitle = await this.getValidGameTitle(game);
-            if (!gameTitle) return;
-
-            game.title = gameTitle;
-            game.isVisible = false;
-            this.adminService.prepareGameForImport(game);
-            this.dataSource = [...this.dataSource, game];
-            this.gameService.createGame(game);
-
-            this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
-        }
-
-        return;
-    }
-
     deleteGame(gameId: string): void {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '300px',
@@ -113,13 +92,7 @@ export class AdminPageComponent implements OnInit {
         this.router.navigate(['/create-qgame']);
     }
 
-    formatLastModificationDate(date: string): string {
-        return new Date(date).toLocaleString('fr-CA', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+    formatDate(date: string): string {
+        return this.adminService.formatLastModificationDate(date);
     }
 }
