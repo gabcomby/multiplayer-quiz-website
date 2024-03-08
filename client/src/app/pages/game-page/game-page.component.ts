@@ -6,7 +6,7 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 // import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
@@ -70,26 +70,45 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     // REFACTOR DONE
+    // ngOnInit() {
+    //     this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
+    //         this.route.snapshot.params['lobbyId'],
+    //         this.route.snapshot.params['playerId'],
+    //     );
+    //     // this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId']).subscribe({
+    //     //     next: (lobby) => {
+    //     //         this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
+    //     //         this.lobby = lobby;
+    //     //         console.log(this.lobby);
+    //     //     },
+    //     // });
+    //     this.matchLobbyService
+    //         .getLobby(this.route.snapshot.params['lobbyId'])
+    //         .pipe(takeUntil(this.destroy))
+    //         .subscribe({
+    //             next: (lobby) => {
+    //                 this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
+    //                 this.lobby = lobby;
+    //                 console.log(this.lobby);
+    //             },
+    //         });
+    // }
+
     ngOnInit() {
-        this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
-            this.route.snapshot.params['lobbyId'],
-            this.route.snapshot.params['playerId'],
-        );
-        // this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId']).subscribe({
-        //     next: (lobby) => {
-        //         this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
-        //         this.lobby = lobby;
-        //         console.log(this.lobby);
-        //     },
-        // });
-        this.matchLobbyService
-            .getLobby(this.route.snapshot.params['lobbyId'])
-            .pipe(takeUntil(this.destroy))
+        from(
+            (this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
+                this.route.snapshot.params['lobbyId'],
+                this.route.snapshot.params['playerId'],
+            )),
+        )
+            .pipe(
+                concatMap(() => this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId'])),
+                takeUntil(this.destroy),
+            )
             .subscribe({
                 next: (lobby) => {
                     this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
                     this.lobby = lobby;
-                    console.log(this.lobby);
                 },
             });
     }

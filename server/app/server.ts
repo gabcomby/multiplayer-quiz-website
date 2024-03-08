@@ -41,6 +41,8 @@ export class Server {
         });
 
         this.io.on('connection', (socket) => {
+            console.log('socket connected : ', socket.id);
+            // console.log(socket.handshake);
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
             });
@@ -110,6 +112,8 @@ export class Server {
                 }
             });
             socket.on('disconnect', () => {
+                console.log('socket disconnected : ', socket.id);
+
                 if (this.room) {
                     if (this.room.idAdmin === socket.id) {
                         this.io.emit('adminDisconnected', socket.id);

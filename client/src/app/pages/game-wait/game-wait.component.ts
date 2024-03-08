@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { Subscription } from 'rxjs';
 // import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
@@ -11,7 +12,7 @@ import { SocketService } from '@app/services/socket.service';
     templateUrl: './game-wait.component.html',
     styleUrls: ['./game-wait.component.scss'],
 })
-export class GameWaitComponent implements OnInit {
+export class GameWaitComponent implements OnInit, OnDestroy {
     matchLobby: MatchLobby = {
         id: '',
         playerList: [],
@@ -23,6 +24,7 @@ export class GameWaitComponent implements OnInit {
     };
     playerId: string;
     isHost: boolean;
+    subscribeSubject: Subscription;
     private gameId: string;
     // eslint-disable-next-line max-params
     constructor(
@@ -35,12 +37,12 @@ export class GameWaitComponent implements OnInit {
     ngOnInit() {
         this.playerId = this.route.snapshot.params['host'];
 
-        this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
+        this.subscribeSubject = this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
             next: (data) => {
                 this.matchLobby = data;
                 this.isHost = this.playerId === `${this.matchLobby.hostId}`;
                 this.gameId = this.matchLobby.gameId;
-                this.socketService.connect();
+                // this.socketService.connect();
                 this.socketService.onTimerGame(() => {
                     this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
                 });
@@ -49,7 +51,13 @@ export class GameWaitComponent implements OnInit {
                 this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
             },
         });
-
+    }
+    ngOnDestroy() {
+        this.subscribeSubject.unsubscribe();
+    }
+    backHome(){
+        this.socketService.disconnect();
+        this.router.navigate(['/home']);
     }
 
     handleGameLaunch() {

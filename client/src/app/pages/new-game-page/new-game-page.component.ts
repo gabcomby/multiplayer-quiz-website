@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
@@ -8,23 +8,23 @@ import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { environment } from '@env/environment';
-import { Observable, lastValueFrom } from 'rxjs';
-import { Socket, io } from 'socket.io-client';
+// import { environment } from '@env/environment';
+import { Observable, Subscription, lastValueFrom } from 'rxjs';
+import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
 @Component({
     selector: 'app-new-game-page',
     templateUrl: './new-game-page.component.html',
     styleUrls: ['./new-game-page.component.scss'],
-    providers: [SocketService],
 })
-export class NewGamePageComponent implements OnInit {
+export class NewGamePageComponent implements OnInit, OnDestroy {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
     gamesUnderscoreId: string[] = [];
     deletedGamesId: string[] = [];
+    subscription: Subscription;
 
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
@@ -49,13 +49,14 @@ export class NewGamePageComponent implements OnInit {
     }
 
     initializeSocket() {
-        this.socket = io(environment.serverUrl);
-        this.socket.on('deleteId', async (gameId: string) => {
-            await this.deleteGameEvent(gameId);
-        });
+        // this.socket = io(environment.serverUrl);
+        // this.socket.on('deleteId', (gameId: string) => {
+        //     this.deleteGameEvent(gameId);
+        // });
+        this.socketService.deletedGame(this.deleteGameEvent);
     }
 
-    async deleteGameEvent(gameIdString: string) {
+    deleteGameEvent(gameIdString: string) {
         this.gamesUnderscoreId.push(gameIdString);
         const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
         const gameD = this.games[index];
@@ -111,7 +112,7 @@ export class NewGamePageComponent implements OnInit {
             this.ngOnInit();
             return false;
         } else {
-            this.createNewMatchLobby('Test Player', game.id).subscribe({
+            this.subscription = this.createNewMatchLobby('Test Player', game.id).subscribe({
                 next: (matchLobby) => {
                     this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
                 },
@@ -121,6 +122,10 @@ export class NewGamePageComponent implements OnInit {
             });
             return true;
         }
+    }
+    backHome() {
+        console.log('hello');
+        this.socketService.disconnect();
     }
 
     // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
@@ -148,6 +153,12 @@ export class NewGamePageComponent implements OnInit {
                 },
             });
             return true;
+        }
+    }
+    ngOnDestroy() {
+        // this.socket.disconnect();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
         }
     }
 

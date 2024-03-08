@@ -26,6 +26,11 @@ export class SocketService {
             this.socket.disconnect();
         }
     }
+    deletedGame(callback: (gameId: string) => void) {
+        this.socket.on('deleteId', (gameId: string) => {
+            callback(gameId);
+        });
+    }
 
     async deleteId(): Promise<string> {
         return new Promise<string>((resolve) => {

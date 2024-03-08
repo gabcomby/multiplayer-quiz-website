@@ -336,21 +336,23 @@ export class GameService {
         return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
             next: (data) => {
                 this.lobbyData = data;
-                if (this.lobbyData.playerList.length === 0) {
-                    this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                        next: () => {
-                            this.socketService.disconnect();
-                            this.router.navigate(['/new-game']);
-                        },
-                        error: (error) => {
-                            this.snackbarService.openSnackBar(
-                                `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
-                            );
-                        },
-                    });
-                } else {
-                    this.socketService.disconnect();
-                    this.router.navigate(['/new-game']);
+                if (data) {
+                    if (this.lobbyData.playerList === null || this.lobbyData.playerList.length === 0) {
+                        this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                            next: () => {
+                                this.socketService.disconnect();
+                                this.router.navigate(['/new-game']);
+                            },
+                            error: (error) => {
+                                this.snackbarService.openSnackBar(
+                                    `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
+                                );
+                            },
+                        });
+                    } else {
+                        this.socketService.disconnect();
+                        this.router.navigate(['/new-game']);
+                    }
                 }
             },
             error: (error) => {
@@ -359,7 +361,7 @@ export class GameService {
         });
     }
     private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-        this.socketService.connect();
+        // this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
@@ -377,10 +379,12 @@ export class GameService {
             }
         });
         this.socketService.onDisconnect(() => {
+            this.socketService.disconnect();
             this.router.navigate(['/home']);
         });
         this.socketService.onPlayerDisconnect(() => {
-            this.snackbarService.openSnackBar('playeroyt');
+            this.socketService.disconnect();
+            this.snackbarService.openSnackBar('playerout');
             this.router.navigate(['/home']);
         });
         if (currentPlayer) {
