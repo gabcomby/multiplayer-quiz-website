@@ -17,6 +17,9 @@ export class Server {
         timerId: 0,
         currentTime: 0,
         isRunning: false,
+        idAdmin: '',
+        player: new Map(),
+        answersLocked: 0,
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -38,6 +41,7 @@ export class Server {
             },
         });
 
+        // TODO: Move this into the "connect" event
         this.io.on('connection', (socket) => {
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
@@ -50,6 +54,12 @@ export class Server {
             });
             this.application.watchDelete().then((deletedId) => {
                 this.io.emit('deleteId', deletedId);
+            });
+            socket.on('registerAsAdmin', () => {
+                this.room.idAdmin = socket.id;
+            });
+            socket.on('registerAsPlayer', (idPlayer) => {
+                this.room.player.set(idPlayer, socket.id);
             });
 
             socket.on('set-timer-duration', (duration) => {
@@ -64,6 +74,7 @@ export class Server {
                 if (this.room.isRunning) {
                     clearInterval(this.room.timerId);
                 }
+
                 this.room.isRunning = true;
                 startCountdownTimer(this.room.duration);
             });
@@ -75,6 +86,13 @@ export class Server {
                     this.room.currentTime = this.room.duration;
                 }
             });
+            socket.on('answerSubmitted', () => {
+                this.room.answersLocked += 1;
+                if (this.room.answersLocked === this.room.player.size) {
+                    this.room.answersLocked = 0;
+                    this.io.emit('stop-timer');
+                }
+            });
 
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
                 if (answerIdx.length === 0) {
@@ -82,20 +100,46 @@ export class Server {
                     return;
                 }
 
-                const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-                const isMultipleAnswer = totalCorrectChoices > 1;
+                if (socket.id) {
+                    const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+                    const isMultipleAnswer = totalCorrectChoices > 1;
 
-                const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
+                    const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
-                if (!isMultipleAnswer) {
-                    this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
-                } else {
-                    const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
-                    const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                    this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                    if (!isMultipleAnswer) {
+                        this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                    } else {
+                        const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+                        const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+                        this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                    }
                 }
             });
-
+            socket.on('start', () => {
+                if (this.room) {
+                    this.io.emit('game-timer');
+                }
+            });
+            socket.on('disconnect', () => {
+                if (this.room) {
+                    if (this.room.idAdmin === socket.id) {
+                        this.io.emit('adminDisconnected', socket.id);
+                        this.room.idAdmin = '';
+                    } else {
+                        const players: string[] = [];
+                        this.room.player.forEach((value, key) => {
+                            if (value === socket.id) {
+                                this.room.player.delete(key);
+                            } else {
+                                players.push(key);
+                            }
+                        });
+                        if (players.length === 0) {
+                            this.io.emit('playerDisconnected');
+                        }
+                    }
+                }
+            });
             const startCountdownTimer = (duration: number): void => {
                 this.room.currentTime = duration;
                 this.io.emit('timer-countdown', duration);

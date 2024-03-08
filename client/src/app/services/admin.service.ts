@@ -6,7 +6,6 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
-// import { isValidGame } from '@app/utils/is-valid-game';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 
 const MAX_GAME_NAME_LENGTH = 35;
@@ -26,7 +25,8 @@ export class AdminService {
         this.connectSocket();
         return games;
     }
-    toggleVisibility(game: Game, isVisible: boolean): void {
+
+    async toggleVisibility(game: Game, isVisible: boolean): Promise<void> {
         if (!this.gameService.getGame(game.id)) return;
 
         game.isVisible = isVisible;
@@ -54,6 +54,16 @@ export class AdminService {
         });
     }
 
+    addGame(game: Game, gameTitle: string, dataSource: Game[]): Game[] {
+        game.title = gameTitle;
+        game.isVisible = false;
+        this.prepareGameForImport(game);
+        dataSource = [...dataSource, game];
+        this.gameService.createGame(game);
+        this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
+        return dataSource;
+    }
+
     async deleteGame(gameId: string): Promise<void> {
         return this.gameService
             .deleteGame(gameId)
@@ -75,6 +85,29 @@ export class AdminService {
         assignNewGameAttributes(game);
     }
 
+    formatLastModificationDate(date: string): string {
+        return new Date(date).toLocaleString('fr-CA', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    async readFileFromInput(file: File): Promise<Game | void> {
+        if (!file.name.endsWith('.json')) {
+            this.snackbarService.openSnackBar('Le fichier doit être un fichier JSON.');
+            return Promise.resolve();
+        }
+
+        const reader = new FileReader();
+        reader.readAsText(file);
+        return new Promise((resolve) => {
+            reader.onload = (e) => resolve(JSON.parse((e.target as FileReader).result as string));
+        });
+    }
+
     private async fetchGames(): Promise<Game[]> {
         try {
             const games = await this.gameService.getGames();
@@ -93,9 +126,9 @@ export class AdminService {
         return !dataSource.some((game) => game.title === name);
     }
 
-    private removeUnwantedFields(data: Record<string, unknown>): unknown {
+    private removeUnwantedFields(data: Record<string, unknown> | unknown[]): unknown {
         if (Array.isArray(data)) {
-            return data.map((item) => this.removeUnwantedFields(item));
+            return data.map((item) => this.removeUnwantedFields(item as Record<string, unknown>));
         } else if (typeof data === 'object' && data !== null) {
             Object.keys(data).forEach((key) => {
                 if (key === '_id' || key === '__v' || key === 'isVisible') {

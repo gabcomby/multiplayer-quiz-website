@@ -7,9 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Game } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { AdminService } from '@app/services/admin.service';
 import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
@@ -73,44 +71,37 @@ describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
-    let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
 
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
-    const gameServiceMock = jasmine.createSpyObj('gameService', [
-        'patchGame',
-        'getGames',
-        'deleteGame',
-        'getGame',
-        'createGame',
-        'validateDuplicationGame',
-        'isValidGame',
-    ]);
-    const socketServiceMock = jasmine.createSpyObj('socketService', ['connect']);
     const dialogMock = {
         open: () => {
             return { afterClosed: () => of(true) };
         },
     };
 
-    beforeEach(async () => {
-        snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+    const adminServiceMock = jasmine.createSpyObj('AdminService', [
+        'init',
+        'toggleVisibility',
+        'exportGameAsJson',
+        'importGamesFromFile',
+        'getValidGameTitle',
+        'createGame',
+        'deleteGame',
+        'readFileFromInput',
+        'hasValidInput',
+        'addGame',
+        'formatLastModificationDate',
+    ]);
 
+    beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
             imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
             providers: [
-                {
-                    provide: GameService,
-                    useValue: gameServiceMock,
-                },
-                { provide: SnackbarService, useValue: snackbarServiceMock },
-                {
-                    provide: SocketService,
-                    useValue: socketServiceMock,
-                },
                 { provide: MatDialogRef, useValue: dialogMock },
                 { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
+                { provide: AdminService, useValue: adminServiceMock },
             ],
         }).compileComponents();
 
@@ -126,10 +117,9 @@ describe('AdminPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it("should populate dataSource with games' data", async () => {
-        gameServiceMock.getGames.and.returnValue(Promise.resolve([mockData]));
+    it('should call init when ngOnInit is called', async () => {
         await component.ngOnInit();
-        expect(component.dataSource).toEqual([mockData]);
+        expect(adminServiceMock.init).toHaveBeenCalled();
     });
 
     it('should call importGamesFromFile when onFileSelected is called', () => {
@@ -160,39 +150,34 @@ describe('AdminPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should return a new valid game title immediately', async () => {
-        matDialogMock.open.and.returnValue({
-            afterClosed: () => of('New Valid Title'),
-        });
-
-        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
-        const newTitle = await component.getValidGameTitle(originalGame as Game);
-
-        expect(newTitle).toEqual('New Valid Title');
-        expect(matDialogMock.open).toHaveBeenCalled();
+    it('should toggleVisibility', () => {
+        adminServiceMock.toggleVisibility.and.returnValue(Promise.resolve());
+        component.toggleVisibility(mockData, true);
+        expect(adminServiceMock.toggleVisibility).toHaveBeenCalled();
     });
 
-    it('should handle cancellation', async () => {
-        matDialogMock.open.and.returnValue({
-            afterClosed: () => of(null),
-        });
-
-        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
-        const newTitle = await component.getValidGameTitle(originalGame as Game);
-
-        expect(newTitle).toBeNull();
-        expect(matDialogMock.open).toHaveBeenCalled();
+    it('should export game as json', () => {
+        adminServiceMock.exportGameAsJson.and.returnValue();
+        component.exportGameAsJson(mockData);
+        expect(adminServiceMock.exportGameAsJson).toHaveBeenCalled();
     });
 
-    it('should handle empty string', async () => {
-        matDialogMock.open.and.returnValue({
-            afterClosed: () => of(''),
-        });
+    it('should return nothing if the input lenght is 0', () => {
+        const result = component.onFileSelected({ target: { files: [] } } as unknown as Event);
+        expect(result).toBeUndefined();
+    });
 
-        const originalGame = { title: 'Original Game Title' } as Partial<Game>;
-        const newTitle = await component.getValidGameTitle(originalGame as Game);
+    it("should import game's data from file", async () => {
+        adminServiceMock.readFileFromInput.and.returnValue(Promise.resolve(mockData));
+        adminServiceMock.addGame.and.returnValue([mockData]);
+        await component.importGamesFromFile({} as File);
+        expect(adminServiceMock.readFileFromInput).toHaveBeenCalled();
+        expect(adminServiceMock.addGame).toHaveBeenCalled();
+    });
 
-        expect(newTitle).toBeNull();
-        expect(matDialogMock.open).toHaveBeenCalled();
+    it('should format date last modification date', () => {
+        adminServiceMock.formatLastModificationDate.and.returnValue('2024-02-12T14:48:55.329Z');
+        const result = component.formatDate('2024-02-12T14:48:55.329Z');
+        expect(result).toBeDefined();
     });
 });
