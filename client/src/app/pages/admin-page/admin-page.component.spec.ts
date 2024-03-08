@@ -90,6 +90,7 @@ describe('AdminPageComponent', () => {
         'readFileFromInput',
         'hasValidInput',
         'addGame',
+        'formatLastModificationDate',
     ]);
 
     beforeEach(async () => {
@@ -172,5 +173,11 @@ describe('AdminPageComponent', () => {
         await component.importGamesFromFile({} as File);
         expect(adminServiceMock.readFileFromInput).toHaveBeenCalled();
         expect(adminServiceMock.addGame).toHaveBeenCalled();
+    });
+
+    it('should format date last modification date', () => {
+        adminServiceMock.formatLastModificationDate.and.returnValue('2024-02-12T14:48:55.329Z');
+        const result = component.formatDate('2024-02-12T14:48:55.329Z');
+        expect(result).toBeDefined();
     });
 });
