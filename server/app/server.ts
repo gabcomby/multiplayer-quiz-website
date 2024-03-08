@@ -112,10 +112,10 @@ export class Server {
             });
             socket.on('disconnect', () => {
                 console.log('socket disconnected : ', socket.id);
-
                 if (this.room) {
                     if (this.room.idAdmin === socket.id) {
                         this.io.emit('adminDisconnected', socket.id);
+                        this.room.idAdmin = '';
                     } else {
                         const players: string[] = [];
                         this.room.player.forEach((value, key) => {
@@ -130,7 +130,6 @@ export class Server {
                         }
                     }
                 }
-                this.room.idAdmin = '';
             });
             const startCountdownTimer = (duration: number): void => {
                 this.room.currentTime = duration;

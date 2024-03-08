@@ -361,15 +361,17 @@ export class GameService {
             }
         });
         this.socketService.onDisconnect(() => {
-            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                next: () => {
-                    this.socketService.disconnect();
-                    this.router.navigate(['/home']);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
-                },
-            });
+            // console.log('adminOut');
+            // this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+            //     next: () => {
+            //         this.socketService.disconnect();
+            //         this.router.navigate(['/home']);
+            //     },
+            //     error: (error) => {
+            //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+            //     },
+            // });
+            this.handleGameLeave();
         });
         this.socketService.onPlayerDisconnect(() => {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
@@ -381,6 +383,7 @@ export class GameService {
                     this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
                 },
             });
+            // this.handleGameLeave();
             this.snackbarService.openSnackBar('playerout');
         });
         if (currentPlayer) {

@@ -156,7 +156,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         }
     }
     ngOnDestroy() {
-        // this.socket.disconnect();
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
