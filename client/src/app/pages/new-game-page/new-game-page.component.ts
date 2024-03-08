@@ -53,7 +53,9 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         // this.socket.on('deleteId', (gameId: string) => {
         //     this.deleteGameEvent(gameId);
         // });
-        this.socketService.deletedGame(this.deleteGameEvent);
+        this.socketService.deletedGame((gameId: string) => {
+            this.deleteGameEvent(gameId);
+        });
     }
 
     deleteGameEvent(gameIdString: string) {
