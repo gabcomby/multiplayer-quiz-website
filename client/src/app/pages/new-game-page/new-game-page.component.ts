@@ -69,38 +69,46 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         }
     }
 
+    snackbarHiddenGame(game: Game, indexGame: number) {
+        let suggestion = '';
+        if (indexGame === this.games.length - 1) {
+            const newSuggestedGameCase1 = this.games[0];
+            suggestion = ' we suggest to play ' + newSuggestedGameCase1.title;
+        } else if (this.games.length === 1) {
+            suggestion = ' we have no other games to suggest';
+        } else {
+            const newSuggestedGame = this.games[indexGame + 1];
+            suggestion = ' we suggest you to play ' + newSuggestedGame.title;
+        }
+        this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + suggestion);
+    }
+
+    snackbarDeletedGame(game: Game, indexGame: number) {
+        let suggestion = '';
+        if (indexGame === this.games.length - 1) {
+            const newSuggestedGameCase1 = this.games[0];
+            suggestion = ' we suggest to play ' + newSuggestedGameCase1.title;
+        } else if (this.games.length === 1) {
+            suggestion = ' we have no other games to suggest';
+        } else {
+            const newSuggestedGame = this.games[indexGame + 1];
+            suggestion = ' we suggest you to play ' + newSuggestedGame.title;
+        }
+        this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + suggestion);
+    }
+
     async isTheGameModified(game: Game): Promise<boolean> {
         let result = true;
         const newGameArray = await this.gameService.getGames();
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
         if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND) {
             const indexGame = this.games.indexOf(game);
-            if (indexGame === this.games.length - 1) {
-                const newSuggestedGameCase1 = this.games[0];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we suggest to play ' + newSuggestedGameCase1.title);
-                result = false;
-            } else if (this.games.length === 1) {
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we have no other games to suggest');
-                result = false;
-            } else {
-                const newSuggestedGame = this.games[indexGame + 1];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' we suggest you to play ' + newSuggestedGame.title);
-                result = false;
-            }
-        } else if (newGameArray[indexG].isVisible === false) {
+            this.snackbarDeletedGame(game, indexGame);
+            result = false;
+        } else if (!newGameArray[indexG].isVisible) {
             const indexGame = this.games.indexOf(game);
-            if (indexGame === this.games.length - 1) {
-                const newSuggestedGameCase1 = this.games[0];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we suggest to play ' + newSuggestedGameCase1.title);
-                result = false;
-            } else if (this.games.length === 1) {
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we have no other games to suggest');
-                result = false;
-            } else {
-                const newSuggestedGame = this.games[indexGame + 1];
-                this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' we suggest you to play ' + newSuggestedGame.title);
-                result = false;
-            }
+            this.snackbarHiddenGame(game, indexGame);
+            result = false;
         }
         return result;
     }
@@ -162,6 +170,10 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
 
     createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
         return this.matchLobbyService.createLobby(playerName, gameId);
+    }
+
+    createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createTestLobby(playerName, gameId);
     }
 
     private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
