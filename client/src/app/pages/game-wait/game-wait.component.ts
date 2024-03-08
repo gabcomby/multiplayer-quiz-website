@@ -63,4 +63,15 @@ export class GameWaitComponent implements OnInit, OnDestroy {
     handleGameLaunch() {
         this.socketService.startGame();
     }
+
+    handleGameLeave() {
+        this.matchLobbyService.removePlayer(this.playerId, this.matchLobby.id).subscribe({
+            next: () => {
+                this.router.navigate(['/']);
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar('Erreur' + error + 'lors de la suppression du joueur');
+            },
+        });
+    }
 }
