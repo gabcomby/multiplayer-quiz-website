@@ -131,4 +131,12 @@ describe('MatchLobbyService', () => {
         expect(result).to.eql(lobbyInstance.bannedNames);
         expect(findOneStub.calledOnce).to.be.true;
     });
+
+    it("should get players list and return an empty array if lobby doesn't exist", async () => {
+        findOneStub.withArgs({ id: lobbyInstance.id }).resolves(playerInstance);
+
+        const result = await matchLobbyService.getPlayers(lobbyInstance.id);
+        expect(result).to.eql(undefined);
+        expect(findOneStub.calledOnce).to.be.true;
+    });
 });
