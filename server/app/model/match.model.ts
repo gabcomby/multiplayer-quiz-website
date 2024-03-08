@@ -11,7 +11,7 @@ export interface IMatch extends Document {
     playerList: IPlayer[];
 }
 
-const playerSchema: Schema = new Schema({
+export const playerSchema: Schema = new Schema({
     id: { type: String, required: true },
     name: { type: String, required: true },
     score: { type: Number, required: true },

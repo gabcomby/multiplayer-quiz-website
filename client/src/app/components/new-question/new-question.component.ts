@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Choice, Question } from '@app/interfaces/game';
-import { QuestionValidationService } from '@app/services/question-validation.service';
+import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
+// import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
+// import { SnackbarService } from '@app/services/snackbar.service';
+// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',
@@ -21,25 +22,16 @@ export class NewQuestionComponent {
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private questionService: QuestionService,
-        private snackbarService: SnackbarService,
         private router: Router,
-        private questionValidationService: QuestionValidationService,
+        private handlerQuestionService: HandlerNewQuestionService,
     ) {}
 
     async addQuestion(event: Choice[], onlyAddQuestionBank: boolean): Promise<void> {
-        const newQuestion = this.createNewQuestion(event);
-        if (this.questionValidationService.validateQuestion(newQuestion)) {
+        const questionValidated = await this.handlerQuestionService.addQuestion(event, this.question, onlyAddQuestionBank, this.addBankQuestion);
+        if (questionValidated) {
             if (!onlyAddQuestionBank) {
-                if (this.addBankQuestion && (await this.validateQuestionExisting(newQuestion))) {
-                    this.questionService.addQuestionBank(newQuestion);
-                    this.questionService.addQuestion(newQuestion);
-                    this.resetComponent(event);
-                } else if (!this.addBankQuestion) {
-                    this.questionService.addQuestion(newQuestion);
-                    this.resetComponent(event);
-                }
-            } else if (await this.validateQuestionExisting(newQuestion)) {
-                this.questionService.addQuestionBank(newQuestion);
+                this.resetComponent(event);
+            } else {
                 this.router.navigate(['/question-bank']);
             }
         }
@@ -58,25 +50,5 @@ export class NewQuestionComponent {
             element.text = '';
         });
         this.addBankQuestion = false;
-    }
-    createNewQuestion(choices: Choice[]) {
-        return {
-            type: this.question.type,
-            text: this.question.text,
-            points: this.question.points,
-            id: generateNewId(),
-            choices: choices.map((item: Choice) => ({ ...item })),
-            lastModification: new Date(),
-        };
-    }
-
-    async validateQuestionExisting(question: Question): Promise<boolean> {
-        const questionInBank = await this.questionService.getQuestions();
-        const findQuestion = questionInBank.find((element) => element.text === question.text);
-        if (findQuestion) {
-            this.snackbarService.openSnackBar('Une question avec un nom similaire existe deja dans la banque de question');
-            return false;
-        }
-        return true;
     }
 }

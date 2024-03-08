@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
-import { Question } from '@app/interfaces/game';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '@app/app.module';
+import { Choice, Question } from '@app/interfaces/game';
 import { Observable, firstValueFrom } from 'rxjs';
+import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',
@@ -10,9 +12,15 @@ export class QuestionService {
     questions: Question[] = [];
 
     onQuestionAdded: EventEmitter<Question> = new EventEmitter();
-    private apiUrl = 'http://localhost:3000/api/questions';
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private questionValidationService: QuestionValidationService,
+        @Inject(API_BASE_URL) apiBaseURL: string,
+    ) {
+        this.apiUrl = `${apiBaseURL}/questions`;
+    }
 
     resetQuestions() {
         this.questions = [];
@@ -55,5 +63,35 @@ export class QuestionService {
     updateList(question: Question[]) {
         this.questions = [];
         this.questions = question.map((item) => ({ ...item }));
+    }
+    saveQuestion(index: number, questionList: Question[], listQuestionBank: boolean): boolean {
+        questionList[index].lastModification = new Date();
+        const validated =
+            this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices) &&
+            this.questionValidationService.validateQuestion(questionList[index]);
+        // this.disabled[index] = validated;
+
+        if (listQuestionBank && validated) {
+            this.updateQuestion(questionList[index].id, questionList[index]);
+        } else if (validated) {
+            this.updateList(questionList);
+        }
+        return validated;
+    }
+
+    moveQuestionUp(index: number, array: Choice[] | Question[]): void {
+        if (index > 0) {
+            const temp = array[index];
+            array[index] = array[index - 1];
+            array[index - 1] = temp;
+        }
+    }
+
+    moveQuestionDown(index: number, array: Choice[] | Question[]): void {
+        if (index < array.length - 1) {
+            const temp = array[index];
+            array[index] = array[index + 1];
+            array[index + 1] = temp;
+        }
     }
 }

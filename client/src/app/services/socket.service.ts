@@ -2,6 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import type { Choice } from '@app/interfaces/game';
+import { environment } from '@env/environment';
 import { io, Socket } from 'socket.io-client';
 
 @Injectable({
@@ -9,7 +10,7 @@ import { io, Socket } from 'socket.io-client';
 })
 export class SocketService {
     private socket: Socket;
-    private readonly url: string = 'http://localhost:3000';
+    private readonly url: string = environment.socketUrl;
 
     connect(): string[] {
         this.socket = io(this.url, { autoConnect: true });
@@ -24,6 +25,11 @@ export class SocketService {
         if (this.socket) {
             this.socket.disconnect();
         }
+    }
+    deletedGame(callback: (gameId: string) => void) {
+        this.socket.on('deleteId', (gameId: string) => {
+            callback(gameId);
+        });
     }
 
     async deleteId(): Promise<string> {
@@ -60,6 +66,38 @@ export class SocketService {
     onAnswerVerification(callback: (data: boolean) => void): void {
         this.socket.on('answer-verification', (data: boolean) => {
             callback(data);
+        });
+    }
+    startGame(): void {
+        this.socket.emit('start');
+    }
+    onTimerGame(callback: () => void): void {
+        this.socket.on('game-timer', () => {
+            callback();
+        });
+    }
+    onDisconnect(callback: () => void): void {
+        this.socket.on('adminDisconnected', () => {
+            callback();
+        });
+    }
+    adminCreated(idAdmin: string): void {
+        this.socket.emit('registerAsAdmin', idAdmin);
+    }
+    playerCreated(idPlayer: string): void {
+        this.socket.emit('registerAsPlayer', idPlayer);
+    }
+    onPlayerDisconnect(callback: () => void) {
+        this.socket.on('playerDisconnected', () => {
+            callback();
+        });
+    }
+    answerSubmit() {
+        this.socket.emit('answerSubmitted');
+    }
+    onStopTimer(callback: () => void) {
+        this.socket.on('stop-timer', () => {
+            callback();
         });
     }
 }

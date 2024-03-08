@@ -15,8 +15,6 @@ export class QuestionBankComponent implements OnInit {
     displayedColumns: string[];
     dataSource: Question[] = [];
     defaultDisplayedColumns: string[] = ['question', 'date', 'delete'];
-
-    // Track the selected row IDs
     selectedRowIds: string[] = [];
 
     constructor(

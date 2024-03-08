@@ -1,0 +1,62 @@
+#menu-bar {
+    height: 100%;
+}
+.large-bar-spacer {
+    flex: 1 1 auto;
+}
+
+.top-bar-text {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    grid-template-rows: 50px 35% 65%;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        'top-bar top-bar top-bar'
+        'live-chat lobby-info score'
+        'live-chat start-game score';
+}
+
+.top-bar {
+    grid-area: top-bar;
+}
+
+.live-chat {
+    grid-area: live-chat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.score {
+    margin-top: 20%;
+    grid-area: score;
+}
+
+.lobby-info {
+    grid-area: lobby-info;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.start-game {
+    grid-area: start-game;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.lobby-text {
+    font-size: 1.5em;
+    font-weight: bold;
+}

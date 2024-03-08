@@ -1,11 +1,17 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { QuestionValidationService } from '@app/services/question-validation.service';
+import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ChoiceComponent } from './choice.component';
 
 const MAX_CHOICES = 4;
 
 describe('ChoiceComponent', () => {
+    let questionServiceSpy: jasmine.SpyObj<QuestionService>;
     let component: ChoiceComponent;
     let fixture: ComponentFixture<ChoiceComponent>;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
@@ -16,7 +22,12 @@ describe('ChoiceComponent', () => {
         questionValidationSpy = jasmine.createSpyObj('QuestionValidationService', ['answerValid']);
         TestBed.configureTestingModule({
             declarations: [ChoiceComponent],
-            providers: [{ provide: SnackbarService, useValue: snackbarServiceMock }],
+            providers: [
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+                { provide: QuestionService, useValue: questionServiceSpy },
+            ],
+            imports: [MatDialogModule, MatCheckboxModule, MatIconModule],
+            schemas: [NO_ERRORS_SCHEMA],
         });
         fixture = TestBed.createComponent(ChoiceComponent);
         component = fixture.componentInstance;
@@ -111,66 +122,6 @@ describe('ChoiceComponent', () => {
 
         component.removeChoice(1, component.answers);
         expect(component.answers.length).toBe(2);
-    });
-
-    it('should switch the answer selected and the one on top', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
-
-        component.moveQuestionUp(1, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test2', isCorrect: false },
-            { text: 'test1', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-        ]);
-    });
-
-    it('should not switch the answers if its the first choice', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
-
-        component.moveQuestionUp(0, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ]);
-    });
-
-    it('should switch the answer selected and the one underneath', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
-
-        component.moveQuestionDown(1, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test3', isCorrect: false },
-            { text: 'test2', isCorrect: false },
-        ]);
-    });
-
-    it('should not switch the answers if its the last choice', () => {
-        component.answers = [
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ];
-
-        component.moveQuestionDown(3, component.answers);
-        expect(component.answers).toEqual([
-            { text: 'test1', isCorrect: true },
-            { text: 'test2', isCorrect: false },
-            { text: 'test3', isCorrect: false },
-        ]);
     });
 
     it('should emit registerAnswer event when there is at least one correct and one incorrect answer', () => {

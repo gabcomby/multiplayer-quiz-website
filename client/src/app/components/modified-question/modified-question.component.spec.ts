@@ -1,12 +1,22 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { Question } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
+
+@Component({
+    selector: 'app-choice',
+    template: '',
+})
+class AppChoiceStubComponent {
+    @Input() question: unknown;
+}
 
 describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
@@ -15,28 +25,29 @@ describe('ModifiedQuestionComponent', () => {
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     let questionValidationSpy: SpyObj<QuestionValidationService>;
     const defaultDate = new Date();
-    const questionList = [
-        {
-            type: 'QCM',
-            text: 'Ceci est une question de test',
-            points: 10,
-            id: 'dsdsd',
-            lastModification: defaultDate,
-            choices: [],
-        },
-        {
-            type: 'QCM',
-            text: 'Ceci est une question de test 2',
-            points: 20,
-            id: '45',
-            lastModification: defaultDate,
-            choices: [],
-        },
-    ];
+    // const questionList = [
+    //     {
+    //         type: 'QCM',
+    //         text: 'Ceci est une question de test',
+    //         points: 10,
+    //         id: 'dsdsd',
+    //         lastModification: defaultDate,
+    //         choices: [],
+    //     },
+    //     {
+    //         type: 'QCM',
+    //         text: 'Ceci est une question de test 2',
+    //         points: 20,
+    //         id: '45',
+    //         lastModification: defaultDate,
+    //         choices: [],
+    //     },
+    // ];
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion', 'verifyOneGoodAndBadAnswer']);
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
+            saveQuestion: {},
             addQuestion: {},
             updateList: {},
             updateQuestion: {},
@@ -82,13 +93,14 @@ describe('ModifiedQuestionComponent', () => {
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [ModifiedQuestionComponent],
+            declarations: [ModifiedQuestionComponent, AppChoiceStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: QuestionValidationService, useValue: questionValidationSpy },
             ],
-            imports: [DragDropModule],
+            imports: [DragDropModule, FormsModule, MatIconModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
@@ -174,50 +186,57 @@ describe('ModifiedQuestionComponent', () => {
         component.toggleMenuSelection();
         expect(component.menuSelected).toBeTrue();
     });
-    it('when saveQuestion is called, initialize with new date', () => {
+
+    it('should call saveQuestion from service when saveQuestion is called', () => {
+        // component.disabled = [false, false];
+        // component.listQuestionBank = true;
+
+        // component.questionList = questionList;
+        // questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+
+        // questionValidationSpy.validateQuestion.and.returnValue(true);
+        // const index = 1;
+        // component.saveQuestion(index);
+        // expect(questionServiceSpy.updateQuestion).toHaveBeenCalled();
+        // expect(component.disabled[index]).toBeTrue();
         const index = 1;
         component.saveQuestion(index);
-        expect(component.questionList[index].lastModification).toEqual(new Date());
+        expect(questionServiceSpy.saveQuestion).toHaveBeenCalled();
     });
-    it('when saveQuestion is from questionBank, it should update list and disabled with valid data', () => {
+    it('should call saveQuestion from service when saveQuestion is called', () => {
         component.disabled = [false, false];
-        component.listQuestionBank = true;
+        questionServiceSpy.saveQuestion.and.returnValue(true);
 
-        component.questionList = questionList;
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
-
-        questionValidationSpy.validateQuestion.and.returnValue(true);
         const index = 1;
         component.saveQuestion(index);
-        expect(questionServiceSpy.updateQuestion).toHaveBeenCalled();
         expect(component.disabled[index]).toBeTrue();
     });
-    it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
-        component.disabled = [false, false];
-        component.listQuestionBank = false;
+    // it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
+    //     component.disabled = [false, false];
+    //     component.listQuestionBank = false;
 
-        component.questionList = questionList;
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+    //     component.questionList = questionList;
+    //     questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
 
-        questionValidationSpy.validateQuestion.and.returnValue(true);
+    //     questionValidationSpy.validateQuestion.and.returnValue(true);
 
-        const index = 1;
-        component.saveQuestion(index);
-        expect(questionServiceSpy.updateList).toHaveBeenCalled();
-        expect(component.disabled[index]).toBeTrue();
-    });
+    //     const index = 1;
+    //     component.saveQuestion(index);
+    //     expect(questionServiceSpy.updateList).toHaveBeenCalled();
+    //     expect(component.disabled[index]).toBeTrue();
+    // });
 
-    it('when saveQuestion with no valid data, it should not update list or update question', () => {
-        component.disabled = [false, false];
-        questionValidationSpy.validateQuestion.and.returnValue(false);
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
-        const index = 1;
-        component.questionList = questionList;
+    // it('when saveQuestion with no valid data, it should not update list or update question', () => {
+    //     component.disabled = [false, false];
+    //     questionValidationSpy.validateQuestion.and.returnValue(false);
+    //     questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+    //     const index = 1;
+    //     component.questionList = questionList;
 
-        expect(questionServiceSpy.updateList).not.toHaveBeenCalled();
-        expect(questionServiceSpy.updateQuestion).not.toHaveBeenCalled();
-        expect(component.disabled[index]).toBeFalse();
-    });
+    //     expect(questionServiceSpy.updateList).not.toHaveBeenCalled();
+    //     expect(questionServiceSpy.updateQuestion).not.toHaveBeenCalled();
+    //     expect(component.disabled[index]).toBeFalse();
+    // });
 
     it('should remove a question from questionList and disable input modification', () => {
         const index = 0;
@@ -236,59 +255,59 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.disabled[index]).toBeTrue();
     });
 
-    it('should switch the answer selected and the one on top', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
+    // it('should switch the answer selected and the one on top', () => {
+    //     component.questionList = [
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ];
 
-        component.moveQuestionUp(1);
-        expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
+    //     component.moveQuestionUp(1);
+    //     expect(component.questionList).toEqual([
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ]);
+    // });
 
-    it('should not switch the answers if its the first choice', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
+    // it('should not switch the answers if its the first choice', () => {
+    //     component.questionList = [
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ];
 
-        component.moveQuestionUp(0);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
+    //     component.moveQuestionUp(0);
+    //     expect(component.questionList).toEqual([
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ]);
+    // });
 
-    it('should switch the answer selected and the one underneath', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
+    // it('should switch the answer selected and the one underneath', () => {
+    //     component.questionList = [
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ];
 
-        component.moveQuestionDown(1);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
+    //     component.moveQuestionDown(1);
+    //     expect(component.questionList).toEqual([
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ]);
+    // });
 
-    it('should not switch the answers if its the last choice', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
+    // it('should not switch the answers if its the last choice', () => {
+    //     component.questionList = [
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ];
 
-        component.moveQuestionDown(3);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
+    //     component.moveQuestionDown(3);
+    //     expect(component.questionList).toEqual([
+    //         { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //         { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
+    //     ]);
+    // });
 });

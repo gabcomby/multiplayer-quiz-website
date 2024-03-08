@@ -1,6 +1,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { InjectionToken, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
+import { environment } from '@env/environment';
 import { ChoiceComponent } from './components/choice/choice.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { GamePageLivechatComponent } from './components/game-page-livechat/game-page-livechat.component';
@@ -21,6 +22,7 @@ import { InputDialogComponent } from './components/input-dialog/input-dialog.com
 import { ModifiedQuestionComponent } from './components/modified-question/modified-question.component';
 import { NewQuestionComponent } from './components/new-question/new-question.component';
 import { PasswordDialogComponent } from './components/password-dialog/password-dialog.component';
+import { PlayerNameDialogComponent } from './components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
@@ -30,6 +32,13 @@ import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modi
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
+
+import { HistogramComponent } from './components/histogram/histogram.component';
+import { ResultsViewComponent } from './pages/results-view/results-view.component';
+import { GameTimerPageComponent } from './pages/game-timer-page/game-timer-page.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 /**
  * Main module that is used in main.ts.
@@ -62,6 +71,10 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         ServerErrorDialogComponent,
         InputDialogComponent,
         ConfirmDialogComponent,
+        PlayerNameDialogComponent,
+        GameTimerPageComponent,
+        ResultsViewComponent,
+        HistogramComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -75,8 +88,9 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
         DragDropModule,
         MatListModule,
         RouterModule,
+        NgxChartsModule,
     ],
-    providers: [],
+    providers: [{ provide: API_BASE_URL, useValue: environment.serverUrl }],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,43 @@
+.container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px auto auto;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        'top-bar'
+        'palmares-container'
+        'live-chat';
+}
+
+.top-bar {
+    grid-area: top-bar;
+    width: 100%;
+}
+
+.live-chat {
+    grid-area: live-chat;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.palmares-container {
+    grid-area: palmares-container;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin-left: 30%;
+    margin-bottom: 30%;
+}
+
+.histogram {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin-left: 30%;
+    margin-top: 80%;
+}

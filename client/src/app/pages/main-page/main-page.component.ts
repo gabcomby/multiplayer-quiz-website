@@ -3,9 +3,14 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PasswordDialogComponent } from '@app/components/password-dialog/password-dialog.component';
+import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { AuthService } from '@app/services/auth.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
+import { SocketService } from '@app/services/socket.service';
+import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 
 @Component({
     selector: 'app-main-page',
@@ -21,11 +26,58 @@ export class MainPageComponent {
         private router: Router,
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
+        private matchLobbyService: MatchLobbyService,
+        private joinGameValidation: JoinGameValidationService,
+        private socketService: SocketService,
     ) {}
 
     openAdminDialog(): void {
         const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
         dialogRef.afterClosed().subscribe(this.handleDialogClose);
+    }
+
+    async handleGameJoin(): Promise<void> {
+        const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
+            width: '300px',
+            data: {
+                isShown: true,
+            },
+        });
+        const result = await lastValueFrom(dialogRef.afterClosed());
+        await this.joinGameValidation.getNameAndLobby(result.userName, result.lobbyCode);
+
+        if (this.isEmpyDialog(result)) {
+            this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
+            return;
+        }
+        // TODO: Refactor this code to remove the nested subscribe (Pierre-Emmanuel)
+        if (result.lobbyCode) {
+            this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
+                next: (lobby) => {
+                    if (lobby) {
+                        this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
+                            next: (lobbyUpdated) => {
+                                const newPlayer = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                this.socketService.connect();
+                                this.router.navigate(['/gameWait', lobby.id, newPlayer]);
+                            },
+                            error: (error) => {
+                                this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
+                            },
+                        });
+                    } else {
+                        this.snackbarService.openSnackBar("Cette partie n'existe pas");
+                    }
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar('Erreur ' + error + 'lors de la récupération du salon');
+                },
+            });
+        }
+    }
+
+    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+        return result.userName.trim() === '' || result.lobbyCode.trim() === '';
     }
 
     private handleDialogClose = (password: string) => {

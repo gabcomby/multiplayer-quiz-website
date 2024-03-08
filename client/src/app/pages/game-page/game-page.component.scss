@@ -125,3 +125,10 @@ $base-font-size: 16; // Default base font-size in pixels
     font-size: px-to-em(16); // Scale up the text by 1.5x
     margin-top: px-to-em(30); // Lower the timer a little bit
 }
+
+.results {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

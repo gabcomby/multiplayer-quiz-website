@@ -1,10 +1,12 @@
 /* eslint-disable-next-line max-classes-per-file -- Those are  mock class */
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { API_BASE_URL } from '@app/app.module';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AuthService } from '@app/services/auth.service';
@@ -41,12 +43,14 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: 'admin', component: DummyAdminComponent }])],
+            imports: [RouterTestingModule.withRoutes([{ path: 'admin', component: DummyAdminComponent }]), HttpClientTestingModule],
             declarations: [MainPageComponent, DummyAdminComponent],
             providers: [
                 { provide: AuthService, useClass: AuthServiceMock },
                 { provide: MatDialog, useClass: MatDialogMock },
                 { provide: SnackbarService, useClass: SnackbarServiceMock },
+                { provide: HttpClient, useValue: {} },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
         }).compileComponents();
 
