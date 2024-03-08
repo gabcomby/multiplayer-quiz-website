@@ -11,25 +11,20 @@ export class HistogramComponent implements OnInit {
     @Input() questionsGame: Question[];
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
+    answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
 
     ngOnInit(): void {
-        let question: Question;
-        for (question of this.questionsGame) {
-            if (question) {
-                console.log(question.text);
-            }
-        }
         this.constructAnswerCounts();
+        this.answerCounts.forEach((value, key) => {
+            this.answerCountsArray.push({ key, value });
+        });
     }
 
     private constructAnswerCounts(): void {
-        const questionOrder: string[] = [];
         this.questionsGame.forEach((question) => {
             const answerCountMap: Map<Choice, number> = new Map();
             question.choices.forEach((choice) => answerCountMap.set(choice, 0));
             this.answerCounts.set(question.text, answerCountMap);
-            questionOrder.push(question.text);
-            // console.log(questionOrder[0]);
         });
 
         this.answersPlayer.forEach(([questionText, choices]) => {
