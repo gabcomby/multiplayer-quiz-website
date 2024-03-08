@@ -384,12 +384,14 @@ export class GameService {
     }
     private checkAllAnswersLocker(): Subscription {
         return this.answerStateService.answerLocked.subscribe({
-            next: () => {
+            next: (isLocked) => {
                 // if (currentPlayer) {
                 //     currentPlayer.isLocked = true;
                 //     this.allAnswerlocked(lobbyData);
                 // }
-                this.socketService.answerSubmit();
+                if (isLocked) {
+                    this.socketService.answerSubmit();
+                }
             },
         });
     }

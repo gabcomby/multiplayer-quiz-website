@@ -86,8 +86,9 @@ export class Server {
                 }
             });
             socket.on('answerSubmitted', () => {
+                console.log(this.room.answersLocked);
                 this.room.answersLocked += 1;
-                if (this.room.answersLocked === this.room.player.size + 1) {
+                if (this.room.answersLocked === this.room.player.size) {
                     this.room.answersLocked = 0;
                     this.io.emit('stop-timer');
                 }
