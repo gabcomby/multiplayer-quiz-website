@@ -23,7 +23,7 @@
         <!-- Creation Date Column -->
         <ng-container matColumnDef="lastUpdate">
             <mat-header-cell *matHeaderCellDef> Dernière modification</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ formatLastModificationDate(element.lastModification) }} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{ formatDate(element.lastModification) }} </mat-cell>
         </ng-container>
 
         <!-- Export Column -->

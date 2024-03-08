@@ -8,6 +8,7 @@ import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/
 import { AuthService } from '@app/services/auth.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
+import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 
 @Component({
@@ -25,6 +26,7 @@ export class MainPageComponent {
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
+        private socketService: SocketService,
     ) {}
 
     openAdminDialog(): void {
@@ -53,6 +55,7 @@ export class MainPageComponent {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayer = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                this.socketService.connect();
                                 this.router.navigate(['/gameWait', lobby.id, newPlayer]);
                             },
                             error: (error) => {

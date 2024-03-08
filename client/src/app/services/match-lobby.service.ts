@@ -5,6 +5,8 @@ import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable } from 'rxjs';
+// import { SocketService } from './socket.service';
+// import { AnswerStateService } from './answer-state.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,6 +17,8 @@ export class MatchLobbyService {
     private apiUrl: string;
     constructor(
         private http: HttpClient,
+        // private answerStateService: AnswerStateService,
+        // private socketService: SocketService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/lobbies`;
@@ -25,15 +29,11 @@ export class MatchLobbyService {
     }
 
     getLobby(lobbyId: string): Observable<MatchLobby> {
-        return this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+        const a = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+        return a;
     }
 
     createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
-        // const player: Player = {
-        //     id: generateNewId(),
-        //     name: creatorName,
-        //     score: 0,
-        // };
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [],
@@ -42,6 +42,25 @@ export class MatchLobbyService {
             lobbyCode: generateLobbyId(),
             isLocked: false,
             hostId: generateNewId(),
+        };
+
+        return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
+    }
+
+    createTestLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
+        const player: Player = {
+            id: generateNewId(),
+            name: creatorName,
+            score: 0,
+        };
+        const lobby: MatchLobby = {
+            id: generateNewId(),
+            playerList: [player],
+            gameId,
+            bannedNames: [],
+            lobbyCode: generateLobbyId(),
+            isLocked: false,
+            hostId: '0',
         };
         return this.http.post<MatchLobby>(`${this.apiUrl}/`, lobby);
     }
@@ -55,7 +74,6 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: playerName,
             score: 0,
-            isLocked: false,
         };
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players`, player);
     }
