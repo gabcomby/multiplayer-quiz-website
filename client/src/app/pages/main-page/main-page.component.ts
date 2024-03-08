@@ -44,7 +44,7 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-        await this.joinGameValidation.getNameAndLobby(result.userName, result.lobbyCode);
+        await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
 
         if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");

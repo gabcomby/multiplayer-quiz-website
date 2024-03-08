@@ -101,4 +101,8 @@ export class MatchLobbyService {
     getBannedArray(lobbyId: string): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}/${lobbyId}/banned`);
     }
+
+    addToBannedArray(lobbyId: string, name: string): Observable<MatchLobby> {
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/banned`, { name });
+    }
 }
