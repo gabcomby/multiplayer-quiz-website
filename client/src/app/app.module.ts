@@ -36,6 +36,7 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
 import { HistogramComponent } from './components/histogram/histogram.component';
 import { ResultsViewComponent } from './pages/results-view/results-view.component';
 import { GameTimerPageComponent } from './pages/game-timer-page/game-timer-page.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -87,6 +88,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         DragDropModule,
         MatListModule,
         RouterModule,
+        NgxChartsModule,
     ],
     providers: [{ provide: API_BASE_URL, useValue: environment.serverUrl }],
     bootstrap: [AppComponent],

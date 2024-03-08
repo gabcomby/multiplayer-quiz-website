@@ -34,12 +34,6 @@ export class ResultsViewComponent implements OnInit {
         });
     }
 
-    // ngOnDestroy() {
-    //     this.gameService.finalResultsEmitter.unsubscribe();
-    //     this.gameService.answersSelected.unsubscribe();
-    //     this.gameService.questions.unsubscribe();
-    // }
-
     private sortDataSource() {
         this.dataSource.sort((a, b) => {
             if (b.score !== a.score) {

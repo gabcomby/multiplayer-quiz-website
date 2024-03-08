@@ -1,24 +1,20 @@
-<div class="palmares-container">
-    <mat-table [dataSource]="dataSource">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
-        </ng-container>
+<div class="container">
+    <div class="palmares-container">
+        <mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+            </ng-container>
 
-        <!-- Score Column -->
-        <ng-container matColumnDef="score">
-            <mat-header-cell *matHeaderCellDef> Score </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.score }} </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="score">
+                <mat-header-cell *matHeaderCellDef> Score </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.score }} </mat-cell>
+            </ng-container>
 
-        <!-- Define column order -->
-        <mat-header-row *matHeaderRowDef="['name', 'score']"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: ['name', 'score']"></mat-row>
-
-        <!-- Ajouter nombre de fois bonus -->
-    </mat-table>
-    <app-game-page-livechat class="live-chat"></app-game-page-livechat>
-
+            <mat-header-row *matHeaderRowDef="['name', 'score']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name', 'score']"></mat-row>
+        </mat-table>
+        <app-game-page-livechat class="live-chat"></app-game-page-livechat>
+    </div>
     <app-histogram [answersPlayer]="answersPlayerArray" [questionsGame]="questions"></app-histogram>
 </div>

@@ -13,6 +13,15 @@ export class HistogramComponent implements OnInit {
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
 
+    showXAxis: boolean = true;
+    showYAxis: boolean = true;
+    gradient: boolean = false;
+    showLegend: boolean = true;
+    showXAxisLabel: boolean = true;
+    yAxisLabel: string = 'Nombre de votes';
+    showYAxisLabel: boolean = true;
+    xAxisLabel: string = 'Choix de réponses';
+
     ngOnInit(): void {
         this.constructAnswerCounts();
         this.answerCounts.forEach((value, key) => {
