@@ -12,12 +12,13 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, Subscription, concatMap, firstValueFrom } from 'rxjs';
+import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
-const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+// const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -54,6 +55,8 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
+    subscription: Subscription;
+    // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
     // eslint-disable-next-line max-params
@@ -66,6 +69,7 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
+        private answerStateService: AnswerStateService, // private route: ActivatedRoute,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -244,33 +248,41 @@ export class GameService {
     }
     // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
-    initializeLobbyAndGame(lobbyId: string, playerId: string): void {
+    initializeLobbyAndGame(lobbyId: string, playerId: string): Subscription[] {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
         this.answerIdx = [];
         this.questionHasExpired = false;
-        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
-            next: (lobbyData) => {
-                this.lobbyData = lobbyData;
-                const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-                this.getGame(this.lobbyData.gameId).subscribe({
+        let currentPlayer: Player | undefined;
+        const arraySubscription: Subscription[] = [];
+
+        arraySubscription.push(
+            this.matchLobbyService
+                .getLobby(this.lobbyId)
+                .pipe(
+                    concatMap((lobbyData) => {
+                        this.lobbyData = lobbyData;
+                        currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                        this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
+                        return this.getGame(this.lobbyData.gameId);
+                    }),
+                )
+                .subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
-                        this.setupWebSocketEvents();
+
+                        this.setupWebSocketEvents(this.lobbyData, arraySubscription, currentPlayer);
+
                         this.socketService.startTimer();
                     },
                     error: (error) => {
-                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
                     },
-                });
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-            },
-        });
+                }),
+        );
+        return arraySubscription;
     }
 
     getCurrentQuestion(): Question {
@@ -291,26 +303,35 @@ export class GameService {
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
+    // allAnswerlocked(lobby: MatchLobby) {
+    //     console.log(lobby.playerList);
+    //     const allLocked = lobby.playerList.every((player) => player.isLocked === true);
+    //     if (allLocked) {
+    //         this.onTimerComplete();
+    //     }
+    // }
 
     handleGameLeave() {
-        this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
+        return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
             next: (data) => {
                 this.lobbyData = data;
-                if (this.lobbyData.playerList.length === 0) {
-                    this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                        next: () => {
-                            this.socketService.disconnect();
-                            this.router.navigate(['/new-game']);
-                        },
-                        error: (error) => {
-                            this.snackbarService.openSnackBar(
-                                `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
-                            );
-                        },
-                    });
-                } else {
-                    this.socketService.disconnect();
-                    this.router.navigate(['/new-game']);
+                if (data) {
+                    if (this.lobbyData.playerList === null || this.lobbyData.playerList.length === 0) {
+                        this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                            next: () => {
+                                this.socketService.disconnect();
+                                this.router.navigate(['/home']);
+                            },
+                            error: (error) => {
+                                this.snackbarService.openSnackBar(
+                                    `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
+                                );
+                            },
+                        });
+                    } else {
+                        this.socketService.disconnect();
+                        this.router.navigate(['/home']);
+                    }
                 }
             },
             error: (error) => {
@@ -318,26 +339,62 @@ export class GameService {
             },
         });
     }
-
-    private setupWebSocketEvents() {
-        this.socketService.connect();
+    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
                 this.onTimerComplete();
             }
         });
+
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
-        this.socketService.onAnswerVerification((data) => {
-            this.answerIsCorrect = data;
-            if (data === true) {
-                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
-            }
+
+        this.socketService.onDisconnect(() => {
+            this.handleGameLeave();
+        });
+        this.socketService.onPlayerDisconnect(() => {
+            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                next: () => {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+                },
+            });
+            this.snackbarService.openSnackBar('playerout');
+        });
+        this.socketService.onStopTimer(() => {
+            this.onTimerComplete();
+        });
+        if (currentPlayer) {
+            this.socketService.playerCreated(currentPlayer.id);
+            arraySubscription.push(this.checkAllAnswersLocker());
+            this.socketService.onAnswerVerification((data) => {
+                this.answerIsCorrect = data;
+                if (data === true) {
+                    this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points, currentPlayer?.score);
+                }
+            });
+        } else {
+            this.socketService.adminCreated(lobbyData.hostId);
+        }
+    }
+    private checkAllAnswersLocker(): Subscription {
+        return this.answerStateService.answerLocked.subscribe({
+            next: (isLocked) => {
+                // if (currentPlayer) {
+                //     currentPlayer.isLocked = true;
+                //     this.allAnswerlocked(lobbyData);
+                // }
+                if (isLocked) {
+                    this.socketService.answerSubmit();
+                }
+            },
         });
     }
-
     private onTimerComplete(): void {
         this.socketService.stopTimer();
         this.questionHasExpired = true;
@@ -346,10 +403,6 @@ export class GameService {
         if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
             setTimeout(() => {
                 this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
-        } else {
-            setTimeout(() => {
-                this.handleGameLeave();
             }, TIME_BETWEEN_QUESTIONS);
         }
     }
@@ -360,8 +413,8 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
+    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
             next: (data) => {
                 this.lobbyData = data;
             },
