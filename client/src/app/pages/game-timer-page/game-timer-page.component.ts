@@ -16,6 +16,7 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
     idLobby: string;
     idPlayer: string;
     subscriptionSubject: Subscription;
+    firstTimer: boolean;
 
     constructor(
         private socketService: SocketService,
@@ -24,6 +25,7 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         private gameService: GameService,
     ) {}
     ngOnInit() {
+        this.firstTimer = true;
         this.gameId = this.route.snapshot.params['id'];
         this.idLobby = this.route.snapshot.params['idLobby'];
         this.idPlayer = this.route.snapshot.params['idPlayer'];
@@ -36,7 +38,6 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         this.socketService.startTimer();
     }
     setupWebSocketEvents() {
-
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
@@ -48,7 +49,7 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
     }
 
     onTimerComplete(): void {
-        console.log(this.idLobby, this.idPlayer);
+        this.firstTimer = false;
         this.socketService.stopTimer();
         this.router.navigate(['/game', this.route.snapshot.params['idLobby'], this.route.snapshot.params['idPlayer']]);
     }

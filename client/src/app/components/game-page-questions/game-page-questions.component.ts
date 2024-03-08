@@ -84,7 +84,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.selectedChoices = [];
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
-        this.answerStateService.lockAnswer(this.answerIsLocked);
+        // this.answerStateService.lockAnswer(this.answerIsLocked);
     }
 
     private checkIfNumberValid(buttonPressed: string): boolean {

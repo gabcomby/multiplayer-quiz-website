@@ -92,4 +92,12 @@ export class SocketService {
             callback();
         });
     }
+    answerSubmit() {
+        this.socket.emit('answerSubmitted');
+    }
+    onStopTimer(callback: () => void) {
+        this.socket.on('stop-timer', () => {
+            callback();
+        });
+    }
 }

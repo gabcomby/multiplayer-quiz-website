@@ -18,7 +18,7 @@ import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
-const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+// const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -56,6 +56,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
+    // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
     // eslint-disable-next-line max-params
@@ -256,18 +257,12 @@ export class GameService {
         this.questionHasExpired = false;
         let currentPlayer: Player | undefined;
         const arraySubscription: Subscription[] = [];
-        this.matchLobbyService.getAllLobbies().subscribe({
-            next: (date) => {
-                console.log(date);
-            },
-        });
 
         arraySubscription.push(
             this.matchLobbyService
                 .getLobby(this.lobbyId)
                 .pipe(
                     concatMap((lobbyData) => {
-                        console.log(lobbyData);
                         this.lobbyData = lobbyData;
                         currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
                         this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
@@ -308,12 +303,13 @@ export class GameService {
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
-    allAnswerlocked(lobby: MatchLobby) {
-        const allLocked = lobby.playerList.every((player) => player.isLocked === true);
-        if (allLocked) {
-            this.onTimerComplete();
-        }
-    }
+    // allAnswerlocked(lobby: MatchLobby) {
+    //     console.log(lobby.playerList);
+    //     const allLocked = lobby.playerList.every((player) => player.isLocked === true);
+    //     if (allLocked) {
+    //         this.onTimerComplete();
+    //     }
+    // }
 
     handleGameLeave() {
         return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
@@ -354,23 +350,8 @@ export class GameService {
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
-        this.socketService.onAnswerVerification((data) => {
-            this.answerIsCorrect = data;
-            if (data === true) {
-                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
-            }
-        });
+
         this.socketService.onDisconnect(() => {
-            // console.log('adminOut');
-            // this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-            //     next: () => {
-            //         this.socketService.disconnect();
-            //         this.router.navigate(['/home']);
-            //     },
-            //     error: (error) => {
-            //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
-            //     },
-            // });
             this.handleGameLeave();
         });
         this.socketService.onPlayerDisconnect(() => {
@@ -383,23 +364,32 @@ export class GameService {
                     this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
                 },
             });
-            // this.handleGameLeave();
             this.snackbarService.openSnackBar('playerout');
+        });
+        this.socketService.onStopTimer(() => {
+            this.onTimerComplete();
         });
         if (currentPlayer) {
             this.socketService.playerCreated(currentPlayer.id);
-            arraySubscription.push(this.checkAllAnswersLocker(currentPlayer, lobbyData));
+            arraySubscription.push(this.checkAllAnswersLocker());
+            this.socketService.onAnswerVerification((data) => {
+                this.answerIsCorrect = data;
+                if (data === true) {
+                    this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points, currentPlayer?.score);
+                }
+            });
         } else {
             this.socketService.adminCreated(lobbyData.hostId);
         }
     }
-    private checkAllAnswersLocker(currentPlayer: Player, lobbyData: MatchLobby): Subscription {
+    private checkAllAnswersLocker(): Subscription {
         return this.answerStateService.answerLocked.subscribe({
-            next: (isLocked) => {
-                if (currentPlayer) {
-                    currentPlayer.isLocked = isLocked;
-                    this.allAnswerlocked(lobbyData);
-                }
+            next: () => {
+                // if (currentPlayer) {
+                //     currentPlayer.isLocked = true;
+                //     this.allAnswerlocked(lobbyData);
+                // }
+                this.socketService.answerSubmit();
             },
         });
     }
@@ -412,10 +402,6 @@ export class GameService {
             setTimeout(() => {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
-        } else {
-            setTimeout(() => {
-                this.handleGameLeave();
-            }, TIME_BETWEEN_QUESTIONS);
         }
     }
 
@@ -425,8 +411,8 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
+    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
             next: (data) => {
                 this.lobbyData = data;
             },

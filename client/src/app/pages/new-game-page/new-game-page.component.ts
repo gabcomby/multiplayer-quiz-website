@@ -124,7 +124,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         }
     }
     backHome() {
-        console.log('hello');
         this.socketService.disconnect();
     }
 

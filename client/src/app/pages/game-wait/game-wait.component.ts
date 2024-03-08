@@ -55,7 +55,7 @@ export class GameWaitComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscribeSubject.unsubscribe();
     }
-    backHome(){
+    backHome() {
         this.socketService.disconnect();
         this.router.navigate(['/home']);
     }

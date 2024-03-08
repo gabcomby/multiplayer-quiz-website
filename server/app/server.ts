@@ -19,6 +19,7 @@ export class Server {
         isRunning: false,
         idAdmin: '',
         player: new Map(),
+        answersLocked: 0,
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -41,7 +42,6 @@ export class Server {
         });
 
         this.io.on('connection', (socket) => {
-            console.log('socket connected : ', socket.id);
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
             });
@@ -85,6 +85,13 @@ export class Server {
                     this.room.currentTime = this.room.duration;
                 }
             });
+            socket.on('answerSubmitted', () => {
+                this.room.answersLocked += 1;
+                if (this.room.answersLocked === this.room.player.size + 1) {
+                    this.room.answersLocked = 0;
+                    this.io.emit('stop-timer');
+                }
+            });
 
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
                 if (answerIdx.length === 0) {
@@ -92,17 +99,19 @@ export class Server {
                     return;
                 }
 
-                const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-                const isMultipleAnswer = totalCorrectChoices > 1;
+                if (socket.id) {
+                    const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+                    const isMultipleAnswer = totalCorrectChoices > 1;
 
-                const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
+                    const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
-                if (!isMultipleAnswer) {
-                    this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
-                } else {
-                    const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
-                    const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                    this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                    if (!isMultipleAnswer) {
+                        this.io.emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                    } else {
+                        const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+                        const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+                        this.io.emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                    }
                 }
             });
             socket.on('start', () => {
@@ -111,7 +120,6 @@ export class Server {
                 }
             });
             socket.on('disconnect', () => {
-                console.log('socket disconnected : ', socket.id);
                 if (this.room) {
                     if (this.room.idAdmin === socket.id) {
                         this.io.emit('adminDisconnected', socket.id);

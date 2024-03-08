@@ -56,7 +56,6 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: playerName,
             score: 0,
-            isLocked: false,
         };
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players`, player);
     }
