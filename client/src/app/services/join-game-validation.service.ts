@@ -1,41 +1,43 @@
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
 import { BehaviorSubject } from 'rxjs';
 import { MatchLobbyService } from './match-lobby.service';
-import { getLocaleNumberSymbol } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class JoinGameValidationService {
     private isAuthenticated = new BehaviorSubject<boolean>(false);
-    private apiUrl: string;
     private bannedNames: string[];
+    private name: string;
+    private lobby: string;
     constructor(
-        private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
         private matchLobbyService: MatchLobbyService,
     ) {
-        this.apiUrl = `${apiBaseURL}`;
+        this.bannedNames = [];
     }
     checkIfHost(): boolean {
         return this.isAuthenticated.value;
     }
-    getBannedNames(lobby: string): string[] {
-        this.matchLobbyService.getBannedArray(lobby).subscribe((names) => {
+    getBannedNames(): string[] {
+        this.matchLobbyService.getBannedArray(this.lobby).subscribe((names) => {
             names.forEach((element) => {
                 this.bannedNames.push(element);
             });
         });
         return this.bannedNames;
     }
-    isBanned(name: string, lobby: string) {
-        this.getBannedNames(lobby);
-        this.bannedNames.forEach((elem) => {
-            if (elem === name) {
+    isBanned(): boolean {
+        const bannedNames = this.getBannedNames();
+        for (const name of bannedNames) {
+            if (name === this.name) {
                 return true;
-            } else {
-                return false;
             }
-        });
+        }
+
+        return false;
+    }
+    async getNameAndLobby(namePlayer: string, lobbyNum: string) {
+        this.name = namePlayer;
+        this.lobby = lobbyNum;
     }
 }
