@@ -13,7 +13,6 @@ import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-
 export class GamePageComponent implements OnInit, OnDestroy {
     endGame = false;
     isHost: boolean;
@@ -124,7 +123,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                     this.lobby = lobby;
                 },
             });
-         this.gameService.finalResultsEmitter.subscribe(() => {
+        this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
         });
     }
