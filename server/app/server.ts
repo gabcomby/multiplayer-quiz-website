@@ -38,6 +38,7 @@ export class Server {
             },
         });
 
+        // TODO: Move this into the "connect" event
         this.io.on('connection', (socket) => {
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
