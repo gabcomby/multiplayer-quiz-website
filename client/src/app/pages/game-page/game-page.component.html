@@ -20,9 +20,9 @@
     <div  *ngIf="!isHost" class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
-    <div class="question">
+    <div class="question" *ngIf="!endGame">
         <app-game-page-questions
-            [question]="currentQuestion.text || '' "
+            [question]="currentQuestion.text || ''"
             [mark]="currentQuestion.points || 0"
             [choices]="currentQuestion.choices || []"
             [timerExpired]="questionHasExpiredValue"
@@ -30,6 +30,8 @@
             [answerIsCorrect]="answerIsCorrectValue"
         ></app-game-page-questions>
     </div>
+    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
+
     <div class="score" *ngIf="lobby">
         <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
     </div>

@@ -14,6 +14,7 @@ import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit, OnDestroy {
+    endGame = false;
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
@@ -70,6 +71,17 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     // REFACTOR DONE
+
+    // ngOnDestroy(): void {
+    //     this.gameService.finalResultsEmitter.unsubscribe();
+    // }
+    // allAnswerlocked() {
+    //     this.answerStateService.answerLocked.subscribe((locked) => {
+    //         this.currentPlayer.isLocked = locked;
+    //         if (locked === true) {
+    //             this.answerStateService.allLocked += 1;
+    //         }
+    //     });
     // ngOnInit() {
     //     this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
     //         this.route.snapshot.params['lobbyId'],
@@ -111,6 +123,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
                     this.lobby = lobby;
                 },
             });
+        this.gameService.finalResultsEmitter.subscribe(() => {
+            this.endGame = true;
+        });
     }
     ngOnDestroy() {
         this.destroy.next();

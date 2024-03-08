@@ -8,11 +8,11 @@ import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 
 import { Router } from '@angular/router';
-import type { Game, Question } from '@app/interfaces/game';
+import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, Subscription, concatMap, firstValueFrom } from 'rxjs';
+import { Observable, Subscription, concatMap, ReplaySubject, firstValueFrom } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -25,6 +25,13 @@ const TIME_BETWEEN_QUESTIONS = 3000;
 })
 export class GameService {
     // private apiUrl: string;
+    finalResultsEmitter = new ReplaySubject<Player[]>(1);
+    answersSelected = new ReplaySubject<AnswersPlayer>(1);
+
+    questionGame = new ReplaySubject<Question[]>(1);
+    questions: Question[] = [];
+
+    playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
     timerCountdown: number;
@@ -55,6 +62,7 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
+    endGame = false;
     subscription: Subscription;
     // isLocked: number;
     private minDuration: number;
@@ -131,6 +139,11 @@ export class GameService {
 
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+    }
+
+    calculateFinalResults(): void {
+        const finalResults: Player[] = this.playerListFromLobby;
+        this.finalResultsEmitter.next(finalResults);
     }
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
@@ -404,10 +417,22 @@ export class GameService {
             setTimeout(() => {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
+        } else {
+            this.questions.push(this.currentQuestion);
+            this.questionGame.next(this.questions);
+            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+            this.answersSelected.next(this.playerChoice);
+            this.calculateFinalResults();
+            // setTimeout(() => {
+            //     this.handleGameLeave();
+            // }, TIME_BETWEEN_QUESTIONS);
         }
     }
 
     private handleNextQuestion(): void {
+        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        this.answersSelected.next(this.playerChoice);
+        this.questions.push(this.currentQuestion);
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

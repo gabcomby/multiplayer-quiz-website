@@ -12,7 +12,7 @@ import { ModifyQuestionQbankComponent } from '@app/pages/modify-question-qbank/m
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { NewQuestionQbankComponent } from '@app/pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from '@app/pages/question-bank/question-bank.component';
-import { ResultsViewComponent } from '@app/components/results-view/results-view.component';
+import { ResultsViewComponent } from '@app/pages/results-view/results-view.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
