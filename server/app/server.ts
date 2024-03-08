@@ -42,7 +42,6 @@ export class Server {
 
         this.io.on('connection', (socket) => {
             console.log('socket connected : ', socket.id);
-            // console.log(socket.handshake);
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
             });

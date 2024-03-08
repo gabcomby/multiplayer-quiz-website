@@ -12,7 +12,7 @@ import type { Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, Subscription, firstValueFrom, switchMap } from 'rxjs';
+import { Observable, Subscription, concatMap, firstValueFrom } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -256,35 +256,18 @@ export class GameService {
         this.questionHasExpired = false;
         let currentPlayer: Player | undefined;
         const arraySubscription: Subscription[] = [];
-        // this.matchLobbyService.getLobby(this.lobbyId).subscribe({
-        //     next: (lobbyData) => {
-        //         this.lobbyData = lobbyData;
-        //         const currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-        //         this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-        //         this.getGame(this.lobbyData.gameId).subscribe({
-        //             next: (gameData) => {
-        //                 this.gameData = gameData;
-        //                 if (currentPlayer) {
-        //                     this.setupWebSocketEvents(lobbyData, currentPlayer);
-        //                 } else {
-        //                     this.setupWebSocketEvents(lobbyData);
-        //                 }
-        //                 this.socketService.startTimer();
-        //             },
-        //             error: (error) => {
-        //                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant la partie: ${error}`);
-        //             },
-        //         });
-        //     },
-        //     error: (error) => {
-        //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-        //     },
-        // });
+        this.matchLobbyService.getAllLobbies().subscribe({
+            next: (date) => {
+                console.log(date);
+            },
+        });
+
         arraySubscription.push(
             this.matchLobbyService
                 .getLobby(this.lobbyId)
                 .pipe(
-                    switchMap((lobbyData) => {
+                    concatMap((lobbyData) => {
+                        console.log(lobbyData);
                         this.lobbyData = lobbyData;
                         currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
                         this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
@@ -341,7 +324,7 @@ export class GameService {
                         this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                             next: () => {
                                 this.socketService.disconnect();
-                                this.router.navigate(['/new-game']);
+                                this.router.navigate(['/home']);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar(
@@ -351,7 +334,7 @@ export class GameService {
                         });
                     } else {
                         this.socketService.disconnect();
-                        this.router.navigate(['/new-game']);
+                        this.router.navigate(['/home']);
                     }
                 }
             },
@@ -361,7 +344,6 @@ export class GameService {
         });
     }
     private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-        // this.socketService.connect();
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
@@ -379,13 +361,27 @@ export class GameService {
             }
         });
         this.socketService.onDisconnect(() => {
-            this.socketService.disconnect();
-            this.router.navigate(['/home']);
+            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                next: () => {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+                },
+            });
         });
         this.socketService.onPlayerDisconnect(() => {
-            this.socketService.disconnect();
+            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                next: () => {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+                },
+            });
             this.snackbarService.openSnackBar('playerout');
-            this.router.navigate(['/home']);
         });
         if (currentPlayer) {
             this.socketService.playerCreated(currentPlayer.id);

@@ -29,15 +29,11 @@ export class MatchLobbyService {
     }
 
     getLobby(lobbyId: string): Observable<MatchLobby> {
-        return this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+        const a = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+        return a;
     }
 
     createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
-        // const player: Player = {
-        //     id: generateNewId(),
-        //     name: creatorName,
-        //     score: 0,
-        // };
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [],

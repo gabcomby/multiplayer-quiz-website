@@ -95,6 +95,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
     // }
 
     ngOnInit() {
+        console.log(this.route.snapshot.params['lobbyId']);
+        console.log(this.route.snapshot.params['playerId']);
+
         from(
             (this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
                 this.route.snapshot.params['lobbyId'],
