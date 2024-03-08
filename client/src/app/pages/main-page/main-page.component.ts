@@ -10,6 +10,7 @@ import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 
 @Component({
     selector: 'app-main-page',
@@ -26,6 +27,7 @@ export class MainPageComponent {
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
+        private joinGameValidation: JoinGameValidationService,
         private socketService: SocketService,
     ) {}
 
@@ -42,6 +44,7 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
+        await this.joinGameValidation.getNameAndLobby(result.userName, result.lobbyCode);
 
         if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");

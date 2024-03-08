@@ -1,21 +1,23 @@
 /* eslint max-lines: off */
-/*
-import { HttpClientModule } from '@angular/common/http';
+/* import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog'; // MatDialogModule,
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'; // MatDialogModule,
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { of } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { NewGamePageComponent } from './new-game-page.component';
 
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
+    // let matchLobbyServiceSpy: jasmine.SpyObj<MatchLobbyService>;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let socketSpy: jasmine.SpyObj<Socket>;
@@ -116,6 +118,18 @@ describe('NewGamePageComponent', () => {
             questions: [],
         },
     ];
+    const matchLobbyMock = {
+        id: 'matchLobby1',
+        playerList: [
+            { id: 'host1', name: 'TestUser', score: 0, isLocked: false },
+            { id: 'player2', name: 'TestUser2', score: 0, isLocked: false },
+        ],
+        gameId: 'game1',
+        bannedNames: ['allo'],
+        lobbyCode: '1234',
+        isLocked: false,
+        hostId: 'host1',
+    };
     const gameSelectedMock = {
         un: true,
     };
@@ -123,8 +137,10 @@ describe('NewGamePageComponent', () => {
         un: true,
         deux: false,
     };
-    const dialogRefMock = {
-        close: jasmine.createSpy('close'),
+    /* const dialogMock = {
+        open: () => {
+            return { afterClosed: () => of(true) };
+        },
     };
     beforeEach(async () => {
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames']);
@@ -132,6 +148,9 @@ describe('NewGamePageComponent', () => {
         const socketObj = jasmine.createSpyObj('SocketService', ['connect', 'deleteId']);
         const socketIoObj = jasmine.createSpyObj('Socket', ['on']);
         const routerObj = jasmine.createSpyObj('Router', ['navigate']);
+        const matchLobbyServiceObj = jasmine.createSpyObj('MatchLobbyService', ['getAllLobbies']);
+        const matDialogObj = jasmine.createSpyObj('MatDialog', ['open', 'close']);
+        const dialogRefMock = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
         await TestBed.configureTestingModule({
             declarations: [NewGamePageComponent],
             providers: [
@@ -142,7 +161,10 @@ describe('NewGamePageComponent', () => {
                 { provide: SnackbarService, useValue: snackbarObj },
                 { provide: Socket, useValue: socketIoObj },
                 { provide: Router, useValue: routerObj },
+                { provide: MatchLobbyService, useValue: matchLobbyServiceObj },
                 { provide: MatDialogRef, useValue: dialogRefMock },
+                { provide: MatDialog, useValue: matDialogObj },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
             imports: [HttpClientModule, MatIconModule, MatToolbarModule],
         }).compileComponents();
@@ -154,6 +176,8 @@ describe('NewGamePageComponent', () => {
         socketSpy = TestBed.inject(Socket) as jasmine.SpyObj<Socket>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+        // matDialogSpy = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+        // matchLobbyServiceSpy = TestBed.inject(MatchLobbyService) as jasmine.SpyObj<MatchLobbyService>;
     });
     it('should create', () => {
         expect(component).toBeTruthy();
@@ -226,8 +250,6 @@ describe('NewGamePageComponent', () => {
         component.games = gamesMockIsVisibleTrue;
         component.deletedGamesId = deletedGamesIdMock;
         gameServiceSpy.getGames.and.resolveTo(gamesMockIsVisibleTrue);
-        // component.ngOnInit(); je pense que le probleme vient du deploiement a voir avec acces a internet
-        // jasmine.createSpyObj('page', ['ngOnInit']);
         component.gameSelected = gameSelectedMockTestModified;
         await component.isTheGameModifiedTest(gamesMock[0]);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
@@ -241,12 +263,15 @@ describe('NewGamePageComponent', () => {
         const deletedGamesIdMock = ['deux'];
         component.games = gamesMockTrueTrue;
         component.deletedGamesId = deletedGamesIdMock;
-        gameServiceSpy.getGames.and.resolveTo(gamesMockTrueTrue);
-        await component.isTheGameModifiedTest(gamesMockTrueTrue[1]);
-        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
-            'Game ' + gamesMockTrueTrue[1].title + ' has been deleted' + ' we suggest to play ' + gamesMockTrueTrue[0].title,
-        );
-        expect(gameServiceSpy.getGames).toHaveBeenCalled();
+        gameServiceSpy.getGames.and.returnValue(Promise.resolve([gamesMockTrueTrue[1]]));
+        spyOn(component, 'isTheGameModified').and.returnValue(Promise.resolve(false));
+        spyOn(component, 'createNewMatchLobby').and.returnValue(of(matchLobbyMock));
+        component.createNewMatchLobby('TestUser', gamesMockTrueTrue[1].id).subscribe();
+        const dialogRefMock = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+        dialogRefMock.afterClosed.and.returnValue(of(true));
+        const result = await component.isTheGameModifiedPlay(gamesMockTrueTrue[1]);
+        expect(result).toBeFalse();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/gameWait', 'matchLobbyId', 'hostId']);
     });
     it('should return false if game is deleted first game', async () => {
         const deletedGamesIdMock = ['un'];
