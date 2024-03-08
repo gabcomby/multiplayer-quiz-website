@@ -97,4 +97,8 @@ export class MatchLobbyService {
     getLobbyByCode(lobbyCode: string): Observable<MatchLobby> {
         return this.http.get<MatchLobby>(`${this.apiUrl}/joinLobby/${lobbyCode}`);
     }
+
+    getBannedArray(lobbyId: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/${lobbyId}/banned`);
+    }
 }
