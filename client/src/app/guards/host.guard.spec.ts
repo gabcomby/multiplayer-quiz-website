@@ -4,14 +4,13 @@ import { CanActivateFn } from '@angular/router';
 import { hostGuard } from './host.guard';
 
 describe('hostGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) => 
-      TestBed.runInInjectionContext(() => hostGuard(...guardParameters));
+    const executeGuard: CanActivateFn = async (...guardParameters) => TestBed.runInInjectionContext(async () => hostGuard(...guardParameters));
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+    });
 
-  it('should be created', () => {
-    expect(executeGuard).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(executeGuard).toBeTruthy();
+    });
 });
