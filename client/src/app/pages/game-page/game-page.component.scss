@@ -1,7 +1,9 @@
+@use 'sass:math';
+
 $base-font-size: 16;
 
 @function px-to-em($pixels, $context: $base-font-size) {
-    @return #{$pixels / $context}em;
+    @return math.div($pixels, $context) * 1em;
 }
 
 #menu-bar {
