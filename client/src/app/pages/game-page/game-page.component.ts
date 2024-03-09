@@ -1,28 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnDestroy {
     endGame = false;
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     private destroy = new Subject<void>();
-    constructor(
-        private route: ActivatedRoute,
-        private gameService: GameService,
-        private matchLobbyService: MatchLobbyService,
-    ) {}
+    constructor(private gameService: GameService) {}
 
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
@@ -68,7 +62,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gameService.setAnswerIndex(answerIdx);
     }
 
-    ngOnInit() {
+    /* ngOnInit() {
         from(
             (this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
                 this.route.snapshot.params['lobbyId'],
@@ -88,7 +82,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
         });
-    }
+    } */
     ngOnDestroy() {
         this.destroy.next();
         this.destroy.complete();

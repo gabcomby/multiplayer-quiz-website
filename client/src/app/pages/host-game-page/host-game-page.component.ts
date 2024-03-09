@@ -1,26 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-host-game-page',
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnInit {
+export class HostGamePageComponent {
     endGame = false;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
-    private destroy = new Subject<void>();
-    constructor(
-        private route: ActivatedRoute,
-        private matchLobbyService: MatchLobbyService,
-        private gameService: GameService,
-    ) {}
+
+    constructor(private gameService: GameService) {}
 
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
@@ -50,7 +44,7 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.getCurrentQuestion();
     }
 
-    ngOnInit() {
+    /* ngOnInit() {
         from((this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'])))
             .pipe(
                 concatMap(() => this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId'])),
@@ -64,5 +58,5 @@ export class HostGamePageComponent implements OnInit {
         this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
         });
-    }
+    }*/
 }

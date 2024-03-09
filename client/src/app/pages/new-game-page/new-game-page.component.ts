@@ -5,7 +5,6 @@ import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/pl
 import { Game } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -34,7 +33,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         private matchLobbyService: MatchLobbyService,
         private dialog: MatDialog,
         private apiService: ApiService,
-        private gameService: GameService,
     ) {}
 
     async ngOnInit() {
@@ -154,7 +152,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
                 next: (matchLobby) => {
                     this.socketService.connect();
                     this.socketService.createRoom(matchLobby.lobbyCode);
-                    this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
+                    // this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
                     this.router.navigate(['/gameWait']);
                 },
                 error: (error) => {

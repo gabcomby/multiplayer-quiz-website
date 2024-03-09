@@ -13,8 +13,6 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { AnswerStateService } from './answer-state.service';
-import { GameSocketService } from './game-socket.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -75,8 +73,6 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService,
-        private gameSocketService: GameSocketService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -239,7 +235,7 @@ export class GameService {
 
     // TODO: split this logic in two different methods to handle the different cases
     // When there is an host and when there is players
-    initializeLobbyAndGame(lobbyId: string, playerId: string): void {
+    /* initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
@@ -267,7 +263,7 @@ export class GameService {
                 });
             },
         });
-    }
+    } */
 
     getCurrentQuestion(): Question {
         if (this.gameData.questions.length > 0) {
@@ -390,7 +386,7 @@ export class GameService {
     //     }
     // }
 
-    private checkAllAnswersLocker(): Subscription {
+    /* private checkAllAnswersLocker(): Subscription {
         return this.answerStateService.answerLocked.subscribe({
             next: (isLocked) => {
                 if (isLocked) {
@@ -398,7 +394,7 @@ export class GameService {
                 }
             },
         });
-    }
+    } */
 
     private handleNextQuestion(): void {
         if (this.currentPlayerId !== this.lobbyData.hostId) {
@@ -411,7 +407,7 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
+    /* private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
         this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
             next: (data) => {
                 this.lobbyData = data;
@@ -420,5 +416,5 @@ export class GameService {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
             },
         });
-    }
+    } */
 }
