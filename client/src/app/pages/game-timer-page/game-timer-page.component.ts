@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./game-timer-page.component.scss'],
 })
 export class GameTimerPageComponent implements OnInit, OnDestroy {
+    isHost: boolean;
     gameId: string;
     timerCountdown: number;
     gameTitle: string;
@@ -29,6 +30,9 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         this.gameId = this.route.snapshot.params['id'];
         this.idLobby = this.route.snapshot.params['idLobby'];
         this.idPlayer = this.route.snapshot.params['idPlayer'];
+
+        this.isHost = history.state.isHost || false;
+
         this.subscriptionSubject = this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameTitle = data.title;
@@ -51,7 +55,11 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
     onTimerComplete(): void {
         this.firstTimer = false;
         this.socketService.stopTimer();
-        this.router.navigate(['/game', this.route.snapshot.params['idLobby'], this.route.snapshot.params['idPlayer']]);
+        if (this.isHost) {
+            this.router.navigate(['/host-game-page', this.route.snapshot.params['idLobby']]);
+        } else {
+            this.router.navigate(['/game', this.route.snapshot.params['idLobby'], this.route.snapshot.params['idPlayer']]);
+        }
     }
     ngOnDestroy() {
         this.subscriptionSubject.unsubscribe();
