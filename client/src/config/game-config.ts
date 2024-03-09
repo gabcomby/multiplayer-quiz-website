@@ -1,0 +1,1 @@
+export const TIME_BETWEEN_QUESTIONS = 3000;
