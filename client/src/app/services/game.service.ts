@@ -267,6 +267,8 @@ export class GameService {
     }
     // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
+    // TODO: split this logic in two different methods to handle the different cases
+    // When there is an host and when there is players
     initializeLobbyAndGame(lobbyId: string, playerId: string): Subscription[] {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
@@ -304,14 +306,15 @@ export class GameService {
         return arraySubscription;
     }
 
+    // TODO:  REMOVE
     initializeHostGame(lobbyId: string): Subscription[] {
         this.lobbyId = lobbyId;
-        this.currentPlayerId = playerId;
+        // this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
         this.answerIdx = [];
         this.questionHasExpired = false;
-        let currentPlayer: Player | undefined;
+
         const arraySubscription: Subscription[] = [];
 
         arraySubscription.push(
@@ -328,7 +331,6 @@ export class GameService {
                         this.gameData = gameData;
 
                         this.setupWebSocketEvents(this.lobbyData, arraySubscription);
-
                         this.socketService.startTimer();
                     },
                     error: (error) => {
