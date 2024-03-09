@@ -120,6 +120,14 @@ export class Server {
             });
 
             // HAS ROOMS
+            socket.on('new-player', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.io.to(roomsArray[1]).emit('new-player-connected');
+                }
+            });
+
+            // HAS ROOMS
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
                 const roomsArray = Array.from(socket.rooms);
                 const roomId = roomsArray[1];
