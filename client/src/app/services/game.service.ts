@@ -17,6 +17,8 @@ import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
+const TIME_BETWEEN_QUESTIONS = 3000;
+
 @Injectable({
     providedIn: 'root',
 })
