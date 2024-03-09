@@ -5,6 +5,8 @@ export interface IChoice extends Document {
     isCorrect?: boolean;
 }
 
+export interface AnswersPlayer extends Map<string, number[]> {}
+
 export interface IQuestion extends Document {
     type: string;
     text: string;
