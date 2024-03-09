@@ -18,13 +18,11 @@ import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
-// const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    // private apiUrl: string;
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer>(1);
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
@@ -62,12 +60,9 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
-    // endGame = false;
     subscription: Subscription;
-    // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
-    // private playerAnswerCount = 0;
     // eslint-disable-next-line max-params
     constructor(
         private apiService: ApiService,
@@ -78,7 +73,7 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService, // private route: ActivatedRoute,
+        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
