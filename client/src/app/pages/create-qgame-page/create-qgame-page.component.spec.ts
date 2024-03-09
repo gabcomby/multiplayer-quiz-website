@@ -6,13 +6,12 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import { Game, Question } from '@app/interfaces/game';
+import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-// import * as gameUtilsModule from '@app/utils/is-valid-game';
-import { API_BASE_URL } from '@app/app.module';
-import { ApiService } from '@app/services/api.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -170,7 +169,6 @@ describe('CreateQGamePageComponent', () => {
         expect(component.modifiedQuestion).toBeFalse();
         expect(component.games).toEqual([]);
         expect(component.dataReady).toBeFalse();
-        // expect(component.gamesFromDB).toEqual([]);
     });
 
     it('initialize forms controls', () => {
@@ -263,70 +261,14 @@ describe('CreateQGamePageComponent', () => {
     });
 
     it('should call createNewGame from service when onSubmit', async () => {
-        // spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        // component.gameForm = new FormGroup({
-        //     name: new FormControl('allo'),
-        //     description: new FormControl('chose'),
-        //     time: new FormControl('10'),
-        // });
-        // spyOn(component, 'createNewGame');
-        // await component.onSubmit();
-        // fixture.detectChanges();
-        // expect(component.createNewGame).toHaveBeenCalled();
         gameServiceSpy.gameValidationWhenModified.and.returnValue(Promise.resolve(true));
 
         await component.onSubmit();
-        // expect(gameServiceSpy.createNewGame).toHaveBeenCalled();
+
         expect(routerSpy.navigate).toHaveBeenCalled();
     });
-    // it('should create new game when calling createNewGame', () => {
-    //     component.gameForm = new FormGroup({
-    //         name: new FormControl(''),
-    //         description: new FormControl(''),
-    //         visibility: new FormControl(''),
-    //         time: new FormControl(''),
-    //     });
-    //     const MAGIC_NUMB = 10;
-    //     component.gameForm.controls['name'].setValue('Test Game');
-    //     component.gameForm.controls['description'].setValue('Test Description');
-    //     component.gameForm.controls['time'].setValue(MAGIC_NUMB);
 
-    //     const newGame = component.createNewGame(true);
-    //     expect(newGame).toBeTruthy();
-    //     expect(newGame.id).toBeDefined();
-    //     expect(newGame.title).toBe('Test Game');
-    //     expect(newGame.description).toBe('Test Description');
-    //     expect(newGame.duration).toBe(MAGIC_NUMB);
-    //     expect(newGame.lastModification).toBeInstanceOf(Date);
-    //     expect(newGame.questions).toEqual(questionServiceSpy.getQuestion());
-    // });
-
-    // it('should call gameValidationWhenModified when gameID is not null in onSubmit', async () => {
-    //     // spyOn(component, 'gameValidationWhenModified');
-    //     await component.onSubmit().then(async () => {
-    //         expect(component.gameId).toBe('123');
-    //         fixture.detectChanges();
-    //         expect(component.gameValidationWhenModified).toHaveBeenCalled();
-    //     });
-    // });
-    // it('should call patch when gameID is not null and validateDeletedGame return true in gameValidationModified', async () => {
-    //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-    //     gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(true));
-    //     gameServiceSpy.gameValidationWhenModified.then(() => {
-    //         fixture.detectChanges();
-    //         expect(gameServiceSpy.patchGame).toHaveBeenCalled();
-    //     });
-    // });
-    // it('should call createGame when gameID is not null and validateDeletedGame return false in gameValidationModified', async () => {
-    //     spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-    //     gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(false));
-    //     await gameServiceSpy.gameValidationWhenModified().then(async () => {
-    //         fixture.detectChanges();
-    //         expect(gameServiceSpy.createGame).toHaveBeenCalled();
-    //     });
-    // });
     it('should throw error if submitting with the server down', async () => {
-        // spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
         gameServiceSpy.gameValidationWhenModified.and.throwError('error');
         try {
             await component.onSubmit();

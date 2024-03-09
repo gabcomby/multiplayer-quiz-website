@@ -100,7 +100,7 @@ describe('GamePageQuestionsComponent', () => {
     });
 
     it('should call resetAnswerState when choices change', () => {
-        spyOn(component, 'resetAnswerState'); // Spy on the resetAnswerState method
+        spyOn(component, 'resetAnswerState');
         const newChoices = [
             { text: 'Paris', isCorrect: true },
             { text: 'London', isCorrect: false },
@@ -108,6 +108,6 @@ describe('GamePageQuestionsComponent', () => {
         component.ngOnChanges({
             choices: new SimpleChange([], newChoices, false),
         });
-        expect(component.resetAnswerState).toHaveBeenCalled(); // Verify resetAnswerState was called
+        expect(component.resetAnswerState).toHaveBeenCalled();
     });
 });

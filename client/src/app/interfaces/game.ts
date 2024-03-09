@@ -15,10 +15,6 @@ export interface Choice {
 
 export interface AnswersPlayer extends Map<string, number[]> {}
 
-// export interface AnswersPlayer {
-//     [question: string]: number[];
-// }
-
 export interface Question {
     type: string;
     text: string;

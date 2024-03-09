@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { Choice } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation.service';
-import { SnackbarService } from '@app/services/snackbar.service';
 import { QuestionService } from '@app/services/question.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 
 const MAX_CHOICES = 4;
 @Component({
@@ -52,22 +52,6 @@ export class ChoiceComponent implements OnInit {
             this.snackbarService.openSnackBar('Minimum 2 choix');
         }
     }
-
-    // moveQuestionUp(index: number, choices: Choice[]): void {
-    //     if (index > 0) {
-    //         const temp = choices[index];
-    //         choices[index] = choices[index - 1];
-    //         choices[index - 1] = temp;
-    //     }
-    // }
-
-    // moveQuestionDown(index: number, choices: Choice[]): void {
-    //     if (index < choices.length - 1) {
-    //         const temp = choices[index];
-    //         choices[index] = choices[index + 1];
-    //         choices[index + 1] = temp;
-    //     }
-    // }
 
     addAnswer() {
         if (this.questionValidationService.verifyOneGoodAndBadAnswer(this.answers)) {
