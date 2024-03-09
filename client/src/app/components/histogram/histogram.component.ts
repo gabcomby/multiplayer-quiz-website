@@ -26,8 +26,6 @@ export class HistogramComponent implements OnInit {
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
     ngOnInit(): void {
-        // console.log(this.answersPlayer);
-        // console.log(this.questionsGame);
         this.constructAnswerCounts();
         this.answerCounts.forEach((value, key) => {
             this.answerCountsArray.push({ key, value });

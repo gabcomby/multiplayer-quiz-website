@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-// import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Subject, Subscription, concatMap, from, takeUntil } from 'rxjs';
@@ -70,42 +69,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gameService.setAnswerIndex(answerIdx);
     }
 
-    // REFACTOR DONE
-
-    // ngOnDestroy(): void {
-    //     this.gameService.finalResultsEmitter.unsubscribe();
-    // }
-    // allAnswerlocked() {
-    //     this.answerStateService.answerLocked.subscribe((locked) => {
-    //         this.currentPlayer.isLocked = locked;
-    //         if (locked === true) {
-    //             this.answerStateService.allLocked += 1;
-    //         }
-    //     });
-    // ngOnInit() {
-    //     this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
-    //         this.route.snapshot.params['lobbyId'],
-    //         this.route.snapshot.params['playerId'],
-    //     );
-    //     // this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId']).subscribe({
-    //     //     next: (lobby) => {
-    //     //         this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
-    //     //         this.lobby = lobby;
-    //     //         console.log(this.lobby);
-    //     //     },
-    //     // });
-    //     this.matchLobbyService
-    //         .getLobby(this.route.snapshot.params['lobbyId'])
-    //         .pipe(takeUntil(this.destroy))
-    //         .subscribe({
-    //             next: (lobby) => {
-    //                 this.isHost = this.route.snapshot.params['playerId'] === lobby.hostId;
-    //                 this.lobby = lobby;
-    //                 console.log(this.lobby);
-    //             },
-    //         });
-    // }
-
     ngOnInit() {
         from(
             (this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(
@@ -126,9 +89,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
         });
-        // this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
-        //     console.log(answer);
-        // });
     }
     ngOnDestroy() {
         this.destroy.next();

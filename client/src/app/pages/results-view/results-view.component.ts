@@ -28,10 +28,6 @@ export class ResultsViewComponent implements OnInit {
     }
 
     async ngOnInit() {
-        // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-        //     console.log(answer);
-        //     this.updateAnswersQuestions(answer);
-        // });
         this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
             this.updateAnswersQuestions(answer);
         });

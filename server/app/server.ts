@@ -124,7 +124,6 @@ export class Server {
             });
 
             socket.on('playerAnswer', (answer) => {
-                console.log('Player answer received:', answer);
                 this.io.emit('sendPlayerAnswer', answer);
                 this.numberAnswers++;
                 if (this.numberAnswers === this.room.player.size) {

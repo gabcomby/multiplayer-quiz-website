@@ -362,6 +362,7 @@ export class GameService {
             },
         });
     }
+
     private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
