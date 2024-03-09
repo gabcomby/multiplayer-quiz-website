@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 
@@ -24,14 +25,14 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         private router: Router,
         private route: ActivatedRoute,
         private gameService: GameService,
+        private matchLobbyService: MatchLobbyService,
     ) {}
     ngOnInit() {
         this.firstTimer = true;
         this.gameId = this.route.snapshot.params['id'];
         this.idLobby = this.route.snapshot.params['idLobby'];
         this.idPlayer = this.route.snapshot.params['idPlayer'];
-
-        this.isHost = history.state.isHost || false;
+        this.checkIfHost();
 
         this.subscriptionSubject = this.gameService.getGame(this.gameId).subscribe({
             next: (data) => {
@@ -63,5 +64,13 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
     }
     ngOnDestroy() {
         this.subscriptionSubject.unsubscribe();
+    }
+
+    checkIfHost() {
+        this.matchLobbyService.getLobby(this.idLobby).subscribe({
+            next: (data) => {
+                this.isHost = this.idPlayer === `${data.hostId}`;
+            },
+        });
     }
 }
