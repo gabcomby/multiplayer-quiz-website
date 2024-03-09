@@ -23,8 +23,29 @@ export class MatchLobbyService {
     }
 
     getLobby(lobbyId: string): Observable<MatchLobby> {
-        const a = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
-        return a;
+        const emptyLobby: MatchLobby = {
+            id: '',
+            playerList: [],
+            gameId: '',
+            bannedNames: [],
+            lobbyCode: '',
+            isLocked: false,
+            hostId: '',
+        };
+
+        const res = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+        res.subscribe({
+            next: (data) => {
+                return data;
+            },
+            error: (error) => {
+                console.log(error);
+                return emptyLobby;
+            },
+        });
+
+        console.log(res);
+        return res;
     }
 
     createLobby(gameId: string): Observable<MatchLobby> {

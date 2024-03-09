@@ -304,12 +304,21 @@ export class GameService {
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
-                    console.log('host left');
                     this.socketService.disconnect();
                     this.router.navigate(['/home']);
                 },
                 error: (error) => {
                     this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+                },
+            });
+        } else {
+            this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
+                next: () => {
+                    this.socketService.disconnect();
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
                 },
             });
         }
