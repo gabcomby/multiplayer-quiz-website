@@ -117,7 +117,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.ngOnInit();
             return false;
         } else {
-            this.subscription = this.createNewMatchLobby('Test Player', game.id).subscribe({
+            this.subscription = this.createNewMatchLobby(game.id).subscribe({
                 next: (matchLobby) => {
                     this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
                 },
@@ -132,7 +132,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.socketService.disconnect();
     }
 
-    // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
         const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
             width: '300px',
@@ -148,7 +147,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.ngOnInit();
             return false;
         } else {
-            this.createNewMatchLobby(result.userName, game.id).subscribe({
+            this.createNewMatchLobby(game.id).subscribe({
                 next: (matchLobby) => {
                     this.socketService.connect();
                     this.socketService.createRoom(matchLobby.lobbyCode);
@@ -168,8 +167,8 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         }
     }
 
-    createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
-        return this.matchLobbyService.createLobby(playerName, gameId);
+    createNewMatchLobby(gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createLobby(gameId);
     }
 
     createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {
