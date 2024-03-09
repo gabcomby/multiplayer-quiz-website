@@ -152,8 +152,6 @@ export class GameService {
         this.finalResultsEmitter.next(finalResults);
     }
 
-    // HTTP REQUEST HANDLING STARTS HERE =============================================================================
-
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
@@ -240,7 +238,6 @@ export class GameService {
         if (!game.lastModification) errors.push('La date de mise à jour est requise');
         if (game.questions.length < 1) errors.push('Au moins une question');
     }
-    // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
     // TODO: split this logic in two different methods to handle the different cases
     // When there is an host and when there is players
@@ -382,21 +379,8 @@ export class GameService {
         }
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-            // console.log(answer);
             this.answersSelected.next(answer);
         });
-        // Subscribe to the combined observable of player answers
-        // This will ensure that all players have submitted their answers
-        // combineLatest([
-        //     this.getPlayerAnswers(),
-        //     this.matchLobbyService.getLobby(this.lobbyId).pipe(map((lobbyDatax) => lobbyDatax.playerList.length)),
-        // ]).subscribe(([answers, totalPlayers]) => {
-        //     // Check if all players have submitted their answers
-        //     if (this.playerAnswerCount === totalPlayers) {
-        //         // Reset player answer count for the next round
-        //         this.playerAnswerCount = 0;
-        //     }
-        // });
 
         this.socketService.onEndGame().subscribe(() => {
             this.calculateFinalResults();
@@ -436,10 +420,6 @@ export class GameService {
     private checkAllAnswersLocker(): Subscription {
         return this.answerStateService.answerLocked.subscribe({
             next: (isLocked) => {
-                // if (currentPlayer) {
-                //     currentPlayer.isLocked = true;
-                //     this.allAnswerlocked(lobbyData);
-                // }
                 if (isLocked) {
                     this.socketService.answerSubmit();
                 }
@@ -463,10 +443,6 @@ export class GameService {
                 this.questions.push(this.currentQuestion);
                 this.questionGame.next(this.questions);
             }
-
-            // setTimeout(() => {
-            //     this.handleGameLeave();
-            // }, TIME_BETWEEN_QUESTIONS);
         }
     }
 
