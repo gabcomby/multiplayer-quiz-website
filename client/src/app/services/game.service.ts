@@ -13,7 +13,6 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { GameSocketService } from './game-socket.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -74,7 +73,6 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private gameSocketService: GameSocketService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -254,7 +252,7 @@ export class GameService {
                 this.apiService.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
-                        this.gameSocketService.setupWebsocketEvents();
+                        this.setupWebsocketEvents();
                         this.socketService.startTimer();
                     },
                     error: (error) => {
@@ -395,6 +393,39 @@ export class GameService {
             },
         });
     } */
+
+    setupWebsocketEvents(): void {
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
+            if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
+        });
+
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+            this.answersSelected.next(answer);
+        });
+
+        this.socketService.onEndGame().subscribe(() => {
+            this.calculateFinalResults();
+        });
+
+        this.socketService.onStopTimer(() => {
+            this.onTimerComplete();
+        });
+
+        this.socketService.onAdminDisconnect(() => {
+            this.handleGameLeave();
+        });
+
+        this.socketService.onPlayerDisconnect(() => {
+            this.refreshPlayerList();
+        });
+
+        this.socketService.onNewPlayerJoin(() => {
+            this.refreshPlayerList();
+        });
+    }
 
     private handleNextQuestion(): void {
         if (this.currentPlayerId !== this.lobbyData.hostId) {
