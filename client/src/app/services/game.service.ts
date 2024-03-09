@@ -369,52 +369,12 @@ export class GameService {
         });
     }
 
-    // private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-    //     if (this.gameData && this.gameData.duration) {
-    //         this.socketService.setTimerDuration(this.gameData.duration);
-    //     }
-
-    //     this.socketService.onPlayerDisconnect(() => {
-    //         this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-    //             next: () => {
-    //                 this.socketService.disconnect();
-    //                 this.router.navigate(['/home']);
-    //             },
-    //             error: (error) => {
-    //                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
-    //             },
-    //         });
-    //         this.snackbarService.openSnackBar('playerout');
-    //     });
-    //     this.socketService.onStopTimer(() => {
-    //         this.onTimerComplete();
-    //     });
-    //     if (currentPlayer) {
-    //         this.socketService.playerCreated(currentPlayer.id);
-    //         arraySubscription.push(this.checkAllAnswersLocker());
-    //         this.socketService.onAnswerVerification((data) => {
-    //             this.answerIsCorrect = data;
-    //             if (data === true) {
-    //                 this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points, currentPlayer?.score);
-    //             }
-    //         });
-    //     } else {
-    //         this.socketService.adminCreated(lobbyData.hostId);
-    //     }
-    // }
-
-    /* private checkAllAnswersLocker(): Subscription {
-        return this.answerStateService.answerLocked.subscribe({
-            next: (isLocked) => {
-                if (isLocked) {
-                    this.socketService.answerSubmit();
-                }
-            },
-        });
-    } */
-
     setupWebsocketEvents(): void {
         this.socketService.onTimerCountdown((data) => {
+            // roule dès que quelqu'un join la partie et le fais 2 fois.
+            // le problème est que le timerCountdown est à 0 et le onTimerComplete est appelé
+            // je sais pas pourquoi le timerCountdown est à 0
+            console.log('timer countdown', data);
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
                 this.onTimerComplete();
@@ -438,7 +398,6 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect(() => {
-            console.log('wtf');
             this.refreshPlayerList();
         });
 
