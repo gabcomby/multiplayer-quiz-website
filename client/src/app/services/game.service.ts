@@ -313,16 +313,14 @@ export class GameService {
                 },
             });
         } else {
-            this.matchLobbyService.getLobby(this.lobbyId).subscribe({
-                next: (lobbyData) => {
-                    if (lobbyData.hostId === '') {
-                        console.log('host considered empty');
+            this.matchLobbyService.lobbyExists(this.lobbyId).subscribe({
+                next: (data) => {
+                    if (data === false) {
                         this.socketService.disconnect();
                         this.router.navigate(['/home']);
                     } else {
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
-                                console.log('player removed');
                                 this.socketService.playerDisconnect();
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
@@ -364,7 +362,6 @@ export class GameService {
         this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
             next: (data) => {
                 this.lobbyData.playerList = data;
-                console.log(this.lobbyData.playerList);
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);

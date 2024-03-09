@@ -136,7 +136,6 @@ export class Server {
             });
 
             socket.on('player-disconnect', () => {
-                console.log('is called');
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected');
@@ -175,24 +174,8 @@ export class Server {
                 }
             });
             socket.on('disconnect', () => {
-                if (this.room) {
-                    if (this.room.idAdmin === socket.id) {
-                        this.io.emit('adminDisconnected', socket.id);
-                        this.room.idAdmin = '';
-                    } else {
-                        const players: string[] = [];
-                        this.room.player.forEach((value, key) => {
-                            if (value === socket.id) {
-                                this.room.player.delete(key);
-                            } else {
-                                players.push(key);
-                            }
-                        });
-                        if (players.length === 0) {
-                            this.io.emit('playerDisconnected');
-                        }
-                    }
-                }
+                // eslint-disable-next-line no-console
+                console.log('user disconnected');
             });
         });
 

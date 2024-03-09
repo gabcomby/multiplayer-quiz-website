@@ -4,7 +4,7 @@ import { API_BASE_URL } from '@app/app.module';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -23,24 +23,11 @@ export class MatchLobbyService {
     }
 
     getLobby(lobbyId: string): Observable<MatchLobby> {
-        const emptyLobby: MatchLobby = {
-            id: '',
-            playerList: [],
-            gameId: '',
-            bannedNames: [],
-            lobbyCode: '',
-            isLocked: false,
-            hostId: '',
-        };
+        return this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
+    }
 
-        const res = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`).pipe(
-            catchError((error) => {
-                // eslint-disable-next-line no-console
-                console.log(error);
-                return of(emptyLobby); // Return empty lobby in case of an error
-            }),
-        );
-        return res;
+    lobbyExists(lobbyId: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/${lobbyId}/exist`);
     }
 
     createLobby(gameId: string): Observable<MatchLobby> {

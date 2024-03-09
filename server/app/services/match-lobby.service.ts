@@ -16,6 +16,11 @@ export class MatchLobbyService {
         return await matchLobbyModel.findOne({ lobbyCode });
     }
 
+    async lobbyExists(lobbyId: string): Promise<boolean> {
+        const count = await matchLobbyModel.countDocuments({ id: lobbyId }, { limit: 1 });
+        return count > 0;
+    }
+
     async createLobby(lobbyData: ILobby): Promise<ILobby> {
         return await matchLobbyModel.create(lobbyData);
     }
