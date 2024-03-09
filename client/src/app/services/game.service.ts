@@ -300,8 +300,12 @@ export class GameService {
 
     initializeHostGame(lobbyId: string): Subscription[] {
         this.lobbyId = lobbyId;
+        this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
+        this.answerIdx = [];
+        this.questionHasExpired = false;
+        let currentPlayer: Player | undefined;
         const arraySubscription: Subscription[] = [];
 
         arraySubscription.push(

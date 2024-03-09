@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
@@ -20,6 +21,34 @@ export class HostGamePageComponent implements OnInit {
         private matchLobbyService: MatchLobbyService,
         private gameService: GameService,
     ) {}
+
+    get currentQuestionIndexValue(): number {
+        return this.gameService.currentQuestionIndexValue;
+    }
+
+    get currentGameLength(): number {
+        return this.gameService.currentGameLength;
+    }
+
+    get currentGameTitle(): string {
+        return this.gameService.currentGameTitle;
+    }
+
+    get currentPlayerNameValue(): string {
+        return this.gameService.currentPlayerNameValue;
+    }
+
+    get currentTimerCountdown(): number {
+        return this.gameService.timerCountdownValue;
+    }
+
+    get totalGameDuration(): number {
+        return this.gameService.totalGameDuration;
+    }
+
+    get currentQuestion(): Question {
+        return this.gameService.getCurrentQuestion();
+    }
 
     ngOnInit() {
         from((this.unsubscribeSubject = this.gameService.initializeHostGame(this.route.snapshot.params['lobbyId'])))
