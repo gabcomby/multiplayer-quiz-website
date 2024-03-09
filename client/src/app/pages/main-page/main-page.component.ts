@@ -6,6 +6,7 @@ import { PasswordDialogComponent } from '@app/components/password-dialog/passwor
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { AuthService } from '@app/services/auth.service';
+import { GameService } from '@app/services/game.service';
 import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -29,6 +30,7 @@ export class MainPageComponent {
         private matchLobbyService: MatchLobbyService,
         private joinGameValidation: JoinGameValidationService,
         private socketService: SocketService,
+        private gameService: GameService,
     ) {}
 
     openAdminDialog(): void {
@@ -61,7 +63,7 @@ export class MainPageComponent {
                                 this.socketService.connect();
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
                                 this.socketService.newPlayerJoin();
-                                // this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
+                                this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {
