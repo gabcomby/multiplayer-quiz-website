@@ -414,12 +414,11 @@ export class GameService {
     } */
 
     setupWebsocketEvents(): void {
-        this.socketService.onTimerCountdown(() => {
-            // this.timerCountdown = data;
-            // if (this.timerCountdown === 0) {
-            //     console.log('test');
-            //     this.onTimerComplete();
-            // }
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
+            if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
