@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { API_BASE_URL } from '@app/app.module';
@@ -13,7 +12,7 @@ import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, ReplaySubject, Subject, Subscription, concatMap, firstValueFrom } from 'rxjs';
+import { Observable, ReplaySubject, Subject, Subscription, concatMap } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -71,7 +70,6 @@ export class GameService {
     // private playerAnswerCount = 0;
     // eslint-disable-next-line max-params
     constructor(
-        private http: HttpClient,
         private apiService: ApiService,
         private questionService: QuestionService,
         private questionValidationService: QuestionValidationService,
@@ -156,17 +154,6 @@ export class GameService {
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
 
-    async deleteGame(gameId: string): Promise<void> {
-        const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
-        await firstValueFrom(game$);
-    }
-
-    async patchGame(game: Game): Promise<Game> {
-        const game$ = this.http.patch<Game>(`${this.apiUrl}/${game.id}`, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
-    }
-
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
@@ -192,7 +179,7 @@ export class GameService {
         try {
             if (await this.isValidGame(modifiedGame)) {
                 if (await this.validateDeletedGame(modifiedGame)) {
-                    await this.patchGame(modifiedGame);
+                    await this.apiService.patchGame(modifiedGame);
                 } else {
                     await this.apiService.createGame(modifiedGame);
                 }
