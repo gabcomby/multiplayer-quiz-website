@@ -126,6 +126,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.gameService.finalResultsEmitter.subscribe(() => {
             this.endGame = true;
         });
+        // this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
+        //     console.log(answer);
+        // });
     }
     ngOnDestroy() {
         this.destroy.next();

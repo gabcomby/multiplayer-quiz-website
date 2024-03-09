@@ -21,6 +21,8 @@ export class Server {
         player: new Map(),
         answersLocked: 0,
     };
+
+    private numberAnswers = 0;
     private server: http.Server;
     private io: SocketIoServer;
     constructor(private readonly application: Application) {}
@@ -120,6 +122,17 @@ export class Server {
                     this.io.emit('game-timer');
                 }
             });
+
+            socket.on('playerAnswer', (answer) => {
+                console.log('Player answer received:', answer);
+                this.io.emit('sendPlayerAnswer', answer);
+                this.numberAnswers++;
+                if (this.numberAnswers === this.room.player.size) {
+                    this.numberAnswers = 0;
+                    this.io.emit('endGame');
+                }
+            });
+
             socket.on('disconnect', () => {
                 if (this.room) {
                     if (this.room.idAdmin === socket.id) {
