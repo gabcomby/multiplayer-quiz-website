@@ -304,6 +304,41 @@ export class GameService {
         return arraySubscription;
     }
 
+    initializeHostGame(lobbyId: string): Subscription[] {
+        this.lobbyId = lobbyId;
+        this.currentPlayerId = playerId;
+        this.currentQuestionIndex = 0;
+        this.previousQuestionIndex = 0;
+        this.answerIdx = [];
+        this.questionHasExpired = false;
+        let currentPlayer: Player | undefined;
+        const arraySubscription: Subscription[] = [];
+
+        arraySubscription.push(
+            this.matchLobbyService
+                .getLobby(this.lobbyId)
+                .pipe(
+                    concatMap((lobbyData) => {
+                        this.lobbyData = lobbyData;
+                        return this.getGame(this.lobbyData.gameId);
+                    }),
+                )
+                .subscribe({
+                    next: (gameData) => {
+                        this.gameData = gameData;
+
+                        this.setupWebSocketEvents(this.lobbyData, arraySubscription);
+
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+                    },
+                }),
+        );
+        return arraySubscription;
+    }
+
     getCurrentQuestion(): Question {
         if (this.gameData.questions.length > 0) {
             return this.gameData.questions[this.currentQuestionIndex];

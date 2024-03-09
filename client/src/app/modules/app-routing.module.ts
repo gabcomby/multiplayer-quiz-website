@@ -7,6 +7,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { GameTimerPageComponent } from '@app/pages/game-timer-page/game-timer-page.component';
 // import { GameTimerPageComponent } from '@app/pages/game-timer-page/game-timer-page.component';
 import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
+import { HostGamePageComponent } from '@app/pages/host-game-page/host-game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { ModifyQuestionQbankComponent } from '@app/pages/modify-question-qbank/modify-question-qbank.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
@@ -28,6 +29,7 @@ const routes: Routes = [
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
     { path: 'gameTimer/:id/:idLobby/:idPlayer', component: GameTimerPageComponent },
+    { path: 'host-game-page/:idLobby', component: HostGamePageComponent },
     // { path: 'gameTimer/:id/:idLobby/:idPlayer', component: GameTimerPageComponent },
     // { path: 'resultsView/:idLobby', component: ResultsViewComponent },
     { path: 'resultsView', component: ResultsViewComponent },

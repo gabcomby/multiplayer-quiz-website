@@ -37,6 +37,7 @@ import { HistogramComponent } from './components/histogram/histogram.component';
 import { ResultsViewComponent } from './pages/results-view/results-view.component';
 import { GameTimerPageComponent } from './pages/game-timer-page/game-timer-page.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -75,6 +76,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         GameTimerPageComponent,
         ResultsViewComponent,
         HistogramComponent,
+        HostGamePageComponent,
     ],
     imports: [
         AppMaterialModule,
