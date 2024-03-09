@@ -12,7 +12,7 @@ import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, Subscription, concatMap, ReplaySubject, firstValueFrom } from 'rxjs';
+import { Observable, ReplaySubject, Subject, Subscription, combineLatest, concatMap, firstValueFrom, map } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -27,7 +27,7 @@ export class GameService {
     // private apiUrl: string;
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer>(1);
-
+    playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
 
@@ -62,11 +62,12 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
-    endGame = false;
+    // endGame = false;
     subscription: Subscription;
     // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
+    private playerAnswerCount = 0;
     // eslint-disable-next-line max-params
     constructor(
         private http: HttpClient,
@@ -141,6 +142,11 @@ export class GameService {
         this.answerIdx = answerIdx;
     }
 
+    gameEnded(): void {
+        this.socketService.onEndGame().subscribe(() => {
+            this.calculateFinalResults();
+        });
+    }
     calculateFinalResults(): void {
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
@@ -316,13 +322,14 @@ export class GameService {
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
-    // allAnswerlocked(lobby: MatchLobby) {
-    //     console.log(lobby.playerList);
-    //     const allLocked = lobby.playerList.every((player) => player.isLocked === true);
-    //     if (allLocked) {
-    //         this.onTimerComplete();
-    //     }
-    // }
+
+    sendPlayerAnswer(answer: AnswersPlayer) {
+        this.socketService.sendPlayerAnswer(answer);
+    }
+
+    getPlayerAnswers(): Observable<AnswersPlayer> {
+        return this.answersSelected.asObservable();
+    }
 
     handleGameLeave() {
         return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
@@ -359,10 +366,37 @@ export class GameService {
                 this.onTimerComplete();
             }
         });
-
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
+
+        // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+        //     console.log(answer);
+        //     this.answersSelected.next(answer);
+        // });
+
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+            console.log(answer);
+            this.answersSelected.next(answer);
+            this.playerAnswerCount++; // Increment count
+        });
+
+        // Subscribe to the combined observable of player answers
+        // This will ensure that all players have submitted their answers
+        combineLatest([
+            this.getPlayerAnswers(),
+            this.matchLobbyService.getLobby(this.lobbyId).pipe(map((lobbyDatax) => lobbyDatax.playerList.length)),
+        ]).subscribe(([answers, totalPlayers]) => {
+            // Check if all players have submitted their answers
+            if (this.playerAnswerCount === totalPlayers) {
+                // Reset player answer count for the next round
+                this.playerAnswerCount = 0;
+            }
+        });
+
+        this.socketService.onEndGame().subscribe(() => {
+            this.calculateFinalResults();
+        });
 
         this.socketService.onDisconnect(() => {
             this.handleGameLeave();
@@ -418,11 +452,14 @@ export class GameService {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
-            this.questions.push(this.currentQuestion);
-            this.questionGame.next(this.questions);
-            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-            this.answersSelected.next(this.playerChoice);
-            this.calculateFinalResults();
+            if (this.currentPlayerId !== this.lobbyData.hostId) {
+                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                this.sendPlayerAnswer(this.playerChoice);
+            } else {
+                this.questions.push(this.currentQuestion);
+                this.questionGame.next(this.questions);
+            }
+
             // setTimeout(() => {
             //     this.handleGameLeave();
             // }, TIME_BETWEEN_QUESTIONS);
@@ -430,9 +467,11 @@ export class GameService {
     }
 
     private handleNextQuestion(): void {
-        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        this.answersSelected.next(this.playerChoice);
-        this.questions.push(this.currentQuestion);
+        if (this.currentPlayerId !== this.lobbyData.hostId) {
+            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        } else {
+            this.questions.push(this.currentQuestion);
+        }
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

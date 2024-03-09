@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
+// import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-results-view',
@@ -12,6 +13,9 @@ export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer = new Map<string, number[]>();
     questions: Question[] = [];
     dataSource: Player[] = [];
+    answersArray: AnswersPlayer[] = [];
+
+    // private playerAnswersSubscription: Subscription;
 
     constructor(private gameService: GameService) {}
 
@@ -20,15 +24,14 @@ export class ResultsViewComponent implements OnInit {
     }
 
     async ngOnInit() {
+        this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
+            this.updateAnswersQuestions(answer);
+        });
+
         this.gameService.finalResultsEmitter.subscribe((finalResults: Player[]) => {
             this.dataSource = finalResults;
             this.sortDataSource();
         });
-
-        this.gameService.answersSelected.subscribe((answers: AnswersPlayer) => {
-            this.updateAnswersQuestions(answers);
-        });
-
         this.gameService.questionGame.subscribe((question: Question[]) => {
             this.questions = question;
         });

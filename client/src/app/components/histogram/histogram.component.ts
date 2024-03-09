@@ -12,7 +12,9 @@ export class HistogramComponent implements OnInit {
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
+    histogramData: { name: string; value: number }[];
 
+    view: [number, number] = [700, 400];
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;
@@ -21,12 +23,14 @@ export class HistogramComponent implements OnInit {
     yAxisLabel: string = 'Nombre de votes';
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
-
     ngOnInit(): void {
+        // console.log(this.answersPlayer);
+        // console.log(this.questionsGame);
         this.constructAnswerCounts();
         this.answerCounts.forEach((value, key) => {
             this.answerCountsArray.push({ key, value });
         });
+        this.dataHistogram();
     }
 
     private constructAnswerCounts(): void {
@@ -50,5 +54,17 @@ export class HistogramComponent implements OnInit {
                 });
             }
         });
+    }
+
+    private dataHistogram(): void {
+        this.histogramData = this.answerCountsArray
+            .map((answer) => {
+                const data: { name: string; value: number }[] = [];
+                answer.value.forEach((count, choice) => {
+                    data.push({ name: choice.text, value: count });
+                });
+                return data;
+            })
+            .reduce((acc, curr) => acc.concat(curr), []);
     }
 }

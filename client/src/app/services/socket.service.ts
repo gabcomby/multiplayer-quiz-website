@@ -1,9 +1,10 @@
 // src/app/services/socket.service.ts
 
 import { Injectable } from '@angular/core';
-import type { Choice } from '@app/interfaces/game';
+import type { AnswersPlayer, Choice } from '@app/interfaces/game';
 import { environment } from '@env/environment';
-import { io, Socket } from 'socket.io-client';
+import { Observable } from 'rxjs';
+import { Socket, io } from 'socket.io-client';
 
 @Injectable({
     providedIn: 'root',
@@ -98,6 +99,36 @@ export class SocketService {
     onStopTimer(callback: () => void) {
         this.socket.on('stop-timer', () => {
             callback();
+        });
+    }
+
+    onEndGame(): Observable<unknown> {
+        return new Observable((observer) => {
+            this.socket.on('endGame', () => {
+                observer.next();
+            });
+        });
+    }
+
+    sendPlayerAnswer(answer: AnswersPlayer) {
+        const mapToArray = [];
+
+        for (const [key, value] of answer.entries()) {
+            mapToArray.push({ key, value });
+        }
+        this.socket.emit('playerAnswer', mapToArray);
+    }
+
+    onPlayerAnswer(): Observable<AnswersPlayer> {
+        return new Observable((observer) => {
+            this.socket.on('sendPlayerAnswer', (answer) => {
+                const map = new Map<string, number[]>();
+                answer.forEach((entry: { key: string; value: number[] }) => {
+                    map.set(entry.key, entry.value);
+                });
+
+                observer.next(map);
+            });
         });
     }
 }

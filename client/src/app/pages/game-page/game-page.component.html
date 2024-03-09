@@ -1,6 +1,7 @@
 
 <div *ngIf="isHost">
     <p>Je suis administrateur</p>
+    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
 </div>
 <div class="container">
     <div class="top-bar">
@@ -30,7 +31,7 @@
             [answerIsCorrect]="answerIsCorrectValue"
         ></app-game-page-questions>
     </div>
-    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
+    
 
     <div class="score" *ngIf="lobby">
         <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
