@@ -320,28 +320,31 @@ export class GameService {
         });
     }
 
-    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
+    onTimerComplete(): void {
+        this.socketService.stopTimer();
+        this.questionHasExpired = true;
+        this.previousQuestionIndex = this.currentQuestionIndex;
+        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
+        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+            setTimeout(() => {
+                this.handleNextQuestion();
+            }, TIME_BETWEEN_QUESTIONS);
+        } else {
+            if (this.currentPlayerId !== this.lobbyData.hostId) {
+                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                this.sendPlayerAnswer(this.playerChoice);
+            } else {
+                this.questions.push(this.currentQuestion);
+                this.questionGame.next(this.questions);
             }
-        });
+        }
+    }
+
+    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
 
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-            this.answersSelected.next(answer);
-        });
-
-        this.socketService.onEndGame().subscribe(() => {
-            this.calculateFinalResults();
-        });
-
-        this.socketService.onDisconnect(() => {
-            this.handleGameLeave();
-        });
         this.socketService.onPlayerDisconnect(() => {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
@@ -379,25 +382,6 @@ export class GameService {
                 }
             },
         });
-    }
-    private onTimerComplete(): void {
-        this.socketService.stopTimer();
-        this.questionHasExpired = true;
-        this.previousQuestionIndex = this.currentQuestionIndex;
-        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
-        } else {
-            if (this.currentPlayerId !== this.lobbyData.hostId) {
-                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                this.sendPlayerAnswer(this.playerChoice);
-            } else {
-                this.questions.push(this.currentQuestion);
-                this.questionGame.next(this.questions);
-            }
-        }
     }
 
     private handleNextQuestion(): void {
