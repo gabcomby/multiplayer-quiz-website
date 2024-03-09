@@ -1,59 +1,43 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatchLobby } from '@app/interfaces/match-lobby';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-wait',
     templateUrl: './game-wait.component.html',
     styleUrls: ['./game-wait.component.scss'],
 })
-export class GameWaitComponent implements OnInit, OnDestroy {
-    matchLobby: MatchLobby = {
-        id: '',
-        playerList: [], // string vide c'est null
-        gameId: '',
-        bannedNames: [],
-        lobbyCode: '',
-        isLocked: false,
-        hostId: '',
-    };
-    playerId: string;
-    isHost: boolean;
-    subscribeSubject: Subscription;
-    private gameId: string;
-
-    // eslint-disable-next-line max-params
+export class GameWaitComponent implements OnInit {
     constructor(
-        private route: ActivatedRoute,
         private router: Router,
-        private matchLobbyService: MatchLobbyService,
-        private snackbarService: SnackbarService,
         private socketService: SocketService,
+        private gameService: GameService,
     ) {}
-    ngOnInit() {
-        this.playerId = this.route.snapshot.params['host'];
 
-        this.subscribeSubject = this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
-            next: (data) => {
-                this.matchLobby = data;
-                this.isHost = this.playerId === `${this.matchLobby.hostId}`;
-                this.gameId = this.matchLobby.gameId;
-                this.socketService.onTimerGame(() => {
-                    this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
-                });
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
-            },
+    get playerList() {
+        return this.gameService.matchLobby.playerList;
+    }
+
+    get isHost() {
+        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+    }
+
+    get lobbyCode() {
+        return this.gameService.matchLobby.lobbyCode;
+    }
+
+    ngOnInit() {
+        this.socketService.onTimerGame(() => {
+            this.router.navigate([
+                '/gameTimer',
+                this.gameService.matchLobby.gameId,
+                this.gameService.matchLobby.id,
+                this.gameService.currentPlayerId,
+            ]);
         });
     }
-    ngOnDestroy() {
-        this.subscribeSubject.unsubscribe();
-    }
+
     backHome() {
         this.socketService.disconnect();
         this.router.navigate(['/home']);
@@ -64,13 +48,6 @@ export class GameWaitComponent implements OnInit, OnDestroy {
     }
 
     handleGameLeave() {
-        this.matchLobbyService.removePlayer(this.playerId, this.matchLobby.id).subscribe({
-            next: () => {
-                this.router.navigate(['/']);
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar('Erreur' + error + 'lors de la suppression du joueur');
-            },
-        });
+        this.gameService.handleGameLeave();
     }
 }

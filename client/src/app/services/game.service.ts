@@ -132,6 +132,14 @@ export class GameService {
         return this.lobbyData.playerList;
     }
 
+    get matchLobby(): MatchLobby {
+        return this.lobbyData;
+    }
+
+    get game(): Game {
+        return this.gameData;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
@@ -245,6 +253,7 @@ export class GameService {
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
+
                 if (this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)) {
                     // eslint-disable-next-line
                     this.currentPlayerName = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)!.name;
@@ -252,6 +261,7 @@ export class GameService {
                 this.apiService.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
+
                         this.setupWebsocketEvents();
                         this.socketService.startTimer();
                     },
