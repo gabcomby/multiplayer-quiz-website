@@ -13,11 +13,8 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
-
-const TIME_BETWEEN_QUESTIONS = 3000;
 
 @Injectable({
     providedIn: 'root',
@@ -63,6 +60,7 @@ export class GameService {
     subscription: Subscription;
     private minDuration: number;
     private maxDuration: number;
+
     // eslint-disable-next-line max-params
     constructor(
         private apiService: ApiService,
@@ -73,7 +71,6 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -317,107 +314,6 @@ export class GameService {
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
-            },
-        });
-    }
-
-    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
-        });
-        if (this.gameData && this.gameData.duration) {
-            this.socketService.setTimerDuration(this.gameData.duration);
-        }
-
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-            this.answersSelected.next(answer);
-        });
-
-        this.socketService.onEndGame().subscribe(() => {
-            this.calculateFinalResults();
-        });
-
-        this.socketService.onDisconnect(() => {
-            this.handleGameLeave();
-        });
-        this.socketService.onPlayerDisconnect(() => {
-            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                next: () => {
-                    this.socketService.disconnect();
-                    this.router.navigate(['/home']);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
-                },
-            });
-            this.snackbarService.openSnackBar('playerout');
-        });
-        this.socketService.onStopTimer(() => {
-            this.onTimerComplete();
-        });
-        if (currentPlayer) {
-            this.socketService.playerCreated(currentPlayer.id);
-            arraySubscription.push(this.checkAllAnswersLocker());
-            this.socketService.onAnswerVerification((data) => {
-                this.answerIsCorrect = data;
-                if (data === true) {
-                    this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points, currentPlayer?.score);
-                }
-            });
-        } else {
-            this.socketService.adminCreated(lobbyData.hostId);
-        }
-    }
-    private checkAllAnswersLocker(): Subscription {
-        return this.answerStateService.answerLocked.subscribe({
-            next: (isLocked) => {
-                if (isLocked) {
-                    this.socketService.answerSubmit();
-                }
-            },
-        });
-    }
-    private onTimerComplete(): void {
-        this.socketService.stopTimer();
-        this.questionHasExpired = true;
-        this.previousQuestionIndex = this.currentQuestionIndex;
-        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
-        } else {
-            if (this.currentPlayerId !== this.lobbyData.hostId) {
-                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                this.sendPlayerAnswer(this.playerChoice);
-            } else {
-                this.questions.push(this.currentQuestion);
-                this.questionGame.next(this.questions);
-            }
-        }
-    }
-
-    private handleNextQuestion(): void {
-        if (this.currentPlayerId !== this.lobbyData.hostId) {
-            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        } else {
-            this.questions.push(this.currentQuestion);
-        }
-        this.currentQuestionIndex++;
-        this.questionHasExpired = false;
-        this.socketService.startTimer();
-    }
-
-    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
             },
         });
     }
