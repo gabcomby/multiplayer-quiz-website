@@ -111,6 +111,7 @@ export class SocketService {
     }
 
     sendPlayerAnswer(answer: AnswersPlayer) {
+        // console.log('yes1');
         const mapToArray = [];
 
         for (const [key, value] of answer.entries()) {
@@ -120,8 +121,10 @@ export class SocketService {
     }
 
     onPlayerAnswer(): Observable<AnswersPlayer> {
+        // console.log('yes');
         return new Observable((observer) => {
             this.socket.on('sendPlayerAnswer', (answer) => {
+                // console.log('sos');
                 const map = new Map<string, number[]>();
                 answer.forEach((entry: { key: string; value: number[] }) => {
                     map.set(entry.key, entry.value);

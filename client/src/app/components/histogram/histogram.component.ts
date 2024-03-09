@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
+const SIZE1 = 400;
+const SIZE2 = 700;
 @Component({
     selector: 'app-histogram',
     templateUrl: './histogram.component.html',
@@ -14,7 +16,7 @@ export class HistogramComponent implements OnInit {
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
     histogramData: { name: string; value: number }[];
 
-    view: [number, number] = [700, 400];
+    view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
+// import { SocketService } from '@app/services/socket.service';
 // import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,16 +15,23 @@ export class ResultsViewComponent implements OnInit {
     questions: Question[] = [];
     dataSource: Player[] = [];
     answersArray: AnswersPlayer[] = [];
+    // socket: Socket;
 
     // private playerAnswersSubscription: Subscription;
 
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService, // private socketService: SocketService,
+    ) {}
 
     get answersPlayerArray(): [string, number[]][] {
         return Array.from(this.answersQuestions.entries());
     }
 
     async ngOnInit() {
+        // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+        //     console.log(answer);
+        //     this.updateAnswersQuestions(answer);
+        // });
         this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
             this.updateAnswersQuestions(answer);
         });

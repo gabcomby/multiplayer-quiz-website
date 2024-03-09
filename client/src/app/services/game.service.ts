@@ -12,7 +12,7 @@ import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, ReplaySubject, Subject, Subscription, combineLatest, concatMap, firstValueFrom, map } from 'rxjs';
+import { Observable, ReplaySubject, Subject, Subscription, concatMap, firstValueFrom } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -67,7 +67,7 @@ export class GameService {
     // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
-    private playerAnswerCount = 0;
+    // private playerAnswerCount = 0;
     // eslint-disable-next-line max-params
     constructor(
         private http: HttpClient,
@@ -370,29 +370,22 @@ export class GameService {
             this.socketService.setTimerDuration(this.gameData.duration);
         }
 
-        // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-        //     console.log(answer);
-        //     this.answersSelected.next(answer);
-        // });
-
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
-            console.log(answer);
+            // console.log(answer);
             this.answersSelected.next(answer);
-            this.playerAnswerCount++; // Increment count
         });
-
         // Subscribe to the combined observable of player answers
         // This will ensure that all players have submitted their answers
-        combineLatest([
-            this.getPlayerAnswers(),
-            this.matchLobbyService.getLobby(this.lobbyId).pipe(map((lobbyDatax) => lobbyDatax.playerList.length)),
-        ]).subscribe(([answers, totalPlayers]) => {
-            // Check if all players have submitted their answers
-            if (this.playerAnswerCount === totalPlayers) {
-                // Reset player answer count for the next round
-                this.playerAnswerCount = 0;
-            }
-        });
+        // combineLatest([
+        //     this.getPlayerAnswers(),
+        //     this.matchLobbyService.getLobby(this.lobbyId).pipe(map((lobbyDatax) => lobbyDatax.playerList.length)),
+        // ]).subscribe(([answers, totalPlayers]) => {
+        //     // Check if all players have submitted their answers
+        //     if (this.playerAnswerCount === totalPlayers) {
+        //         // Reset player answer count for the next round
+        //         this.playerAnswerCount = 0;
+        //     }
+        // });
 
         this.socketService.onEndGame().subscribe(() => {
             this.calculateFinalResults();
