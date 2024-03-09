@@ -94,7 +94,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + suggestion);
     }
 
-    async isTheGameModified(game: Game): Promise<boolean> {
+    async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
         const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
@@ -111,7 +111,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
     }
 
     async isTheGameModifiedTest(game: Game): Promise<boolean> {
-        const isModified = await this.isTheGameModified(game);
+        const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
@@ -141,7 +141,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
         if (!result || this.isEmpyDialog(result)) return false;
-        const isModified = await this.isTheGameModified(game);
+        const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
