@@ -12,7 +12,7 @@ import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, Subscription, concatMap, ReplaySubject, firstValueFrom } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, concatMap, firstValueFrom } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -287,6 +287,37 @@ export class GameService {
                         this.gameData = gameData;
 
                         this.setupWebSocketEvents(this.lobbyData, arraySubscription, currentPlayer);
+
+                        this.socketService.startTimer();
+                    },
+                    error: (error) => {
+                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+                    },
+                }),
+        );
+        return arraySubscription;
+    }
+
+    initializeHostGame(lobbyId: string): Subscription[] {
+        this.lobbyId = lobbyId;
+        this.currentQuestionIndex = 0;
+        this.previousQuestionIndex = 0;
+        const arraySubscription: Subscription[] = [];
+
+        arraySubscription.push(
+            this.matchLobbyService
+                .getLobby(this.lobbyId)
+                .pipe(
+                    concatMap((lobbyData) => {
+                        this.lobbyData = lobbyData;
+                        return this.getGame(this.lobbyData.gameId);
+                    }),
+                )
+                .subscribe({
+                    next: (gameData) => {
+                        this.gameData = gameData;
+
+                        this.setupWebSocketEvents(this.lobbyData, arraySubscription);
 
                         this.socketService.startTimer();
                     },
