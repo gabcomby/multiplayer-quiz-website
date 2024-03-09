@@ -78,7 +78,7 @@ export class CreateQGamePageComponent implements OnInit {
                     this.router.navigate(['/admin']);
                 }
             } else if (await this.gameService.isValidGame(newGame)) {
-                await this.gameService.createGame(newGame);
+                await this.apiService.createGame(newGame);
                 this.router.navigate(['/admin']);
             }
         } catch (error) {

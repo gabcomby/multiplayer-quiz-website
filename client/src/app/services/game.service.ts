@@ -156,12 +156,6 @@ export class GameService {
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
 
-    async createGame(game: Game): Promise<Game> {
-        const game$ = this.http.post<Game>(this.apiUrl, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
-    }
-
     async deleteGame(gameId: string): Promise<void> {
         const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
         await firstValueFrom(game$);
@@ -200,7 +194,7 @@ export class GameService {
                 if (await this.validateDeletedGame(modifiedGame)) {
                     await this.patchGame(modifiedGame);
                 } else {
-                    await this.createGame(modifiedGame);
+                    await this.apiService.createGame(modifiedGame);
                 }
                 return true;
             }
@@ -209,6 +203,7 @@ export class GameService {
             throw new Error('handling error');
         }
     }
+
     createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
         return {
             id: isNewGame ? generateNewId() : gameModified.id,

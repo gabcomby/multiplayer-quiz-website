@@ -4,12 +4,12 @@ import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
+import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-// import * as gameUtilsModule from '@app/utils/is-valid-game';
-import { API_BASE_URL } from '@app/app.module';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -34,6 +34,7 @@ describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let gameServiceSpy: SpyObj<GameService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
+    let apiServiceSpy: SpyObj<ApiService>;
     let routerSpy: SpyObj<Router>;
 
     let component: CreateQGamePageComponent;
@@ -59,10 +60,13 @@ describe('CreateQGamePageComponent', () => {
             resetQuestions: {},
         });
         gameServiceSpy = jasmine.createSpyObj('GameService', {
-            getGames: [],
             isValidGame: {},
-            createGame: {},
             createNewGame: {},
+        });
+        apiServiceSpy = jasmine.createSpyObj('ApiService', {
+            getGames: of([]),
+            getGame: of({}),
+            createGame: of({}),
         });
     });
     beforeEach(waitForAsync(() => {
@@ -77,6 +81,7 @@ describe('CreateQGamePageComponent', () => {
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
                 { provide: Router, useValue: routerSpy },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
+                { provide: ApiService, useValue: apiServiceSpy },
             ],
             imports: [HttpClientTestingModule],
             schemas: [NO_ERRORS_SCHEMA],
@@ -88,12 +93,12 @@ describe('CreateQGamePageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should call createGame from GameService when onSubmit is called with validData', async () => {
+    it('should call createGame from ApiService when onSubmit is called with validData', async () => {
         component.gameId = null;
         gameServiceSpy.isValidGame.and.returnValue(Promise.resolve(true));
         await component.onSubmit();
         expect(gameServiceSpy.createNewGame).toHaveBeenCalled();
-        expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        expect(apiServiceSpy.createGame).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalled();
     });
     it('should throw error if submitting with the server down', async () => {
