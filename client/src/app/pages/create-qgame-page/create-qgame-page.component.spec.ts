@@ -11,6 +11,8 @@ import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 // import * as gameUtilsModule from '@app/utils/is-valid-game';
+import { API_BASE_URL } from '@app/app.module';
+import { ApiService } from '@app/services/api.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -36,6 +38,7 @@ describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let gameServiceSpy: SpyObj<GameService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
+    let apiServiceSpy: SpyObj<ApiService>;
     let routerSpy: SpyObj<Router>;
     let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
@@ -134,6 +137,7 @@ describe('CreateQGamePageComponent', () => {
             createNewGame: {},
         });
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        apiServiceSpy = jasmine.createSpyObj('ApiService', { getGames: of(defaultGame) });
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -141,11 +145,13 @@ describe('CreateQGamePageComponent', () => {
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
+                { provide: ApiService, useValue: apiServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
             ],
             imports: [HttpClientTestingModule, MatToolbarModule],
             schemas: [NO_ERRORS_SCHEMA],
@@ -182,7 +188,7 @@ describe('CreateQGamePageComponent', () => {
         expect(component.dataReady).toBeTrue();
     });
     it('ngOnInit should initiliase if theres is an id', async () => {
-        gameServiceSpy.getGames.and.throwError('test error');
+        apiServiceSpy.getGames.and.throwError('test error');
         try {
             await component.ngOnInit();
         } catch (error) {

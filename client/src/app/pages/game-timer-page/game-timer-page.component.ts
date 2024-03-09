@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameService } from '@app/services/game.service';
+import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
@@ -20,11 +20,12 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
     subscriptionSubject: Subscription;
     firstTimer: boolean;
 
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private socketService: SocketService,
         private router: Router,
         private route: ActivatedRoute,
-        private gameService: GameService,
+        private apiService: ApiService,
         private matchLobbyService: MatchLobbyService,
     ) {}
     ngOnInit() {
@@ -34,7 +35,7 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         this.idPlayer = this.route.snapshot.params['idPlayer'];
         this.checkIfHost();
 
-        this.subscriptionSubject = this.gameService.getGame(this.gameId).subscribe({
+        this.subscriptionSubject = this.apiService.getGame(this.gameId).subscribe({
             next: (data) => {
                 this.gameTitle = data.title;
             },

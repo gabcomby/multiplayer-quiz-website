@@ -9,6 +9,7 @@ import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 // import * as gameUtilsModule from '@app/utils/is-valid-game';
+import { API_BASE_URL } from '@app/app.module';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -75,6 +76,7 @@ describe('CreateQGamePageComponent', () => {
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
                 { provide: Router, useValue: routerSpy },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
             ],
             imports: [HttpClientTestingModule],
             schemas: [NO_ERRORS_SCHEMA],

@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription, concatMap, firstValueFrom } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
@@ -71,6 +72,7 @@ export class GameService {
     // eslint-disable-next-line max-params
     constructor(
         private http: HttpClient,
+        private apiService: ApiService,
         private questionService: QuestionService,
         private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
@@ -154,16 +156,6 @@ export class GameService {
 
     // HTTP REQUEST HANDLING STARTS HERE =============================================================================
 
-    getGame(gameId: string): Observable<Game> {
-        return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
-    }
-
-    async getGames(): Promise<Game[]> {
-        const games$ = this.http.get<Game[]>(this.apiUrl);
-        const games = await firstValueFrom(games$);
-        return games;
-    }
-
     async createGame(game: Game): Promise<Game> {
         const game$ = this.http.post<Game>(this.apiUrl, game);
         const newGame = await firstValueFrom(game$);
@@ -180,8 +172,9 @@ export class GameService {
         const newGame = await firstValueFrom(game$);
         return newGame;
     }
+
     async validateDuplicationGame(game: Game, error: string[]) {
-        const gameList = await this.getGames();
+        const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
         const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
         if (titleExisting) {
@@ -192,7 +185,7 @@ export class GameService {
         }
     }
     async validateDeletedGame(game: Game) {
-        const gameList = await this.getGames();
+        const gameList = await this.apiService.getGames();
         const idExisting = gameList.find((element) => element.id === game.id);
         if (idExisting) {
             return true;
@@ -287,7 +280,7 @@ export class GameService {
                         this.lobbyData = lobbyData;
                         currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
                         this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-                        return this.getGame(this.lobbyData.gameId);
+                        return this.apiService.getGame(this.lobbyData.gameId);
                     }),
                 )
                 .subscribe({
@@ -306,7 +299,6 @@ export class GameService {
         return arraySubscription;
     }
 
-    // TODO:  REMOVE
     initializeHostGame(lobbyId: string): Subscription[] {
         this.lobbyId = lobbyId;
         // this.currentPlayerId = playerId;
@@ -323,7 +315,7 @@ export class GameService {
                 .pipe(
                     concatMap((lobbyData) => {
                         this.lobbyData = lobbyData;
-                        return this.getGame(this.lobbyData.gameId);
+                        return this.apiService.getGame(this.lobbyData.gameId);
                     }),
                 )
                 .subscribe({

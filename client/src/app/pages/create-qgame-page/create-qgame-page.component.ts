@@ -4,12 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
-// import { GameValidationService } from '@app/services/game-validation.service';
+import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
-// import { SnackbarService } from '@app/services/snackbar.service';
-// import { generateNewId } from '@app/utils/assign-new-game-attributes';
-// import { isValidGame } from '@app/utils/is-valid-game';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -33,14 +30,14 @@ export class CreateQGamePageComponent implements OnInit {
     };
     gameForm: FormGroup;
     dataReady: boolean = false;
+
     // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
         private gameService: GameService,
         private route: ActivatedRoute,
         private router: Router,
-        // private snackbarService: SnackbarService,
-        // private gameValidationService: GameValidationService,
+        private apiService: ApiService,
         public dialog: MatDialog,
     ) {
         this.questionService.resetQuestions();
@@ -54,7 +51,7 @@ export class CreateQGamePageComponent implements OnInit {
         this.route.paramMap.subscribe((params) => (this.gameId = params.get('id')));
         if (this.gameId) {
             try {
-                this.games = await this.gameService.getGames();
+                this.games = await this.apiService.getGames();
                 this.getGame(this.gameId);
                 this.insertIfExist();
                 this.dataReady = true;
