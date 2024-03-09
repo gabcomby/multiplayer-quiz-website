@@ -92,7 +92,6 @@ describe('MainPageComponent', () => {
         expect(navigateSpy).toHaveBeenCalledWith(['/admin']);
     });
 
-    // Test handling dialog close with invalid password
     it('should handle authentication error', () => {
         const errorResponse = new HttpErrorResponse({
             error: { body: 'Invalid password' },

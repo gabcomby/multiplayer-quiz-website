@@ -21,7 +21,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private gameService: GameService,
-        // private answerStateService: AnswerStateService,
         private matchLobbyService: MatchLobbyService,
     ) {}
 

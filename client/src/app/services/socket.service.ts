@@ -1,5 +1,3 @@
-// src/app/services/socket.service.ts
-
 import { Injectable } from '@angular/core';
 import type { AnswersPlayer, Choice } from '@app/interfaces/game';
 import { environment } from '@env/environment';
