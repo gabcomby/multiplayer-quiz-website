@@ -153,6 +153,7 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.createNewMatchLobby(result.userName, game.id).subscribe({
                 next: (matchLobby) => {
                     this.socketService.connect();
+                    this.socketService.createRoom(matchLobby.lobbyCode);
                     this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
                     this.router.navigate(['/gameWait']);
                 },

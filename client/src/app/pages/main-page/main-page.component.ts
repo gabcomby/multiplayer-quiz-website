@@ -60,8 +60,9 @@ export class MainPageComponent {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
-                                this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.socketService.connect();
+                                this.socketService.joinRoom(result.lobbyCode, newPlayerId);
+                                this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {

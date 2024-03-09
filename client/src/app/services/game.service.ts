@@ -342,6 +342,17 @@ export class GameService {
         }
     }
 
+    refreshPlayerList(): void {
+        this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
+            next: (data) => {
+                this.lobbyData.playerList = data;
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
+            },
+        });
+    }
+
     private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
         if (this.gameData && this.gameData.duration) {
             this.socketService.setTimerDuration(this.gameData.duration);

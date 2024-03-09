@@ -75,16 +75,16 @@ export class SocketService {
             callback();
         });
     }
-    onDisconnect(callback: () => void): void {
+    onAdminDisconnect(callback: () => void): void {
         this.socket.on('adminDisconnected', () => {
             callback();
         });
     }
-    adminCreated(idAdmin: string): void {
-        this.socket.emit('registerAsAdmin', idAdmin);
+    createRoom(roomId: string): void {
+        this.socket.emit('create-room', roomId);
     }
-    playerCreated(idPlayer: string): void {
-        this.socket.emit('registerAsPlayer', idPlayer);
+    joinRoom(roomId: string, playerId: string): void {
+        this.socket.emit('join-room', roomId, playerId);
     }
     onPlayerDisconnect(callback: () => void) {
         this.socket.on('playerDisconnected', () => {
@@ -96,6 +96,14 @@ export class SocketService {
     }
     onStopTimer(callback: () => void) {
         this.socket.on('stop-timer', () => {
+            callback();
+        });
+    }
+    newPlayerJoin() {
+        this.socket.emit('new-player');
+    }
+    onNewPlayerJoin(callback: () => void) {
+        this.socket.on('new-player-connected', () => {
             callback();
         });
     }

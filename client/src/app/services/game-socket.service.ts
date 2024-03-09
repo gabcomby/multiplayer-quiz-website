@@ -27,5 +27,21 @@ export class GameSocketService {
         this.socketService.onEndGame().subscribe(() => {
             this.gameService.calculateFinalResults();
         });
+
+        this.socketService.onStopTimer(() => {
+            this.gameService.onTimerComplete();
+        });
+
+        this.socketService.onAdminDisconnect(() => {
+            this.gameService.handleGameLeave();
+        });
+
+        this.socketService.onPlayerDisconnect(() => {
+            this.gameService.refreshPlayerList();
+        });
+
+        this.socketService.onNewPlayerJoin(() => {
+            this.gameService.refreshPlayerList();
+        });
     }
 }
