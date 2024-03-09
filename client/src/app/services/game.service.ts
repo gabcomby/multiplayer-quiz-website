@@ -301,32 +301,18 @@ export class GameService {
     }
 
     handleGameLeave() {
-        return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-                if (data) {
-                    if (this.lobbyData.playerList === null || this.lobbyData.playerList.length === 0) {
-                        this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                            next: () => {
-                                this.socketService.disconnect();
-                                this.router.navigate(['/home']);
-                            },
-                            error: (error) => {
-                                this.snackbarService.openSnackBar(
-                                    `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
-                                );
-                            },
-                        });
-                    } else {
-                        this.socketService.disconnect();
-                        this.router.navigate(['/home']);
-                    }
-                }
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
-            },
-        });
+        if (this.matchLobby.hostId === this.currentPlayerId) {
+            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
+                next: () => {
+                    console.log('host left');
+                    this.socketService.disconnect();
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
+                },
+            });
+        }
     }
 
     onTimerComplete(): void {

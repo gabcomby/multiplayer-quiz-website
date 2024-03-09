@@ -91,6 +91,6 @@ export class GamePageComponent implements OnDestroy {
         });
     }
     handleGameLeave(): void {
-        this.unsubscribeSubject.push(this.gameService.handleGameLeave());
+        this.gameService.handleGameLeave();
     }
 }
