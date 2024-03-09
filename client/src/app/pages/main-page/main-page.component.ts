@@ -6,11 +6,12 @@ import { PasswordDialogComponent } from '@app/components/password-dialog/passwor
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { AuthService } from '@app/services/auth.service';
+import { GameService } from '@app/services/game.service';
+import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
-import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 
 @Component({
     selector: 'app-main-page',
@@ -29,6 +30,7 @@ export class MainPageComponent {
         private matchLobbyService: MatchLobbyService,
         private joinGameValidation: JoinGameValidationService,
         private socketService: SocketService,
+        private gameService: GameService,
     ) {}
 
     openAdminDialog(): void {
@@ -57,9 +59,10 @@ export class MainPageComponent {
                     if (lobby) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
-                                const newPlayer = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                                this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.socketService.connect();
-                                this.router.navigate(['/gameWait', lobby.id, newPlayer]);
+                                this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");

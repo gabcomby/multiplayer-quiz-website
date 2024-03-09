@@ -24,7 +24,7 @@ const routes: Routes = [
     { path: 'create-qgame/:id', component: CreateQGamePageComponent },
     { path: 'question-bank', component: QuestionBankComponent },
     { path: 'game/:lobbyId/:playerId', component: GamePageComponent },
-    { path: 'gameWait/:id/:host', component: GameWaitComponent },
+    { path: 'gameWait', component: GameWaitComponent },
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
     { path: 'gameTimer/:id/:idLobby/:idPlayer', component: GameTimerPageComponent },
