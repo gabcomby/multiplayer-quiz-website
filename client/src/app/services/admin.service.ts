@@ -15,7 +15,7 @@ const MAX_GAME_NAME_LENGTH = 35;
     providedIn: 'root',
 })
 export class AdminService {
-    // eslint-disable-next-line max-params -- Single responsibility principlex
+    // eslint-disable-next-line max-params -- Single responsibility principle
     constructor(
         private apiService: ApiService,
         private snackbarService: SnackbarService,

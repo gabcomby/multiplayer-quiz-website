@@ -65,14 +65,4 @@ export class HostGamePageComponent implements OnInit {
             this.endGame = true;
         });
     }
-    // ngOnInit(): void {
-    //     return;
-    // }
-    // ngOnDestroy() {
-    //     this.destroy.next();
-    //     this.destroy.complete();
-    //     this.unsubscribeSubject.forEach((subject) => {
-    //         subject.unsubscribe();
-    //     });
-    // }
 }

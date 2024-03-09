@@ -69,7 +69,6 @@ export class QuestionService {
         const validated =
             this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices) &&
             this.questionValidationService.validateQuestion(questionList[index]);
-        // this.disabled[index] = validated;
 
         if (listQuestionBank && validated) {
             this.updateQuestion(questionList[index].id, questionList[index]);

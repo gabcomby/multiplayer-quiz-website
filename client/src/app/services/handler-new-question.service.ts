@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Injectable({
     providedIn: 'root',
@@ -52,7 +52,6 @@ export class HandlerNewQuestionService {
             text: question.text,
             points: question.points,
             id: generateNewId(),
-            // id: '123',
             choices: choices.map((item: Choice) => ({ ...item })),
             lastModification: new Date(),
         };

@@ -4,11 +4,10 @@ import { Router } from '@angular/router';
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-// import { environment } from '@env/environment';
-import { ApiService } from '@app/services/api.service';
 import { Observable, Subscription, lastValueFrom } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
@@ -49,10 +48,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
     }
 
     initializeSocket() {
-        // this.socket = io(environment.serverUrl);
-        // this.socket.on('deleteId', (gameId: string) => {
-        //     this.deleteGameEvent(gameId);
-        // });
         this.socketService.deletedGame((gameId: string) => {
             this.deleteGameEvent(gameId);
         });

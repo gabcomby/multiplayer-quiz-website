@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
-// import { SocketService } from '@app/services/socket.service';
-// import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-results-view',
@@ -15,13 +13,8 @@ export class ResultsViewComponent implements OnInit {
     questions: Question[] = [];
     dataSource: Player[] = [];
     answersArray: AnswersPlayer[] = [];
-    // socket: Socket;
 
-    // private playerAnswersSubscription: Subscription;
-
-    constructor(
-        private gameService: GameService, // private socketService: SocketService,
-    ) {}
+    constructor(private gameService: GameService) {}
 
     get answersPlayerArray(): [string, number[]][] {
         return Array.from(this.answersQuestions.entries());

@@ -5,20 +5,14 @@ import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable } from 'rxjs';
-// import { SocketService } from './socket.service';
-// import { AnswerStateService } from './answer-state.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MatchLobbyService {
-    // TODO: Change this to the actual server URL
-    // private apiUrl = 'http://localhost:3000/api/lobbies';
     private apiUrl: string;
     constructor(
         private http: HttpClient,
-        // private answerStateService: AnswerStateService,
-        // private socketService: SocketService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/lobbies`;
