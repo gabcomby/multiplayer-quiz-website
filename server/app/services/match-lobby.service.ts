@@ -36,7 +36,7 @@ export class MatchLobbyService {
         );
     }
 
-    async removePlayer(lobbyId: string, playerId: string): Promise<ILobby> {
+    async removePlayer(playerId: string, lobbyId: string): Promise<ILobby> {
         return await matchLobbyModel.findOneAndUpdate(
             { id: lobbyId },
             {

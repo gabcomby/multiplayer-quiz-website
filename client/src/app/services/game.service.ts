@@ -304,6 +304,7 @@ export class GameService {
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
+                    this.socketService.adminDisconnect();
                     this.socketService.disconnect();
                     this.router.navigate(['/home']);
                 },
@@ -312,13 +313,28 @@ export class GameService {
                 },
             });
         } else {
-            this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
-                next: () => {
-                    this.socketService.disconnect();
-                    this.router.navigate(['/home']);
+            this.matchLobbyService.getLobby(this.lobbyId).subscribe({
+                next: (lobbyData) => {
+                    if (lobbyData.hostId === '') {
+                        console.log('host considered empty');
+                        this.socketService.disconnect();
+                        this.router.navigate(['/home']);
+                    } else {
+                        this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
+                            next: () => {
+                                console.log('player removed');
+                                this.socketService.playerDisconnect();
+                                this.socketService.disconnect();
+                                this.router.navigate(['/home']);
+                            },
+                            error: (error) => {
+                                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
+                            },
+                        });
+                    }
                 },
                 error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
                 },
             });
         }
@@ -348,6 +364,7 @@ export class GameService {
         this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
             next: (data) => {
                 this.lobbyData.playerList = data;
+                console.log(this.lobbyData.playerList);
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
@@ -400,11 +417,12 @@ export class GameService {
     } */
 
     setupWebsocketEvents(): void {
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
+        this.socketService.onTimerCountdown(() => {
+            // this.timerCountdown = data;
+            // if (this.timerCountdown === 0) {
+            //     console.log('test');
+            //     this.onTimerComplete();
+            // }
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
@@ -424,6 +442,7 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect(() => {
+            console.log('wtf');
             this.refreshPlayerList();
         });
 

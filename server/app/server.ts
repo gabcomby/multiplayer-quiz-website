@@ -127,6 +127,22 @@ export class Server {
                 }
             });
 
+            socket.on('admin-disconnect', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.io.to(roomsArray[1]).emit('adminDisconnected');
+                    this.rooms.delete(roomsArray[1]);
+                }
+            });
+
+            socket.on('player-disconnect', () => {
+                console.log('is called');
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.io.to(roomsArray[1]).emit('playerDisconnected');
+                }
+            });
+
             // HAS ROOMS
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
                 const roomsArray = Array.from(socket.rooms);

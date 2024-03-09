@@ -107,6 +107,12 @@ export class SocketService {
             callback();
         });
     }
+    adminDisconnect() {
+        this.socket.emit('admin-disconnect');
+    }
+    playerDisconnect() {
+        this.socket.emit('player-disconnect');
+    }
 
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {

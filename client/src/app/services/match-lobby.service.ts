@@ -4,7 +4,7 @@ import { API_BASE_URL } from '@app/app.module';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -33,18 +33,13 @@ export class MatchLobbyService {
             hostId: '',
         };
 
-        const res = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
-        res.subscribe({
-            next: (data) => {
-                return data;
-            },
-            error: (error) => {
+        const res = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`).pipe(
+            catchError((error) => {
+                // eslint-disable-next-line no-console
                 console.log(error);
-                return emptyLobby;
-            },
-        });
-
-        console.log(res);
+                return of(emptyLobby); // Return empty lobby in case of an error
+            }),
+        );
         return res;
     }
 
