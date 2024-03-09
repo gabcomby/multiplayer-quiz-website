@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 // import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
