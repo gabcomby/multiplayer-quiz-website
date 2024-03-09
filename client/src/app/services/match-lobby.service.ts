@@ -27,7 +27,7 @@ export class MatchLobbyService {
         return a;
     }
 
-    createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
+    createLobby(gameId: string): Observable<MatchLobby> {
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [],

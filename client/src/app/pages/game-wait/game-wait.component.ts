@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 export class GameWaitComponent implements OnInit, OnDestroy {
     matchLobby: MatchLobby = {
         id: '',
-        playerList: [],
+        playerList: [], // string vide c'est null
         gameId: '',
         bannedNames: [],
         lobbyCode: '',
@@ -42,7 +42,6 @@ export class GameWaitComponent implements OnInit, OnDestroy {
                 this.matchLobby = data;
                 this.isHost = this.playerId === `${this.matchLobby.hostId}`;
                 this.gameId = this.matchLobby.gameId;
-                this.socketService.connect();
                 this.socketService.onTimerGame(() => {
                     this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
                 });
