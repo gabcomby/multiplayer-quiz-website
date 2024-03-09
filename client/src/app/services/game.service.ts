@@ -12,7 +12,7 @@ import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, ReplaySubject, Subject, Subscription, concatMap } from 'rxjs';
+import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -263,40 +263,6 @@ export class GameService {
                 });
             },
         });
-    }
-
-    initializeHostGame(lobbyId: string): Subscription[] {
-        this.lobbyId = lobbyId;
-        // this.currentPlayerId = playerId;
-        this.currentQuestionIndex = 0;
-        this.previousQuestionIndex = 0;
-        this.answerIdx = [];
-        this.questionHasExpired = false;
-
-        const arraySubscription: Subscription[] = [];
-
-        arraySubscription.push(
-            this.matchLobbyService
-                .getLobby(this.lobbyId)
-                .pipe(
-                    concatMap((lobbyData) => {
-                        this.lobbyData = lobbyData;
-                        return this.apiService.getGame(this.lobbyData.gameId);
-                    }),
-                )
-                .subscribe({
-                    next: (gameData) => {
-                        this.gameData = gameData;
-
-                        this.setupWebSocketEvents(this.lobbyData, arraySubscription);
-                        this.socketService.startTimer();
-                    },
-                    error: (error) => {
-                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-                    },
-                }),
-        );
-        return arraySubscription;
     }
 
     getCurrentQuestion(): Question {

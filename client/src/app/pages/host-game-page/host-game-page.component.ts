@@ -51,7 +51,7 @@ export class HostGamePageComponent implements OnInit {
     }
 
     ngOnInit() {
-        from((this.unsubscribeSubject = this.gameService.initializeHostGame(this.route.snapshot.params['lobbyId'])))
+        from((this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'])))
             .pipe(
                 concatMap(() => this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId'])),
                 takeUntil(this.destroy),
