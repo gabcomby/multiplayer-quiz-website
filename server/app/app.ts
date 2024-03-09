@@ -101,7 +101,6 @@ export class Application {
     }
 
     private config(): void {
-        // Middlewares configuration
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
@@ -109,7 +108,6 @@ export class Application {
     }
 
     private errorHandling(): void {
-        // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
             const err: HttpException = new HttpException('Not Found');
             next(err);
