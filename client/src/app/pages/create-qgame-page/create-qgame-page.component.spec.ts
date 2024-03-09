@@ -246,7 +246,7 @@ describe('CreateQGamePageComponent', () => {
     });
 
     it('initialize forms controls with value when gameId is not null', () => {
-        const MAGIC_NUMB = 10;
+        const TIMER_DURATION = 10;
         component.gameForm = new FormGroup({
             name: new FormControl(''),
             description: new FormControl(''),
@@ -257,7 +257,7 @@ describe('CreateQGamePageComponent', () => {
         expect(component.gameForm).toBeTruthy();
         expect(component.gameForm.get('name')?.value).toBe('allo');
         expect(component.gameForm.get('description')?.value).toBe('test');
-        expect(component.gameForm.get('time')?.value).toBe(MAGIC_NUMB);
+        expect(component.gameForm.get('time')?.value).toBe(TIMER_DURATION);
     });
 
     it('should call createNewGame from service when onSubmit', async () => {

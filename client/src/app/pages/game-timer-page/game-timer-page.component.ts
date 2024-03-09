@@ -50,8 +50,8 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
                 this.onTimerComplete();
             }
         });
-        const timer = 5;
-        this.socketService.setTimerDuration(timer);
+        const TIMER = 5;
+        this.socketService.setTimerDuration(TIMER);
     }
 
     onTimerComplete(): void {
