@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-game-wait',
@@ -26,6 +25,7 @@ export class GameWaitComponent implements OnInit, OnDestroy {
     isHost: boolean;
     subscribeSubject: Subscription;
     private gameId: string;
+
     // eslint-disable-next-line max-params
     constructor(
         private route: ActivatedRoute,
@@ -42,7 +42,7 @@ export class GameWaitComponent implements OnInit, OnDestroy {
                 this.matchLobby = data;
                 this.isHost = this.playerId === `${this.matchLobby.hostId}`;
                 this.gameId = this.matchLobby.gameId;
-                // this.socketService.connect();
+                this.socketService.connect();
                 this.socketService.onTimerGame(() => {
                     this.router.navigate(['/gameTimer', this.gameId, this.matchLobby.id, this.playerId]);
                 });
