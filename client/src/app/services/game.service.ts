@@ -13,11 +13,8 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { AnswerStateService } from './answer-state.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
-
-const TIME_BETWEEN_QUESTIONS = 3000;
 
 @Injectable({
     providedIn: 'root',
@@ -63,6 +60,7 @@ export class GameService {
     subscription: Subscription;
     private minDuration: number;
     private maxDuration: number;
+
     // eslint-disable-next-line max-params
     constructor(
         private apiService: ApiService,
@@ -73,7 +71,6 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
