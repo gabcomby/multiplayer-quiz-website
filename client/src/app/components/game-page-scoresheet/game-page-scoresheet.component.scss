@@ -2,13 +2,17 @@ mat-card {
     width: 75%;
 }
 button {
-    width: 15%; 
+    width: 15%;
     height: 15%;
-    background-color: #04AA6D; 
+    background-color: #04aa6d;
     color: white;
     text-align: center;
     text-decoration: none;
     display: flex;
     font-size: 16px;
     cursor: pointer;
+}
+
+.leftplayers {
+    text-decoration: line-through;
 }

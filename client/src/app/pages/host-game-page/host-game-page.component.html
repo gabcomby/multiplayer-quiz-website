@@ -25,5 +25,8 @@
             [mark]="currentQuestion.points || 0"
         ></app-game-page-questions>
     </div>
+    <div class="score" *ngIf="!isLaunchTimer">
+        <app-game-page-scoresheet [isHost]="true" [playerList]="playerListValue"></app-game-page-scoresheet>
+    </div>
     <div class="histogram" *ngIf="!isLaunchTimer"></div>
 </div>

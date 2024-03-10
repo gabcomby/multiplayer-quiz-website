@@ -6,7 +6,7 @@
             </button>
         </mat-toolbar>
     </div>
-    <app-game-page-scoresheet class="score" [playerList]="playerList"></app-game-page-scoresheet>
+    <app-game-page-scoresheet class="score" [isHost]="isHost" [playerList]="playerList"></app-game-page-scoresheet>
     <app-game-page-livechat class="live-chat"></app-game-page-livechat>
     <div class="lobby-info">
         <p class="lobby-text">Code pour rejoindre le match: {{ lobbyCode }}</p>

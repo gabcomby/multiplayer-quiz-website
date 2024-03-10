@@ -4,12 +4,14 @@ import { API_BASE_URL } from '@app/app.module';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MatchLobbyService {
+    playerLeftSource = new Subject<unknown>();
+    playerLeft$ = this.playerLeftSource.asObservable();
     private apiUrl: string;
     constructor(
         private http: HttpClient,

@@ -329,6 +329,7 @@ export class GameService {
                                 this.socketService.playerDisconnect();
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
+                                this.matchLobbyService.playerLeftSource.next(this.currentPlayerId);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
