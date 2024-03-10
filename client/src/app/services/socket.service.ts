@@ -156,7 +156,7 @@ export class SocketService {
         this.socket.emit('chatMessage', { message, playerName, isHost });
     }
 
-    onChatMessage(): Observable<{ text: string; sender: string }> {
+    onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
         return new Observable((observer) => {
             this.socket.on('chatMessage', (data) => {
                 observer.next(data);
