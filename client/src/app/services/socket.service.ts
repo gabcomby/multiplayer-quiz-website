@@ -122,6 +122,10 @@ export class SocketService {
         this.socket.emit('answer-submitted');
     }
 
+    gameIsFinishedSocket() {
+        this.socket.emit('endGame');
+    }
+
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {
             this.socket.on('endGame', () => {
@@ -139,15 +143,10 @@ export class SocketService {
         this.socket.emit('playerAnswer', mapToArray);
     }
 
-    onPlayerAnswer(): Observable<AnswersPlayer> {
+    onPlayerAnswer(): Observable<AnswersPlayer[]> {
         return new Observable((observer) => {
-            this.socket.on('sendPlayerAnswer', (answer) => {
-                const map = new Map<string, number[]>();
-                answer.forEach((entry: { key: string; value: number[] }) => {
-                    map.set(entry.key, entry.value);
-                });
-
-                observer.next(map);
+            this.socket.on('sendPlayerAnswers', (answers: AnswersPlayer[]) => {
+                observer.next(answers);
             });
         });
     }
