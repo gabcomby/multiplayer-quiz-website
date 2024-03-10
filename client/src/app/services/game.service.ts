@@ -413,7 +413,7 @@ export class GameService {
 
         this.socketService.onGameLaunch(() => {
             this.router.navigate(['/game']);
-            // eslint-disable-next-line
+            // eslint-disable-next-line -- this is an explicit number
             this.socketService.setTimerDuration(5);
             this.socketService.startTimer();
         });

@@ -22,7 +22,7 @@ export class GamePageLivechatComponent implements OnInit {
     @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
     @Input() isHost: boolean = false;
-    messages: { text: string; sender: string; visible: boolean }[] = [];
+    messages: { text: string; sender: string; visible: boolean; timestamp: string }[] = [];
     newMessage: string = '';
 
     constructor(
@@ -45,33 +45,41 @@ export class GamePageLivechatComponent implements OnInit {
 
     sendMessage(): void {
         this.newMessage = this.newMessage.trim();
-        if (this.newMessage.length > MESSAGE_MAX_LENGTH) {
-            this.snackbar.openSnackBar('Le message ne peut pas dépasser 200 caractères');
+
+        if (this.newMessage.length === 0) {
+            this.snackbar.openSnackBar('Votre message est vide.');
             return;
         }
+
+        if (this.newMessage.length > MESSAGE_MAX_LENGTH) {
+            this.snackbar.openSnackBar('Votre message est trop long.');
+            return;
+        }
+
         if (this.newMessage) {
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const formattedMessage = this.isHost ? '[Organisateur] ' + this.playerName : this.playerName;
-            this.broadcastMessage(this.newMessage, formattedMessage);
+            this.broadcastMessage(this.newMessage, formattedMessage, currentTime);
             this.socketService.sendMessages(this.newMessage, this.playerName, this.isHost);
             this.newMessage = '';
         }
     }
 
-    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
+    hideMessage(message: { text: string; sender: string; visible: boolean; timestamp: string }): void {
         const index = this.messages.indexOf(message);
         if (index !== MESSAGE_NOT_FOUND) {
             this.messages.splice(index, 1);
         }
     }
 
-    private broadcastMessage(message: string, sender: string): void {
-        this.messages.push({ text: message, sender, visible: true });
+    private broadcastMessage(message: string, sender: string, timestamp: string): void {
+        this.messages.push({ text: message, sender, visible: true, timestamp });
         setTimeout(() => this.hideMessage(this.messages[this.messages.length - 1]), DISAPPEAR_DELAY);
     }
 
     private setupWebSocketEvents(): void {
         this.socketService.onChatMessage().subscribe(({ text, sender }) => {
-            this.broadcastMessage(text, sender);
+            this.broadcastMessage(text, sender, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         });
     }
 }
