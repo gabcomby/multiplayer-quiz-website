@@ -151,4 +151,16 @@ export class SocketService {
             });
         });
     }
+
+    sendMessages(message: string, playerName: string, isHost: boolean) {
+        this.socket.emit('chatMessage', { message, playerName, isHost });
+    }
+
+    onChatMessage(): Observable<{ text: string; sender: string }> {
+        return new Observable((observer) => {
+            this.socket.on('chatMessage', (data) => {
+                observer.next(data);
+            });
+        });
+    }
 }
