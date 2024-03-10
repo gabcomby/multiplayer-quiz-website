@@ -5,6 +5,8 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
 
+const START_TIMER_DURATION = 5;
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -38,7 +40,11 @@ export class GamePageComponent {
     }
 
     get totalGameDuration(): number {
-        return this.gameService.totalGameDuration;
+        if (this.isLaunchTimer) {
+            return START_TIMER_DURATION;
+        } else {
+            return this.gameService.totalGameDuration;
+        }
     }
 
     get currentQuestion(): Question {

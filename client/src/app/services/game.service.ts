@@ -17,6 +17,7 @@ import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+const START_TIMER_DURATION = 5;
 
 @Injectable({
     providedIn: 'root',
@@ -413,8 +414,7 @@ export class GameService {
 
         this.socketService.onGameLaunch(() => {
             this.router.navigate(['/game']);
-            // eslint-disable-next-line
-            this.socketService.setTimerDuration(5);
+            this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
         });
 
