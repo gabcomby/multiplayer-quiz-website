@@ -97,7 +97,7 @@ export class Server {
                 }
             });
 
-            // HAS ROOMS
+            // TODO: Maybe add an 'answersLocked = 0' line to reset it
             socket.on('stop-timer', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).timerId && this.rooms.get(roomsArray[1]).isRunning === true) {
@@ -107,7 +107,7 @@ export class Server {
                 }
             });
 
-            // HAS ROOMS
+            // TODO: Check why it's bugging
             socket.on('answer-submitted', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
@@ -139,6 +139,7 @@ export class Server {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected');
+                    // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
                 }
             });
 
@@ -173,6 +174,7 @@ export class Server {
                     this.io.to(roomsArray[1]).emit('game-started');
                 }
             });
+
             socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');
