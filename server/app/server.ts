@@ -108,7 +108,7 @@ export class Server {
             });
 
             // HAS ROOMS
-            socket.on('answerSubmitted', () => {
+            socket.on('answer-submitted', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.rooms.get(roomsArray[1]).answersLocked += 1;

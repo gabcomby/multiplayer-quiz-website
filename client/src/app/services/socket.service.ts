@@ -118,6 +118,9 @@ export class SocketService {
             callback();
         });
     }
+    submitAnswer() {
+        this.socket.emit('answer-submitted');
+    }
 
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {

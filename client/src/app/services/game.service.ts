@@ -361,9 +361,11 @@ export class GameService {
             if (this.currentPlayerId !== this.lobbyData.hostId) {
                 this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
                 this.sendPlayerAnswer(this.playerChoice);
+                // this.handleGameLeave();
             } else {
                 this.questions.push(this.currentQuestion);
                 this.questionGame.next(this.questions);
+                // this.handleGameLeave();
             }
         }
     }
@@ -421,14 +423,7 @@ export class GameService {
         this.socketService.onAnswerVerification((isCorrect: boolean) => {
             if (isCorrect) {
                 if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.matchLobbyService.getPlayer(this.lobbyId, this.currentPlayerId).subscribe({
-                        next: (player) => {
-                            this.updatePlayerScore(this.currentQuestion.points, player.score);
-                        },
-                        error: (error) => {
-                            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en récupérant le joueur: ${error}`);
-                        },
-                    });
+                    this.updatePlayerScore(this.currentQuestion.points);
                 }
             }
         });
@@ -446,8 +441,8 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
+    private updatePlayerScore(scoreFromQuestion: number): void {
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
             next: (data) => {
                 this.lobbyData = data;
             },
