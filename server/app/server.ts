@@ -92,7 +92,6 @@ export class Server {
             socket.on('start-timer', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).isRunning === false) {
-                    console.log('call to startCountdownTimer');
                     this.rooms.get(roomsArray[1]).isRunning = true;
                     this.rooms.get(roomsArray[1]).startCountdownTimer(this.io, roomsArray[1]);
                 }
@@ -102,7 +101,6 @@ export class Server {
             socket.on('stop-timer', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).timerId && this.rooms.get(roomsArray[1]).isRunning === true) {
-                    console.log('call to stopCountdownTimer');
                     clearInterval(this.rooms.get(roomsArray[1]).timerId);
                     this.rooms.get(roomsArray[1]).isRunning = false;
                     this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;

@@ -368,10 +368,6 @@ export class GameService {
 
     setupWebsocketEvents(): void {
         this.socketService.onTimerCountdown((data) => {
-            // roule dès que quelqu'un join la partie et le fais 2 fois.
-            // le problème est que le timerCountdown est à 0 et le onTimerComplete est appelé
-            // je sais pas pourquoi le timerCountdown est à 0
-            console.log('timer countdown', data);
             this.timerCountdown = data;
             if (this.timerCountdown === 0) {
                 this.onTimerComplete();
