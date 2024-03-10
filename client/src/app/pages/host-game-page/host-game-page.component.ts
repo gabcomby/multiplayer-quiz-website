@@ -31,10 +31,6 @@ export class HostGamePageComponent {
         return this.gameService.currentGameTitle;
     }
 
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
-    }
-
     get currentTimerCountdown(): number {
         return this.gameService.timerCountdownValue;
     }
@@ -51,24 +47,12 @@ export class HostGamePageComponent {
         return this.gameService.getCurrentQuestion();
     }
 
-    get questionHasExpiredValue(): boolean {
-        return this.gameService.questionHasExpired;
-    }
-
-    get answerIsCorrectValue(): boolean {
-        return this.gameService.answerIsCorrect;
-    }
-
     get playerListValue(): Player[] {
         return this.gameService.playerListFromLobby;
     }
 
     get isLaunchTimer(): boolean {
         return this.gameService.isLaunchTimerValue;
-    }
-
-    setAnswerIndex(answerIdx: number[]): void {
-        this.gameService.setAnswerIndex(answerIdx);
     }
 
     handleGameLeave(): void {
