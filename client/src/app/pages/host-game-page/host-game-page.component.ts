@@ -13,7 +13,6 @@ const START_TIMER_DURATION = 5;
     styleUrls: ['./host-game-page.component.scss'],
 })
 export class HostGamePageComponent {
-    endGame = false;
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
@@ -58,6 +57,11 @@ export class HostGamePageComponent {
     get currentPlayerNameValue(): string {
         return this.gameService.currentPlayerNameValue;
     }
+
+    get endGame(): boolean {
+        return this.gameService.endGame;
+    }
+
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }
