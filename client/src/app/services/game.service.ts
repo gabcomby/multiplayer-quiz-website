@@ -413,7 +413,11 @@ export class GameService {
         });
 
         this.socketService.onGameLaunch(() => {
-            this.router.navigate(['/game']);
+            if (this.currentPlayerId === this.lobbyData.hostId) {
+                this.router.navigate(['/host-game-page']);
+            } else {
+                this.router.navigate(['/game']);
+            }
             this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
         });
