@@ -27,6 +27,10 @@ export class GameWaitComponent {
         return this.gameService.matchLobby.lobbyCode;
     }
 
+    get currentPlayerName() {
+        return this.gameService.currentPlayerName;
+    }
+
     backHome() {
         this.socketService.disconnect();
         this.router.navigate(['/home']);

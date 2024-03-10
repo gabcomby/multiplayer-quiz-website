@@ -198,6 +198,11 @@ export class Server {
                 }
             });
 
+            socket.on('chatMessage', ({ message, playerName, isHost }) => {
+                const formattedMessage = isHost ? `Organisateur: ${message}` : `${playerName}: ${message}`;
+                socket.broadcast.emit('chatMessage', { text: formattedMessage, sender: playerName });
+            });
+
             // HAS ROOMS
             socket.on('start', () => {
                 const roomsArray = Array.from(socket.rooms);
