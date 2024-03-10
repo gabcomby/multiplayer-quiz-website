@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import { Room } from '@app/classes/room';
-import type { IChoice } from '@app/model/questions.model';
+import type { AnswersPlayer, IChoice } from '@app/model/questions.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
@@ -25,6 +25,7 @@ export class Server {
     };
     private server: http.Server;
     private io: SocketIoServer;
+    private playersAnswers: Map<string, AnswersPlayer[]> = new Map();
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -97,17 +98,18 @@ export class Server {
                 }
             });
 
-            // HAS ROOMS
+            // TODO: Maybe add an 'answersLocked = 0' line to reset it
             socket.on('stop-timer', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).timerId && this.rooms.get(roomsArray[1]).isRunning === true) {
                     clearInterval(this.rooms.get(roomsArray[1]).timerId);
                     this.rooms.get(roomsArray[1]).isRunning = false;
                     this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;
+                    this.rooms.get(roomsArray[1]).answersLocked = 0;
                 }
             });
 
-            // HAS ROOMS
+            // TODO: Check why it's bugging
             socket.on('answer-submitted', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
@@ -116,6 +118,24 @@ export class Server {
                         this.rooms.get(roomsArray[1]).answersLocked = 0;
                         this.io.to(roomsArray[1]).emit('stop-timer');
                     }
+                }
+            });
+
+            socket.on('playerAnswer', (answer) => {
+                const roomId = Array.from(socket.rooms)[1];
+                if (this.playersAnswers.has(roomId)) {
+                    this.playersAnswers.get(roomId).push(answer);
+                } else {
+                    this.playersAnswers.set(roomId, [answer]);
+                }
+
+                const room = this.rooms.get(roomId);
+                const playersCount = room.player.size;
+
+                if (this.playersAnswers.get(roomId).length === playersCount) {
+                    this.io.to(roomId).emit('sendPlayerAnswers', this.playersAnswers.get(roomId));
+
+                    this.playersAnswers.delete(roomId);
                 }
             });
 
@@ -139,6 +159,18 @@ export class Server {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected');
+                    // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
+                }
+            });
+
+            socket.on('endGame', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.rooms.get(roomsArray[1]).answersLocked += 1;
+                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
+                        this.rooms.get(roomsArray[1]).answersLocked = 0;
+                        this.io.to(roomsArray[1]).emit('endGame');
+                    }
                 }
             });
 
@@ -178,6 +210,7 @@ export class Server {
                     this.io.to(roomsArray[1]).emit('game-started');
                 }
             });
+
             socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');

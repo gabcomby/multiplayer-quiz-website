@@ -17,13 +17,14 @@ import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
+const START_TIMER_DURATION = 5;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
-    answersSelected = new ReplaySubject<AnswersPlayer>(1);
+    answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
@@ -60,6 +61,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
+    endGame = false;
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
@@ -154,7 +156,14 @@ export class GameService {
             this.calculateFinalResults();
         });
     }
+
+    gameIsFinished(): void {
+        if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
+            this.socketService.gameIsFinishedSocket();
+        }
+    }
     calculateFinalResults(): void {
+        this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
     }
@@ -297,7 +306,7 @@ export class GameService {
         this.socketService.sendPlayerAnswer(answer);
     }
 
-    getPlayerAnswers(): Observable<AnswersPlayer> {
+    getPlayerAnswers(): Observable<AnswersPlayer[]> {
         return this.answersSelected.asObservable();
     }
 
@@ -365,6 +374,7 @@ export class GameService {
                 this.questionGame.next(this.questions);
                 // this.handleGameLeave();
             }
+            this.gameIsFinished();
         }
     }
 
@@ -387,7 +397,7 @@ export class GameService {
             }
         });
 
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
             this.answersSelected.next(answer);
         });
 
@@ -413,8 +423,7 @@ export class GameService {
 
         this.socketService.onGameLaunch(() => {
             this.router.navigate(['/game']);
-            // eslint-disable-next-line -- this is an explicit number
-            this.socketService.setTimerDuration(5);
+            this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
         });
 

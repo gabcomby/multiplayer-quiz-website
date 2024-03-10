@@ -5,18 +5,18 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
 
+const START_TIMER_DURATION = 5;
+
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    endGame = false;
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
-
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
@@ -38,7 +38,11 @@ export class GamePageComponent {
     }
 
     get totalGameDuration(): number {
-        return this.gameService.totalGameDuration;
+        if (this.isLaunchTimer) {
+            return START_TIMER_DURATION;
+        } else {
+            return this.gameService.totalGameDuration;
+        }
     }
 
     get currentQuestion(): Question {
@@ -57,8 +61,20 @@ export class GamePageComponent {
         return this.gameService.playerListFromLobby;
     }
 
+    get currentPlayerId(): string {
+        return this.gameService.currentPlayerId;
+    }
+
+    get hostId(): string {
+        return this.gameService.matchLobby.hostId;
+    }
+
     get isLaunchTimer(): boolean {
         return this.gameService.isLaunchTimerValue;
+    }
+
+    get endGame(): boolean {
+        return this.gameService.endGame;
     }
 
     setAnswerIndex(answerIdx: number[]): void {
