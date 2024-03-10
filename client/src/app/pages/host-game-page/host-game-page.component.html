@@ -19,6 +19,11 @@
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
     <div class="question" *ngIf="!endGame && !isLaunchTimer">
-        <app-game-page-questions [question]="currentQuestion.text || ''" [mark]="currentQuestion.points || 0"></app-game-page-questions>
+        <app-game-page-questions
+            [isHost]="true"
+            [question]="currentQuestion.text || ''"
+            [mark]="currentQuestion.points || 0"
+        ></app-game-page-questions>
     </div>
+    <div class="histogram" *ngIf="!isLaunchTimer"></div>
 </div>
