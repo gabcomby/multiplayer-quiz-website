@@ -17,8 +17,9 @@ export class Room {
     }
 
     startCountdownTimer(io: SocketIoServer, roomId: string): void {
+        console.log('startCountdownTimer');
         this.currentTime = this.duration;
-        io.emit('timer-countdown', this.duration);
+        io.to(roomId).emit('timer-countdown', this.duration);
         const timerId = setInterval(
             () => {
                 this.currentTime -= 1;

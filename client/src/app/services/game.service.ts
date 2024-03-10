@@ -253,7 +253,6 @@ export class GameService {
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
-
                 if (this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)) {
                     // eslint-disable-next-line
                     this.currentPlayerName = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)!.name;
@@ -261,9 +260,7 @@ export class GameService {
                 this.apiService.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
-
                         this.setupWebsocketEvents();
-                        this.socketService.startTimer();
                     },
                     error: (error) => {
                         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);

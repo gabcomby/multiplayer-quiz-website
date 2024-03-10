@@ -44,12 +44,12 @@ export class GameTimerPageComponent implements OnInit, OnDestroy {
         this.socketService.startTimer();
     }
     setupWebSocketEvents() {
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
-        });
+        // this.socketService.onTimerCountdown((data) => {
+        //     this.timerCountdown = data;
+        //     if (this.timerCountdown === 0) {
+        //         this.onTimerComplete();
+        //     }
+        // });
         const TIMER = 5;
         this.socketService.setTimerDuration(TIMER);
     }

@@ -58,6 +58,7 @@ export class SocketService {
 
     onTimerCountdown(callback: (data: number) => void): void {
         this.socket.on('timer-countdown', (data: number) => {
+            console.log(data);
             callback(data);
         });
     }
