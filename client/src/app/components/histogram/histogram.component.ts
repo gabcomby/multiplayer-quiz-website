@@ -74,47 +74,4 @@ export class HistogramComponent implements OnInit {
             value: count,
         }));
     }
-
-    // ngOnInit(): void {
-    //     this.constructAnswerCounts();
-    //     this.answerCounts.forEach((value, key) => {
-    //         this.answerCountsArray.push({ key, value });
-    //     });
-    //     this.dataHistogram();
-    // }
-
-    // private constructAnswerCounts(): void {
-    //     this.questionsGame.forEach((question) => {
-    //         const answerCountMap: Map<Choice, number> = new Map();
-    //         question.choices.forEach((choice) => answerCountMap.set(choice, 0));
-    //         this.answerCounts.set(question.text, answerCountMap);
-    //     });
-
-    //     this.answersPlayer.forEach(([questionText, choices]) => {
-    //         const answerCountMap = this.answerCounts.get(questionText);
-    //         if (answerCountMap) {
-    //             choices.forEach((choiceIndex) => {
-    //                 const choice = this.questionsGame.find((question) => question.text === questionText)?.choices[choiceIndex];
-    //                 if (choice) {
-    //                     const count = answerCountMap.get(choice);
-    //                     if (count !== undefined) {
-    //                         answerCountMap.set(choice, count + 1);
-    //                     }
-    //                 }
-    //             });
-    //         }
-    //     });
-    // }
-
-    // private dataHistogram(): void {
-    //     this.histogramData = this.answerCountsArray
-    //         .map((answer) => {
-    //             const data: { name: string; value: number }[] = [];
-    //             answer.value.forEach((count, choice) => {
-    //                 data.push({ name: choice.text, value: count });
-    //             });
-    //             return data;
-    //         })
-    //         .reduce((acc, curr) => acc.concat(curr), []);
-    // }
 }
