@@ -170,7 +170,7 @@ export class Server {
             socket.on('start', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('game-timer');
+                    this.io.to(roomsArray[1]).emit('game-started');
                 }
             });
             socket.on('disconnect', () => {

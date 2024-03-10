@@ -28,14 +28,15 @@ export class GameWaitComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.socketService.onTimerGame(() => {
-            this.router.navigate([
-                '/gameTimer',
-                this.gameService.matchLobby.gameId,
-                this.gameService.matchLobby.id,
-                this.gameService.currentPlayerId,
-            ]);
-        });
+        console.log('fuck you');
+        // this.socketService.onTimerGame(() => {
+        //     this.router.navigate([
+        //         '/gameTimer',
+        //         this.gameService.matchLobby.gameId,
+        //         this.gameService.matchLobby.id,
+        //         this.gameService.currentPlayerId,
+        //     ]);
+        // });
     }
 
     backHome() {
@@ -45,6 +46,7 @@ export class GameWaitComponent implements OnInit {
 
     handleGameLaunch() {
         this.socketService.startGame();
+        this.router.navigate(['/game']);
     }
 
     handleGameLeave() {

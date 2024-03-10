@@ -113,6 +113,11 @@ export class SocketService {
     playerDisconnect() {
         this.socket.emit('player-disconnect');
     }
+    onGameLaunch(callback: () => void) {
+        this.socket.on('game-started', () => {
+            callback();
+        });
+    }
 
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {

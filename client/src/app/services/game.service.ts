@@ -397,6 +397,12 @@ export class GameService {
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
         });
+
+        this.socketService.onGameLaunch(() => {
+            // eslint-disable-next-line
+            this.socketService.setTimerDuration(5);
+            this.socketService.startTimer();
+        });
     }
 
     private handleNextQuestion(): void {
