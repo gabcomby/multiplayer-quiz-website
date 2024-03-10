@@ -17,7 +17,7 @@
     <div class="live-chat" *ngIf="!isLaunchTimer">
         <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar"></app-game-page-livechat>
     </div>
-    <div *ngIf="!isHost" class="timer">
+    <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
     <div class="question" *ngIf="!endGame && !isLaunchTimer">
