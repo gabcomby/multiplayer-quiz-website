@@ -417,9 +417,25 @@ export class GameService {
             this.socketService.setTimerDuration(5);
             this.socketService.startTimer();
         });
+
+        this.socketService.onAnswerVerification((isCorrect: boolean) => {
+            if (isCorrect) {
+                if (this.currentPlayerId !== this.lobbyData.hostId) {
+                    this.matchLobbyService.getPlayer(this.lobbyId, this.currentPlayerId).subscribe({
+                        next: (player) => {
+                            this.updatePlayerScore(this.currentQuestion.points, player.score);
+                        },
+                        error: (error) => {
+                            this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en récupérant le joueur: ${error}`);
+                        },
+                    });
+                }
+            }
+        });
     }
 
     private handleNextQuestion(): void {
+        this.refreshPlayerList();
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {
@@ -430,7 +446,7 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    /* private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
+    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
         this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
             next: (data) => {
                 this.lobbyData = data;
@@ -439,5 +455,5 @@ export class GameService {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
             },
         });
-    } */
+    }
 }
