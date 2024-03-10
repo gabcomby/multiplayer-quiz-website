@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-// import { environment } from '@env/environment';
 import { Observable, Subscription, lastValueFrom } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
@@ -28,16 +28,17 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
 
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
-        private gameService: GameService,
         private socketService: SocketService,
         private router: Router,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
         private dialog: MatDialog,
+        private apiService: ApiService,
+        private gameService: GameService,
     ) {}
 
     async ngOnInit() {
-        this.gameService.getGames().then((games) => {
+        this.apiService.getGames().then((games) => {
             this.games = games;
         });
         this.gamesUnderscoreId = this.socketService.connect();
@@ -49,10 +50,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
     }
 
     initializeSocket() {
-        // this.socket = io(environment.serverUrl);
-        // this.socket.on('deleteId', (gameId: string) => {
-        //     this.deleteGameEvent(gameId);
-        // });
         this.socketService.deletedGame((gameId: string) => {
             this.deleteGameEvent(gameId);
         });
@@ -99,9 +96,9 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + suggestion);
     }
 
-    async isTheGameModified(game: Game): Promise<boolean> {
+    async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
-        const newGameArray = await this.gameService.getGames();
+        const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((g) => g.id === game.id);
         if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND) {
             const indexGame = this.games.indexOf(game);
@@ -116,13 +113,13 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
     }
 
     async isTheGameModifiedTest(game: Game): Promise<boolean> {
-        const isModified = await this.isTheGameModified(game);
+        const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
             return false;
         } else {
-            this.subscription = this.createNewMatchLobby('Test Player', game.id).subscribe({
+            this.subscription = this.createNewMatchLobby(game.id).subscribe({
                 next: (matchLobby) => {
                     this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
                 },
@@ -137,7 +134,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.socketService.disconnect();
     }
 
-    // TODO: Modify this function to use Obervable (Pierre-Emmanuel)
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
         const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
             width: '300px',
@@ -147,15 +143,18 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
         if (!result || this.isEmpyDialog(result)) return false;
-        const isModified = await this.isTheGameModified(game);
+        const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
             return false;
         } else {
-            this.createNewMatchLobby(result.userName, game.id).subscribe({
+            this.createNewMatchLobby(game.id).subscribe({
                 next: (matchLobby) => {
-                    this.router.navigate(['/gameWait', matchLobby.id, matchLobby.hostId]);
+                    this.socketService.connect();
+                    this.socketService.createRoom(matchLobby.lobbyCode);
+                    this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
+                    this.router.navigate(['/gameWait']);
                 },
                 error: (error) => {
                     this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
@@ -170,8 +169,8 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         }
     }
 
-    createNewMatchLobby(playerName: string, gameId: string): Observable<MatchLobby> {
-        return this.matchLobbyService.createLobby(playerName, gameId);
+    createNewMatchLobby(gameId: string): Observable<MatchLobby> {
+        return this.matchLobbyService.createLobby(gameId);
     }
 
     createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {

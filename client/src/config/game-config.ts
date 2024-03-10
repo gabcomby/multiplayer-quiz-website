@@ -1,0 +1,8 @@
+export const TIME_BETWEEN_QUESTIONS = 3000;
+export const SOCKET_TIMER_DURATION = 5;
+
+export const MAX_QUESTIONS_CHOICES = 4;
+export const NOTIFICATION_DURATION = 10000;
+
+export const HISTOGRAM_SIZE_SMALL = 400;
+export const HISTOGRAM_SIZE_MEDIUM = 700;

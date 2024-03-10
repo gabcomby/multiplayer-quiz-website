@@ -5,20 +5,14 @@ import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { generateLobbyId, generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable } from 'rxjs';
-// import { SocketService } from './socket.service';
-// import { AnswerStateService } from './answer-state.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MatchLobbyService {
-    // TODO: Change this to the actual server URL
-    // private apiUrl = 'http://localhost:3000/api/lobbies';
     private apiUrl: string;
     constructor(
         private http: HttpClient,
-        // private answerStateService: AnswerStateService,
-        // private socketService: SocketService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
         this.apiUrl = `${apiBaseURL}/lobbies`;
@@ -29,11 +23,14 @@ export class MatchLobbyService {
     }
 
     getLobby(lobbyId: string): Observable<MatchLobby> {
-        const a = this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
-        return a;
+        return this.http.get<MatchLobby>(`${this.apiUrl}/${lobbyId}`);
     }
 
-    createLobby(creatorName: string, gameId: string): Observable<MatchLobby> {
+    lobbyExists(lobbyId: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/${lobbyId}/exist`);
+    }
+
+    createLobby(gameId: string): Observable<MatchLobby> {
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [],
@@ -100,5 +97,9 @@ export class MatchLobbyService {
 
     getBannedArray(lobbyId: string): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}/${lobbyId}/banned`);
+    }
+
+    banPlayer(lobby: string, name: string): Observable<string[]> {
+        return this.http.patch<string[]>(`${this.apiUrl}/${lobby}/banned`, { name });
     }
 }

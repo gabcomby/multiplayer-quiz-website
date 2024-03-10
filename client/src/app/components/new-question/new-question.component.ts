@@ -2,10 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Choice, Question } from '@app/interfaces/game';
 import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
-// import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
-// import { SnackbarService } from '@app/services/snackbar.service';
-// import { generateNewId } from '@app/utils/assign-new-game-attributes';
 
 @Component({
     selector: 'app-new-question',

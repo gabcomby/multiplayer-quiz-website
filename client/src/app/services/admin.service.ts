@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 
 import { Game } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
+import { ApiService } from './api.service';
+import { GameService } from './game.service';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -14,10 +15,12 @@ const MAX_GAME_NAME_LENGTH = 35;
     providedIn: 'root',
 })
 export class AdminService {
+    // eslint-disable-next-line max-params -- Single responsibility principle
     constructor(
-        private gameService: GameService,
+        private apiService: ApiService,
         private snackbarService: SnackbarService,
         private socketService: SocketService,
+        private gameService: GameService,
     ) {}
 
     async init(): Promise<Game[]> {
@@ -27,17 +30,17 @@ export class AdminService {
     }
 
     async toggleVisibility(game: Game, isVisible: boolean): Promise<void> {
-        if (!this.gameService.getGame(game.id)) return;
+        if (!this.apiService.getGame(game.id)) return;
 
         game.isVisible = isVisible;
-        this.gameService.patchGame(game).then(() => {
+        this.apiService.patchGame(game).then(() => {
             this.snackbarService.openSnackBar('La visibilité a été mise à jour avec succès.');
             return;
         });
     }
 
     exportGameAsJson(game: Game): void {
-        this.gameService.getGame(game.id).subscribe({
+        this.apiService.getGame(game.id).subscribe({
             next: (data) => {
                 const json = JSON.stringify(this.removeUnwantedFields(data as unknown as Record<string, unknown>));
                 this.snackbarService.openSnackBar('Le jeu a été exporté avec succès.');
@@ -59,13 +62,13 @@ export class AdminService {
         game.isVisible = false;
         this.prepareGameForImport(game);
         dataSource = [...dataSource, game];
-        this.gameService.createGame(game);
+        this.apiService.createGame(game);
         this.snackbarService.openSnackBar('Le jeu a été importé avec succès.');
         return dataSource;
     }
 
     async deleteGame(gameId: string): Promise<void> {
-        return this.gameService
+        return this.apiService
             .deleteGame(gameId)
             .then(() => {
                 this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
@@ -110,7 +113,7 @@ export class AdminService {
 
     private async fetchGames(): Promise<Game[]> {
         try {
-            const games = await this.gameService.getGames();
+            const games = await this.apiService.getGames();
             return games;
         } catch (error) {
             this.snackbarService.openSnackBar('Erreur lors de la récupération des jeux.');

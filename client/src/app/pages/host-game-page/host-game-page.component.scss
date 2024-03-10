@@ -1,0 +1,36 @@
+$base-font-size: 16; // Default base font-size in pixels
+
+// Function to convert px to em
+@function px-to-em($pixels, $context: $base-font-size) {
+    @return #{$pixels / $context}em;
+}
+
+#menu-bar {
+    height: 100%; // This is relative to its container, no change needed
+}
+
+.large-bar-spacer {
+    flex: 1 1 auto; // Flex values do not need conversion
+}
+
+.top-bar-text {
+    font-size: px-to-em(24); // 1.5em based on 16px base font-size
+    font-weight: bold;
+}
+
+.container {
+    height: 100%; // This is relative, no change needed
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    grid-template-rows: px-to-em(50) 30% 60%; // Adjust percentages as needed
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        'top-bar top-bar top-bar'
+        'live-chat timer score'
+        'live-chat question score';
+}
+
+.top-bar {
+    grid-area: top-bar;
+}

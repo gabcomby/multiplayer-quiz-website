@@ -32,6 +32,15 @@ export class MatchLobbyController {
             }
         });
 
+        this.router.get('/:id/exist', async (req: Request, res: Response) => {
+            try {
+                const exists = await this.matchLobbyService.lobbyExists(req.params.id);
+                res.json(exists);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching lobby from server' });
+            }
+        });
+
         this.router.post('/', async (req: Request, res: Response) => {
             try {
                 const lobby = await this.matchLobbyService.createLobby(req.body);

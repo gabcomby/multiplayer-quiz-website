@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { API_BASE_URL } from '@app/app.module';
@@ -11,23 +10,21 @@ import { Router } from '@angular/router';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { Observable, Subscription, concatMap, ReplaySubject, firstValueFrom } from 'rxjs';
-import { AnswerStateService } from './answer-state.service';
+import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
-// const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    // private apiUrl: string;
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer>(1);
-
+    playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
 
@@ -62,14 +59,14 @@ export class GameService {
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
-    endGame = false;
     subscription: Subscription;
-    // isLocked: number;
     private minDuration: number;
     private maxDuration: number;
+    private isLaunchTimer: boolean;
+
     // eslint-disable-next-line max-params
     constructor(
-        private http: HttpClient,
+        private apiService: ApiService,
         private questionService: QuestionService,
         private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
@@ -77,7 +74,6 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService, // private route: ActivatedRoute,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -137,45 +133,34 @@ export class GameService {
         return this.lobbyData.playerList;
     }
 
+    get matchLobby(): MatchLobby {
+        return this.lobbyData;
+    }
+
+    get game(): Game {
+        return this.gameData;
+    }
+
+    get isLaunchTimerValue(): boolean {
+        return this.isLaunchTimer;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
 
+    gameEnded(): void {
+        this.socketService.onEndGame().subscribe(() => {
+            this.calculateFinalResults();
+        });
+    }
     calculateFinalResults(): void {
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
     }
 
-    // HTTP REQUEST HANDLING STARTS HERE =============================================================================
-
-    getGame(gameId: string): Observable<Game> {
-        return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
-    }
-
-    async getGames(): Promise<Game[]> {
-        const games$ = this.http.get<Game[]>(this.apiUrl);
-        const games = await firstValueFrom(games$);
-        return games;
-    }
-
-    async createGame(game: Game): Promise<Game> {
-        const game$ = this.http.post<Game>(this.apiUrl, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
-    }
-
-    async deleteGame(gameId: string): Promise<void> {
-        const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
-        await firstValueFrom(game$);
-    }
-
-    async patchGame(game: Game): Promise<Game> {
-        const game$ = this.http.patch<Game>(`${this.apiUrl}/${game.id}`, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
-    }
     async validateDuplicationGame(game: Game, error: string[]) {
-        const gameList = await this.getGames();
+        const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
         const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
         if (titleExisting) {
@@ -186,7 +171,7 @@ export class GameService {
         }
     }
     async validateDeletedGame(game: Game) {
-        const gameList = await this.getGames();
+        const gameList = await this.apiService.getGames();
         const idExisting = gameList.find((element) => element.id === game.id);
         if (idExisting) {
             return true;
@@ -199,9 +184,9 @@ export class GameService {
         try {
             if (await this.isValidGame(modifiedGame)) {
                 if (await this.validateDeletedGame(modifiedGame)) {
-                    await this.patchGame(modifiedGame);
+                    await this.apiService.patchGame(modifiedGame);
                 } else {
-                    await this.createGame(modifiedGame);
+                    await this.apiService.createGame(modifiedGame);
                 }
                 return true;
             }
@@ -210,6 +195,7 @@ export class GameService {
             throw new Error('handling error');
         }
     }
+
     createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
         return {
             id: isNewGame ? generateNewId() : gameModified.id,
@@ -259,43 +245,33 @@ export class GameService {
         if (!game.lastModification) errors.push('La date de mise à jour est requise');
         if (game.questions.length < 1) errors.push('Au moins une question');
     }
-    // HTTP REQUEST HANDLING ENDS HERE ===============================================================================
 
-    initializeLobbyAndGame(lobbyId: string, playerId: string): Subscription[] {
+    initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
         this.answerIdx = [];
         this.questionHasExpired = false;
-        let currentPlayer: Player | undefined;
-        const arraySubscription: Subscription[] = [];
-
-        arraySubscription.push(
-            this.matchLobbyService
-                .getLobby(this.lobbyId)
-                .pipe(
-                    concatMap((lobbyData) => {
-                        this.lobbyData = lobbyData;
-                        currentPlayer = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                        this.currentPlayerName = currentPlayer ? currentPlayer.name : '';
-                        return this.getGame(this.lobbyData.gameId);
-                    }),
-                )
-                .subscribe({
+        this.isLaunchTimer = true;
+        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
+            next: (lobbyData) => {
+                this.lobbyData = lobbyData;
+                if (this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)) {
+                    // eslint-disable-next-line
+                    this.currentPlayerName = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)!.name;
+                }
+                this.apiService.getGame(this.lobbyData.gameId).subscribe({
                     next: (gameData) => {
                         this.gameData = gameData;
-
-                        this.setupWebSocketEvents(this.lobbyData, arraySubscription, currentPlayer);
-
-                        this.socketService.startTimer();
+                        this.setupWebsocketEvents();
                     },
                     error: (error) => {
                         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
                     },
-                }),
-        );
-        return arraySubscription;
+                });
+            },
+        });
     }
 
     getCurrentQuestion(): Question {
@@ -316,60 +292,20 @@ export class GameService {
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
-    // allAnswerlocked(lobby: MatchLobby) {
-    //     console.log(lobby.playerList);
-    //     const allLocked = lobby.playerList.every((player) => player.isLocked === true);
-    //     if (allLocked) {
-    //         this.onTimerComplete();
-    //     }
-    // }
+
+    sendPlayerAnswer(answer: AnswersPlayer) {
+        this.socketService.sendPlayerAnswer(answer);
+    }
+
+    getPlayerAnswers(): Observable<AnswersPlayer> {
+        return this.answersSelected.asObservable();
+    }
 
     handleGameLeave() {
-        return this.matchLobbyService.removePlayer(this.currentPlayerId, this.lobbyId).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-                if (data) {
-                    if (this.lobbyData.playerList === null || this.lobbyData.playerList.length === 0) {
-                        this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                            next: () => {
-                                this.socketService.disconnect();
-                                this.router.navigate(['/home']);
-                            },
-                            error: (error) => {
-                                this.snackbarService.openSnackBar(
-                                    `Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`,
-                                );
-                            },
-                        });
-                    } else {
-                        this.socketService.disconnect();
-                        this.router.navigate(['/home']);
-                    }
-                }
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
-            },
-        });
-    }
-    private setupWebSocketEvents(lobbyData: MatchLobby, arraySubscription: Subscription[], currentPlayer?: Player) {
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
-        });
-
-        if (this.gameData && this.gameData.duration) {
-            this.socketService.setTimerDuration(this.gameData.duration);
-        }
-
-        this.socketService.onDisconnect(() => {
-            this.handleGameLeave();
-        });
-        this.socketService.onPlayerDisconnect(() => {
+        if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
+                    this.socketService.adminDisconnect();
                     this.socketService.disconnect();
                     this.router.navigate(['/home']);
                 },
@@ -377,38 +313,40 @@ export class GameService {
                     this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
                 },
             });
-            this.snackbarService.openSnackBar('playerout');
-        });
-        this.socketService.onStopTimer(() => {
-            this.onTimerComplete();
-        });
-        if (currentPlayer) {
-            this.socketService.playerCreated(currentPlayer.id);
-            arraySubscription.push(this.checkAllAnswersLocker());
-            this.socketService.onAnswerVerification((data) => {
-                this.answerIsCorrect = data;
-                if (data === true) {
-                    this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points, currentPlayer?.score);
-                }
-            });
         } else {
-            this.socketService.adminCreated(lobbyData.hostId);
+            this.matchLobbyService.lobbyExists(this.lobbyId).subscribe({
+                next: (data) => {
+                    if (data === false) {
+                        this.socketService.disconnect();
+                        this.router.navigate(['/home']);
+                    } else {
+                        this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
+                            next: () => {
+                                this.socketService.playerDisconnect();
+                                this.socketService.disconnect();
+                                this.router.navigate(['/home']);
+                            },
+                            error: (error) => {
+                                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
+                            },
+                        });
+                    }
+                },
+                error: (error) => {
+                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
+                },
+            });
         }
     }
-    private checkAllAnswersLocker(): Subscription {
-        return this.answerStateService.answerLocked.subscribe({
-            next: (isLocked) => {
-                // if (currentPlayer) {
-                //     currentPlayer.isLocked = true;
-                //     this.allAnswerlocked(lobbyData);
-                // }
-                if (isLocked) {
-                    this.socketService.answerSubmit();
-                }
-            },
-        });
-    }
-    private onTimerComplete(): void {
+
+    onTimerComplete(): void {
+        if (this.isLaunchTimer) {
+            this.socketService.stopTimer();
+            this.isLaunchTimer = false;
+            this.socketService.setTimerDuration(this.gameData.duration);
+            this.socketService.startTimer();
+            return;
+        }
         this.socketService.stopTimer();
         this.questionHasExpired = true;
         this.previousQuestionIndex = this.currentQuestionIndex;
@@ -418,28 +356,91 @@ export class GameService {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         } else {
-            this.questions.push(this.currentQuestion);
-            this.questionGame.next(this.questions);
-            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-            this.answersSelected.next(this.playerChoice);
-            this.calculateFinalResults();
-            // setTimeout(() => {
-            //     this.handleGameLeave();
-            // }, TIME_BETWEEN_QUESTIONS);
+            if (this.currentPlayerId !== this.lobbyData.hostId) {
+                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                this.sendPlayerAnswer(this.playerChoice);
+                // this.handleGameLeave();
+            } else {
+                this.questions.push(this.currentQuestion);
+                this.questionGame.next(this.questions);
+                // this.handleGameLeave();
+            }
         }
     }
 
+    refreshPlayerList(): void {
+        this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
+            next: (data) => {
+                this.lobbyData.playerList = data;
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
+            },
+        });
+    }
+
+    setupWebsocketEvents(): void {
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
+            if (this.timerCountdown === 0) {
+                this.onTimerComplete();
+            }
+        });
+
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+            this.answersSelected.next(answer);
+        });
+
+        this.socketService.onEndGame().subscribe(() => {
+            this.calculateFinalResults();
+        });
+
+        this.socketService.onStopTimer(() => {
+            this.onTimerComplete();
+        });
+
+        this.socketService.onAdminDisconnect(() => {
+            this.handleGameLeave();
+        });
+
+        this.socketService.onPlayerDisconnect(() => {
+            this.refreshPlayerList();
+        });
+
+        this.socketService.onNewPlayerJoin(() => {
+            this.refreshPlayerList();
+        });
+
+        this.socketService.onGameLaunch(() => {
+            this.router.navigate(['/game']);
+            // eslint-disable-next-line
+            this.socketService.setTimerDuration(5);
+            this.socketService.startTimer();
+        });
+
+        this.socketService.onAnswerVerification((isCorrect: boolean) => {
+            if (isCorrect) {
+                if (this.currentPlayerId !== this.lobbyData.hostId) {
+                    this.updatePlayerScore(this.currentQuestion.points);
+                }
+            }
+        });
+    }
+
     private handleNextQuestion(): void {
-        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        this.answersSelected.next(this.playerChoice);
-        this.questions.push(this.currentQuestion);
+        this.refreshPlayerList();
+        if (this.currentPlayerId !== this.lobbyData.hostId) {
+            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        } else {
+            this.questions.push(this.currentQuestion);
+        }
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number, currentScore: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion + currentScore).subscribe({
+    private updatePlayerScore(scoreFromQuestion: number): void {
+        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
             next: (data) => {
                 this.lobbyData = data;
             },

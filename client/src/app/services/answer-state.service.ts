@@ -8,7 +8,6 @@ import { BehaviorSubject } from 'rxjs';
 export class AnswerStateService {
     answerLockedSource = new BehaviorSubject<boolean>(false);
     answerLocked = this.answerLockedSource.asObservable();
-    // allLocked = 0;
 
     lockAnswer(isLocked: boolean) {
         this.answerLockedSource.next(isLocked);

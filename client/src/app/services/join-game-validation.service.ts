@@ -36,8 +36,12 @@ export class JoinGameValidationService {
 
         return false;
     }
-    async getNameAndLobby(namePlayer: string, lobbyNum: string) {
+    async receiveNameAndLobby(namePlayer: string, lobbyNum: string) {
         this.name = namePlayer;
         this.lobby = lobbyNum;
+    }
+
+    getLobby(): string {
+        return this.lobby;
     }
 }

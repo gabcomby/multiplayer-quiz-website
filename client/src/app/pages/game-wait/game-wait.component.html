@@ -1,15 +1,15 @@
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
-            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="backHome()">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="handleGameLeave()">
                 <mat-icon>logout</mat-icon>
             </button>
         </mat-toolbar>
     </div>
-    <app-game-page-scoresheet class="score" [playerList]="matchLobby.playerList"></app-game-page-scoresheet>
+    <app-game-page-scoresheet class="score" [playerList]="playerList"></app-game-page-scoresheet>
     <app-game-page-livechat class="live-chat"></app-game-page-livechat>
     <div class="lobby-info">
-        <p class="lobby-text">Code pour rejoindre le match: {{ matchLobby.lobbyCode }}</p>
+        <p class="lobby-text">Code pour rejoindre le match: {{ lobbyCode }}</p>
     </div>
     <div *ngIf="isHost === true" class="start-game">
         <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>

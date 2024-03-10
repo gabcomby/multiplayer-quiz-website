@@ -1,4 +1,12 @@
 <div class="container">
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </mat-toolbar>
+    </div>
+
     <div class="palmares-container">
         <mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="name">
@@ -16,5 +24,7 @@
         </mat-table>
         <app-game-page-livechat class="live-chat"></app-game-page-livechat>
     </div>
-    <app-histogram [answersPlayer]="answersPlayerArray" [questionsGame]="questions"></app-histogram>
+    <div class="histogram">
+        <app-histogram [answersPlayer]="answersPlayerArray" [questionsGame]="questions"></app-histogram>
+    </div>
 </div>

@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
-import type { Question } from '@app/interfaces/game';
-import type { Player } from '@app/interfaces/match';
+import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-game-page',
-    templateUrl: './game-page.component.html',
-    styleUrls: ['./game-page.component.scss'],
+    selector: 'app-host-game-page',
+    templateUrl: './host-game-page.component.html',
+    styleUrls: ['./host-game-page.component.scss'],
 })
-export class GamePageComponent {
+export class HostGamePageComponent {
     endGame = false;
-    isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
+
     constructor(private gameService: GameService) {}
 
     get currentQuestionIndexValue(): number {
@@ -45,27 +44,19 @@ export class GamePageComponent {
         return this.gameService.getCurrentQuestion();
     }
 
-    get questionHasExpiredValue(): boolean {
-        return this.gameService.questionHasExpired;
-    }
-
-    get answerIsCorrectValue(): boolean {
-        return this.gameService.answerIsCorrect;
-    }
-
-    get playerListValue(): Player[] {
-        return this.gameService.playerListFromLobby;
-    }
-
-    get isLaunchTimer(): boolean {
-        return this.gameService.isLaunchTimerValue;
-    }
-
-    setAnswerIndex(answerIdx: number[]): void {
-        this.gameService.setAnswerIndex(answerIdx);
-    }
-
-    handleGameLeave(): void {
-        this.gameService.handleGameLeave();
-    }
+    /* ngOnInit() {
+        from((this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'])))
+            .pipe(
+                concatMap(() => this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId'])),
+                takeUntil(this.destroy),
+            )
+            .subscribe({
+                next: (lobby) => {
+                    this.lobby = lobby;
+                },
+            });
+        this.gameService.finalResultsEmitter.subscribe(() => {
+            this.endGame = true;
+        });
+    }*/
 }

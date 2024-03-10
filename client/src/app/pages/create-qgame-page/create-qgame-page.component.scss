@@ -52,23 +52,20 @@
 #modifyingComponent {
     display: flex;
     flex: 1;
-    // background-color: blue;
 }
 #registerGame {
-    // background-color: red;
     display: flex;
     justify-content: center;
     flex-direction: column;
     padding: 15px;
 }
-#registerButton{
+#registerButton {
     width: 25%;
 }
 #newGame {
-    // background-color: green;
     flex: 1;
 }
 
-#addQuestion{
+#addQuestion {
     width: 100%;
 }

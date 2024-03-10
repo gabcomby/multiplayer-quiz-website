@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
+const SIZE1 = 400;
+const SIZE2 = 700;
 @Component({
     selector: 'app-histogram',
     templateUrl: './histogram.component.html',
@@ -12,7 +14,9 @@ export class HistogramComponent implements OnInit {
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
+    histogramData: { name: string; value: number }[];
 
+    view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;
@@ -21,12 +25,12 @@ export class HistogramComponent implements OnInit {
     yAxisLabel: string = 'Nombre de votes';
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
-
     ngOnInit(): void {
         this.constructAnswerCounts();
         this.answerCounts.forEach((value, key) => {
             this.answerCountsArray.push({ key, value });
         });
+        this.dataHistogram();
     }
 
     private constructAnswerCounts(): void {
@@ -50,5 +54,17 @@ export class HistogramComponent implements OnInit {
                 });
             }
         });
+    }
+
+    private dataHistogram(): void {
+        this.histogramData = this.answerCountsArray
+            .map((answer) => {
+                const data: { name: string; value: number }[] = [];
+                answer.value.forEach((count, choice) => {
+                    data.push({ name: choice.text, value: count });
+                });
+                return data;
+            })
+            .reduce((acc, curr) => acc.concat(curr), []);
     }
 }

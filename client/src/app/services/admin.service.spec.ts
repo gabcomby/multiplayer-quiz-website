@@ -4,6 +4,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { API_BASE_URL } from '@app/app.module';
 import { AdminService } from './admin.service';
+import { ApiService } from './api.service';
 import { GameService } from './game.service';
 import { SnackbarService } from './snackbar.service';
 
@@ -14,15 +15,18 @@ import { SocketService } from './socket.service';
 
 describe('AdminService', () => {
     let service: AdminService;
+    let apiServiceSpy: jasmine.SpyObj<ApiService>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let gameMock = {} as unknown as Game;
 
     beforeEach(() => {
-        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['getGame', 'getGames', 'patchGame', 'isValidGame', 'createGame', 'deleteGame']);
+        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['isValidGame']);
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['connect']);
+        const SPY_API_SERVICE = jasmine.createSpyObj('ApiService', ['getGame', 'getGames', 'patchGame', 'createGame', 'deleteGame']);
+
         TestBed.configureTestingModule({
             providers: [
                 AdminService,
@@ -30,6 +34,7 @@ describe('AdminService', () => {
                 { provide: GameService, useValue: SPY_GAME_SERVICE },
                 { provide: SnackbarService, useValue: SPY_SNACKBAR_SERVICE },
                 { provide: SocketService, useValue: SPY_SOCKET_SERVICE },
+                { provide: ApiService, useValue: SPY_API_SERVICE },
             ],
             imports: [HttpClientTestingModule, MatSnackBarModule, BrowserAnimationsModule],
         });
@@ -38,6 +43,7 @@ describe('AdminService', () => {
         gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
+        apiServiceSpy = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     });
 
     it('should be created', () => {
@@ -45,57 +51,57 @@ describe('AdminService', () => {
     });
 
     it('should toggle visibility', fakeAsync(() => {
-        gameServiceSpy.getGame.and.returnValue(of(gameMock));
-        gameServiceSpy.patchGame.and.returnValue(Promise.resolve(gameMock));
+        apiServiceSpy.getGame.and.returnValue(of(gameMock));
+        apiServiceSpy.patchGame.and.returnValue(Promise.resolve(gameMock));
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
         service.toggleVisibility(gameMock, false);
         flush();
-        expect(gameServiceSpy.getGame).toHaveBeenCalled();
-        expect(gameServiceSpy.patchGame).toHaveBeenCalled();
+        expect(apiServiceSpy.getGame).toHaveBeenCalled();
+        expect(apiServiceSpy.patchGame).toHaveBeenCalled();
     }));
 
     it("shouldn't toggle visibility if game does not exist", fakeAsync(() => {
-        gameServiceSpy.patchGame.and.returnValue(Promise.resolve(gameMock));
+        apiServiceSpy.patchGame.and.returnValue(Promise.resolve(gameMock));
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
         service.toggleVisibility(gameMock, false);
         flush();
-        expect(gameServiceSpy.getGame).toHaveBeenCalled();
-        expect(gameServiceSpy.patchGame).not.toHaveBeenCalled();
+        expect(apiServiceSpy.getGame).toHaveBeenCalled();
+        expect(apiServiceSpy.patchGame).not.toHaveBeenCalled();
     }));
 
     it('should export game as json', fakeAsync(() => {
-        gameServiceSpy.getGame.and.returnValue(of(gameMock));
+        apiServiceSpy.getGame.and.returnValue(of(gameMock));
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
         service.exportGameAsJson(gameMock);
         flush();
-        expect(gameServiceSpy.getGame).toHaveBeenCalled();
+        expect(apiServiceSpy.getGame).toHaveBeenCalled();
     }));
 
     it("should render an error if game doesn't exist", (done) => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
         const errorMessage = 'Game not found';
-        gameServiceSpy.getGame.and.returnValue(throwError(() => new Error(errorMessage)));
+        apiServiceSpy.getGame.and.returnValue(throwError(() => new Error(errorMessage)));
 
         service.exportGameAsJson(gameMock);
-        expect(gameServiceSpy.getGame).toHaveBeenCalled();
+        expect(apiServiceSpy.getGame).toHaveBeenCalled();
         done();
     });
 
     it('should add game', () => {
         const dataSource = [gameMock];
         service.addGame(gameMock, 'title', dataSource);
-        expect(gameServiceSpy.createGame).toHaveBeenCalled();
+        expect(apiServiceSpy.createGame).toHaveBeenCalled();
     });
 
     it('should delete game', fakeAsync(() => {
-        gameServiceSpy.deleteGame.and.returnValue(Promise.resolve());
+        apiServiceSpy.deleteGame.and.returnValue(Promise.resolve());
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
         service.deleteGame('1').then(() => {
-            expect(gameServiceSpy.deleteGame).toHaveBeenCalled();
+            expect(apiServiceSpy.deleteGame).toHaveBeenCalled();
             expect().nothing();
         });
 
@@ -104,11 +110,11 @@ describe('AdminService', () => {
 
     it('should render an error if game does not exist', (done) => {
         const errorMessage = 'Game not found';
-        gameServiceSpy.deleteGame.and.returnValue(Promise.reject(new Error(errorMessage)));
+        apiServiceSpy.deleteGame.and.returnValue(Promise.reject(new Error(errorMessage)));
         snackbarServiceSpy.openSnackBar.and.returnValue();
 
         service.deleteGame('1').then(() => {
-            expect(gameServiceSpy.deleteGame).toHaveBeenCalled();
+            expect(apiServiceSpy.deleteGame).toHaveBeenCalled();
             done();
         });
     });
@@ -143,7 +149,7 @@ describe('AdminService', () => {
     }));
 
     it('should handle error when fetching games fails', fakeAsync(() => {
-        gameServiceSpy.getGames.and.returnValue(Promise.reject(new Error('Error')));
+        apiServiceSpy.getGames.and.returnValue(Promise.reject(new Error('Error')));
         try {
             service['fetchGames']();
         } catch (error) {
@@ -167,7 +173,7 @@ describe('AdminService', () => {
 
     it("should init admin's page", fakeAsync(() => {
         socketServiceSpy.connect.and.callThrough();
-        gameServiceSpy.getGames.and.returnValue(Promise.resolve([gameMock]));
+        apiServiceSpy.getGames.and.returnValue(Promise.resolve([gameMock]));
         service.init().then((result) => {
             expect(result).toBeDefined();
         });
