@@ -28,7 +28,7 @@ $base-font-size: 16;
     grid-auto-flow: row;
     grid-template-areas:
         'top-bar top-bar top-bar'
-        'live-chat timer score'
+        'results timer score'
         'live-chat histogram question';
 }
 
