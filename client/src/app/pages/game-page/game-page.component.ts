@@ -58,7 +58,6 @@ export class GamePageComponent {
     }
 
     get playerListValue(): Player[] {
-        // console.log(this.gameService.playerListFromLobby);
         return this.gameService.playerListFromLobby;
     }
 

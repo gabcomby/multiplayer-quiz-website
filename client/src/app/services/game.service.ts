@@ -132,7 +132,6 @@ export class GameService {
     }
 
     get playerListFromLobby(): Player[] {
-        // console.log(this.lobbyData.playerList);
         return this.lobbyData.playerList;
     }
 
@@ -166,7 +165,6 @@ export class GameService {
     calculateFinalResults(): void {
         this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
-        // console.log(finalResults);
         this.finalResultsEmitter.next(finalResults);
     }
 
@@ -305,7 +303,6 @@ export class GameService {
     }
 
     sendPlayerAnswer(answer: AnswersPlayer) {
-        // console.log(answer);
         this.socketService.sendPlayerAnswer(answer);
     }
 
