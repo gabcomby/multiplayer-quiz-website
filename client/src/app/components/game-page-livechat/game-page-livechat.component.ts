@@ -34,6 +34,8 @@ export class GamePageLivechatComponent implements OnInit {
     sendMessage(): void {
         this.newMessage = this.newMessage.trim();
         if (this.newMessage) {
+            const formattedMessage = this.isHost ? 'Organisateur' : `${this.playerName}`;
+            this.broadcastMessage(this.newMessage, formattedMessage);
             this.socketService.sendMessages(this.newMessage, this.playerName, this.isHost);
             this.newMessage = '';
         }
