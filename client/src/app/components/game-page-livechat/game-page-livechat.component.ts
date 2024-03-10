@@ -1,9 +1,11 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 
 const DISAPPEAR_DELAY = 10000;
 const MESSAGE_NOT_FOUND = -1;
+const MESSAGE_MAX_LENGTH = 200;
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -23,7 +25,10 @@ export class GamePageLivechatComponent implements OnInit {
     messages: { text: string; sender: string; visible: boolean }[] = [];
     newMessage: string = '';
 
-    constructor(private socketService: SocketService) {}
+    constructor(
+        private socketService: SocketService,
+        private snackbar: SnackbarService,
+    ) {}
 
     ngOnInit(): void {
         this.setupWebSocketEvents();
@@ -40,8 +45,12 @@ export class GamePageLivechatComponent implements OnInit {
 
     sendMessage(): void {
         this.newMessage = this.newMessage.trim();
+        if (this.newMessage.length > MESSAGE_MAX_LENGTH) {
+            this.snackbar.openSnackBar('Le message ne peut pas dépasser 200 caractères');
+            return;
+        }
         if (this.newMessage) {
-            const formattedMessage = this.isHost ? 'Organisateur' : `${this.playerName}`;
+            const formattedMessage = this.isHost ? '[Organisateur] ' + this.playerName : this.playerName;
             this.broadcastMessage(this.newMessage, formattedMessage);
             this.socketService.sendMessages(this.newMessage, this.playerName, this.isHost);
             this.newMessage = '';
