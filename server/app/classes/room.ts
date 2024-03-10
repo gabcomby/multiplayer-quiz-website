@@ -3,6 +3,7 @@ import { Server as SocketIoServer } from 'socket.io';
 const ONE_SECOND_IN_MS = 1000;
 
 export class Room {
+    [x: string]: any;
     duration = 0;
     timerId = 0;
     currentTime = 0;

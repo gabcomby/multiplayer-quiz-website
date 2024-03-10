@@ -14,6 +14,7 @@ export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
 
     rooms = new Map<string, Room>();
+
     room = {
         duration: 0,
         timerId: 0,
@@ -22,6 +23,16 @@ export class Server {
         idAdmin: '',
         player: new Map(),
         answersLocked: 0,
+        answers: new Map(),
+        lobbyData: {
+            id: '',
+            playerList: [],
+            gameId: '',
+            bannedNames: [],
+            lobbyCode: '',
+            isLocked: false,
+            hostId: '',
+        };
     };
     private server: http.Server;
     private io: SocketIoServer;
@@ -104,6 +115,7 @@ export class Server {
                     clearInterval(this.rooms.get(roomsArray[1]).timerId);
                     this.rooms.get(roomsArray[1]).isRunning = false;
                     this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;
+                    this.rooms.get(roomsArray[1]).answersLocked = 0;
                 }
             });
 
@@ -116,6 +128,14 @@ export class Server {
                         this.rooms.get(roomsArray[1]).answersLocked = 0;
                         this.io.to(roomsArray[1]).emit('stop-timer');
                     }
+                }
+            });
+            socket.on('player-answers', (idPlayer, answerIdx) => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    //     if (this.rooms.get(roomsArray[1]).firstAnswer === false) {
+                    //     }
+                    //     // this.rooms.get(roomsArray[1])
                 }
             });
 
@@ -149,7 +169,7 @@ export class Server {
                 const roomId = roomsArray[1];
                 if (this.rooms.has(roomId)) {
                     if (answerIdx.length === 0) {
-                        this.io.to(roomId).emit('answer-verification', false);
+                        this.io.to(socket.id).emit('answer-verification', false);
                         return;
                     }
                     const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
@@ -158,12 +178,18 @@ export class Server {
                     const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
                     if (!isMultipleAnswer) {
-                        this.io.to(roomId).emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                        this.io.to(socket.id).emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
                     } else {
                         const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
                         const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                        this.io.to(roomId).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                        this.io.to(socket.id).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
                     }
+                }
+            });
+            socket.on('update', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.io.to(roomsArray[1]).emit('updateList');
                 }
             });
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import type { AnswersPlayer, Choice } from '@app/interfaces/game';
+// import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
@@ -121,6 +122,9 @@ export class SocketService {
     submitAnswer() {
         this.socket.emit('answer-submitted');
     }
+    submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
+        this.socket.emit('player-answers', idPlayer, answerIdx);
+    }
 
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {
@@ -149,6 +153,14 @@ export class SocketService {
 
                 observer.next(map);
             });
+        });
+    }
+    updatePlayerList() {
+        this.socket.emit('update');
+    }
+    onUpdateList(callback: () => void) {
+        this.socket.on('updateList', () => {
+            callback();
         });
     }
 }
