@@ -55,6 +55,9 @@ export class HostGamePageComponent {
         return this.gameService.isLaunchTimerValue;
     }
 
+    get currentPlayerNameValue(): string {
+        return this.gameService.currentPlayerNameValue;
+    }
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }

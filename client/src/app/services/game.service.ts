@@ -100,6 +100,9 @@ export class GameService {
     }
 
     get currentPlayerNameValue(): string {
+        if (this.currentPlayerId === this.lobbyData.hostId) {
+            this.currentPlayerName = 'Administrateur';
+        }
         return this.currentPlayerName;
     }
 

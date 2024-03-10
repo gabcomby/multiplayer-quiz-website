@@ -7,7 +7,12 @@
             <span class="large-bar-spacer"></span>
             <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ currentGameLength }}</span>
             <span class="large-bar-spacer"></span>
+            <span class="top-bar-text">Administrateur</span>
+            <span class="large-bar-spacer"></span>
             <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
+    </div>
+    <div class="live-chat" *ngIf="!isLaunchTimer">
+        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar"></app-game-page-livechat>
     </div>
 </div>
