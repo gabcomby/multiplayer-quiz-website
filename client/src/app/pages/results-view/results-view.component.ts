@@ -34,7 +34,6 @@ export class ResultsViewComponent implements OnInit {
         });
 
         this.dataSource = this.playerListValue;
-        // console.log(this.dataSource);
         this.sortDataSource();
     }
 
@@ -53,7 +52,6 @@ export class ResultsViewComponent implements OnInit {
             for (const playerChoice of Object.entries(answer)) {
                 if (playerChoice) {
                     this.answersArray.push([playerChoice[1].key, playerChoice[1].value]);
-                    // console.log(this.answersArray);
                 }
             }
         }
