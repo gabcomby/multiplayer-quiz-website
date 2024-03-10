@@ -61,6 +61,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
+    endGame: boolean;
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
@@ -155,7 +156,14 @@ export class GameService {
             this.calculateFinalResults();
         });
     }
+
+    gameIsFinished(): void {
+        if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
+            this.socketService.gameIsFinishedSocket();
+        }
+    }
     calculateFinalResults(): void {
+        this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
     }
@@ -366,6 +374,7 @@ export class GameService {
                 this.questionGame.next(this.questions);
                 // this.handleGameLeave();
             }
+            this.gameIsFinished();
         }
     }
 

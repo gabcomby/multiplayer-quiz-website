@@ -20,6 +20,10 @@ export class ResultsViewComponent implements OnInit {
         return Array.from(this.answersQuestions.entries());
     }
 
+    handleGameLeave(): void {
+        this.gameService.handleGameLeave();
+    }
+
     async ngOnInit() {
         this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
             this.updateAnswersQuestions(answer);

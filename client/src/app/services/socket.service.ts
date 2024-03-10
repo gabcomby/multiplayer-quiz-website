@@ -122,6 +122,10 @@ export class SocketService {
         this.socket.emit('answer-submitted');
     }
 
+    gameIsFinishedSocket() {
+        this.socket.emit('endGame');
+    }
+
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {
             this.socket.on('endGame', () => {

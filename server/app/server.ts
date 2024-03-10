@@ -143,6 +143,17 @@ export class Server {
                 }
             });
 
+            socket.on('endGame', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.rooms.get(roomsArray[1]).answersLocked += 1;
+                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
+                        this.rooms.get(roomsArray[1]).answersLocked = 0;
+                        this.io.to(roomsArray[1]).emit('endGame');
+                    }
+                }
+            });
+
             // HAS ROOMS
             socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
                 const roomsArray = Array.from(socket.rooms);
