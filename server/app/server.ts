@@ -105,6 +105,7 @@ export class Server {
                     clearInterval(this.rooms.get(roomsArray[1]).timerId);
                     this.rooms.get(roomsArray[1]).isRunning = false;
                     this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;
+                    this.rooms.get(roomsArray[1]).answersLocked = 0;
                 }
             });
 
