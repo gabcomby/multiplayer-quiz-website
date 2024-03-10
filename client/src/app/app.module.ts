@@ -33,11 +33,10 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 
-import { HistogramComponent } from './components/histogram/histogram.component';
-import { ResultsViewComponent } from './pages/results-view/results-view.component';
-import { GameTimerPageComponent } from './pages/game-timer-page/game-timer-page.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { HistogramComponent } from './components/histogram/histogram.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
+import { ResultsViewComponent } from './pages/results-view/results-view.component';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -73,7 +72,6 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         InputDialogComponent,
         ConfirmDialogComponent,
         PlayerNameDialogComponent,
-        GameTimerPageComponent,
         ResultsViewComponent,
         HistogramComponent,
         HostGamePageComponent,

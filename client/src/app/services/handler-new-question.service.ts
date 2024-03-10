@@ -14,6 +14,7 @@ export class HandlerNewQuestionService {
         private questionValidationService: QuestionValidationService,
         private questionService: QuestionService,
     ) {}
+    // eslint-disable-next-line max-params -- Single responsibility principle
     async addQuestion(choices: Choice[], question: Question, onlyAddQuestionBank: boolean, addToBank: boolean): Promise<boolean> {
         const newQuestion = this.createNewQuestion(choices, question);
 
