@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
@@ -8,7 +8,7 @@ import { SocketService } from '@app/services/socket.service';
     templateUrl: './game-wait.component.html',
     styleUrls: ['./game-wait.component.scss'],
 })
-export class GameWaitComponent implements OnInit {
+export class GameWaitComponent {
     constructor(
         private router: Router,
         private socketService: SocketService,
@@ -25,18 +25,6 @@ export class GameWaitComponent implements OnInit {
 
     get lobbyCode() {
         return this.gameService.matchLobby.lobbyCode;
-    }
-
-    ngOnInit() {
-        console.log('fuck you');
-        // this.socketService.onTimerGame(() => {
-        //     this.router.navigate([
-        //         '/gameTimer',
-        //         this.gameService.matchLobby.gameId,
-        //         this.gameService.matchLobby.id,
-        //         this.gameService.currentPlayerId,
-        //     ]);
-        // });
     }
 
     backHome() {

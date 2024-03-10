@@ -141,6 +141,10 @@ export class GameService {
         return this.gameData;
     }
 
+    get isLaunchTimerValue(): boolean {
+        return this.isLaunchTimer;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
