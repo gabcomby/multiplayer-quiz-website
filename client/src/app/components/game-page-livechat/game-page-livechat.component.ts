@@ -18,6 +18,7 @@ const MESSAGE_NOT_FOUND = -1;
 export class GamePageLivechatComponent {
     @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
+    @Input() isHost: boolean = false;
     messages: { text: string; sender: string; visible: boolean }[] = [];
     newMessage: string = '';
 
@@ -47,7 +48,7 @@ export class GamePageLivechatComponent {
     }
 
     private addMessageToData(): void {
-        const message = { text: this.newMessage, sender: this.playerName, visible: true };
+        const message = { text: this.newMessage, sender: this.playerName ? this.playerName : '' + this.isHost ? ' Organisateur' : '', visible: true };
         this.messages.push(message);
         setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
     }
