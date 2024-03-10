@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
 const SIZE1 = 400;
-const SIZE2 = 700;
+const SIZE2 = 400;
 @Component({
     selector: 'app-histogram',
     templateUrl: './histogram.component.html',
@@ -27,6 +27,10 @@ export class HistogramComponent implements OnInit {
     yAxisLabel: string = 'Nombre de votes';
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
+
+    colorScheme = {
+        domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
+    };
 
     ngOnInit(): void {
         this.constructHistogramsData();
