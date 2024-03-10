@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SocketService } from '@app/services/socket.service';
 
 @Component({
@@ -9,14 +11,17 @@ import { SocketService } from '@app/services/socket.service';
     styleUrls: ['./game-wait.component.scss'],
 })
 export class GameWaitComponent {
+    players: Player[] = [];
     constructor(
         private router: Router,
         private socketService: SocketService,
         private gameService: GameService,
+        private matchLobbyService: MatchLobbyService,
     ) {}
 
     get playerList() {
-        return this.gameService.matchLobby.playerList;
+        this.players = this.gameService.matchLobby.playerList;
+        return this.players;
     }
 
     get isHost() {
@@ -27,6 +32,22 @@ export class GameWaitComponent {
         return this.gameService.matchLobby.lobbyCode;
     }
 
+    get bannedPlayers(): string[] {
+        let bannedArray: string[] = [];
+        this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response: string[]) => {
+            bannedArray = response;
+        });
+        console.log(bannedArray);
+        return bannedArray;
+    }
+
+    isBanned(name: string): boolean {
+        if (this.bannedPlayers.includes(name)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     backHome() {
         this.socketService.disconnect();
         this.router.navigate(['/home']);

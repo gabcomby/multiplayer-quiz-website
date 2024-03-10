@@ -9,7 +9,7 @@ export const hostGuard: CanActivateFn = (): Observable<boolean | UrlTree> | Prom
     const isABannedPlayer = joinGameValidation.isBanned();
 
     if (!isABannedPlayer) {
-        router.createUrlTree(['gameWait']);
+        router.createUrlTree(['home']);
         return false;
     }
     return true;

@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import type { Player } from '@app/interfaces/match';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { GameService } from '@app/services/game.service';
+import { JoinGameValidationService } from '@app/services/join-game-validation.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -23,7 +23,12 @@ export class GamePageScoresheetComponent {
     }
     makeBannedPlayer(name: string) {
         this.lobbyCode = this.joinGameValidationService.getLobby();
-        this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+        console.log('the player to be banned is: ' + name);
+        this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe((response: string[]) => {
+            console.log('the player banned is: ', response);
+            this.bannedPlayers.push(name);
+            console.log(this.bannedPlayers);
+            window.location.reload();
+        });
     }
-
 }

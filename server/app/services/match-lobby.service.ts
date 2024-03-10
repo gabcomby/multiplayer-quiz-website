@@ -54,6 +54,7 @@ export class MatchLobbyService {
     }
 
     async getBannedPlayers(lobbyId: string): Promise<string[]> {
+        console.log('allo');
         const lobby = await matchLobbyModel.findOne({ id: lobbyId });
 
         if (lobby) {
@@ -64,6 +65,7 @@ export class MatchLobbyService {
     }
 
     async banPlayer(lobbyId: string, playerName: string): Promise<ILobby> {
+        console.log('the player banned is: ', playerName);
         return await matchLobbyModel.findOneAndUpdate(
             { id: lobbyId },
             {
