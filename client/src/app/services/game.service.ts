@@ -62,6 +62,7 @@ export class GameService {
     subscription: Subscription;
     private minDuration: number;
     private maxDuration: number;
+    private isLaunchTimer: boolean;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -250,6 +251,7 @@ export class GameService {
         this.previousQuestionIndex = 0;
         this.answerIdx = [];
         this.questionHasExpired = false;
+        this.isLaunchTimer = true;
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
@@ -336,6 +338,13 @@ export class GameService {
     }
 
     onTimerComplete(): void {
+        if (this.isLaunchTimer) {
+            this.socketService.stopTimer();
+            this.isLaunchTimer = false;
+            this.socketService.setTimerDuration(this.gameData.duration);
+            this.socketService.startTimer();
+            return;
+        }
         this.socketService.stopTimer();
         this.questionHasExpired = true;
         this.previousQuestionIndex = this.currentQuestionIndex;
