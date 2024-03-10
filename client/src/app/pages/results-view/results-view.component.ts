@@ -20,6 +20,10 @@ export class ResultsViewComponent implements OnInit {
         return Array.from(this.answersQuestions.entries());
     }
 
+    get playerListValue(): Player[] {
+        return this.gameService.playerListFromLobby;
+    }
+
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }
@@ -29,13 +33,13 @@ export class ResultsViewComponent implements OnInit {
             this.updateAnswersQuestions(answer);
         });
 
-        this.gameService.finalResultsEmitter.subscribe((finalResults: Player[]) => {
-            this.dataSource = finalResults;
-            this.sortDataSource();
-        });
         this.gameService.questionGame.subscribe((question: Question[]) => {
             this.questions = question;
         });
+
+        this.dataSource = this.playerListValue;
+        // console.log(this.dataSource);
+        this.sortDataSource();
     }
 
     private sortDataSource() {

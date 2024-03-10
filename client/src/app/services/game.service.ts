@@ -165,6 +165,7 @@ export class GameService {
     calculateFinalResults(): void {
         this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
+        // console.log(finalResults);
         this.finalResultsEmitter.next(finalResults);
     }
 
