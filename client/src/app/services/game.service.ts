@@ -246,8 +246,6 @@ export class GameService {
         if (game.questions.length < 1) errors.push('Au moins une question');
     }
 
-    // TODO: split this logic in two different methods to handle the different cases
-    // When there is an host and when there is players
     initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
