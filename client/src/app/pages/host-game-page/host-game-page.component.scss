@@ -1,36 +1,84 @@
-$base-font-size: 16; // Default base font-size in pixels
+@use 'sass:math';
 
-// Function to convert px to em
+$base-font-size: 16;
+
 @function px-to-em($pixels, $context: $base-font-size) {
-    @return #{$pixels / $context}em;
+    @return math.div($pixels, $context) * 1em;
 }
 
 #menu-bar {
-    height: 100%; // This is relative to its container, no change needed
+    height: 100%;
 }
 
 .large-bar-spacer {
-    flex: 1 1 auto; // Flex values do not need conversion
+    flex: 1 1 auto;
 }
 
 .top-bar-text {
-    font-size: px-to-em(24); // 1.5em based on 16px base font-size
+    font-size: px-to-em(24);
     font-weight: bold;
 }
 
 .container {
-    height: 100%; // This is relative, no change needed
+    height: 100%;
     display: grid;
     grid-template-columns: 25% 50% 25%;
-    grid-template-rows: px-to-em(50) 30% 60%; // Adjust percentages as needed
+    grid-template-rows: px-to-em(50) 40% 50%;
     gap: 0px 0px;
     grid-auto-flow: row;
     grid-template-areas:
         'top-bar top-bar top-bar'
-        'live-chat timer score'
-        'live-chat question score';
+        'results timer score'
+        'live-chat histogram question';
 }
 
 .top-bar {
     grid-area: top-bar;
+}
+
+.histogram {
+    grid-area: histogram;
+    display: flex;
+    justify-content: center;
+    background-color: gray;
+}
+
+.live-chat {
+    grid-area: live-chat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.question {
+    display: flex;
+    grid-area: question;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: px-to-em(30);
+    margin-top: px-to-em(-20);
+}
+
+.score {
+    margin-top: px-to-em(50);
+    grid-area: score;
+}
+
+.timer {
+    grid-area: timer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: px-to-em(16);
+    margin-top: px-to-em(30);
+}
+
+.results {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 30%;
 }

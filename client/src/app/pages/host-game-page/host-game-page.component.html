@@ -1,13 +1,33 @@
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
-            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="handleGameLeave()">
                 <mat-icon>logout</mat-icon>
             </button>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">Question Oui/Essai</span>
+            <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ currentGameLength }}</span>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">Administrateur</span>
+            <span class="top-bar-text">Organisateur</span>
+            <span class="large-bar-spacer"></span>
+            <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
+    <div class="live-chat" *ngIf="!isLaunchTimer">
+        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar"></app-game-page-livechat>
+    </div>
+    <div class="timer">
+        <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
+    </div>
+    <div class="question" *ngIf="!endGame && !isLaunchTimer">
+        <app-game-page-questions
+            [isHost]="true"
+            [question]="currentQuestion.text || ''"
+            [mark]="currentQuestion.points || 0"
+        ></app-game-page-questions>
+    </div>
+    <div class="score" *ngIf="!isLaunchTimer">
+        <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
+    </div>
+    <div class="histogram" *ngIf="!isLaunchTimer"></div>
+    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
 </div>

@@ -38,7 +38,6 @@ export class GameWaitComponent {
 
     handleGameLaunch() {
         this.socketService.startGame();
-        this.router.navigate(['/game']);
     }
 
     handleGameLeave() {

@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
+
+const START_TIMER_DURATION = 5;
 
 @Component({
     selector: 'app-host-game-page',
@@ -11,9 +14,9 @@ import { Subscription } from 'rxjs';
 })
 export class HostGamePageComponent {
     endGame = false;
+    isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
-
     constructor(private gameService: GameService) {}
 
     get currentQuestionIndexValue(): number {
@@ -28,35 +31,34 @@ export class HostGamePageComponent {
         return this.gameService.currentGameTitle;
     }
 
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
-    }
-
     get currentTimerCountdown(): number {
         return this.gameService.timerCountdownValue;
     }
 
     get totalGameDuration(): number {
-        return this.gameService.totalGameDuration;
+        if (this.isLaunchTimer) {
+            return START_TIMER_DURATION;
+        } else {
+            return this.gameService.totalGameDuration;
+        }
     }
 
     get currentQuestion(): Question {
         return this.gameService.getCurrentQuestion();
     }
 
-    /* ngOnInit() {
-        from((this.unsubscribeSubject = this.gameService.initializeLobbyAndGame(this.route.snapshot.params['lobbyId'])))
-            .pipe(
-                concatMap(() => this.matchLobbyService.getLobby(this.route.snapshot.params['lobbyId'])),
-                takeUntil(this.destroy),
-            )
-            .subscribe({
-                next: (lobby) => {
-                    this.lobby = lobby;
-                },
-            });
-        this.gameService.finalResultsEmitter.subscribe(() => {
-            this.endGame = true;
-        });
-    }*/
+    get playerListValue(): Player[] {
+        return this.gameService.playerListFromLobby;
+    }
+
+    get isLaunchTimer(): boolean {
+        return this.gameService.isLaunchTimerValue;
+    }
+
+    get currentPlayerNameValue(): string {
+        return this.gameService.currentPlayerNameValue;
+    }
+    handleGameLeave(): void {
+        this.gameService.handleGameLeave();
+    }
 }
