@@ -23,17 +23,24 @@ $base-font-size: 16;
     height: 100%;
     display: grid;
     grid-template-columns: 25% 50% 25%;
-    grid-template-rows: px-to-em(50) 30% 60%;
+    grid-template-rows: px-to-em(50) 40% 50%;
     gap: 0px 0px;
     grid-auto-flow: row;
     grid-template-areas:
         'top-bar top-bar top-bar'
         'live-chat timer score'
-        'live-chat question score';
+        'live-chat histogram question';
 }
 
 .top-bar {
     grid-area: top-bar;
+}
+
+.histogram {
+    grid-area: histogram;
+    display: flex;
+    justify-content: center;
+    background-color: gray;
 }
 
 .live-chat {

@@ -26,7 +26,8 @@
         ></app-game-page-questions>
     </div>
     <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [isHost]="true" [playerList]="playerListValue"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
     </div>
     <div class="histogram" *ngIf="!isLaunchTimer"></div>
+    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
 </div>
