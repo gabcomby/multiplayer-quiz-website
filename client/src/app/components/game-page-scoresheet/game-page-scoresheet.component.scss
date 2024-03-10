@@ -1,13 +1,12 @@
 mat-card {
     width: 75%;
 }
-button {
+button .bannedPlayer {
     width: 15%; 
-    height: 15%;
+    height: 55%;
     background-color: #04AA6D; 
     color: white;
     text-align: center;
-    text-decoration: none;
     display: flex;
     font-size: 16px;
     cursor: pointer;
