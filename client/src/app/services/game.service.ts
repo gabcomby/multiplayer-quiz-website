@@ -24,7 +24,7 @@ const START_TIMER_DURATION = 5;
 })
 export class GameService {
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
-    answersSelected = new ReplaySubject<AnswersPlayer>(1);
+    answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
@@ -61,7 +61,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
-    endGame: boolean;
+    endGame = false;
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
@@ -132,6 +132,7 @@ export class GameService {
     }
 
     get playerListFromLobby(): Player[] {
+        // console.log(this.lobbyData.playerList);
         return this.lobbyData.playerList;
     }
 
@@ -304,10 +305,11 @@ export class GameService {
     }
 
     sendPlayerAnswer(answer: AnswersPlayer) {
+        // console.log(answer);
         this.socketService.sendPlayerAnswer(answer);
     }
 
-    getPlayerAnswers(): Observable<AnswersPlayer> {
+    getPlayerAnswers(): Observable<AnswersPlayer[]> {
         return this.answersSelected.asObservable();
     }
 
@@ -398,7 +400,7 @@ export class GameService {
             }
         });
 
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
             this.answersSelected.next(answer);
         });
 

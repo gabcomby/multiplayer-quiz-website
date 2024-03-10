@@ -9,17 +9,12 @@ import { GameService } from '@app/services/game.service';
     styleUrls: ['./results-view.component.scss'],
 })
 export class ResultsViewComponent implements OnInit {
-    answersQuestions: AnswersPlayer = new Map<string, number[]>();
+    answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
     dataSource: Player[] = [];
-    answersArray: AnswersPlayer[] = [];
+    answersArray: [string, number[]][] = [];
 
     constructor(private gameService: GameService) {}
-
-    get answersPlayerArray(): [string, number[]][] {
-        return Array.from(this.answersQuestions.entries());
-    }
-
     get playerListValue(): Player[] {
         return this.gameService.playerListFromLobby;
     }
@@ -29,8 +24,9 @@ export class ResultsViewComponent implements OnInit {
     }
 
     async ngOnInit() {
-        this.gameService.getPlayerAnswers().subscribe((answer: AnswersPlayer) => {
-            this.updateAnswersQuestions(answer);
+        this.gameService.getPlayerAnswers().subscribe((answers: AnswersPlayer[]) => {
+            this.answersQuestions = answers;
+            this.updateAnswersQuestions(answers);
         });
 
         this.gameService.questionGame.subscribe((question: Question[]) => {
@@ -52,20 +48,12 @@ export class ResultsViewComponent implements OnInit {
         });
     }
 
-    private updateAnswersQuestions(answers: AnswersPlayer) {
-        const keys = Array.from(answers.keys());
-        for (const questionKey of keys) {
-            if (questionKey) {
-                const choices = answers.get(questionKey);
-                if (choices) {
-                    let questionAnswers = this.answersQuestions.get(questionKey);
-                    if (!questionAnswers) {
-                        questionAnswers = [];
-                    }
-                    for (const choice of choices) {
-                        questionAnswers.push(choice);
-                    }
-                    this.answersQuestions.set(questionKey, questionAnswers);
+    private updateAnswersQuestions(answers: AnswersPlayer[]) {
+        for (const answer of answers) {
+            for (const playerChoice of Object.entries(answer)) {
+                if (playerChoice) {
+                    this.answersArray.push([playerChoice[1].key, playerChoice[1].value]);
+                    // console.log(this.answersArray);
                 }
             }
         }
