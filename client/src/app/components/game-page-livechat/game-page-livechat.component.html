@@ -23,11 +23,11 @@
                 [(ngModel)]="newMessage"
                 style="resize: none"
                 (click)="onChatClick()"
-                (keydown.enter)="onChatEnterPressed($event)"
+                (keydown.enter)="onEnterKeyPressed($event)"
                 maxlength="200"
             ></textarea>
         </mat-form-field>
-        <button mat-mini-fab color="primary" (click)="onButtonClick()">
+        <button mat-mini-fab color="primary" (click)="onButtonClicked()">
             <mat-icon>send</mat-icon>
         </button>
     </form>
