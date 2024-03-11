@@ -357,16 +357,17 @@ export class GameService {
 
     onTimerComplete(): void {
         if (this.isLaunchTimer) {
-            // this.socketService.stopTimer();
             this.isLaunchTimer = false;
             this.socketService.setTimerDuration(this.gameData.duration);
             this.socketService.startTimer();
             return;
         } else {
-            this.socketService.stopTimer();
+            // this.socketService.stopTimer();
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
-            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
+            if (this.currentPlayerId !== this.lobbyData.hostId) {
+                this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex], this.answerIdx);
+            }
             if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
                 setTimeout(() => {
                     this.handleNextQuestion();
@@ -400,9 +401,6 @@ export class GameService {
     setupWebsocketEvents(): void {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
-            // if (this.timerCountdown === 0) {
-            //     this.onTimerComplete();
-            // }
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
@@ -442,12 +440,22 @@ export class GameService {
             this.socketService.startTimer();
         });
 
-        this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
-            if (isCorrect) {
-                const index = this.lobbyData.playerList.findIndex((player) => {
-                    return player.id === playerId;
-                });
-                this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
+        this.socketService.onAnswerVerification((score) => {
+            // if (isCorrect) {
+            //     const index = this.lobbyData.playerList.findIndex((player) => {
+            //         return player.id === playerId;
+            //     });
+            //     this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
+            // }
+            score = new Map(score);
+            console.log(score);
+            for (const player of this.lobbyData.playerList) {
+                const newScore = score.get(player.id);
+                if (newScore) {
+                    player.score = newScore;
+                } else {
+                    player.score = 0;
+                }
             }
         });
     }

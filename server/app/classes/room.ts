@@ -9,7 +9,9 @@ export class Room {
     currentTime = 0;
     isRunning = false;
     idAdmin = '';
-    player = new Map();
+    player = new Map<string, string>();
+    score = new Map<string, number>();
+    assertedAnswers: number = 0;
     answersLocked = 0;
     roomId = '';
     firstAnswer = true;

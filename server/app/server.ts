@@ -5,9 +5,11 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
+import { IQuestion } from './model/game.model';
 // import { MatchLobbyService } from './services/match-lobby.service';
 
 const BASE_TEN = 10;
+const FIRST_ANSWER_MULTIPLIER = 1.2;
 
 @Service()
 export class Server {
@@ -56,6 +58,7 @@ export class Server {
                 if (this.rooms.has(roomId)) {
                     socket.join(roomId);
                     this.rooms.get(roomId).player.set(socket.id, playerId);
+                    this.rooms.get(roomId).score.set(playerId, 0);
                     console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
                     throw new Error('The room you are trying to join does not exist');
@@ -173,9 +176,12 @@ export class Server {
             });
 
             // HAS ROOMS TODO lint
-            socket.on('assert-answers', async (choices: IChoice[], answerIdx: number[], playerId: string) => {
+            socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
                 const roomsArray = Array.from(socket.rooms);
                 const roomId = roomsArray[1];
+                const playerId = this.rooms.get(roomId).player.get(socket.id);
+                const choices: IChoice[] = question.choices;
+                this.rooms.get(roomId).assertedAnswers += 1;
                 if (this.rooms.has(roomId)) {
                     if (answerIdx.length === 0) {
                         this.io.to(socket.id).emit('answer-verification', false, 1);
@@ -196,11 +202,17 @@ export class Server {
                     }
 
                     if (isCorrect && this.rooms.get(roomId).firstAnswer) {
-                        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1.2);
                         this.rooms.get(roomId).firstAnswer = false;
-                    } else {
-                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
+                        const currentScore = this.rooms.get(roomId).score.get(playerId);
+                        this.rooms.get(roomId).score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
+                    } else if (isCorrect) {
+                        const currentScore = this.rooms.get(roomId).score.get(playerId);
+                        this.rooms.get(roomId).score.set(playerId, question.points + currentScore);
+                    }
+
+                    if (this.rooms.get(roomId).assertedAnswers === this.rooms.get(roomId).player.size) {
+                        this.io.to(roomId).emit('answer-verification', Array.from(this.rooms.get(roomId).score));
+                        this.rooms.get(roomId).assertedAnswers = 0;
                     }
                 }
             });
