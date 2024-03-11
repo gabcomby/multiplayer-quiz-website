@@ -11,6 +11,7 @@ export class Room {
     player = new Map();
     answersLocked = 0;
     roomId = '';
+    firstAnswer = true;
 
     constructor(roomId: string) {
         this.roomId = roomId;

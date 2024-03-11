@@ -73,8 +73,8 @@ describe('SocketService', () => {
     it('should emit "assert-answers" when verifyAnswers is called', () => {
         const choices = [{ text: 'Choice 1', isCorrect: true }];
         const answerIdx = [0];
-        service.verifyAnswers(choices, answerIdx);
-        expect(mockSocket.emit).toHaveBeenCalledWith('assert-answers', choices, answerIdx);
+        service.verifyAnswers(choices, answerIdx, '123');
+        expect(mockSocket.emit).toHaveBeenCalledWith('assert-answers', choices, answerIdx, '123');
     });
 
     it('should handle "answer-verification" events', (done) => {

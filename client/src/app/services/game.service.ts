@@ -28,7 +28,6 @@ export class GameService {
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
-
     playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
@@ -334,7 +333,7 @@ export class GameService {
                     } else {
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
-                                this.socketService.playerDisconnect(this.currentPlayerId);
+                                this.socketService.playerDisconnect();
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
                             },
@@ -358,24 +357,25 @@ export class GameService {
             this.socketService.setTimerDuration(this.gameData.duration);
             this.socketService.startTimer();
             return;
-        }
-        this.socketService.stopTimer();
-        this.questionHasExpired = true;
-        this.previousQuestionIndex = this.currentQuestionIndex;
-        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
         } else {
-            if (this.currentPlayerId !== this.lobbyData.hostId) {
-                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                this.sendPlayerAnswer(this.playerChoice);
-                // this.handleGameLeave();
+            this.socketService.stopTimer();
+            this.questionHasExpired = true;
+            this.previousQuestionIndex = this.currentQuestionIndex;
+            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
+            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+                setTimeout(() => {
+                    this.handleNextQuestion();
+                }, TIME_BETWEEN_QUESTIONS);
             } else {
-                this.questions.push(this.currentQuestion);
-                this.questionGame.next(this.questions);
-                // this.handleGameLeave();
+                if (this.currentPlayerId !== this.lobbyData.hostId) {
+                    this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                    this.sendPlayerAnswer(this.playerChoice);
+                    // this.handleGameLeave();
+                } else {
+                    this.questions.push(this.currentQuestion);
+                    this.questionGame.next(this.questions);
+                    // this.handleGameLeave();
+                }
             }
             this.gameIsFinished();
         }
@@ -416,10 +416,13 @@ export class GameService {
             this.handleGameLeave();
         });
 
-        this.socketService.onPlayerDisconnect(() => {
-            this.refreshPlayerList();
+        this.socketService.onPlayerDisconnect((playerId) => {
+            // this.refreshPlayerList();
+            this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
-
+        this.socketService.onLastPlayerDisconnected(() => {
+            this.handleGameLeave();
+        });
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
         });
@@ -434,17 +437,18 @@ export class GameService {
             this.socketService.startTimer();
         });
 
-        this.socketService.onAnswerVerification((isCorrect: boolean) => {
+        this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
             if (isCorrect) {
-                if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.updatePlayerScore(this.currentQuestion.points);
-                }
+                const index = this.lobbyData.playerList.findIndex((player) => {
+                    return player.id === playerId;
+                });
+                this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
             }
         });
     }
 
     private handleNextQuestion(): void {
-        this.refreshPlayerList();
+        // this.refreshPlayerList();
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {
@@ -453,16 +457,5 @@ export class GameService {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();
-    }
-
-    private updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
-            },
-        });
     }
 }
