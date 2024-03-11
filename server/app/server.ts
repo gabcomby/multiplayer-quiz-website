@@ -154,7 +154,7 @@ export class Server {
                 }
             });
 
-            socket.on('player-disconnect', (playerId: string) => {
+            socket.on('player-disconnect', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
