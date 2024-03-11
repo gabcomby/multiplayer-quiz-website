@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import { Room } from '@app/classes/room';
-import type { AnswersPlayer, IChoice } from '@app/model/questions.model';
+import type { IChoice } from '@app/model/questions.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
@@ -18,7 +18,6 @@ export class Server {
     private server: http.Server;
     private io: SocketIoServer;
 
-    private playersAnswers: Map<string, AnswersPlayer[]> = new Map();
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -121,19 +120,12 @@ export class Server {
 
             socket.on('playerAnswer', (answer) => {
                 const roomId = Array.from(socket.rooms)[1];
-                if (this.playersAnswers.has(roomId)) {
-                    this.playersAnswers.get(roomId).push(answer);
-                } else {
-                    this.playersAnswers.set(roomId, [answer]);
+                if (this.rooms.has(roomId)) {
+                    this.rooms.get(roomId).playersAnswers.push(answer);
                 }
 
-                const room = this.rooms.get(roomId);
-                const playersCount = room.player.size;
-
-                if (this.playersAnswers.get(roomId).length === playersCount) {
-                    this.io.to(roomId).emit('sendPlayerAnswers', this.playersAnswers.get(roomId));
-
-                    this.playersAnswers.delete(roomId);
+                if (this.rooms.get(roomId).playersAnswers.length === this.rooms.get(roomId).player.size) {
+                    this.io.to(roomId).emit('sendPlayerAnswers', this.rooms.get(roomId).playersAnswers);
                 }
             });
 
