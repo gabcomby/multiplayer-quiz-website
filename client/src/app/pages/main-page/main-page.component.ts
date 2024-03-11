@@ -46,6 +46,8 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
+        console.log('handleCloseBanned result: ', result.name);
+        this.handleDialogCloseBanned(result.userName, result.lobbyCode);
         await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
 
         if (this.isEmpyDialog(result)) {
@@ -107,6 +109,35 @@ export class MainPageComponent {
     private handleAuthenticationError = (error: HttpErrorResponse) => {
         if (error.error.body === 'Invalid password') {
             this.snackbarService.openSnackBar('Mot de passe invalide');
+        } else {
+            this.dialog.open(ServerErrorDialogComponent, {
+                data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
+            });
+        }
+    };
+
+    private handleDialogCloseBanned = (name: string, lobbyCode: string) => {
+        if (name && lobbyCode) {
+            this.authenticateUserIfBanned(name, lobbyCode);
+        }
+    };
+
+    private authenticateUserIfBanned(name: string, lobbyCode: string): void {
+        this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe({
+            next: this.handleAuthenticationSuccessBanned,
+            error: this.handleAuthenticationErrorBanned,
+        });
+    }
+
+    private handleAuthenticationSuccessBanned = (authenticate: boolean) => {
+        if (authenticate) {
+            this.router.navigate(['/gameWait']);
+        }
+    };
+
+    private handleAuthenticationErrorBanned = (error: HttpErrorResponse) => {
+        if (error.error.body === false) {
+            this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
         } else {
             this.dialog.open(ServerErrorDialogComponent, {
                 data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },

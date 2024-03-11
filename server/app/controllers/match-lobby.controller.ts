@@ -115,9 +115,7 @@ export class MatchLobbyController {
 
         this.router.patch('/:id/banned', async (req: Request, res: Response) => {
             try {
-                console.log('the patch went to the server');
                 const lobby = await this.matchLobbyService.banPlayer(req.body.name, req.params.id);
-                console.log(lobby);
                 res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating banned names' });
@@ -125,12 +123,21 @@ export class MatchLobbyController {
         });
 
         this.router.get('/:id/banned', async (req: Request, res: Response) => {
-            console.log('bonjour');
             try {
                 const banned = await this.matchLobbyService.getBannedPlayers(req.params.id);
                 res.json(banned);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching banned names' });
+            }
+        });
+
+        this.router.post('/:id/banned', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.isABannedPlayer(req.body.name, req.params.id);
+                console.log(lobby);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating banned names' });
             }
         });
     }

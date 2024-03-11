@@ -106,4 +106,8 @@ export class MatchLobbyService {
         console.log(`${this.apiUrl}/${lobby}/banned`);
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name });
     }
+
+    authenticateUser(playerName: string, lobbyCode: string): Observable<boolean> {
+        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, { playerName });
+    }
 }

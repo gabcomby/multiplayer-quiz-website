@@ -66,10 +66,7 @@ export class MatchLobbyService {
     }
 
     async getBannedPlayers(lobbyId: string): Promise<string[]> {
-        console.log('allo');
-        console.log('lobby', lobbyId);
         const lobby = await matchLobbyModel.findOne({ lobbyCode: lobbyId });
-        console.log('lobby', lobby);
         if (lobby) {
             return lobby.bannedNames;
         } else {
@@ -77,8 +74,12 @@ export class MatchLobbyService {
         }
     }
 
+    async isABannedPlayer(playerName: string, lobbyId: string): Promise<boolean> {
+        const lobby = await matchLobbyModel.findOne({ lobbyCode: lobbyId });
+        return lobby.bannedNames.includes(playerName);
+    }
+
     async banPlayer(playerName: string, lobbyId: string): Promise<ILobby> {
-        console.log('banPlayer', playerName, lobbyId);
         try {
             const updatedLobby = await matchLobbyModel.findOneAndUpdate(
                 { lobbyCode: lobbyId },
@@ -89,15 +90,13 @@ export class MatchLobbyService {
                 },
                 { new: true },
             );
-            const removedPlayer = await this.removePlayerByName(playerName, lobbyId);
-            console.log('removedPlayer', removedPlayer);
+            await this.removePlayerByName(playerName, lobbyId);
             return updatedLobby;
         } catch (error) {
             console.error('Erreur lors de la mise à jour du lobby :', error);
             throw error;
         }
     }
-
 
     async getPlayers(lobbyId: string): Promise<IPlayer[]> {
         const lobby = await matchLobbyModel.findOne({ id: lobbyId });
