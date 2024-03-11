@@ -362,7 +362,6 @@ export class GameService {
             this.socketService.startTimer();
             return;
         } else {
-            // this.socketService.stopTimer();
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
             if (this.currentPlayerId !== this.lobbyData.hostId) {
@@ -420,7 +419,6 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect((playerId) => {
-            // this.refreshPlayerList();
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
         this.socketService.onLastPlayerDisconnected(() => {
@@ -441,14 +439,7 @@ export class GameService {
         });
 
         this.socketService.onAnswerVerification((score) => {
-            // if (isCorrect) {
-            //     const index = this.lobbyData.playerList.findIndex((player) => {
-            //         return player.id === playerId;
-            //     });
-            //     this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
-            // }
             score = new Map(score);
-            console.log(score);
             for (const player of this.lobbyData.playerList) {
                 const newScore = score.get(player.id);
                 if (newScore) {
@@ -461,7 +452,6 @@ export class GameService {
     }
 
     private handleNextQuestion(): void {
-        // this.refreshPlayerList();
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {

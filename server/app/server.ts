@@ -59,6 +59,7 @@ export class Server {
                     socket.join(roomId);
                     this.rooms.get(roomId).player.set(socket.id, playerId);
                     this.rooms.get(roomId).score.set(playerId, 0);
+                    // eslint-disable-next-line no-console
                     console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
                     throw new Error('The room you are trying to join does not exist');
@@ -73,6 +74,7 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
+                // eslint-disable-next-line no-console
                 console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
             });
 
