@@ -1,14 +1,16 @@
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
+import { GameService } from '@app/services/game.service';
 
 export const hostGuard: CanActivateFn = (): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
-    const joinGameValidation = inject(JoinGameValidationService);
+    const gameService = inject(GameService);
+    const gameWaitComponent = inject(GameWaitComponent);
     const router = inject(Router);
-    const isABannedPlayer = joinGameValidation.isBanned();
+    const isABannedPlayer = gameWaitComponent.bannedFromGame.includes(gameService.currentPlayerName);
 
-    if (!isABannedPlayer) {
+    if (isABannedPlayer) {
         router.createUrlTree(['home']);
         return false;
     }

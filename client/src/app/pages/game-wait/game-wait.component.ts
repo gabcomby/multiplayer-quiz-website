@@ -19,7 +19,9 @@ export class GameWaitComponent {
         private gameService: GameService,
         private matchLobbyService: MatchLobbyService,
     ) {}
-
+    get banned() {
+        return this.bannedFromGame;
+    }
     get playerList() {
         this.players = this.gameService.matchLobby.playerList;
         return this.players;
@@ -33,7 +35,7 @@ export class GameWaitComponent {
         return this.gameService.matchLobby.lobbyCode;
     }
 
-    get bannedPlayers(): string[] {
+    bannedPlayers(): string[] {
         const bannedArray: string[] = [];
         this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
             console.log('response: ', response);
@@ -42,16 +44,10 @@ export class GameWaitComponent {
             }
         });
         console.log('banned array: ', bannedArray);
-        return bannedArray;
+        this.bannedFromGame = bannedArray;
+        return this.bannedFromGame;
     }
 
-    isNotBanned(name: string): boolean {
-        if (this.bannedPlayers.includes(name)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
     backHome() {
         this.socketService.disconnect();
         this.router.navigate(['/home']);
@@ -76,17 +72,8 @@ export class GameWaitComponent {
             this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
             console.log('the player has been banned');
             this.bannedFromGame.push(name);
-            console.log(this.bannedPlayers);
+            console.log(this.bannedPlayers());
             this.players = this.playerList;
         }
-    }
-
-    containsPlayer(name: string): boolean {
-        for (const player of this.players) {
-            if (player.name === name) {
-                return true;
-            }
-        }
-        return false;
     }
 }
