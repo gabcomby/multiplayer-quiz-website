@@ -268,6 +268,8 @@ export class GameService {
         this.questionHasExpired = false;
         this.isLaunchTimer = true;
         this.endGame = false;
+        this.questions = [];
+        this.playerChoice = new Map();
         this.answerStateService.resetAnswerState();
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
@@ -367,12 +369,15 @@ export class GameService {
             this.previousQuestionIndex = this.currentQuestionIndex;
             this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
             if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
-                // setTimeout(() => {
-                //     this.handleNextQuestion();
-                // }, TIME_BETWEEN_QUESTIONS);
+                //     setTimeout(() => {
+                //         this.handleNextQuestion();
+                //     }, TIME_BETWEEN_QUESTIONS);
                 // } else {
-                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                this.sendPlayerAnswer(this.playerChoice);
+                if (this.currentPlayerId !== this.lobbyData.hostId) {
+                    this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                    this.sendPlayerAnswer(this.playerChoice);
+                }
+
                 this.questions.push(this.currentQuestion);
                 this.questionGame.next(this.questions);
                 // this.handleGameLeave();
@@ -401,6 +406,7 @@ export class GameService {
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
+            console.log('avant result', answer);
             this.answersSelected.next(answer);
         });
 
@@ -461,7 +467,9 @@ export class GameService {
 
     private handleNextQuestion(): void {
         // this.refreshPlayerList();
-        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        if (this.currentPlayerId !== this.lobbyData.hostId) {
+            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        }
         this.questions.push(this.currentQuestion);
 
         this.currentQuestionIndex++;

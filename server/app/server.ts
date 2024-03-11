@@ -123,6 +123,7 @@ export class Server {
             socket.on('playerAnswer', (answer) => {
                 const roomId = Array.from(socket.rooms)[1];
                 if (this.rooms.has(roomId)) {
+                    console.log('server', answer);
                     this.rooms.get(roomId).playersAnswers.push(answer);
                 }
 
