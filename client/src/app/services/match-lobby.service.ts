@@ -99,7 +99,10 @@ export class MatchLobbyService {
         return this.http.get<string[]>(`${this.apiUrl}/${lobbyId}/banned`);
     }
 
-    banPlayer(lobby: string, name: string): Observable<string[]> {
-        return this.http.patch<string[]>(`${this.apiUrl}/${lobby}/banned`, { name });
+    banPlayer(name: string, lobby: string): Observable<MatchLobby> {
+        console.log('le patch a ete appele cote client');
+        console.log('le joueur a ete banni est: ', name);
+        console.log('le lobby est: ', lobby);
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name, lobby });
     }
 }

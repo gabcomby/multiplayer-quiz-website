@@ -64,17 +64,23 @@ export class MatchLobbyService {
         }
     }
 
-    async banPlayer(lobbyId: string, playerName: string): Promise<ILobby> {
-        console.log('the player banned is: ', playerName);
-        return await matchLobbyModel.findOneAndUpdate(
-            { id: lobbyId },
-            {
-                $push: {
-                    bannedNames: playerName,
+    async banPlayer(playerName: string, lobbyId: string): Promise<ILobby> {
+        console.log('the player banned is...: ', playerName);
+        try {
+            const updatedLobby = await matchLobbyModel.findOneAndUpdate(
+                { id: lobbyId },
+                {
+                    $push: {
+                        bannedNames: playerName,
+                    },
                 },
-            },
-            { new: true },
-        );
+                { new: true },
+            );
+            return updatedLobby;
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour du lobby :', error);
+            throw error;
+        }
     }
 
     async getPlayers(lobbyId: string): Promise<IPlayer[]> {

@@ -104,7 +104,7 @@ describe('MatchLobbyService', () => {
             bannedNames: [...lobbyInstance.bannedNames, playerName],
         });
 
-        const result = await matchLobbyService.banPlayer(lobbyInstance.id, playerName);
+        const result = await matchLobbyService.banPlayer(playerName, lobbyInstance.id);
         expect(result.bannedNames).to.include(playerName);
         expect(findOneAndUpdateStub.calledOnce).to.be.true;
     });
