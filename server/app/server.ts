@@ -5,7 +5,6 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
-// import { MatchLobbyService } from './services/match-lobby.service';
 
 const BASE_TEN = 10;
 
@@ -201,17 +200,6 @@ export class Server {
                     }
                 }
             });
-
-            socket.on('chatMessage', ({ message, playerName, isHost }) => {
-                const senderName = isHost ? 'Organisateur' : playerName;
-
-                socket.broadcast.emit('chatMessage', {
-                    text: message,
-                    sender: senderName,
-                    timeStamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                });
-            });
-
             // HAS ROOMS
             socket.on('start', () => {
                 const roomsArray = Array.from(socket.rooms);

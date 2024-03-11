@@ -1,6 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ChatService } from 'src/app/services/chat.service';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+
+const DISAPPEAR_DELAY = 10000;
+const MESSAGE_NOT_FOUND = -1;
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -13,34 +15,40 @@ import { ChatService } from 'src/app/services/chat.service';
         ]),
     ],
 })
-export class GamePageLivechatComponent implements OnInit {
+export class GamePageLivechatComponent {
     @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
-    @Input() isHost: boolean = false;
-    @Input() roomId: string;
-    messages: { text: string; sender: string; visible: boolean; timestamp: string }[] = [];
+    messages: { text: string; sender: string; visible: boolean }[] = [];
     newMessage: string = '';
-
-    constructor(private chatService: ChatService) {}
-
-    ngOnInit(): void {
-        this.chatService.getMessages().subscribe((messages) => {
-            this.messages = messages;
-        });
-    }
 
     onChatClick(): void {
         this.textbox.nativeElement.focus();
     }
 
-    onEnterKeyPressed(event: Event): void {
+    onChatEnterPressed(event: Event): void {
         event.preventDefault();
-        this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
+        this.sendMessage();
+    }
+
+    sendMessage(): void {
+        this.newMessage = this.newMessage.trim();
+        if (this.newMessage) {
+            this.addMessageToData();
+        }
         this.newMessage = '';
     }
 
-    onButtonClicked(): void {
-        this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
-        this.newMessage = '';
+    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
+        message.visible = false;
+        const index = this.messages.indexOf(message);
+        if (index !== MESSAGE_NOT_FOUND) {
+            this.messages.splice(index, 1);
+        }
+    }
+
+    private addMessageToData(): void {
+        const message = { text: this.newMessage, sender: this.playerName, visible: true };
+        this.messages.push(message);
+        setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
     }
 }
