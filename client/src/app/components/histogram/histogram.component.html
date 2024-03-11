@@ -1,20 +1,27 @@
-<div *ngFor="let answer of answerCountsArray">
-    <h3>{{ answer.key }}</h3>
-    <ul>
-        <li *ngFor="let count of answer.value | keyvalue">{{ count.key.text }}: {{ count.value }}</li>
-    </ul>
-</div>
+<div *ngFor="let histogram of histogramsData; let i = index" [hidden]="i !== currentIndex">
+    <h3 div="question">{{ histogram.question }}</h3>
 
-<ngx-charts-bar-vertical
-    [view]="view"
-    [results]="histogramData"
-    [gradient]="gradient"
-    [xAxis]="showXAxis"
-    [yAxis]="showYAxis"
-    [legend]="showLegend"
-    [showXAxisLabel]="showXAxisLabel"
-    [showYAxisLabel]="showYAxisLabel"
-    [xAxisLabel]="xAxisLabel"
-    [yAxisLabel]="yAxisLabel"
->
-</ngx-charts-bar-vertical>
+    <ngx-charts-bar-vertical
+        class="graphic"
+        [view]="view"
+        [results]="histogram.data"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [legend]="showLegend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+    >
+    </ngx-charts-bar-vertical>
+    <div class="navigation">
+        <button mat-icon-button class="buttonIcon" color="primary" (click)="navigate(-1)" *ngIf="i > 0">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <button mat-icon-button class="buttonIcon" color="primary" (click)="navigate(1)" *ngIf="i < histogramsData.length - 1">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+</div>

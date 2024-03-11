@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import { Room } from '@app/classes/room';
-import type { IChoice } from '@app/model/questions.model';
+import type { AnswersPlayer, IChoice } from '@app/model/questions.model';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
@@ -18,9 +18,9 @@ export class Server {
 
     private server: http.Server;
     private io: SocketIoServer;
-    constructor(
-        private readonly application: Application, // private matchLobbyService: MatchLobbyService,
-    ) {}
+
+    private playersAnswers: Map<string, AnswersPlayer[]> = new Map();
+    constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, BASE_TEN) : val;
@@ -55,9 +55,14 @@ export class Server {
 
             // HAS ROOMS
             socket.on('join-room', (roomId, playerId) => {
-                socket.join(roomId);
-                this.rooms.get(roomId).player.set(socket.id, playerId);
+                if (this.rooms.has(roomId)) {
+                    socket.join(roomId);
+                    this.rooms.get(roomId).player.set(playerId, socket.id);
+                } else {
+                    throw new Error('The room you are trying to join does not exist');
+                }
             });
+
             // HAS ROOMS
             socket.on('create-room', (roomId) => {
                 if (this.rooms.has(roomId)) {
@@ -66,9 +71,6 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
-                const roomsArray = Array.from(socket.rooms);
-                // eslint-disable-next-line no-console
-                console.log('Room id is', roomsArray[1]);
             });
 
             // socket.on('set-game-info', )
@@ -118,6 +120,24 @@ export class Server {
                 }
             });
 
+            socket.on('playerAnswer', (answer) => {
+                const roomId = Array.from(socket.rooms)[1];
+                if (this.playersAnswers.has(roomId)) {
+                    this.playersAnswers.get(roomId).push(answer);
+                } else {
+                    this.playersAnswers.set(roomId, [answer]);
+                }
+
+                const room = this.rooms.get(roomId);
+                const playersCount = room.player.size;
+
+                if (this.playersAnswers.get(roomId).length === playersCount) {
+                    this.io.to(roomId).emit('sendPlayerAnswers', this.playersAnswers.get(roomId));
+
+                    this.playersAnswers.delete(roomId);
+                }
+            });
+
             // HAS ROOMS
             socket.on('new-player', () => {
                 const roomsArray = Array.from(socket.rooms);
@@ -134,7 +154,7 @@ export class Server {
                 }
             });
 
-            socket.on('player-disconnect', () => {
+            socket.on('player-disconnect', (playerId: string) => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
@@ -142,8 +162,17 @@ export class Server {
                     if (this.rooms.get(roomsArray[1]).player.size === 0) {
                         this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
                     }
+                }
+            });
 
-                    // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
+            socket.on('endGame', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.rooms.get(roomsArray[1]).answersLocked += 1;
+                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
+                        this.rooms.get(roomsArray[1]).answersLocked = 0;
+                        this.io.to(roomsArray[1]).emit('endGame');
+                    }
                 }
             });
 
@@ -178,6 +207,11 @@ export class Server {
                         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
                     }
                 }
+            });
+
+            socket.on('chatMessage', ({ message, playerName, isHost }) => {
+                const formattedMessage = isHost ? `Organisateur: ${message}` : `${playerName}: ${message}`;
+                socket.broadcast.emit('chatMessage', { text: formattedMessage, sender: playerName });
             });
 
             // HAS ROOMS

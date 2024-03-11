@@ -111,8 +111,8 @@ export class SocketService {
     adminDisconnect() {
         this.socket.emit('admin-disconnect');
     }
-    playerDisconnect() {
-        this.socket.emit('player-disconnect');
+    playerDisconnect(playerId: string) {
+        this.socket.emit('player-disconnect', playerId);
     }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {
@@ -124,6 +124,10 @@ export class SocketService {
     }
     submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
         this.socket.emit('player-answers', idPlayer, answerIdx);
+    }
+
+    gameIsFinishedSocket() {
+        this.socket.emit('endGame');
     }
 
     onEndGame(): Observable<unknown> {
@@ -143,15 +147,22 @@ export class SocketService {
         this.socket.emit('playerAnswer', mapToArray);
     }
 
-    onPlayerAnswer(): Observable<AnswersPlayer> {
+    onPlayerAnswer(): Observable<AnswersPlayer[]> {
         return new Observable((observer) => {
-            this.socket.on('sendPlayerAnswer', (answer) => {
-                const map = new Map<string, number[]>();
-                answer.forEach((entry: { key: string; value: number[] }) => {
-                    map.set(entry.key, entry.value);
-                });
+            this.socket.on('sendPlayerAnswers', (answers: AnswersPlayer[]) => {
+                observer.next(answers);
+            });
+        });
+    }
 
-                observer.next(map);
+    sendMessages(message: string, playerName: string, isHost: boolean) {
+        this.socket.emit('chatMessage', { message, playerName, isHost });
+    }
+
+    onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
+        return new Observable((observer) => {
+            this.socket.on('chatMessage', (data) => {
+                observer.next(data);
             });
         });
     }

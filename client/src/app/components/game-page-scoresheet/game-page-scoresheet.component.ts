@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import type { Player } from '@app/interfaces/match';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { JoinGameValidationService } from '@app/services/join-game-validation.service';
+import { MatchLobbyService } from '@app/services/match-lobby.service';
 
 @Component({
     selector: 'app-game-page-scoresheet',

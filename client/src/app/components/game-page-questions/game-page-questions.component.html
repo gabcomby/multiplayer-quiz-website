@@ -21,7 +21,7 @@
             {{ i + 1 }}: {{ choice.text }}
         </button>
     </div>
-    <div *ngIf="!answerIsLocked">
+    <div *ngIf="!answerIsLocked && !isHost">
         <button mat-raised-button color="primary" (click)="submitAnswer()">Submit</button>
     </div>
 </div>

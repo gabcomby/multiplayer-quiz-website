@@ -13,12 +13,10 @@ const START_TIMER_DURATION = 5;
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    endGame = false;
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
-
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
@@ -63,8 +61,20 @@ export class GamePageComponent {
         return this.gameService.playerListFromLobby;
     }
 
+    get currentPlayerId(): string {
+        return this.gameService.currentPlayerId;
+    }
+
+    get hostId(): string {
+        return this.gameService.matchLobby.hostId;
+    }
+
     get isLaunchTimer(): boolean {
         return this.gameService.isLaunchTimerValue;
+    }
+
+    get endGame(): boolean {
+        return this.gameService.endGame;
     }
 
     setAnswerIndex(answerIdx: number[]): void {
