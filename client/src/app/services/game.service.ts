@@ -18,7 +18,6 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
-// const MULTIPLIER_FIRST_ANSWER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -29,7 +28,6 @@ export class GameService {
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
-    // firstAnswer: boolean = true;
     playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
