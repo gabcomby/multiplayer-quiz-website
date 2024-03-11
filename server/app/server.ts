@@ -114,6 +114,9 @@ export class Server {
                 if (this.rooms.has(roomsArray[1])) {
                     this.rooms.get(roomsArray[1]).answersLocked += 1;
                     if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
+                        clearInterval(this.rooms.get(roomsArray[1]).timerId);
+                        this.rooms.get(roomsArray[1]).isRunning = false;
+                        this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;
                         this.rooms.get(roomsArray[1]).answersLocked = 0;
                         this.io.to(roomsArray[1]).emit('stop-timer');
                     }

@@ -26,6 +26,13 @@ export class Room {
             () => {
                 this.currentTime -= 1;
                 io.to(roomId).emit('timer-countdown', this.currentTime);
+                if (this.currentTime === 0) {
+                    io.to(roomId).emit('stop-timer');
+                    clearInterval(this.timerId);
+                    this.isRunning = false;
+                    this.currentTime = this.duration;
+                    this.answersLocked = 0;
+                }
             },
             ONE_SECOND_IN_MS,
             this.currentTime,

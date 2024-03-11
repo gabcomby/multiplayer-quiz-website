@@ -357,7 +357,7 @@ export class GameService {
 
     onTimerComplete(): void {
         if (this.isLaunchTimer) {
-            this.socketService.stopTimer();
+            // this.socketService.stopTimer();
             this.isLaunchTimer = false;
             this.socketService.setTimerDuration(this.gameData.duration);
             this.socketService.startTimer();
@@ -400,9 +400,9 @@ export class GameService {
     setupWebsocketEvents(): void {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
+            // if (this.timerCountdown === 0) {
+            //     this.onTimerComplete();
+            // }
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
