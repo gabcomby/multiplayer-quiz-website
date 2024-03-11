@@ -189,4 +189,9 @@ export class SocketService {
     nextQuestion() {
         this.socket.emit('goNextQuestion');
     }
+    onNextQuestion(callback: () => void) {
+        this.socket.on('handleNextQuestion', () => {
+            callback();
+        });
+    }
 }

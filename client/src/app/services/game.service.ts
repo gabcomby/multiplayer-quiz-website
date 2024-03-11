@@ -442,6 +442,9 @@ export class GameService {
         this.socketService.onResultView(() => {
             this.router.navigate(['/resultsView']);
         });
+        this.socketService.onNextQuestion(() => {
+            this.handleNextQuestion();
+        });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
             if (isCorrect) {

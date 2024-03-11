@@ -218,6 +218,13 @@ export class Server {
                     this.io.to(roomId).emit('resultView');
                 }
             });
+            socket.on('goNextQuestion', () => {
+                const roomsArray = Array.from(socket.rooms);
+                const roomId = roomsArray[1];
+                if (this.rooms.has(roomId)) {
+                    this.io.to(roomId).emit('handleNextQuestion');
+                }
+            });
 
             // HAS ROOMS
             socket.on('start', () => {
