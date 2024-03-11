@@ -37,7 +37,7 @@ export class GameWaitComponent {
         const bannedArray: string[] = [];
         this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
             console.log('response: ', response);
-            for (let elem of response) {
+            for (const elem of response) {
                 bannedArray.push(elem);
             }
         });
@@ -45,7 +45,7 @@ export class GameWaitComponent {
         return bannedArray;
     }
 
-    isBanned(name: string): boolean {
+    isNotBanned(name: string): boolean {
         if (this.bannedPlayers.includes(name)) {
             return false;
         } else {
@@ -69,8 +69,24 @@ export class GameWaitComponent {
     makeBannedPlayer(name: string) {
         console.log('the player to be banned is: ' + name);
         console.log('the lobby code is: ' + this.lobbyCode);
-        this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
-        console.log('the player has been banned');
-        console.log(this.bannedPlayers);
+        if (this.bannedFromGame.includes(name)) {
+            console.log('the player is already banned');
+            return;
+        } else {
+            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+            console.log('the player has been banned');
+            this.bannedFromGame.push(name);
+            console.log(this.bannedPlayers);
+            this.players = this.playerList;
+        }
+    }
+
+    containsPlayer(name: string): boolean {
+        for (const player of this.players) {
+            if (player.name === name) {
+                return true;
+            }
+        }
+        return false;
     }
 }

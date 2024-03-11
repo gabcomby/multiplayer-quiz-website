@@ -53,6 +53,18 @@ export class MatchLobbyService {
         );
     }
 
+    async removePlayerByName(playerName: string, code: string): Promise<ILobby> {
+        return await matchLobbyModel.findOneAndUpdate(
+            { lobbyCode: code },
+            {
+                $pull: {
+                    playerList: { name: playerName },
+                },
+            },
+            { new: true },
+        );
+    }
+
     async getBannedPlayers(lobbyId: string): Promise<string[]> {
         console.log('allo');
         console.log('lobby', lobbyId);
@@ -77,12 +89,15 @@ export class MatchLobbyService {
                 },
                 { new: true },
             );
+            const removedPlayer = await this.removePlayerByName(playerName, lobbyId);
+            console.log('removedPlayer', removedPlayer);
             return updatedLobby;
         } catch (error) {
             console.error('Erreur lors de la mise à jour du lobby :', error);
             throw error;
         }
     }
+
 
     async getPlayers(lobbyId: string): Promise<IPlayer[]> {
         const lobby = await matchLobbyModel.findOne({ id: lobbyId });
