@@ -35,7 +35,7 @@ export class ChatService {
         }
 
         const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const formattedMessage = isHost ? '[Organisateur] ' + playerName : playerName;
+        const formattedMessage = isHost ? 'Organisateur ' : playerName;
         this.broadcastMessage(trimmedMessage, formattedMessage, currentTime);
         this.socketService.sendMessages(trimmedMessage, playerName, isHost);
     }

@@ -6,7 +6,6 @@ import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 
-// const ONE_SECOND_IN_MS = 1000;
 const BASE_TEN = 10;
 
 @Service()
