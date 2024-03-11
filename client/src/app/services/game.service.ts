@@ -16,7 +16,7 @@ import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
-const TIME_BETWEEN_QUESTIONS = 3000;
+// const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
 
 @Injectable({
@@ -365,11 +365,11 @@ export class GameService {
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
             this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
-            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-                setTimeout(() => {
-                    this.handleNextQuestion();
-                }, TIME_BETWEEN_QUESTIONS);
-            } else {
+            if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
+                // setTimeout(() => {
+                //     this.handleNextQuestion();
+                // }, TIME_BETWEEN_QUESTIONS);
+            // } else {
                 if (this.currentPlayerId !== this.lobbyData.hostId) {
                     this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
                     this.sendPlayerAnswer(this.playerChoice);
@@ -438,6 +438,9 @@ export class GameService {
             }
             this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
+        });
+        this.socketService.onResultView(() => {
+            this.router.navigate(['/resultsView']);
         });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {

@@ -35,6 +35,8 @@ export class ResultsViewComponent implements OnInit {
 
         this.dataSource = this.playerListValue;
         this.sortDataSource();
+        console.log(this.answersArray);
+        console.log(this.questions);
     }
 
     private sortDataSource() {

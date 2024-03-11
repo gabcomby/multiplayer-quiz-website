@@ -178,4 +178,15 @@ export class SocketService {
             callback();
         });
     }
+    goToResult() {
+        this.socket.emit('goToResult');
+    }
+    onResultView(callback: () => void) {
+        this.socket.on('resultView', () => {
+            callback();
+        });
+    }
+    nextQuestion() {
+        this.socket.emit('goNextQuestion');
+    }
 }
