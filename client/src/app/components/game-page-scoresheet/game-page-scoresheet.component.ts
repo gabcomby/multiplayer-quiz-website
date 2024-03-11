@@ -13,4 +13,8 @@ export class GamePageScoresheetComponent {
     get isHost() {
         return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
     }
+    isBanned(playerName: string): boolean {
+        this.gameService.refreshPlayerList();
+        return this.gameService.matchLobby.bannedNames.includes(playerName);
+    }
 }
