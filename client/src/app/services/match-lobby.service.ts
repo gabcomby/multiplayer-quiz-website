@@ -107,4 +107,9 @@ export class MatchLobbyService {
         const body = { player: playerName };
         return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, body);
     }
+
+    gameLocked(lobbyId: string, isLocked: boolean): Observable<MatchLobby> {
+        console.log('game locked', isLocked);
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/locked`, { isLocked });
+    }
 }

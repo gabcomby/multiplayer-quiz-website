@@ -150,6 +150,10 @@ export class GameService {
         return this.isLaunchTimer;
     }
 
+    get lockStatus(): boolean {
+        return this.lobbyData.isLocked;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }

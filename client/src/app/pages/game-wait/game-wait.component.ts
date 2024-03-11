@@ -39,6 +39,10 @@ export class GameWaitComponent {
         return this.gameService.matchLobby.lobbyCode;
     }
 
+    get lockStatus() {
+        return this.gameService.matchLobby.isLocked;
+    }
+
     get currentPlayerName() {
         return this.gameService.currentPlayerName;
     }
@@ -94,5 +98,12 @@ export class GameWaitComponent {
             this.players = this.playerList;
             console.log('banned');
         }
+    }
+
+    makeLocked(lobbyCode: string, isLocked: boolean) {
+        this.matchLobbyService.gameLocked(lobbyCode, isLocked).subscribe((response) => {
+            console.log(response);
+            this.gameService.matchLobby.isLocked = response.isLocked;
+        });
     }
 }
