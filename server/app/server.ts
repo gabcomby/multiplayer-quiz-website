@@ -144,7 +144,6 @@ export class Server {
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('adminDisconnected');
                     this.rooms.delete(roomsArray[1]);
-                    console.log('Deleted a room, room array now is', this.rooms);
                 }
             });
 
@@ -156,7 +155,6 @@ export class Server {
                     if (this.rooms.get(roomsArray[1]).player.size === 0) {
                         this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
                     }
-                    console.log('Deleted a player, room array now is', this.rooms.get(roomsArray[1]));
                 }
             });
 

@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { API_BASE_URL } from '@app/app.module';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { AnswerStateService } from '@app/services/answer-state.service';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { QuestionValidationService } from './question-validation.service';
+import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -75,6 +75,7 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
+        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -266,6 +267,7 @@ export class GameService {
         this.questionHasExpired = false;
         this.isLaunchTimer = true;
         this.endGame = false;
+        this.answerStateService.resetAnswerState();
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
