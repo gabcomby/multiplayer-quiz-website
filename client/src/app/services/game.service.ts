@@ -18,6 +18,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
+const BONUS_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -442,8 +443,12 @@ export class GameService {
                 const index = this.lobbyData.playerList.findIndex((player) => {
                     return player.id === playerId;
                 });
+                if (multiplier === BONUS_MULTIPLIER) {
+                    this.lobbyData.playerList[index].bonus++;
+                }
                 this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
             }
+            console.log(this.lobbyData.playerList);
         });
     }
 
