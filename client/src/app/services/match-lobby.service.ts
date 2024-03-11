@@ -103,6 +103,7 @@ export class MatchLobbyService {
         console.log('le patch a ete appele cote client');
         console.log('le joueur a ete banni est: ', name);
         console.log('le lobby est: ', lobby);
-        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name, lobby });
+        console.log(`${this.apiUrl}/${lobby}/banned`);
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name });
     }
 }

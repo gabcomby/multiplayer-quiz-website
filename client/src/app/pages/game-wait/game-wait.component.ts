@@ -34,10 +34,10 @@ export class GameWaitComponent {
 
     get bannedPlayers(): string[] {
         let bannedArray: string[] = [];
-        this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response: string[]) => {
+        this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
             bannedArray = response;
         });
-        console.log(bannedArray);
+        console.log('banned array: ', bannedArray);
         return bannedArray;
     }
 
@@ -60,5 +60,13 @@ export class GameWaitComponent {
 
     handleGameLeave() {
         this.gameService.handleGameLeave();
+    }
+
+    makeBannedPlayer(name: string) {
+        console.log('the player to be banned is: ' + name);
+        console.log('the lobby code is: ' + this.lobbyCode);
+        this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+        console.log('the player has been banned');
+        console.log(this.bannedPlayers);
     }
 }
