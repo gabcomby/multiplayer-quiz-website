@@ -49,6 +49,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: creatorName,
             score: 0,
+            bonus: 0,
         };
         const lobby: MatchLobby = {
             id: generateNewId(),
@@ -71,6 +72,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: playerName,
             score: 0,
+            bonus: 0,
         };
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players`, player);
     }

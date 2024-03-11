@@ -7,7 +7,7 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
+import { GameValidationService } from '@app/services/game-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { of } from 'rxjs';
@@ -30,9 +30,10 @@ class AppNewQuestionStubComponent {
 }
 
 import SpyObj = jasmine.SpyObj;
+
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
-    let gameServiceSpy: SpyObj<GameService>;
+    let gameServiceSpy: SpyObj<GameValidationService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
     let apiServiceSpy: SpyObj<ApiService>;
     let routerSpy: SpyObj<Router>;
@@ -74,7 +75,7 @@ describe('CreateQGamePageComponent', () => {
             declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
-                { provide: GameService, useValue: gameServiceSpy },
+                { provide: GameValidationService, useValue: gameServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: null })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function

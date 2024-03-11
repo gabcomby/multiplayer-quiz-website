@@ -31,14 +31,14 @@ export class SocketService {
         });
     }
 
-    async deleteId(): Promise<string> {
-        return new Promise<string>((resolve) => {
-            this.socket = io(this.url, { autoConnect: true });
-            this.socket.on('deleteId', (gameId) => {
-                resolve(gameId);
-            });
-        });
-    }
+    // async deleteId(): Promise<string> {
+    //     return new Promise<string>((resolve) => {
+    //         this.socket = io(this.url, { autoConnect: true });
+    //         this.socket.on('deleteId', (gameId) => {
+    //             resolve(gameId);
+    //         });
+    //     });
+    // }
 
     verifyAnswers(question: Question, answerIdx: number[]) {
         this.socket.emit('assert-answers', question, answerIdx);
@@ -176,6 +176,22 @@ export class SocketService {
     }
     onLastPlayerDisconnected(callback: () => void) {
         this.socket.on('lastPlayerDisconnected', () => {
+            callback();
+        });
+    }
+    goToResult() {
+        this.socket.emit('goToResult');
+    }
+    onResultView(callback: () => void) {
+        this.socket.on('resultView', () => {
+            callback();
+        });
+    }
+    nextQuestion() {
+        this.socket.emit('goNextQuestion');
+    }
+    onNextQuestion(callback: () => void) {
+        this.socket.on('handleNextQuestion', () => {
             callback();
         });
     }

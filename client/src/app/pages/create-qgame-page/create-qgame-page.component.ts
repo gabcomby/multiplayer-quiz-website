@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
+import { GameValidationService } from '@app/services/game-validation.service';
 import { QuestionService } from '@app/services/question.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class CreateQGamePageComponent implements OnInit {
     // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
-        private gameService: GameService,
+        private gameValidationService: GameValidationService,
         private route: ActivatedRoute,
         private router: Router,
         private apiService: ApiService,
@@ -71,13 +71,13 @@ export class CreateQGamePageComponent implements OnInit {
     }
 
     async onSubmit() {
-        const newGame: Game = this.gameService.createNewGame(true, this.gameForm, this.gameModified);
+        const newGame: Game = this.gameValidationService.createNewGame(true, this.gameForm, this.gameModified);
         try {
             if (this.gameId) {
-                if (await this.gameService.gameValidationWhenModified(this.gameForm, this.gameModified)) {
+                if (await this.gameValidationService.gameValidationWhenModified(this.gameForm, this.gameModified)) {
                     this.router.navigate(['/admin']);
                 }
-            } else if (await this.gameService.isValidGame(newGame)) {
+            } else if (await this.gameValidationService.isValidGame(newGame)) {
                 await this.apiService.createGame(newGame);
                 this.router.navigate(['/admin']);
             }

@@ -56,11 +56,13 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.gamesUnderscoreId.push(gameIdString);
         const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
         const gameD = this.games[index];
-        this.deletedGamesId.push(gameD.id);
-        const goodID = gameD.id;
-        if (goodID !== undefined) {
-            if (this.gameSelected[goodID]) {
-                this.snackbarService.openSnackBar('Game ' + goodID + ' has been deleted');
+        if (gameD) {
+            this.deletedGamesId.push(gameD.id);
+            const goodID = gameD.id;
+            if (goodID !== undefined) {
+                if (this.gameSelected[goodID]) {
+                    this.snackbarService.openSnackBar('Game ' + goodID + ' has been deleted');
+                }
             }
         }
     }
