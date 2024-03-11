@@ -66,7 +66,7 @@ export class MainPageComponent {
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
                                 this.socketService.newPlayerJoin();
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
-                                this.router.navigate(['/gameWait']);
+                                // this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
