@@ -3,14 +3,12 @@ import type { AnswersPlayer, Choice } from '@app/interfaces/game';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
-// import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SocketService {
     private socket: Socket;
-    // private router: Router;
     private readonly url: string = environment.socketUrl;
 
     connect(): string[] {
@@ -167,17 +165,26 @@ export class SocketService {
             });
         });
     }
+
+    onLastPlayerDisconnected(callback: () => void) {
+        this.socket.on('lastPlayerDisconnected', () => {
+            callback();
+        });
+    }
+
     bannedPlayer(idPlayer: string) {
         this.socket.connect();
         console.log('banned FROM SOCKET SEND');
         this.socket.emit('banFromGame', idPlayer);
     }
 
-    onBannedPlayer(callback: () => void) {
-        this.socket.on('bannedFromHost', () => {
-            callback();
+    /* async onBannedPlayer() {
+        console.log('allo');
+        await this.socket.on('bannedFromHost', () => {
+            console.log('banned FROM SOCKET RECEIVED');
+            this.router.navigate(['/home']);
         });
-    }
+    }*/
 
     // onBannedPlayer() {
     //     this.socket.connect();

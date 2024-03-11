@@ -225,13 +225,19 @@ export class Server {
                 console.log('user disconnected');
             });
 
-            socket.on('banFromGame', (idPlayer) => {
-                const listPlayer = this.room.player;
-                console.log('list player', listPlayer);
-                const joueur = listPlayer.get(idPlayer);
-                console.log('joueur', joueur);
-                this.io.to(joueur).emit('bannedFromHost');
-            });
+            /* socket.on('banFromGame', (idPlayer) => {
+                const roomsArray = Array.from(socket.rooms);
+                let socketToBeBanned: string;
+                if (this.rooms.has(roomsArray[1])) {
+                    const players = this.rooms.get(roomsArray[1]).player;
+                    for (const [key, value] of players.entries()) {
+                        if (value === idPlayer) socketToBeBanned = key;
+                    }
+                    if (socketToBeBanned) {
+                        this.io.to(socketToBeBanned).emit('bannedFromHost');
+                    }
+                }
+            });*/
         });
 
         this.server.listen(Server.appPort);

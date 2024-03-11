@@ -316,6 +316,7 @@ export class GameService {
     }
 
     handleGameLeave() {
+        console.log('handleGameLeave');
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
@@ -449,9 +450,7 @@ export class GameService {
             }
         });
 
-        this.socketService.onBannedPlayer(() => {
-            this.handleGameLeave();
-        });
+        // this.socketService.onBannedPlayer();
     }
 
     private handleNextQuestion(): void {

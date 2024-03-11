@@ -19,11 +19,13 @@ export class GameWaitComponent {
         private gameService: GameService,
         private matchLobbyService: MatchLobbyService,
     ) {
-        // this.socketService.onBannedPlayer();
+        /* this.socketService.onBannedPlayer(() => {
+            this.gameService.handleGameLeave();
+        });*/
     }
-    get banned() {
+    /* get banned() {
         return this.bannedFromGame;
-    }
+    }*/
     get playerList() {
         this.players = this.gameService.matchLobby.playerList;
         return this.players;
@@ -37,6 +39,9 @@ export class GameWaitComponent {
         return this.gameService.matchLobby.lobbyCode;
     }
 
+    get currentPlayerName() {
+        return this.gameService.currentPlayerName;
+    }
     bannedPlayers(): string[] {
         const bannedArray: string[] = [];
         this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
@@ -71,21 +76,18 @@ export class GameWaitComponent {
                 score: 0,
                 isLocked: false,
             };
-            // this.matchLobbyService.getPlayer(name, this.lobbyCode).subscribe((response) => {
-            //     next: () =>{
-            //         player = response;
-            //         return player;
-            //     },
-            //     // player = response;
-            //     // return player;
-            // });
-            this.matchLobbyService.getPlayer(this.lobbyCode, name).subscribe({
+            /* this.matchLobbyService.getPlayer(this.lobbyCode, name).subscribe({
                 next: (response) => {
                     player = response;
                 },
+            });*/
+            console.log(player);
+            // this.socketService.bannedPlayer(player.id);
+            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe({
+                next: (res) => {
+                    console.log(res);
+                },
             });
-            this.socketService.bannedPlayer(player.id);
-            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
             this.bannedFromGame.push(name);
             this.bannedPlayers();
             this.players = this.playerList;
