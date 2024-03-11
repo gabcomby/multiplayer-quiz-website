@@ -371,15 +371,11 @@ export class GameService {
                 //     this.handleNextQuestion();
                 // }, TIME_BETWEEN_QUESTIONS);
                 // } else {
-                if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                    this.sendPlayerAnswer(this.playerChoice);
-                    // this.handleGameLeave();
-                } else {
-                    this.questions.push(this.currentQuestion);
-                    this.questionGame.next(this.questions);
-                    // this.handleGameLeave();
-                }
+                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                this.sendPlayerAnswer(this.playerChoice);
+                this.questions.push(this.currentQuestion);
+                this.questionGame.next(this.questions);
+                // this.handleGameLeave();
             }
             this.gameIsFinished();
         }
@@ -465,11 +461,9 @@ export class GameService {
 
     private handleNextQuestion(): void {
         // this.refreshPlayerList();
-        if (this.currentPlayerId !== this.lobbyData.hostId) {
-            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        } else {
-            this.questions.push(this.currentQuestion);
-        }
+        this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+        this.questions.push(this.currentQuestion);
+
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();
