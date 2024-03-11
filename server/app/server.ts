@@ -117,15 +117,6 @@ export class Server {
                     }
                 }
             });
-            // socket.on('player-answers', (idPlayer, answerIdx) => {
-            //     const roomsArray = Array.from(socket.rooms);
-            //     if (this.rooms.has(roomsArray[1])) {
-            //         //     if (this.rooms.get(roomsArray[1]).firstAnswer === false) {
-            //         //     }
-            //         this.rooms.get(roomsArray[1]).
-            //         //     // this.rooms.get(roomsArray[1])
-            //     }
-            // });
 
             // HAS ROOMS
             socket.on('new-player', () => {
@@ -186,57 +177,8 @@ export class Server {
                     } else {
                         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
                     }
-
-                    // if (!isMultipleAnswer) {
-                    //     const isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
-                    //     if (isCorrect && this.rooms.get(roomId).firstAnswer) {
-                    //         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                    //         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1.2);
-                    //         this.rooms.get(roomId).firstAnswer = false;
-                    //     } else {
-                    //         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
-                    //     }
-                    // } else {
-                    //     const isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
-                    //     const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
-                    //     const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                    //     this.io.to(roomId).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0, playerId);
-                    //     // this.rooms.get(roomId).playerAnswer.set(selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0, playerId);
-                    // }
-                    // console.log(this.rooms.get(roomId).playerAnswer.size);
-                    // console.log(this.rooms.get(roomId).player.size);
-                    // this.io.to(socket.id).emit('answer-verification');
-
-                    // if (this.rooms.get(roomId).numbAnswers === this.rooms.get(roomId).player.size) {
-                    //     this.rooms.get(roomId).numbAnswers = 0;
-                    //     console.log('yep');
-
-                    // const updatePlayerScore: string[] = [];
-                    // this.rooms.get(roomId).playerAnswer.forEach((key, value) => {
-                    //     if (value === true) {
-                    //         updatePlayerScore.push(key);
-                    //     }
-                    // });
-                    // await this.matchLobbyService.updatePlayerScore(lobbyId, updatePlayerScore, incr);
-                    // this.io.to(socket.id).emit('updatePlayerList');
-                    // this.rooms.get(roomId).playerAnswer = new Map();
-                    // }
                 }
             });
-            // socket.on('update', async (lobbyId: string, incr: number) => {
-            //     const roomsArray = Array.from(socket.rooms);
-            //     if (this.rooms.has(roomsArray[1])) {
-            //         const updatePlayerScore: string[] = [];
-            //         this.rooms.get(roomsArray[1]).playerAnswer.forEach((key, value) => {
-            //             if (value === true) {
-            //                 updatePlayerScore.push(key);
-            //             }
-            //         });
-            //         await this.matchLobbyService.updatePlayerScore(lobbyId, updatePlayerScore, incr);
-            //         this.io.to(socket.id).emit('updatePlayerList');
-            //         this.rooms.get(roomsArray[1]).playerAnswer = new Map();
-            //     }
-            // });
 
             // HAS ROOMS
             socket.on('start', () => {

@@ -29,7 +29,7 @@ export class GameService {
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
-    firstAnswer: boolean = true;
+    // firstAnswer: boolean = true;
     playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
@@ -352,13 +352,7 @@ export class GameService {
             this.socketService.stopTimer();
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
-            this.socketService.verifyAnswers(
-                this.gameData.questions[this.previousQuestionIndex].choices,
-                this.answerIdx,
-                this.currentPlayerId,
-                this.lobbyId,
-                this.currentQuestion.points,
-            );
+            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
             if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
                 setTimeout(() => {
                     this.handleNextQuestion();
@@ -430,31 +424,17 @@ export class GameService {
         });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
-            console.log(playerId + ' has an answer. Is it correct : ' + isCorrect);
             if (isCorrect) {
                 const index = this.lobbyData.playerList.findIndex((player) => {
                     return player.id === playerId;
                 });
                 this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
-                console.log(this.lobbyData);
             }
-        });
-        // this.socketService.onAnswerVerification(() => {
-        //     this.update += 1;
-        //     if (this.update === this.lobbyData.playerList.length) {
-        //         this.socketService.updatePlayerList(this.lobbyId, this.currentQuestion.points);
-        //         this.update = 0;
-        //     }
-        // });
-
-        this.socketService.onUpdateList(() => {
-            this.refreshPlayerList();
         });
     }
 
     private handleNextQuestion(): void {
         // this.refreshPlayerList();
-        this.firstAnswer = true;
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {
@@ -464,18 +444,4 @@ export class GameService {
         this.questionHasExpired = false;
         this.socketService.startTimer();
     }
-
-    // private updatePlayerScore(scoreFromQuestion: number): void {
-    //     console.log(this.currentPlayerId);
-    //     // this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
-    //     //     next: (data) => {
-    //     //         this.lobbyData = data;
-    //     //         console.log(this.lobbyData);
-    //     //         this.socketService.updatePlayerList();
-    //     //     },
-    //     //     error: (error) => {
-    //     //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
-    //     //     },
-    //     // });
-    // }
 }

@@ -41,8 +41,8 @@ export class SocketService {
         });
     }
 
-    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string, lobbyId: string, incr: number) {
-        this.socket.emit('assert-answers', choices, answerIdx, playerId, lobbyId, incr);
+    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string) {
+        this.socket.emit('assert-answers', choices, answerIdx, playerId);
     }
 
     setTimerDuration(duration: number): void {
