@@ -31,14 +31,14 @@ export class SocketService {
         });
     }
 
-    async deleteId(): Promise<string> {
-        return new Promise<string>((resolve) => {
-            this.socket = io(this.url, { autoConnect: true });
-            this.socket.on('deleteId', (gameId) => {
-                resolve(gameId);
-            });
-        });
-    }
+    // async deleteId(): Promise<string> {
+    //     return new Promise<string>((resolve) => {
+    //         this.socket = io(this.url, { autoConnect: true });
+    //         this.socket.on('deleteId', (gameId) => {
+    //             resolve(gameId);
+    //         });
+    //     });
+    // }
 
     verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string) {
         this.socket.emit('assert-answers', choices, answerIdx, playerId);
