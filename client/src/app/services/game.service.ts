@@ -14,7 +14,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
-const BONUS_MULTIPLIER = 1.2;
+// const BONUS_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
