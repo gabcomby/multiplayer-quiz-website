@@ -100,15 +100,10 @@ export class MatchLobbyService {
     }
 
     banPlayer(name: string, lobby: string): Observable<MatchLobby> {
-        console.log('le patch a ete appele cote client');
-        console.log('le joueur a ete banni est: ', name);
-        console.log('le lobby est: ', lobby);
-        console.log(`${this.apiUrl}/${lobby}/banned`);
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name });
     }
 
     authenticateUser(playerName: string, lobbyCode: string): Observable<boolean> {
-        console.log('player name cient auth: ', playerName);
         const body = { player: playerName };
         return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, body);
     }

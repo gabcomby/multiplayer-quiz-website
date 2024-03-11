@@ -66,7 +66,7 @@ export class GameWaitComponent {
         } else {
             this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
             this.bannedFromGame.push(name);
-            console.log(this.bannedPlayers());
+            this.bannedPlayers();
             this.players = this.playerList;
         }
     }

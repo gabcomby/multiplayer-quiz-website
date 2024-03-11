@@ -46,7 +46,6 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-        console.log('handleCloseBanned result: ', result.userName);
         this.handleDialogCloseBanned(result.userName, result.lobbyCode);
         await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
 
@@ -117,15 +116,11 @@ export class MainPageComponent {
     };
 
     private handleDialogCloseBanned = (name: string, lobbyCode: string) => {
-        console.log('handleDialogCloseBanned');
-        console.log(name);
         this.authenticateUserIfBanned(name, lobbyCode);
     };
 
     private authenticateUserIfBanned(name: string, lobbyCode: string): void {
-        console.log('authenticateUserIfBanned', name);
         this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe((result) => {
-            console.log(result);
             if (!result) {
                 this.router.navigate(['/gameWait']);
             } else {
@@ -134,22 +129,4 @@ export class MainPageComponent {
             }
         });
     }
-
-    /* private handleAuthenticationSuccessBanned = (authenticate: boolean) => {
-        console.log('authenticate: ', authenticate);
-        if (authenticate) {
-            this.router.navigate(['/gameWait']);
-        }
-    };
-
-    private handleAuthenticationErrorBanned = (error: HttpErrorResponse) => {
-        if (error.error.body === false) {
-            this.router.navigate(['/home']);
-            this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
-        } else {
-            this.dialog.open(ServerErrorDialogComponent, {
-                data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
-            });
-        }
-    };*/
 }
