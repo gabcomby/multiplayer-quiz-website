@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { AnswersPlayer, Choice } from '@app/interfaces/game';
+import type { AnswersPlayer, Question } from '@app/interfaces/game';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
@@ -40,8 +40,8 @@ export class SocketService {
         });
     }
 
-    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string) {
-        this.socket.emit('assert-answers', choices, answerIdx, playerId);
+    verifyAnswers(question: Question, answerIdx: number[]) {
+        this.socket.emit('assert-answers', question, answerIdx);
     }
 
     setTimerDuration(duration: number): void {
@@ -62,11 +62,12 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (data: boolean, playerId: string, multiplier: number) => void): void {
-        this.socket.on('answer-verification', (data: boolean, playerId: string, multiplier: number) => {
-            callback(data, playerId, multiplier);
+    onAnswerVerification(callback: (score: Map<string, number>) => void): void {
+        this.socket.on('answer-verification', (score: Map<string, number>) => {
+            callback(score);
         });
     }
+
     startGame(): void {
         this.socket.emit('start');
     }
