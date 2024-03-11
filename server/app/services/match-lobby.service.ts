@@ -75,7 +75,10 @@ export class MatchLobbyService {
     }
 
     async isABannedPlayer(playerName: string, lobbyId: string): Promise<boolean> {
+        console.log('isBannedPlayer function playerName: ', playerName);
         const lobby = await matchLobbyModel.findOne({ lobbyCode: lobbyId });
+        console.log('isBannedPlayer function lobby return: ', lobby);
+        console.log(lobby.bannedNames.find((player) => player === playerName));
         return lobby.bannedNames.includes(playerName);
     }
 

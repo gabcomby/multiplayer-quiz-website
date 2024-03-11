@@ -46,7 +46,7 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-        console.log('handleCloseBanned result: ', result.name);
+        console.log('handleCloseBanned result: ', result.userName);
         this.handleDialogCloseBanned(result.userName, result.lobbyCode);
         await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
 
@@ -117,19 +117,26 @@ export class MainPageComponent {
     };
 
     private handleDialogCloseBanned = (name: string, lobbyCode: string) => {
-        if (name && lobbyCode) {
-            this.authenticateUserIfBanned(name, lobbyCode);
-        }
+        console.log('handleDialogCloseBanned');
+        console.log(name);
+        this.authenticateUserIfBanned(name, lobbyCode);
     };
 
     private authenticateUserIfBanned(name: string, lobbyCode: string): void {
-        this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe({
-            next: this.handleAuthenticationSuccessBanned,
-            error: this.handleAuthenticationErrorBanned,
+        console.log('authenticateUserIfBanned', name);
+        this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe((result) => {
+            console.log(result);
+            if (!result) {
+                this.router.navigate(['/gameWait']);
+            } else {
+                this.router.navigate(['/home']);
+                this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
+            }
         });
     }
 
-    private handleAuthenticationSuccessBanned = (authenticate: boolean) => {
+    /* private handleAuthenticationSuccessBanned = (authenticate: boolean) => {
+        console.log('authenticate: ', authenticate);
         if (authenticate) {
             this.router.navigate(['/gameWait']);
         }
@@ -137,11 +144,12 @@ export class MainPageComponent {
 
     private handleAuthenticationErrorBanned = (error: HttpErrorResponse) => {
         if (error.error.body === false) {
+            this.router.navigate(['/home']);
             this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
         } else {
             this.dialog.open(ServerErrorDialogComponent, {
                 data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
             });
         }
-    };
+    };*/
 }

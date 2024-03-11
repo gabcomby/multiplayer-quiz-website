@@ -133,7 +133,9 @@ export class MatchLobbyController {
 
         this.router.post('/:id/banned', async (req: Request, res: Response) => {
             try {
-                const lobby = await this.matchLobbyService.isABannedPlayer(req.body.name, req.params.id);
+                console.log('nom du post:', req.body);
+                const lobby = await this.matchLobbyService.isABannedPlayer(req.body, req.params.id);
+                console.log('reponse du post:');
                 console.log(lobby);
                 res.json(lobby);
             } catch (error) {

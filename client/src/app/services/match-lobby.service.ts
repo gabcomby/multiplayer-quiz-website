@@ -108,6 +108,8 @@ export class MatchLobbyService {
     }
 
     authenticateUser(playerName: string, lobbyCode: string): Observable<boolean> {
-        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, { playerName });
+        console.log('player name cient auth: ', playerName);
+        const body = JSON.stringify(playerName);
+        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, body);
     }
 }
