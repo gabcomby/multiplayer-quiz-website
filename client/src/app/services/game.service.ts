@@ -451,7 +451,6 @@ export class GameService {
                 }
                 this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
             }
-            console.log(this.lobbyData.playerList);
         });
     }
 
