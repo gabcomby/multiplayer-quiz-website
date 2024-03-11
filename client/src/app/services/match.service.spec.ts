@@ -77,7 +77,7 @@ describe('MatchService', () => {
 
     it('should add a player to a match', () => {
         const matchId = '1';
-        const newPlayer: Player = { id: '123', name: 'Test Player', score: 0 };
+        const newPlayer: Player = { id: '123', name: 'Test Player', score: 0, bonus: 0 };
         const updatedMatch: Match = { id: matchId, playerList: [newPlayer] };
 
         service.addPlayer(newPlayer, matchId).subscribe((match) => {
@@ -92,8 +92,8 @@ describe('MatchService', () => {
     it('should fetch all players from a match', () => {
         const matchId = '1';
         const dummyPlayers: Player[] = [
-            { id: 'p1', name: 'Player One', score: 10 },
-            { id: 'p2', name: 'Player Two', score: 20 },
+            { id: 'p1', name: 'Player One', score: 10, bonus: 0 },
+            { id: 'p2', name: 'Player Two', score: 20, bonus: 0 },
         ];
 
         service.getPlayersFromMatch(matchId).subscribe((players) => {
@@ -124,7 +124,7 @@ describe('MatchService', () => {
         const matchId = '1';
         const playerId = 'p1';
         const score = 50;
-        const updatedPlayer: Player = { id: playerId, name: 'Player One', score };
+        const updatedPlayer: Player = { id: playerId, name: 'Player One', score, bonus: 0 };
 
         service.updatePlayerScore(matchId, playerId, score).subscribe((player) => {
             expect(player).toEqual(updatedPlayer);
