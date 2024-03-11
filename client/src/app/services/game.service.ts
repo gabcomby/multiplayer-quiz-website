@@ -425,6 +425,10 @@ export class GameService {
                 }
             }
         });
+
+        this.socketService.onBannedPlayer(() => {
+            this.handleGameLeave();
+        });
     }
 
     private handleNextQuestion(): void {
