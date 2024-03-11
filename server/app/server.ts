@@ -55,7 +55,8 @@ export class Server {
             socket.on('join-room', (roomId, playerId) => {
                 if (this.rooms.has(roomId)) {
                     socket.join(roomId);
-                    this.rooms.get(roomId).player.set(playerId, socket.id);
+                    this.rooms.get(roomId).player.set(socket.id, playerId);
+                    console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
                     throw new Error('The room you are trying to join does not exist');
                 }
@@ -69,6 +70,7 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
+                console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
             });
 
             // socket.on('set-game-info', )
@@ -142,6 +144,7 @@ export class Server {
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('adminDisconnected');
                     this.rooms.delete(roomsArray[1]);
+                    console.log('Deleted a room, room array now is', this.rooms);
                 }
             });
 
@@ -153,6 +156,7 @@ export class Server {
                     if (this.rooms.get(roomsArray[1]).player.size === 0) {
                         this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
                     }
+                    console.log('Deleted a player, room array now is', this.rooms.get(roomsArray[1]));
                 }
             });
 
