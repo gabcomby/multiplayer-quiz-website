@@ -55,6 +55,7 @@ export class GameService {
     currentPlayerId: string;
     currentPlayerName: string;
     answerIdx: number[];
+    // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
     previousQuestionIndex: number;
@@ -64,6 +65,7 @@ export class GameService {
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
+    // À BOUGER DANS LE SERVEUR??
 
     // eslint-disable-next-line max-params
     constructor(
