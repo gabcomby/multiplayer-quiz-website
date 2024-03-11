@@ -351,9 +351,13 @@ export class GameService {
             this.socketService.stopTimer();
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
-            // this.socketService.submitPlayerAnswer(this.currentPlayerId, this.answerIdx);
-            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-
+            this.socketService.verifyAnswers(
+                this.gameData.questions[this.previousQuestionIndex].choices,
+                this.answerIdx,
+                this.currentPlayerId,
+                this.lobbyId,
+                this.currentQuestion.points,
+            );
             if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
                 setTimeout(() => {
                     this.handleNextQuestion();
@@ -421,14 +425,14 @@ export class GameService {
             this.socketService.startTimer();
         });
 
-        this.socketService.onAnswerVerification((isCorrect: boolean) => {
-            console.log(isCorrect);
-            if (isCorrect) {
-                if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.updatePlayerScore(this.currentQuestion.points);
-                }
-            }
-        });
+        // this.socketService.onAnswerVerification((isCorrect: boolean) => {
+        //     console.log(isCorrect);
+        //     if (isCorrect) {
+        //         if (this.currentPlayerId !== this.lobbyData.hostId) {
+        //             this.updatePlayerScore(this.currentQuestion.points);
+        //         }
+        //     }
+        // });
         this.socketService.onUpdateList(() => {
             this.refreshPlayerList();
         });
@@ -446,17 +450,17 @@ export class GameService {
         this.socketService.startTimer();
     }
 
-    private updatePlayerScore(scoreFromQuestion: number): void {
-        console.log(this.currentPlayerId);
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-                console.log(this.lobbyData);
-                this.socketService.updatePlayerList();
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
-            },
-        });
-    }
+    // private updatePlayerScore(scoreFromQuestion: number): void {
+    //     console.log(this.currentPlayerId);
+    //     this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
+    //         next: (data) => {
+    //             this.lobbyData = data;
+    //             console.log(this.lobbyData);
+    //             this.socketService.updatePlayerList();
+    //         },
+    //         error: (error) => {
+    //             this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
+    //         },
+    //     });
+    // }
 }

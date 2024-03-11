@@ -3,7 +3,7 @@ import { Server as SocketIoServer } from 'socket.io';
 const ONE_SECOND_IN_MS = 1000;
 
 export class Room {
-    [x: string]: any;
+    [x: string]: unknown;
     duration = 0;
     timerId = 0;
     currentTime = 0;
@@ -12,6 +12,7 @@ export class Room {
     player = new Map();
     answersLocked = 0;
     roomId = '';
+    playerAnswer = new Map<boolean, string>();
 
     constructor(roomId: string) {
         this.roomId = roomId;

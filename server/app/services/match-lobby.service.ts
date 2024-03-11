@@ -85,12 +85,17 @@ export class MatchLobbyService {
         return lobby.playerList.find((player) => player.id === playerId);
     }
 
-    async updatePlayerScore(lobbyId: string, playerId: string, incr: number): Promise<ILobby> {
+    async updatePlayerScore(lobbyId: string, playersId: string[], incr: number): Promise<ILobby> {
         const lobby = await this.getLobby(lobbyId);
-        const index = lobby.playerList.findIndex((player) => player.id === playerId);
-        lobby.playerList[index].score += incr;
-        const a = await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby, { new: true });
+        console.log(lobby);
+        if (lobby) {
+            playersId.forEach((playerId) => {
+                const index = lobby.playerList.findIndex((player) => playerId === player.id);
+                lobby.playerList[index].score += incr;
+            });
+        }
 
-        return a;
+        return await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby, { new: true });
+
     }
 }

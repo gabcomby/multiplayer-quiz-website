@@ -41,8 +41,8 @@ export class SocketService {
         });
     }
 
-    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[]) {
-        this.socket.emit('assert-answers', choices, answerIdx);
+    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string, lobbyId: string, incr: number) {
+        this.socket.emit('assert-answers', choices, answerIdx, playerId, lobbyId, incr);
     }
 
     setTimerDuration(duration: number): void {
@@ -159,7 +159,7 @@ export class SocketService {
         this.socket.emit('update');
     }
     onUpdateList(callback: () => void) {
-        this.socket.on('updateList', () => {
+        this.socket.on('updatePlayerList', () => {
             callback();
         });
     }

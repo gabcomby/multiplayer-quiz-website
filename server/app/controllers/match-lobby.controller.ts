@@ -1,8 +1,8 @@
 import { MatchLobbyService } from '@app/services/match-lobby.service';
+// import * as async from 'async';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import * as async from 'async';
 
 @Service()
 export class MatchLobbyController {
@@ -14,6 +14,17 @@ export class MatchLobbyController {
 
     private configureRouter(): void {
         this.router = Router();
+        // const semaphore = async.semaphore(1); // Limit to 1 concurrent request
+
+        // const processRequestSequentially = (req: Request, res: Response, next: NextFunction) => {
+        //     semaphore.take(() => {
+        //         // Call the next middleware or route handler
+        //         next();
+        //         // Release the semaphore after the response is sent
+        //         res.on('finish', () => semaphore.leave());
+        //     });
+        // };
+        // this.router.use(processRequestSequentially);
 
         this.router.get('/', async (req: Request, res: Response) => {
             try {
@@ -123,14 +134,14 @@ export class MatchLobbyController {
             }
         });
 
-        this.router.patch('/:id/players/:playerId', async (req: Request, res: Response) => {
-            try {
-                const lobby = await this.matchLobbyService.updatePlayerScore(req.params.id, req.params.playerId, req.body.incr);
+        // this.router.patch('/:id/players/:playerId', async (req: Request, res: Response) => {
+        //     try {
+        //         const lobby = await this.matchLobbyService.updatePlayerScore(req.params.id, req.params.playerId, req.body.incr);
 
-                res.json(lobby);
-            } catch (error) {
-                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
-            }
-        });
+        //         res.json(lobby);
+        //     } catch (error) {
+        //         res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
+        //     }
+        // });
     }
 }
