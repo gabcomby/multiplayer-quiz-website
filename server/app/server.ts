@@ -55,7 +55,8 @@ export class Server {
             socket.on('join-room', (roomId, playerId) => {
                 if (this.rooms.has(roomId)) {
                     socket.join(roomId);
-                    this.rooms.get(roomId).player.set(playerId, socket.id);
+                    this.rooms.get(roomId).player.set(socket.id, playerId);
+                    console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
                     throw new Error('The room you are trying to join does not exist');
                 }
@@ -69,6 +70,7 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
+                console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
             });
 
             // socket.on('set-game-info', )

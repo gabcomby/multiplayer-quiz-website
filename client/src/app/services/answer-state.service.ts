@@ -12,4 +12,8 @@ export class AnswerStateService {
     lockAnswer(isLocked: boolean) {
         this.answerLockedSource.next(isLocked);
     }
+
+    resetAnswerState() {
+        this.answerLockedSource.next(false);
+    }
 }
