@@ -172,11 +172,11 @@ export class SocketService {
         });
     }
 
-    bannedPlayer(idPlayer: string) {
+    /* bannedPlayer(idPlayer: string) {
         this.socket.connect();
         console.log('banned FROM SOCKET SEND');
         this.socket.emit('banFromGame', idPlayer);
-    }
+    }*/
 
     /* async onBannedPlayer() {
         console.log('allo');

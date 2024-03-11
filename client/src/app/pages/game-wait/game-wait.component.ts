@@ -70,7 +70,7 @@ export class GameWaitComponent {
         if (this.bannedFromGame.includes(name)) {
             return;
         } else {
-            let player: Player = {
+            /* let player: Player = {
                 id: '',
                 name: '',
                 score: 0,
@@ -80,17 +80,19 @@ export class GameWaitComponent {
                 next: (response) => {
                     player = response;
                 },
-            });*/
+            });
             console.log(player);
             // this.socketService.bannedPlayer(player.id);
-            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe({
+            /*this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe({
                 next: (res) => {
                     console.log(res);
                 },
-            });
+            });*/
+            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
             this.bannedFromGame.push(name);
             this.bannedPlayers();
             this.players = this.playerList;
+            console.log('banned');
         }
     }
 }
