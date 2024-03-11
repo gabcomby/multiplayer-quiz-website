@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import type { AnswersPlayer, Choice } from '@app/interfaces/game';
-// import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
