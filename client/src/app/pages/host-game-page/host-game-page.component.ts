@@ -65,6 +65,9 @@ export class HostGamePageComponent {
     get endGame(): boolean {
         return this.gameService.endGame;
     }
+    get nextQuestion(): boolean {
+        return this.gameService.nextQuestion;
+    }
 
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
@@ -72,7 +75,7 @@ export class HostGamePageComponent {
     goToResult(): void {
         this.socketService.goToResult();
     }
-    nextQuestion() : void {
+    goNextQuestion(): void {
         this.socketService.nextQuestion();
     }
 }

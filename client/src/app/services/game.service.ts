@@ -16,7 +16,7 @@ import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
-// const TIME_BETWEEN_QUESTIONS = 3000;
+const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
 
 @Injectable({
@@ -61,6 +61,7 @@ export class GameService {
     answerIsCorrect: boolean;
     subscription: Subscription;
     endGame = false;
+    nextQuestion = false;
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
@@ -369,7 +370,7 @@ export class GameService {
                 // setTimeout(() => {
                 //     this.handleNextQuestion();
                 // }, TIME_BETWEEN_QUESTIONS);
-            // } else {
+                // } else {
                 if (this.currentPlayerId !== this.lobbyData.hostId) {
                     this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
                     this.sendPlayerAnswer(this.playerChoice);
@@ -413,6 +414,9 @@ export class GameService {
 
         this.socketService.onStopTimer(() => {
             this.onTimerComplete();
+            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+                this.nextQuestion = true;
+            }
         });
 
         this.socketService.onAdminDisconnect(() => {
@@ -443,7 +447,10 @@ export class GameService {
             this.router.navigate(['/resultsView']);
         });
         this.socketService.onNextQuestion(() => {
-            this.handleNextQuestion();
+            setTimeout(() => {
+                this.handleNextQuestion();
+            }, TIME_BETWEEN_QUESTIONS);
+            this.nextQuestion = false;
         });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
