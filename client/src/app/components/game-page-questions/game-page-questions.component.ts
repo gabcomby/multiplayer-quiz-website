@@ -15,6 +15,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
     @Input() answerIsCorrect: boolean;
+    @Input() isHost: boolean;
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];

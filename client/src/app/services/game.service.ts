@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import { Inject, Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { API_BASE_URL } from '@app/app.module';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
+import { AnswerStateService } from '@app/services/answer-state.service';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { QuestionValidationService } from './question-validation.service';
+import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -24,11 +24,10 @@ const START_TIMER_DURATION = 5;
 })
 export class GameService {
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
-    answersSelected = new ReplaySubject<AnswersPlayer>(1);
+    answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
-
     playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
@@ -61,6 +60,7 @@ export class GameService {
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
+    endGame = false;
     private minDuration: number;
     private maxDuration: number;
     private isLaunchTimer: boolean;
@@ -75,6 +75,7 @@ export class GameService {
         private socketService: SocketService,
         private snackbarService: SnackbarService,
         private router: Router,
+        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -100,6 +101,9 @@ export class GameService {
     }
 
     get currentPlayerNameValue(): string {
+        if (this.currentPlayerId === this.lobbyData.hostId) {
+            this.currentPlayerName = 'Organisateur';
+        }
         return this.currentPlayerName;
     }
 
@@ -155,7 +159,14 @@ export class GameService {
             this.calculateFinalResults();
         });
     }
+
+    gameIsFinished(): void {
+        if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
+            this.socketService.gameIsFinishedSocket();
+        }
+    }
     calculateFinalResults(): void {
+        this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
     }
@@ -255,6 +266,8 @@ export class GameService {
         this.answerIdx = [];
         this.questionHasExpired = false;
         this.isLaunchTimer = true;
+        this.endGame = false;
+        this.answerStateService.resetAnswerState();
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
@@ -298,7 +311,7 @@ export class GameService {
         this.socketService.sendPlayerAnswer(answer);
     }
 
-    getPlayerAnswers(): Observable<AnswersPlayer> {
+    getPlayerAnswers(): Observable<AnswersPlayer[]> {
         return this.answersSelected.asObservable();
     }
 
@@ -347,25 +360,27 @@ export class GameService {
             this.socketService.setTimerDuration(this.gameData.duration);
             this.socketService.startTimer();
             return;
-        }
-        this.socketService.stopTimer();
-        this.questionHasExpired = true;
-        this.previousQuestionIndex = this.currentQuestionIndex;
-        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
         } else {
-            if (this.currentPlayerId !== this.lobbyData.hostId) {
-                this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                this.sendPlayerAnswer(this.playerChoice);
-                // this.handleGameLeave();
+            this.socketService.stopTimer();
+            this.questionHasExpired = true;
+            this.previousQuestionIndex = this.currentQuestionIndex;
+            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
+            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+                setTimeout(() => {
+                    this.handleNextQuestion();
+                }, TIME_BETWEEN_QUESTIONS);
             } else {
-                this.questions.push(this.currentQuestion);
-                this.questionGame.next(this.questions);
-                // this.handleGameLeave();
+                if (this.currentPlayerId !== this.lobbyData.hostId) {
+                    this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+                    this.sendPlayerAnswer(this.playerChoice);
+                    // this.handleGameLeave();
+                } else {
+                    this.questions.push(this.currentQuestion);
+                    this.questionGame.next(this.questions);
+                    // this.handleGameLeave();
+                }
             }
+            this.gameIsFinished();
         }
     }
 
@@ -388,7 +403,7 @@ export class GameService {
             }
         });
 
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer) => {
+        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
             this.answersSelected.next(answer);
         });
 
@@ -404,25 +419,33 @@ export class GameService {
             this.handleGameLeave();
         });
 
-        this.socketService.onPlayerDisconnect(() => {
-            this.refreshPlayerList();
+        this.socketService.onPlayerDisconnect((playerId) => {
+            // this.refreshPlayerList();
+            this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
-
+        this.socketService.onLastPlayerDisconnected(() => {
+            this.handleGameLeave();
+        });
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
         });
 
         this.socketService.onGameLaunch(() => {
-            this.router.navigate(['/game']);
+            if (this.currentPlayerId === this.lobbyData.hostId) {
+                this.router.navigate(['/host-game-page']);
+            } else {
+                this.router.navigate(['/game']);
+            }
             this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
         });
 
-        this.socketService.onAnswerVerification((isCorrect: boolean) => {
+        this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
             if (isCorrect) {
-                if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.updatePlayerScore(this.currentQuestion.points);
-                }
+                const index = this.lobbyData.playerList.findIndex((player) => {
+                    return player.id === playerId;
+                });
+                this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
             }
         });
 
@@ -432,7 +455,7 @@ export class GameService {
     }
 
     private handleNextQuestion(): void {
-        this.refreshPlayerList();
+        // this.refreshPlayerList();
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {
@@ -441,16 +464,5 @@ export class GameService {
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();
-    }
-
-    private updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
-            next: (data) => {
-                this.lobbyData = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
-            },
-        });
     }
 }

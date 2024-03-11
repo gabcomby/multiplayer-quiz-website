@@ -42,8 +42,8 @@ export class SocketService {
         });
     }
 
-    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[]) {
-        this.socket.emit('assert-answers', choices, answerIdx);
+    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string) {
+        this.socket.emit('assert-answers', choices, answerIdx, playerId);
     }
 
     setTimerDuration(duration: number): void {
@@ -64,9 +64,9 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (data: boolean) => void): void {
-        this.socket.on('answer-verification', (data: boolean) => {
-            callback(data);
+    onAnswerVerification(callback: (data: boolean, playerId: string, multiplier: number) => void): void {
+        this.socket.on('answer-verification', (data: boolean, playerId: string, multiplier: number) => {
+            callback(data, playerId, multiplier);
         });
     }
     startGame(): void {
@@ -88,9 +88,9 @@ export class SocketService {
     joinRoom(roomId: string, playerId: string): void {
         this.socket.emit('join-room', roomId, playerId);
     }
-    onPlayerDisconnect(callback: () => void) {
-        this.socket.on('playerDisconnected', () => {
-            callback();
+    onPlayerDisconnect(callback: (playerId: string) => void) {
+        this.socket.on('playerDisconnected', (playerId: string) => {
+            callback(playerId);
         });
     }
     answerSubmit() {
@@ -123,6 +123,13 @@ export class SocketService {
     submitAnswer() {
         this.socket.emit('answer-submitted');
     }
+    submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
+        this.socket.emit('player-answers', idPlayer, answerIdx);
+    }
+
+    gameIsFinishedSocket() {
+        this.socket.emit('endGame');
+    }
 
     onEndGame(): Observable<unknown> {
         return new Observable((observer) => {
@@ -141,19 +148,25 @@ export class SocketService {
         this.socket.emit('playerAnswer', mapToArray);
     }
 
-    onPlayerAnswer(): Observable<AnswersPlayer> {
+    onPlayerAnswer(): Observable<AnswersPlayer[]> {
         return new Observable((observer) => {
-            this.socket.on('sendPlayerAnswer', (answer) => {
-                const map = new Map<string, number[]>();
-                answer.forEach((entry: { key: string; value: number[] }) => {
-                    map.set(entry.key, entry.value);
-                });
-
-                observer.next(map);
+            this.socket.on('sendPlayerAnswers', (answers: AnswersPlayer[]) => {
+                observer.next(answers);
             });
         });
     }
 
+    sendMessages(message: string, playerName: string, isHost: boolean) {
+        this.socket.emit('chatMessage', { message, playerName, isHost });
+    }
+
+    onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
+        return new Observable((observer) => {
+            this.socket.on('chatMessage', (data) => {
+                observer.next(data);
+            });
+        });
+    }
     bannedPlayer(idPlayer: string) {
         this.socket.connect();
         console.log('banned FROM SOCKET SEND');

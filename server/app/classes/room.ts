@@ -1,3 +1,4 @@
+import type { AnswersPlayer } from '@app/model/questions.model';
 import { Server as SocketIoServer } from 'socket.io';
 
 const ONE_SECOND_IN_MS = 1000;
@@ -11,6 +12,8 @@ export class Room {
     player = new Map();
     answersLocked = 0;
     roomId = '';
+    firstAnswer = true;
+    playersAnswers: AnswersPlayer[] = [];
 
     constructor(roomId: string) {
         this.roomId = roomId;

@@ -1,8 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-
-const DISAPPEAR_DELAY = 10000;
-const MESSAGE_NOT_FOUND = -1;
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -15,40 +13,34 @@ const MESSAGE_NOT_FOUND = -1;
         ]),
     ],
 })
-export class GamePageLivechatComponent {
+export class GamePageLivechatComponent implements OnInit {
     @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
-    messages: { text: string; sender: string; visible: boolean }[] = [];
+    @Input() isHost: boolean = false;
+    @Input() roomId: string;
+    messages: { text: string; sender: string; visible: boolean; timestamp: string }[] = [];
     newMessage: string = '';
+
+    constructor(private chatService: ChatService) {}
+
+    ngOnInit(): void {
+        this.chatService.getMessages().subscribe((messages) => {
+            this.messages = messages;
+        });
+    }
 
     onChatClick(): void {
         this.textbox.nativeElement.focus();
     }
 
-    onChatEnterPressed(event: Event): void {
+    onEnterKeyPressed(event: Event): void {
         event.preventDefault();
-        this.sendMessage();
-    }
-
-    sendMessage(): void {
-        this.newMessage = this.newMessage.trim();
-        if (this.newMessage) {
-            this.addMessageToData();
-        }
+        this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
         this.newMessage = '';
     }
 
-    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
-        message.visible = false;
-        const index = this.messages.indexOf(message);
-        if (index !== MESSAGE_NOT_FOUND) {
-            this.messages.splice(index, 1);
-        }
-    }
-
-    private addMessageToData(): void {
-        const message = { text: this.newMessage, sender: this.playerName, visible: true };
-        this.messages.push(message);
-        setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
+    onButtonClicked(): void {
+        this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
+        this.newMessage = '';
     }
 }

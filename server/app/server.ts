@@ -5,8 +5,8 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
+// import { MatchLobbyService } from './services/match-lobby.service';
 
-// const ONE_SECOND_IN_MS = 1000;
 const BASE_TEN = 10;
 
 @Service()
@@ -14,17 +14,10 @@ export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
 
     rooms = new Map<string, Room>();
-    room = {
-        duration: 0,
-        timerId: 0,
-        currentTime: 0,
-        isRunning: false,
-        idAdmin: '',
-        player: new Map(),
-        answersLocked: 0,
-    };
+
     private server: http.Server;
     private io: SocketIoServer;
+
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -60,9 +53,15 @@ export class Server {
 
             // HAS ROOMS
             socket.on('join-room', (roomId, playerId) => {
-                socket.join(roomId);
-                this.rooms.get(roomId).player.set(playerId, socket.id);
+                if (this.rooms.has(roomId)) {
+                    socket.join(roomId);
+                    this.rooms.get(roomId).player.set(socket.id, playerId);
+                    console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
+                } else {
+                    throw new Error('The room you are trying to join does not exist');
+                }
             });
+
             // HAS ROOMS
             socket.on('create-room', (roomId) => {
                 if (this.rooms.has(roomId)) {
@@ -71,10 +70,10 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
-                const roomsArray = Array.from(socket.rooms);
-                // eslint-disable-next-line no-console
-                console.log('Room id is', roomsArray[1]);
+                console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
             });
+
+            // socket.on('set-game-info', )
 
             // HAS ROOMS
             socket.on('set-timer-duration', (duration) => {
@@ -93,6 +92,7 @@ export class Server {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).isRunning === false) {
                     this.rooms.get(roomsArray[1]).isRunning = true;
+                    this.rooms.get(roomsArray[1]).firstAnswer = true;
                     this.rooms.get(roomsArray[1]).startCountdownTimer(this.io, roomsArray[1]);
                 }
             });
@@ -104,6 +104,7 @@ export class Server {
                     clearInterval(this.rooms.get(roomsArray[1]).timerId);
                     this.rooms.get(roomsArray[1]).isRunning = false;
                     this.rooms.get(roomsArray[1]).currentTime = this.rooms.get(roomsArray[1]).duration;
+                    this.rooms.get(roomsArray[1]).answersLocked = 0;
                 }
             });
 
@@ -116,6 +117,17 @@ export class Server {
                         this.rooms.get(roomsArray[1]).answersLocked = 0;
                         this.io.to(roomsArray[1]).emit('stop-timer');
                     }
+                }
+            });
+
+            socket.on('playerAnswer', (answer) => {
+                const roomId = Array.from(socket.rooms)[1];
+                if (this.rooms.has(roomId)) {
+                    this.rooms.get(roomId).playersAnswers.push(answer);
+                }
+
+                if (this.rooms.get(roomId).playersAnswers.length === this.rooms.get(roomId).player.size) {
+                    this.io.to(roomId).emit('sendPlayerAnswers', this.rooms.get(roomId).playersAnswers);
                 }
             });
 
@@ -138,18 +150,32 @@ export class Server {
             socket.on('player-disconnect', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('playerDisconnected');
-                    // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
+                    this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
+                    this.rooms.get(roomsArray[1]).player.delete(socket.id);
+                    if (this.rooms.get(roomsArray[1]).player.size === 0) {
+                        this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
+                    }
                 }
             });
 
-            // HAS ROOMS
-            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[]) => {
+            socket.on('endGame', () => {
+                const roomsArray = Array.from(socket.rooms);
+                if (this.rooms.has(roomsArray[1])) {
+                    this.rooms.get(roomsArray[1]).answersLocked += 1;
+                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
+                        this.rooms.get(roomsArray[1]).answersLocked = 0;
+                        this.io.to(roomsArray[1]).emit('endGame');
+                    }
+                }
+            });
+
+            // HAS ROOMS TODO lint
+            socket.on('assert-answers', async (choices: IChoice[], answerIdx: number[], playerId: string) => {
                 const roomsArray = Array.from(socket.rooms);
                 const roomId = roomsArray[1];
                 if (this.rooms.has(roomId)) {
                     if (answerIdx.length === 0) {
-                        this.io.to(roomId).emit('answer-verification', false);
+                        this.io.to(socket.id).emit('answer-verification', false, 1);
                         return;
                     }
                     const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
@@ -157,14 +183,33 @@ export class Server {
 
                     const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
+                    let isCorrect = false;
                     if (!isMultipleAnswer) {
-                        this.io.to(roomId).emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                        isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
                     } else {
                         const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
                         const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                        this.io.to(roomId).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
+                        isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
+                    }
+
+                    if (isCorrect && this.rooms.get(roomId).firstAnswer) {
+                        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1.2);
+                        this.rooms.get(roomId).firstAnswer = false;
+                    } else {
+                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
                     }
                 }
+            });
+
+            socket.on('chatMessage', ({ message, playerName, isHost }) => {
+                const senderName = isHost ? 'Organisateur' : playerName;
+
+                socket.broadcast.emit('chatMessage', {
+                    text: message,
+                    sender: senderName,
+                    timeStamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                });
             });
 
             // HAS ROOMS

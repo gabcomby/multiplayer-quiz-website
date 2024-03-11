@@ -1,7 +1,3 @@
-<div *ngIf="isHost">
-    <p>Je suis administrateur</p>
-    <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
-</div>
 <div class="container">
     <div class="top-bar">
         <mat-toolbar color="primary" id="menu-bar">
@@ -17,7 +13,7 @@
     <div class="live-chat" *ngIf="!isLaunchTimer">
         <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar"></app-game-page-livechat>
     </div>
-    <div *ngIf="!isHost" class="timer">
+    <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
     <div class="question" *ngIf="!endGame && !isLaunchTimer">
@@ -29,6 +25,11 @@
             (answerIdx)="setAnswerIndex($event)"
             [answerIsCorrect]="answerIsCorrectValue"
         ></app-game-page-questions>
+    </div>
+
+    <div *ngIf="currentPlayerId === hostId">
+        <p>Je suis administrateur</p>
+        <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
     </div>
 
     <div class="score" *ngIf="!isLaunchTimer">

@@ -11,8 +11,30 @@
 
 .messages-container {
     width: 100%;
+    max-height: 300px;
     overflow: auto;
     margin-bottom: 10px;
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: gray;
+    margin-left: 10px;
 }
 
 form.chat-textbox {

@@ -10,15 +10,9 @@ import { HostGamePageComponent } from './host-game-page.component';
 import { of } from 'rxjs';
 
 class MockGameService {
-    initializeHostGame = jasmine.createSpy().and.returnValue(
-        of({
-            /* Mocked initialization data */
-        }),
-    );
-    finalResultsEmitter = of({
-        /* Mocked final results data */
-    });
-    // Add mock implementations for other methods as necessary
+    initializeHostGame = jasmine.createSpy().and.returnValue(of({}));
+    finalResultsEmitter = of({});
+    getCurrentQuestion = jasmine.createSpy('getCurrentQuestion').and.returnValue({});
 }
 
 describe('HostGamePageComponent', () => {
