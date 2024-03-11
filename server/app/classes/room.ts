@@ -12,7 +12,7 @@ export class Room {
     player = new Map();
     answersLocked = 0;
     roomId = '';
-    playerAnswer = new Map<boolean, string>();
+    firstAnswer = true;
 
     constructor(roomId: string) {
         this.roomId = roomId;

@@ -88,14 +88,12 @@ export class MatchLobbyService {
     async updatePlayerScore(lobbyId: string, playersId: string[], incr: number): Promise<ILobby> {
         const lobby = await this.getLobby(lobbyId);
         console.log(lobby);
-        if (lobby) {
-            playersId.forEach((playerId) => {
-                const index = lobby.playerList.findIndex((player) => playerId === player.id);
-                lobby.playerList[index].score += incr;
-            });
-        }
+
+        playersId.forEach((playerId) => {
+            const index = lobby.playerList.findIndex((player) => playerId === player.id);
+            lobby.playerList[index].score += incr;
+        });
 
         return await matchLobbyModel.findOneAndUpdate({ id: lobbyId }, lobby, { new: true });
-
     }
 }

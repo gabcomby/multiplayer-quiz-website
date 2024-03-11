@@ -5,7 +5,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
-import { MatchLobbyService } from './services/match-lobby.service';
+// import { MatchLobbyService } from './services/match-lobby.service';
 
 // const ONE_SECOND_IN_MS = 1000;
 const BASE_TEN = 10;
@@ -19,8 +19,7 @@ export class Server {
     private server: http.Server;
     private io: SocketIoServer;
     constructor(
-        private readonly application: Application,
-        private matchLobbyService: MatchLobbyService,
+        private readonly application: Application, // private matchLobbyService: MatchLobbyService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -57,7 +56,7 @@ export class Server {
             // HAS ROOMS
             socket.on('join-room', (roomId, playerId) => {
                 socket.join(roomId);
-                this.rooms.get(roomId).player.set(playerId, socket.id);
+                this.rooms.get(roomId).player.set(socket.id, playerId);
             });
             // HAS ROOMS
             socket.on('create-room', (roomId) => {
@@ -71,6 +70,8 @@ export class Server {
                 // eslint-disable-next-line no-console
                 console.log('Room id is', roomsArray[1]);
             });
+
+            // socket.on('set-game-info', )
 
             // HAS ROOMS
             socket.on('set-timer-duration', (duration) => {
@@ -89,6 +90,7 @@ export class Server {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).isRunning === false) {
                     this.rooms.get(roomsArray[1]).isRunning = true;
+                    this.rooms.get(roomsArray[1]).firstAnswer = true;
                     this.rooms.get(roomsArray[1]).startCountdownTimer(this.io, roomsArray[1]);
                 }
             });
@@ -144,18 +146,23 @@ export class Server {
             socket.on('player-disconnect', () => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('playerDisconnected');
+                    this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
+                    this.rooms.get(roomsArray[1]).player.delete(socket.id);
+                    if (this.rooms.get(roomsArray[1]).player.size === 0) {
+                        this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
+                    }
+
                     // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
                 }
             });
 
-            // HAS ROOMS
-            socket.on('assert-answers', (choices: IChoice[], answerIdx: number[], playerId: string, lobbyId: string, incr: number) => {
+            // HAS ROOMS TODO lint
+            socket.on('assert-answers', async (choices: IChoice[], answerIdx: number[], playerId: string) => {
                 const roomsArray = Array.from(socket.rooms);
                 const roomId = roomsArray[1];
                 if (this.rooms.has(roomId)) {
                     if (answerIdx.length === 0) {
-                        this.io.to(socket.id).emit('answer-verification', false);
+                        this.io.to(socket.id).emit('answer-verification', false, 1);
                         return;
                     }
                     const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
@@ -163,34 +170,73 @@ export class Server {
 
                     const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
+                    let isCorrect = false;
                     if (!isMultipleAnswer) {
-                        this.rooms.get(roomId).playerAnswer.set(selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect, playerId);
-                        // this.io.to(socket.id).emit('answer-verification', selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect);
+                        isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
                     } else {
                         const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
                         const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                        // this.io.to(socket.id).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0);
-                        this.rooms.get(roomId).playerAnswer.set(selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0, playerId);
+                        isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
                     }
-                    if (this.rooms.get(roomId).playerAnswer.size === this.rooms.get(roomId).player.size) {
-                        const updatePlayerScore: string[] = [];
-                        this.rooms.get(roomId).playerAnswer.forEach((key, value) => {
-                            if (value === true) {
-                                updatePlayerScore.push(key);
-                            }
-                        });
-                        this.matchLobbyService.updatePlayerScore(lobbyId, updatePlayerScore, incr);
-                        this.io.to(roomId).emit('updatePlayerList');
 
+                    if (isCorrect && this.rooms.get(roomId).firstAnswer) {
+                        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1.2);
+                        this.rooms.get(roomId).firstAnswer = false;
+                    } else {
+                        this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
                     }
+
+                    // if (!isMultipleAnswer) {
+                    //     const isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
+                    //     if (isCorrect && this.rooms.get(roomId).firstAnswer) {
+                    //         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                    //         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1.2);
+                    //         this.rooms.get(roomId).firstAnswer = false;
+                    //     } else {
+                    //         this.io.to(roomId).emit('answer-verification', isCorrect, playerId, 1);
+                    //     }
+                    // } else {
+                    //     const isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
+                    //     const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+                    //     const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+                    //     this.io.to(roomId).emit('answer-verification', selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0, playerId);
+                    //     // this.rooms.get(roomId).playerAnswer.set(selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0, playerId);
+                    // }
+                    // console.log(this.rooms.get(roomId).playerAnswer.size);
+                    // console.log(this.rooms.get(roomId).player.size);
+                    // this.io.to(socket.id).emit('answer-verification');
+
+                    // if (this.rooms.get(roomId).numbAnswers === this.rooms.get(roomId).player.size) {
+                    //     this.rooms.get(roomId).numbAnswers = 0;
+                    //     console.log('yep');
+
+                    // const updatePlayerScore: string[] = [];
+                    // this.rooms.get(roomId).playerAnswer.forEach((key, value) => {
+                    //     if (value === true) {
+                    //         updatePlayerScore.push(key);
+                    //     }
+                    // });
+                    // await this.matchLobbyService.updatePlayerScore(lobbyId, updatePlayerScore, incr);
+                    // this.io.to(socket.id).emit('updatePlayerList');
+                    // this.rooms.get(roomId).playerAnswer = new Map();
+                    // }
                 }
             });
-            socket.on('update', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('updateList');
-                }
-            });
+            // socket.on('update', async (lobbyId: string, incr: number) => {
+            //     const roomsArray = Array.from(socket.rooms);
+            //     if (this.rooms.has(roomsArray[1])) {
+            //         const updatePlayerScore: string[] = [];
+            //         this.rooms.get(roomsArray[1]).playerAnswer.forEach((key, value) => {
+            //             if (value === true) {
+            //                 updatePlayerScore.push(key);
+            //             }
+            //         });
+            //         await this.matchLobbyService.updatePlayerScore(lobbyId, updatePlayerScore, incr);
+            //         this.io.to(socket.id).emit('updatePlayerList');
+            //         this.rooms.get(roomsArray[1]).playerAnswer = new Map();
+            //     }
+            // });
 
             // HAS ROOMS
             socket.on('start', () => {

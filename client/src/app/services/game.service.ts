@@ -18,6 +18,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
+// const MULTIPLIER_FIRST_ANSWER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -28,7 +29,7 @@ export class GameService {
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
     questionGame = new ReplaySubject<Question[]>(1);
     questions: Question[] = [];
-
+    firstAnswer: boolean = true;
     playerChoice: AnswersPlayer = new Map<string, number[]>();
 
     apiUrl: string;
@@ -411,10 +412,13 @@ export class GameService {
             this.handleGameLeave();
         });
 
-        this.socketService.onPlayerDisconnect(() => {
-            this.refreshPlayerList();
+        this.socketService.onPlayerDisconnect((playerId) => {
+            // this.refreshPlayerList();
+            this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
-
+        this.socketService.onLastPlayerDisconnected(() => {
+            this.handleGameLeave();
+        });
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
         });
@@ -425,21 +429,32 @@ export class GameService {
             this.socketService.startTimer();
         });
 
-        // this.socketService.onAnswerVerification((isCorrect: boolean) => {
-        //     console.log(isCorrect);
-        //     if (isCorrect) {
-        //         if (this.currentPlayerId !== this.lobbyData.hostId) {
-        //             this.updatePlayerScore(this.currentQuestion.points);
-        //         }
+        this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
+            console.log(playerId + ' has an answer. Is it correct : ' + isCorrect);
+            if (isCorrect) {
+                const index = this.lobbyData.playerList.findIndex((player) => {
+                    return player.id === playerId;
+                });
+                this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
+                console.log(this.lobbyData);
+            }
+        });
+        // this.socketService.onAnswerVerification(() => {
+        //     this.update += 1;
+        //     if (this.update === this.lobbyData.playerList.length) {
+        //         this.socketService.updatePlayerList(this.lobbyId, this.currentQuestion.points);
+        //         this.update = 0;
         //     }
         // });
+
         this.socketService.onUpdateList(() => {
             this.refreshPlayerList();
         });
     }
 
     private handleNextQuestion(): void {
-        this.refreshPlayerList();
+        // this.refreshPlayerList();
+        this.firstAnswer = true;
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
         } else {
@@ -452,15 +467,15 @@ export class GameService {
 
     // private updatePlayerScore(scoreFromQuestion: number): void {
     //     console.log(this.currentPlayerId);
-    //     this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
-    //         next: (data) => {
-    //             this.lobbyData = data;
-    //             console.log(this.lobbyData);
-    //             this.socketService.updatePlayerList();
-    //         },
-    //         error: (error) => {
-    //             this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
-    //         },
-    //     });
+    //     // this.matchLobbyService.updatePlayerScore(this.lobbyId, this.currentPlayerId, scoreFromQuestion).subscribe({
+    //     //     next: (data) => {
+    //     //         this.lobbyData = data;
+    //     //         console.log(this.lobbyData);
+    //     //         this.socketService.updatePlayerList();
+    //     //     },
+    //     //     error: (error) => {
+    //     //         this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en mettant à jour le score du joueur: ${error}`);
+    //     //     },
+    //     // });
     // }
 }
