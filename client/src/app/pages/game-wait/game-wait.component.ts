@@ -12,6 +12,7 @@ import { SocketService } from '@app/services/socket.service';
 })
 export class GameWaitComponent {
     players: Player[] = [];
+    bannedFromGame: string[] = [];
     constructor(
         private router: Router,
         private socketService: SocketService,
@@ -33,9 +34,12 @@ export class GameWaitComponent {
     }
 
     get bannedPlayers(): string[] {
-        let bannedArray: string[] = [];
+        const bannedArray: string[] = [];
         this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
-            bannedArray = response;
+            console.log('response: ', response);
+            for (let elem of response) {
+                bannedArray.push(elem);
+            }
         });
         console.log('banned array: ', bannedArray);
         return bannedArray;
