@@ -33,13 +33,13 @@ export class GamePageLivechatComponent implements OnInit {
         this.textbox.nativeElement.focus();
     }
 
-    onChatEnterPressed(event: Event): void {
+    onEnterKeyPressed(event: Event): void {
         event.preventDefault();
         this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
         this.newMessage = '';
     }
 
-    onButtonClick(): void {
+    onButtonClicked(): void {
         this.chatService.sendMessage(this.newMessage, this.playerName, this.isHost);
         this.newMessage = '';
     }

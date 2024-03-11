@@ -4,9 +4,9 @@
             <mat-card *ngIf="message.visible" [@fade]="true">
                 <mat-card-header>
                     <mat-card-title-group>
-                        <mat-card-title
-                            >{{ message.sender }} <span class="message-time">à {{ message.timestamp }}</span></mat-card-title
-                        >
+                        <mat-card-title>
+                            {{ message.sender }} <span class="message-time">à {{ message.timestamp }}</span>
+                        </mat-card-title>
                     </mat-card-title-group>
                 </mat-card-header>
                 <mat-card-content>{{ message.text }}</mat-card-content>
@@ -23,11 +23,10 @@
                 [(ngModel)]="newMessage"
                 style="resize: none"
                 (click)="onChatClick()"
-                (keydown.enter)="onChatEnterPressed($event)"
-                maxlength="200"
+                (keydown.enter)="onEnterKeyPressed($event)"
             ></textarea>
         </mat-form-field>
-        <button mat-mini-fab color="primary" (click)="onButtonClick()">
+        <button mat-mini-fab color="primary" (click)="onButtonClicked()">
             <mat-icon>send</mat-icon>
         </button>
     </form>

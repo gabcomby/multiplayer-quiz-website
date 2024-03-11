@@ -7,7 +7,6 @@ import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 // import { MatchLobbyService } from './services/match-lobby.service';
 
-// const ONE_SECOND_IN_MS = 1000;
 const BASE_TEN = 10;
 
 @Service()
@@ -210,8 +209,13 @@ export class Server {
             });
 
             socket.on('chatMessage', ({ message, playerName, isHost }) => {
-                const formattedMessage = isHost ? `Organisateur: ${message}` : `${playerName}: ${message}`;
-                socket.broadcast.emit('chatMessage', { text: formattedMessage, sender: playerName });
+                const senderName = isHost ? 'Organisateur' : playerName;
+
+                socket.broadcast.emit('chatMessage', {
+                    text: message,
+                    sender: senderName,
+                    timeStamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                });
             });
 
             // HAS ROOMS
