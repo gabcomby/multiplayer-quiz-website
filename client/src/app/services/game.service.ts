@@ -265,6 +265,7 @@ export class GameService {
         this.answerIdx = [];
         this.questionHasExpired = false;
         this.isLaunchTimer = true;
+        this.endGame = false;
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
                 this.lobbyData = lobbyData;
