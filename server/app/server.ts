@@ -199,7 +199,8 @@ export class Server {
 
             socket.on('chatMessage', ({ message, playerName, isHost }) => {
                 const formattedMessage = isHost ? `Organisateur: ${message}` : `${playerName}: ${message}`;
-                socket.broadcast.emit('chatMessage', { text: formattedMessage, sender: playerName });
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                socket.broadcast.emit('chatMessage', { text: formattedMessage, sender: playerName, timestamp });
             });
 
             // HAS ROOMS
