@@ -1,5 +1,4 @@
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-// import * as async from 'async';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
@@ -14,17 +13,6 @@ export class MatchLobbyController {
 
     private configureRouter(): void {
         this.router = Router();
-        // const semaphore = async.semaphore(1); // Limit to 1 concurrent request
-
-        // const processRequestSequentially = (req: Request, res: Response, next: NextFunction) => {
-        //     semaphore.take(() => {
-        //         // Call the next middleware or route handler
-        //         next();
-        //         // Release the semaphore after the response is sent
-        //         res.on('finish', () => semaphore.leave());
-        //     });
-        // };
-        // this.router.use(processRequestSequentially);
 
         this.router.get('/', async (req: Request, res: Response) => {
             try {
