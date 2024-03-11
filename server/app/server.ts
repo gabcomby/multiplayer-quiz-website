@@ -61,9 +61,14 @@ export class Server {
 
             // HAS ROOMS
             socket.on('join-room', (roomId, playerId) => {
-                socket.join(roomId);
-                this.rooms.get(roomId).player.set(playerId, socket.id);
+                if (this.rooms.has(roomId)) {
+                    socket.join(roomId);
+                    this.rooms.get(roomId).player.set(playerId, socket.id);
+                } else {
+                    throw new Error('The room you are trying to join does not exist');
+                }
             });
+
             // HAS ROOMS
             socket.on('create-room', (roomId) => {
                 if (this.rooms.has(roomId)) {
@@ -72,9 +77,6 @@ export class Server {
                 this.rooms.set(roomId, new Room(roomId));
                 this.rooms.get(roomId).idAdmin = socket.id;
                 socket.join(roomId);
-                const roomsArray = Array.from(socket.rooms);
-                // eslint-disable-next-line no-console
-                console.log('Room id is', roomsArray[1]);
             });
 
             // HAS ROOMS
@@ -155,11 +157,11 @@ export class Server {
                 }
             });
 
-            socket.on('player-disconnect', () => {
+            socket.on('player-disconnect', (playerId: string) => {
                 const roomsArray = Array.from(socket.rooms);
                 if (this.rooms.has(roomsArray[1])) {
                     this.io.to(roomsArray[1]).emit('playerDisconnected');
-                    // TODO: Verify if room still exists, if yes, leave it, if no, do nothing
+                    this.rooms.get(roomsArray[1]).player.delete(playerId);
                 }
             });
 

@@ -334,7 +334,7 @@ export class GameService {
                     } else {
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
-                                this.socketService.playerDisconnect();
+                                this.socketService.playerDisconnect(this.currentPlayerId);
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
                             },

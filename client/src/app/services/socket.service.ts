@@ -110,8 +110,8 @@ export class SocketService {
     adminDisconnect() {
         this.socket.emit('admin-disconnect');
     }
-    playerDisconnect() {
-        this.socket.emit('player-disconnect');
+    playerDisconnect(playerId: string) {
+        this.socket.emit('player-disconnect', playerId);
     }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {
