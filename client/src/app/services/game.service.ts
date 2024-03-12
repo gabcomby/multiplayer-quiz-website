@@ -326,6 +326,10 @@ export class GameService {
             }
         });
 
+        this.socketService.onAdminDisconnect(() => {
+            this.handleGameLeave();
+        });
+
         this.socketService.onPlayerDisconnect((playerId) => {
             const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
             if (playerGone) {
