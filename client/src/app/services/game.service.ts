@@ -320,7 +320,6 @@ export class GameService {
     }
 
     handleGameLeave() {
-        console.log('handleGameLeave');
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
@@ -390,18 +389,14 @@ export class GameService {
     }
 
     refreshPlayerList(): void {
-        this.matchLobbyService.getPlayers(this.lobbyId).subscribe(
-            (data)=> {
-                this.lobbyData.playerList = data;
-            }
-            /* next: (data) => {
+        this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
+            next: (data) => {
                 this.lobbyData.playerList = data;
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
             },
-        }*/
-        );
+        });
     }
 
     setupWebsocketEvents(): void {
@@ -450,9 +445,7 @@ export class GameService {
         });
 
         this.socketService.onBannedPlayer(() => {
-            console.log('banned FROM SOCKET RECEIVED');
             this.router.navigate(['/home']);
-            // this.handleGameLeave();
         });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
@@ -463,8 +456,6 @@ export class GameService {
                 this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
             }
         });
-
-        // this.socketService.onBannedPlayer();
     }
 
     private handleNextQuestion(): void {

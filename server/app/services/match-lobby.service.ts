@@ -120,7 +120,6 @@ export class MatchLobbyService {
     }
 
     async lockLobby(lobbyId: string, isLock: boolean): Promise<ILobby> {
-        console.log('lock lobby', isLock);
         return await matchLobbyModel.findOneAndUpdate({ lobbyCode: lobbyId }, { isLocked: !isLock }, { new: true });
     }
 }

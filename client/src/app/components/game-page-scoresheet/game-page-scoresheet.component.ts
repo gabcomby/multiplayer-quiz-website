@@ -16,9 +16,7 @@ export class GamePageScoresheetComponent {
         private gameWaitComponent: GameWaitComponent,
     ) {}
     get banned() {
-        console.log(this.gameWaitComponent.bannedFromGame);
         this.bannedList = this.gameWaitComponent.bannedFromGame;
-        // this.bannedList = this.gameService.matchLobby.bannedNames;
         return this.bannedList;
     }
     get isHost() {

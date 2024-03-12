@@ -18,14 +18,7 @@ export class GameWaitComponent {
         private socketService: SocketService,
         private gameService: GameService,
         private matchLobbyService: MatchLobbyService,
-    ) {
-        /* this.socketService.onBannedPlayer(() => {
-            this.gameService.handleGameLeave();
-        });*/
-    }
-    /* get banned() {
-        return this.bannedFromGame;
-    }*/
+    ) {}
     get playerList() {
         this.players = this.gameService.matchLobby.playerList;
         return this.players;
@@ -75,44 +68,21 @@ export class GameWaitComponent {
         if (this.bannedFromGame.includes(name)) {
             return;
         } else {
-            /* let player: Player = {
-                id: '',
-                name: '',
-                score: 0,
-                isLocked: false,
-            };
-            /* this.matchLobbyService.getPlayer(this.lobbyCode, name).subscribe({
-                next: (response) => {
-                    player = response;
-                },
-            });
-            console.log(player);
-            // this.socketService.bannedPlayer(player.id);
-            /*this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe({
-                next: (res) => {
-                    console.log(res);
-                },
-            });*/
             for (const element of this.players) {
                 if (element.name === name) {
                     this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
-                    console.log('player found', element.name);
-                    console.log('player supposed to be found', name);
                     this.socketService.bannedPlayer(element.id);
                 }
             }
             const subscribe = this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
             subscribe.unsubscribe();
             this.bannedFromGame.push(name);
-            // this.bannedPlayers();
             this.players = this.playerList;
-            console.log('banned');
         }
     }
 
     makeLocked(lobbyCode: string, isLocked: boolean) {
         this.matchLobbyService.gameLocked(lobbyCode, isLocked).subscribe((response) => {
-            console.log(response);
             this.gameService.matchLobby.isLocked = response.isLocked;
         });
     }

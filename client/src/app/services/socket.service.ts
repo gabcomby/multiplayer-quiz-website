@@ -174,24 +174,12 @@ export class SocketService {
 
     bannedPlayer(idPlayer: string) {
         this.socket.connect();
-        console.log('banned FROM SOCKET SEND');
         this.socket.emit('banFromGame', idPlayer);
     }
 
     async onBannedPlayer(callback: () => void) {
-        console.log('allo');
         await this.socket.on('bannedFromHost', () => {
-            console.log('banned FROM SOCKET GO HOME');
             callback();
         });
     }
-
-    // async onBannedPlayer() {
-    //     this.socket.connect();
-    //     this.socket.on('bannedFromHost', () => {
-    //         console.log('banned FROM SOCKET GO HOME');
-    //         this.router.navigate(['/home']);
-    //     });
-    //     this.socket.disconnect();
-    // }
 }
