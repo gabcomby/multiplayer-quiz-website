@@ -244,6 +244,7 @@ export class Server {
                         getRoom().firstAnswer = false;
                         const currentScore = getRoom().score.get(playerId);
                         getRoom().score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
+                        this.io.to(getRoom().roomId).emit('got-bonus', playerId);
                     } else if (isCorrect) {
                         const currentScore = getRoom().score.get(playerId);
                         getRoom().score.set(playerId, question.points + currentScore);

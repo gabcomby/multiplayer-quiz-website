@@ -123,6 +123,12 @@ export class SocketService {
         });
     }
 
+    onGotBonus(callback: (playerId: string) => void) {
+        this.socket.on('got-bonus', (playerId) => {
+            callback(playerId);
+        });
+    }
+
     sendPlayerAnswer(answer: AnswersPlayer) {
         const mapToArray = [];
 

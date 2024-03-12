@@ -335,6 +335,10 @@ export class GameService {
             this.refreshPlayerList();
         });
 
+        this.socketService.onGotBonus((playerId: string) => {
+            this.calculateBonus(playerId);
+        });
+
         this.socketService.onGameLaunch(() => {
             if (this.currentPlayerId === this.lobbyData.hostId) {
                 this.router.navigate(['/host-game-page']);
@@ -368,6 +372,15 @@ export class GameService {
                 // }
             }
         });
+    }
+
+    private calculateBonus(playerId: string) {
+        let player: Player;
+        for (player of this.playerListFromLobby) {
+            if (player.id === playerId) {
+                player.bonus++;
+            }
+        }
     }
 
     private handleNextQuestion(): void {
