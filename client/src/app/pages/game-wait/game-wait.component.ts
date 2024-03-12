@@ -58,6 +58,7 @@ export class GameWaitComponent {
     }
 
     handleGameLaunch() {
+        this.gameService.matchLobby.isLocked = true;
         this.socketService.startGame();
     }
 
