@@ -182,7 +182,6 @@ export class Server {
                 }
             });
 
-            // TODO: Vérifier pourquoi ces deux fonctions ne sont pas unifiées
             socket.on('answer-submitted', () => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().answersLocked += 1;
@@ -195,7 +194,6 @@ export class Server {
                 }
             });
 
-            // TODO: Vérifier pourquoi ces deux fonctions ne sont pas unifiées
             socket.on('playerAnswer', (answer) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().playersAnswers.push(answer);
