@@ -41,7 +41,6 @@ export class GameService {
     lobbyData: MatchLobby = {
         id: '',
         playerList: [],
-        playerGoneList: [],
         gameId: '',
         bannedNames: [],
         lobbyCode: '',
@@ -251,10 +250,6 @@ export class GameService {
                         this.socketService.disconnect();
                         this.router.navigate(['/home']);
                     } else {
-                        // const playerGone = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                        // if (playerGone) {
-                        //     this.lobbyData.playerGoneList.push(playerGone);
-                        // }
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
                                 this.socketService.leaveRoom();

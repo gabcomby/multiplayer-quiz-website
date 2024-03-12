@@ -4,7 +4,6 @@ export interface MatchLobby {
     playerList: Player[];
     gameId: string;
     bannedNames: string[];
-    playerGoneList: Player[];
     lobbyCode: string;
     isLocked: boolean;
     hostId: string;
