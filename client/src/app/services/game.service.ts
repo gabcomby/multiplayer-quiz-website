@@ -368,9 +368,9 @@ export class GameService {
         });
 
         this.socketService.onAnswerVerification((score) => {
-            score = new Map(score);
+            const scoreMap = new Map(score);
             for (const player of this.lobbyData.playerList) {
-                const newScore = score.get(player.id);
+                const newScore = scoreMap.get(player.id);
                 if (newScore) {
                     player.score = newScore;
                 } else {
