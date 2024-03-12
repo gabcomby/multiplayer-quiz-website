@@ -250,6 +250,10 @@ export class GameService {
                         this.socketService.disconnect();
                         this.router.navigate(['/home']);
                     } else {
+                        const playerGone = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                        if (playerGone) {
+                            this.lobbyData.playerGoneList.push(playerGone);
+                        }
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
                                 this.socketService.leaveRoom();
@@ -328,11 +332,6 @@ export class GameService {
 
         this.socketService.onPlayerDisconnect((playerId) => {
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
-            const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
-            if (playerGone) {
-                this.lobbyData.playerGoneList.push(playerGone);
-            }
-            console.log('playerGoneList', this.lobbyData.playerGoneList);
         });
         this.socketService.onLastPlayerDisconnected(() => {
             this.handleGameLeave();
