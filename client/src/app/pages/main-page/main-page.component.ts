@@ -132,7 +132,6 @@ export class MainPageComponent {
         const result = await lastValueFrom(result$);
 
         if (!result) {
-            // eslint-disable-next-line no-empty -- I need an infinite empty loop while waiting for a socket server answer
             const lockStatus = await this.fetchLobbyLockStatus(lobbyCode);
 
             if (lockStatus) {

@@ -362,7 +362,6 @@ export class GameService {
             this.nextQuestion = false;
         });
         this.socketService.onBannedPlayer(() => {
-            // this.router.navigate(['/home']);
             this.handleGameLeave();
         });
 
