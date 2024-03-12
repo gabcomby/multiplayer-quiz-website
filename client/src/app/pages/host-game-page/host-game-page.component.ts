@@ -17,6 +17,7 @@ export class HostGamePageComponent {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
+    question: Question[] = [this.currentQuestion];
     constructor(
         private gameService: GameService,
         private socketService: SocketService,
@@ -71,6 +72,11 @@ export class HostGamePageComponent {
 
     get playerGoneList() {
         return this.gameService.playerGoneList;
+    }
+
+    get answersClickedValue() {
+        console.log(this.gameService.answersClicked);
+        return this.gameService.answersClicked;
     }
 
     handleGameLeave(): void {
