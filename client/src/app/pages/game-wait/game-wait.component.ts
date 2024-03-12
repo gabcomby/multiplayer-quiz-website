@@ -48,11 +48,12 @@ export class GameWaitComponent {
     }
     bannedPlayers(): string[] {
         const bannedArray: string[] = [];
-        this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
+        const subscription = this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
             for (const elem of response) {
                 bannedArray.push(elem);
             }
         });
+        subscription.unsubscribe();
         this.bannedFromGame = bannedArray;
         return this.bannedFromGame;
     }
@@ -92,9 +93,18 @@ export class GameWaitComponent {
                     console.log(res);
                 },
             });*/
-            this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+            for (const element of this.players) {
+                if (element.name === name) {
+                    this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+                    console.log('player found', element.name);
+                    console.log('player supposed to be found', name);
+                    this.socketService.bannedPlayer(element.id);
+                }
+            }
+            const subscribe = this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
+            subscribe.unsubscribe();
             this.bannedFromGame.push(name);
-            this.bannedPlayers();
+            // this.bannedPlayers();
             this.players = this.playerList;
             console.log('banned');
         }

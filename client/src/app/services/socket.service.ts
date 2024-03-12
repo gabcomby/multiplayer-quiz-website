@@ -172,21 +172,21 @@ export class SocketService {
         });
     }
 
-    /* bannedPlayer(idPlayer: string) {
+    bannedPlayer(idPlayer: string) {
         this.socket.connect();
         console.log('banned FROM SOCKET SEND');
         this.socket.emit('banFromGame', idPlayer);
-    }*/
+    }
 
-    /* async onBannedPlayer() {
+    async onBannedPlayer(callback: () => void) {
         console.log('allo');
         await this.socket.on('bannedFromHost', () => {
-            console.log('banned FROM SOCKET RECEIVED');
-            this.router.navigate(['/home']);
+            console.log('banned FROM SOCKET GO HOME');
+            callback();
         });
-    }*/
+    }
 
-    // onBannedPlayer() {
+    // async onBannedPlayer() {
     //     this.socket.connect();
     //     this.socket.on('bannedFromHost', () => {
     //         console.log('banned FROM SOCKET GO HOME');

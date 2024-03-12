@@ -9,12 +9,20 @@ import { GameService } from '@app/services/game.service';
 })
 export class GamePageScoresheetComponent {
     @Input() playerList: Player[];
+    bannedList: string[] = this.gameService.matchLobby.bannedNames;
     constructor(private gameService: GameService) {}
+    get banned() {
+        /* this.matchLobbyService.getBannedArray(this.gameService.matchLobby.lobbyCode).subscribe((response) => {
+            this.bannedList = response;
+        });*/
+        this.bannedList = this.gameService.matchLobby.bannedNames;
+        return this.bannedList;
+    }
     get isHost() {
         return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
     }
-    isBanned(playerName: string): boolean {
-        this.gameService.refreshPlayerList();
+    /* isBanned(playerName: string): boolean {
+        // this.gameService.refreshPlayerList();
         return this.gameService.matchLobby.bannedNames.includes(playerName);
-    }
+    }*/
 }

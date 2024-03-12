@@ -390,14 +390,18 @@ export class GameService {
     }
 
     refreshPlayerList(): void {
-        this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
-            next: (data) => {
+        this.matchLobbyService.getPlayers(this.lobbyId).subscribe(
+            (data)=> {
+                this.lobbyData.playerList = data;
+            }
+            /* next: (data) => {
                 this.lobbyData.playerList = data;
             },
             error: (error) => {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
             },
-        });
+        }*/
+        );
     }
 
     setupWebsocketEvents(): void {
@@ -443,6 +447,12 @@ export class GameService {
             }
             this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
+        });
+
+        this.socketService.onBannedPlayer(() => {
+            console.log('banned FROM SOCKET RECEIVED');
+            this.router.navigate(['/home']);
+            // this.handleGameLeave();
         });
 
         this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {

@@ -9,8 +9,9 @@ export const hostGuard: CanActivateFn = (): Observable<boolean | UrlTree> | Prom
     const gameWaitComponent = inject(GameWaitComponent);
     const router = inject(Router);
     const isABannedPlayer = gameWaitComponent.bannedFromGame.includes(gameService.currentPlayerName);
+    const isLocked = gameService.matchLobby.isLocked;
 
-    if (isABannedPlayer) {
+    if (isABannedPlayer || isLocked) {
         router.createUrlTree(['home']);
         return false;
     }

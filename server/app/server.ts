@@ -225,7 +225,7 @@ export class Server {
                 console.log('user disconnected');
             });
 
-            /* socket.on('banFromGame', (idPlayer) => {
+            socket.on('banFromGame', (idPlayer) => {
                 const roomsArray = Array.from(socket.rooms);
                 let socketToBeBanned: string;
                 if (this.rooms.has(roomsArray[1])) {
@@ -237,7 +237,7 @@ export class Server {
                         this.io.to(socketToBeBanned).emit('bannedFromHost');
                     }
                 }
-            });*/
+            });
         });
 
         this.server.listen(Server.appPort);
