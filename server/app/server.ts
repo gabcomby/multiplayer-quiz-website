@@ -135,6 +135,7 @@ export class Server {
                         if (getRoom().player.size === 0) {
                             this.io.to(getRoom().roomId).emit('lastPlayerDisconnected');
                         }
+                        console.log('Players are now', getRoom().player);
                     }
                 } else {
                     throw new Error('Error trying to leave a room that does not exist');

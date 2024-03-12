@@ -50,11 +50,13 @@ export class MainPageComponent {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
+        const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
+        console.log('authenticated', authenticated);
         // TODO: Refactor this code to remove the nested subscribe (Pierre-Emmanuel)
         if (result.lobbyCode) {
             this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
                 next: (lobby) => {
-                    if (lobby) {
+                    if (lobby && authenticated) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
@@ -62,13 +64,15 @@ export class MainPageComponent {
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
                                 // this.socketService.newPlayerJoin();
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
+                                this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
                             },
                         });
                     } else {
-                        this.snackbarService.openSnackBar("Cette partie n'existe pas");
+                        // this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
+                        console.log('lol');
                     }
                 },
                 error: (error) => {
@@ -115,23 +119,54 @@ export class MainPageComponent {
         this.authenticateUserIfBanned(name, lobbyCode);
     };
 
-    private authenticateUserIfBanned(name: string, lobbyCode: string): void {
-        this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe((result) => {
-            if (!result) {
-                this.matchLobbyService.getLockStatus(lobbyCode).subscribe((isLocked) => {
-                    this.gameService.matchLobby.isLocked = isLocked;
-                    if (this.gameService.matchLobby.isLocked) {
-                        this.snackbarService.openSnackBar('La partie est verrouillée');
-                        this.router.navigate(['/home']);
-                    } else {
-                        this.router.navigate(['/gameWait']);
-                    }
-                    return this.gameService.matchLobby.isLocked;
-                });
-            } else {
-                this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
-                this.router.navigate(['/home']);
+    // private authenticateUserIfBanned(name: string, lobbyCode: string): boolean {
+    //     this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe((result) => {
+    //         if (!result) {
+    //             this.matchLobbyService.getLockStatus(lobbyCode).subscribe((isLocked) => {
+    //                 this.gameService.matchLobby.isLocked = isLocked;
+    //                 if (this.gameService.matchLobby.isLocked) {
+    //                     this.snackbarService.openSnackBar('La partie est verrouillée');
+    //                     this.router.navigate(['/home']);
+    //                     return false;
+    //                 } else {
+    //                     // this.router.navigate(['/gameWait']);
+    //                     return true;
+    //                 }
+    //                 // return this.gameService.matchLobby.isLocked;
+    //             });
+    //             return false;
+    //         } else {
+    //             this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
+    //             this.router.navigate(['/home']);
+    //             return false;
+    //         }
+    //     });
+    //     return false;
+    // }
+
+    private async authenticateUserIfBanned(name: string, lobbyCode: string): Promise<boolean> {
+        const result$ = await this.matchLobbyService.authenticateUser(name, lobbyCode);
+        const result = await lastValueFrom(result$);
+
+        if (!result) {
+            const isLocked$ = await this.matchLobbyService.getLockStatus(lobbyCode);
+            const isLocked = await lastValueFrom(isLocked$);
+            if (isLocked) {
+                this.gameService.matchLobby.isLocked = isLocked;
             }
-        });
+
+            if (this.gameService.matchLobby.isLocked) {
+                this.snackbarService.openSnackBar('La partie est verrouillée');
+                // this.router.navigate(['/home']);
+                return false;
+            } else {
+                // this.router.navigate(['/gameWait']);
+                return true;
+            }
+        } else {
+            this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
+            // this.router.navigate(['/home']);
+            return false;
+        }
     }
 }
