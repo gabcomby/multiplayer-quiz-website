@@ -128,4 +128,15 @@ export class MatchLobbyService {
         const lobby = await matchLobbyModel.findOne({ lobbyCode: lobbyId });
         return lobby.isLocked;
     }
+
+    async authentificateNameOfUser(playerName: string, lobbyCod: string): Promise<boolean> {
+        console.log('name', playerName);
+        const lobby = await matchLobbyModel.findOne({ lobbyCode: lobbyCod });
+        console.log('lobby', lobby);
+        if (lobby.playerList.find((player) => player.name.toLocaleLowerCase() === playerName.toLocaleLowerCase())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

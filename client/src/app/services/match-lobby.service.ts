@@ -35,7 +35,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             playerList: [],
             gameId,
-            bannedNames: ['Organisateur'],
+            bannedNames: ['organisateur'],
             lobbyCode: generateLobbyId(),
             isLocked: false,
             hostId: generateNewId(),
@@ -106,7 +106,7 @@ export class MatchLobbyService {
     }
 
     authenticateUser(playerName: string, lobbyCode: string): Observable<boolean> {
-        const body = { player: playerName };
+        const body = { player: playerName.toLowerCase() };
         return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, body);
     }
 
@@ -115,5 +115,12 @@ export class MatchLobbyService {
     }
     getLockStatus(lobbyId: string): Observable<boolean> {
         return this.http.get<boolean>(`${this.apiUrl}/${lobbyId}/locked`);
+    }
+
+    authentificateNameOfUser(playerName: string, lobbyCode: string): Observable<boolean> {
+        console.log('name', playerName);
+        console.log('name to lowercase', playerName);
+        const body = { player: playerName };
+        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/isTaken`, body);
     }
 }

@@ -51,10 +51,13 @@ export class MainPageComponent {
             return;
         }
         const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
+        const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
+        const resultName = await lastValueFrom(resultName$);
+        console.log(resultName);
         if (result.lobbyCode) {
             this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
                 next: (lobby) => {
-                    if (lobby && authenticated) {
+                    if (lobby && authenticated && resultName) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
