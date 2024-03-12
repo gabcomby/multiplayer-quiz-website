@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { Game } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { ApiService } from '@app/services/api.service';
@@ -9,7 +7,7 @@ import { GameService } from '@app/services/game.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { Observable, Subscription, lastValueFrom } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -32,7 +30,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         private router: Router,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
-        private dialog: MatDialog,
         private apiService: ApiService,
         private gameService: GameService,
     ) {}
@@ -59,11 +56,13 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         this.gamesUnderscoreId.push(gameIdString);
         const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
         const gameD = this.games[index];
-        this.deletedGamesId.push(gameD.id);
-        const goodID = gameD.id;
-        if (goodID !== undefined) {
-            if (this.gameSelected[goodID]) {
-                this.snackbarService.openSnackBar('Game ' + goodID + ' has been deleted');
+        if (gameD) {
+            this.deletedGamesId.push(gameD.id);
+            const goodID = gameD.id;
+            if (goodID !== undefined) {
+                if (this.gameSelected[goodID]) {
+                    this.snackbarService.openSnackBar('Game ' + goodID + ' has been deleted');
+                }
             }
         }
     }
@@ -135,14 +134,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
     }
 
     async isTheGameModifiedPlay(game: Game): Promise<boolean> {
-        const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
-            width: '300px',
-            data: {
-                isShown: false,
-            },
-        });
-        const result = await lastValueFrom(dialogRef.afterClosed());
-        if (!result || this.isEmpyDialog(result)) return false;
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
@@ -175,9 +166,5 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
 
     createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {
         return this.matchLobbyService.createTestLobby(playerName, gameId);
-    }
-
-    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
-        return result.userName.trim() === '';
     }
 }

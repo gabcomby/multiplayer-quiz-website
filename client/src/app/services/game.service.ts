@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import { Inject, Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
@@ -9,15 +8,13 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { ApiService } from '@app/services/api.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const START_TIMER_DURATION = 5;
+// const BONUS_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -55,21 +52,20 @@ export class GameService {
     currentPlayerId: string;
     currentPlayerName: string;
     answerIdx: number[];
+    // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
     endGame = false;
-    private minDuration: number;
-    private maxDuration: number;
+    nextQuestion = false;
     private isLaunchTimer: boolean;
+    // À BOUGER DANS LE SERVEUR??
 
     // eslint-disable-next-line max-params
     constructor(
         private apiService: ApiService,
-        private questionService: QuestionService,
-        private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
         private matchLobbyService: MatchLobbyService,
         private socketService: SocketService,
@@ -175,93 +171,6 @@ export class GameService {
         this.finalResultsEmitter.next(finalResults);
     }
 
-    async validateDuplicationGame(game: Game, error: string[]) {
-        const gameList = await this.apiService.getGames();
-        const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
-        if (titleExisting) {
-            error.push('Il y a déjà un jeu avec ce nom');
-        }
-        if (descriptionExisting) {
-            error.push('Il y a déjà un jeu avec cet description');
-        }
-    }
-    async validateDeletedGame(game: Game) {
-        const gameList = await this.apiService.getGames();
-        const idExisting = gameList.find((element) => element.id === game.id);
-        if (idExisting) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    async gameValidationWhenModified(gameForm: FormGroup, gameModified: Game): Promise<boolean> {
-        const modifiedGame = this.createNewGame(false, gameForm, gameModified);
-        try {
-            if (await this.isValidGame(modifiedGame)) {
-                if (await this.validateDeletedGame(modifiedGame)) {
-                    await this.apiService.patchGame(modifiedGame);
-                } else {
-                    await this.apiService.createGame(modifiedGame);
-                }
-                return true;
-            }
-            return false;
-        } catch (error) {
-            throw new Error('handling error');
-        }
-    }
-
-    createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
-        return {
-            id: isNewGame ? generateNewId() : gameModified.id,
-            title: gameForm.get('name')?.value,
-            description: gameForm.get('description')?.value,
-            isVisible: isNewGame ? false : gameModified.isVisible,
-            duration: gameForm.get('time')?.value,
-            lastModification: new Date(),
-            questions: isNewGame ? this.questionService.getQuestion() : gameModified.questions,
-        };
-    }
-    async isValidGame(game: Game) {
-        const errors: string[] = [];
-        try {
-            this.validateBasicGameProperties(game, errors);
-            for (const question of game.questions) {
-                if (!this.questionValidationService.validateQuestion(question)) {
-                    return false;
-                }
-                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                    return false;
-                }
-                if (!this.questionValidationService.answerValid(question.choices)) {
-                    return false;
-                }
-            }
-        } catch (error) {
-            throw new Error('handling error');
-        }
-
-        await this.validateDuplicationGame(game, errors);
-        if (errors.length > 0) {
-            this.snackbarService.openSnackBar(errors.join('\n'));
-            return false;
-        }
-        return true;
-    }
-
-    validateBasicGameProperties(game: Game, errors: string[]): void {
-        if (!game.title) errors.push('Le titre est requis');
-        if (game.title.trim().length === 0) errors.push('Pas juste des espaces');
-        if (!game.description) errors.push('La description est requise');
-        if (!game.duration) errors.push('La durée est requise');
-        if (game.duration && (game.duration < this.minDuration || game.duration > this.maxDuration)) {
-            errors.push('La durée doit être entre 10 et 60 secondes');
-        }
-        if (!game.lastModification) errors.push('La date de mise à jour est requise');
-        if (game.questions.length < 1) errors.push('Au moins une question');
-    }
-
     initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
         this.currentPlayerId = playerId;
@@ -271,6 +180,8 @@ export class GameService {
         this.questionHasExpired = false;
         this.isLaunchTimer = true;
         this.endGame = false;
+        this.questions = [];
+        this.playerChoice = new Map();
         this.answerStateService.resetAnswerState();
         this.matchLobbyService.getLobby(this.lobbyId).subscribe({
             next: (lobbyData) => {
@@ -323,7 +234,7 @@ export class GameService {
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
-                    this.socketService.adminDisconnect();
+                    this.socketService.leaveRoom();
                     this.socketService.disconnect();
                     this.router.navigate(['/home']);
                 },
@@ -340,7 +251,7 @@ export class GameService {
                     } else {
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
-                                this.socketService.playerDisconnect();
+                                this.socketService.leaveRoom();
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
                             },
@@ -359,30 +270,25 @@ export class GameService {
 
     onTimerComplete(): void {
         if (this.isLaunchTimer) {
-            this.socketService.stopTimer();
             this.isLaunchTimer = false;
             this.socketService.setTimerDuration(this.gameData.duration);
             this.socketService.startTimer();
             return;
         } else {
-            this.socketService.stopTimer();
             this.questionHasExpired = true;
             this.previousQuestionIndex = this.currentQuestionIndex;
-            this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx, this.currentPlayerId);
-            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-                setTimeout(() => {
-                    this.handleNextQuestion();
-                }, TIME_BETWEEN_QUESTIONS);
-            } else {
+            if (this.currentPlayerId !== this.lobbyData.hostId) {
+                this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex], this.answerIdx);
+            }
+            if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
                 if (this.currentPlayerId !== this.lobbyData.hostId) {
                     this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
                     this.sendPlayerAnswer(this.playerChoice);
-                    // this.handleGameLeave();
-                } else {
-                    this.questions.push(this.currentQuestion);
-                    this.questionGame.next(this.questions);
-                    // this.handleGameLeave();
                 }
+
+                this.questions.push(this.currentQuestion);
+                this.questionGame.next(this.questions);
+                // this.handleGameLeave();
             }
             this.gameIsFinished();
         }
@@ -402,9 +308,6 @@ export class GameService {
     setupWebsocketEvents(): void {
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
         });
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
@@ -417,6 +320,9 @@ export class GameService {
 
         this.socketService.onStopTimer(() => {
             this.onTimerComplete();
+            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+                this.nextQuestion = true;
+            }
         });
 
         this.socketService.onAdminDisconnect(() => {
@@ -424,7 +330,6 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect((playerId) => {
-            // this.refreshPlayerList();
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
         this.socketService.onLastPlayerDisconnected(() => {
@@ -432,6 +337,10 @@ export class GameService {
         });
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
+        });
+
+        this.socketService.onGotBonus((playerId: string) => {
+            this.calculateBonus(playerId);
         });
 
         this.socketService.onGameLaunch(() => {
@@ -443,28 +352,50 @@ export class GameService {
             this.socketService.setTimerDuration(START_TIMER_DURATION);
             this.socketService.startTimer();
         });
-
+        this.socketService.onResultView(() => {
+            this.router.navigate(['/resultsView']);
+        });
+        this.socketService.onNextQuestion(() => {
+            setTimeout(() => {
+                this.handleNextQuestion();
+            }, TIME_BETWEEN_QUESTIONS);
+            this.nextQuestion = false;
+        });
         this.socketService.onBannedPlayer(() => {
             this.router.navigate(['/home']);
         });
 
-        this.socketService.onAnswerVerification((isCorrect: boolean, playerId: string, multiplier: number) => {
-            if (isCorrect) {
-                const index = this.lobbyData.playerList.findIndex((player) => {
-                    return player.id === playerId;
-                });
-                this.lobbyData.playerList[index].score += this.currentQuestion.points * multiplier;
+        this.socketService.onAnswerVerification((score) => {
+            score = new Map(score);
+            for (const player of this.lobbyData.playerList) {
+                const newScore = score.get(player.id);
+                if (newScore) {
+                    player.score = newScore;
+                } else {
+                    player.score = 0;
+                }
+                // if (multiplier === BONUS_MULTIPLIER) {
+                // this.lobbyData.playerList[index].bonus++;
+                // }
             }
         });
     }
 
+    private calculateBonus(playerId: string) {
+        let player: Player;
+        for (player of this.playerListFromLobby) {
+            if (player.id === playerId) {
+                player.bonus++;
+            }
+        }
+    }
+
     private handleNextQuestion(): void {
-        // this.refreshPlayerList();
         if (this.currentPlayerId !== this.lobbyData.hostId) {
             this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        } else {
-            this.questions.push(this.currentQuestion);
         }
+        this.questions.push(this.currentQuestion);
+
         this.currentQuestionIndex++;
         this.questionHasExpired = false;
         this.socketService.startTimer();

@@ -15,6 +15,7 @@ export const playerSchema: Schema = new Schema({
     id: { type: String, required: true },
     name: { type: String, required: true },
     score: { type: Number, required: true },
+    bonus: { type: Number, required: true },
 });
 
 const matchSchema: Schema = new Schema({

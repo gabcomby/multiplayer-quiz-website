@@ -7,7 +7,7 @@ import { SocketService } from '@app/services/socket.service';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
 import { ApiService } from './api.service';
-import { GameService } from './game.service';
+import { GameValidationService } from './game-validation.service';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -20,7 +20,7 @@ export class AdminService {
         private apiService: ApiService,
         private snackbarService: SnackbarService,
         private socketService: SocketService,
-        private gameService: GameService,
+        private gameValidationService: GameValidationService,
     ) {}
 
     async init(): Promise<Game[]> {
@@ -84,7 +84,7 @@ export class AdminService {
 
     prepareGameForImport(game: Game): void {
         removeUnrecognizedAttributes(game);
-        if (!this.gameService.isValidGame(game)) return;
+        if (!this.gameValidationService.isValidGame(game)) return;
         assignNewGameAttributes(game);
     }
 
