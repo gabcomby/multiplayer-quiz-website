@@ -134,7 +134,6 @@ export class MatchLobbyController {
         this.router.patch('/:id/locked', async (req: Request, res: Response) => {
             try {
                 const lobby = await this.matchLobbyService.lockLobby(req.params.id, req.body.isLocked);
-                console.log('lobby', lobby);
                 res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });

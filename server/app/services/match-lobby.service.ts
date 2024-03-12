@@ -93,6 +93,7 @@ export class MatchLobbyService {
             await this.removePlayerByName(playerName, lobbyId);
             return updatedLobby;
         } catch (error) {
+            // eslint-disable-next-line no-console 
             console.error('Erreur lors de la mise à jour du lobby :', error);
             throw error;
         }
