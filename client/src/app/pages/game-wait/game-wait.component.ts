@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Player } from '@app/interfaces/match';
@@ -83,7 +84,6 @@ export class GameWaitComponent {
 
     makeLocked(lobbyCode: string, isLocked: boolean) {
         this.matchLobbyService.gameLocked(lobbyCode, isLocked).subscribe((response) => {
-            console.log(response.isLocked);
             this.gameService.matchLobby.isLocked = response.isLocked;
         });
     }

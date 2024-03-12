@@ -7,7 +7,6 @@ import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/pl
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { AuthService } from '@app/services/auth.service';
 import { GameService } from '@app/services/game.service';
-import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
@@ -28,7 +27,6 @@ export class MainPageComponent {
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
-        private joinGameValidation: JoinGameValidationService,
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
@@ -47,7 +45,6 @@ export class MainPageComponent {
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
         this.handleDialogCloseBanned(result.userName, result.lobbyCode);
-        await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
 
         if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
@@ -65,7 +62,6 @@ export class MainPageComponent {
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
                                 this.socketService.newPlayerJoin();
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
-                                // this.router.navigate(['/gameWait']);
                             },
                             error: (error) => {
                                 this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
