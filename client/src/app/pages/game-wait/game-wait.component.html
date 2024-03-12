@@ -17,7 +17,7 @@
             <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>
         </div>
         <h2>Tu veux verrouiller la partie?</h2>
-        <mat-slide-toggle (change)="makeLocked()"> </mat-slide-toggle>
+        <mat-slide-toggle (change)="makeLocked()" (change)="changeLockStatus()"> </mat-slide-toggle>
         <h2>Qui veut tu bannir?</h2>
         <div *ngFor="let player of players">
             <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1 && player.name !== 'Organisateur'">

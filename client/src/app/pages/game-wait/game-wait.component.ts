@@ -14,6 +14,7 @@ import { SocketService } from '@app/services/socket.service';
 export class GameWaitComponent {
     players: Player[] = [];
     bannedFromGame: string[] = [];
+    lockStatus: boolean = false;
     constructor(
         private router: Router,
         private socketService: SocketService,
@@ -31,10 +32,6 @@ export class GameWaitComponent {
 
     get lobbyCode() {
         return this.gameService.matchLobby.lobbyCode;
-    }
-
-    get lockStatus() {
-        return this.gameService.matchLobby.isLocked;
     }
 
     get currentPlayerName() {
@@ -84,5 +81,9 @@ export class GameWaitComponent {
 
     makeLocked() {
         this.socketService.toggleRoomLock();
+    }
+
+    changeLockStatus() {
+        this.lockStatus = !this.lockStatus;
     }
 }
