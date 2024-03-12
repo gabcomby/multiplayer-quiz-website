@@ -122,10 +122,19 @@ export class MainPageComponent {
     private authenticateUserIfBanned(name: string, lobbyCode: string): void {
         this.matchLobbyService.authenticateUser(name, lobbyCode).subscribe((result) => {
             if (!result) {
-                this.router.navigate(['/gameWait']);
+                this.matchLobbyService.getLockStatus(lobbyCode).subscribe((isLocked) => {
+                    this.gameService.matchLobby.isLocked = isLocked;
+                    if (this.gameService.matchLobby.isLocked) {
+                        this.snackbarService.openSnackBar('La partie est verrouillée');
+                        this.router.navigate(['/home']);
+                    } else {
+                        this.router.navigate(['/gameWait']);
+                    }
+                    return this.gameService.matchLobby.isLocked;
+                });
             } else {
-                this.router.navigate(['/home']);
                 this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
+                this.router.navigate(['/home']);
             }
         });
     }

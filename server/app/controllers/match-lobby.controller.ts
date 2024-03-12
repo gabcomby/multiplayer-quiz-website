@@ -140,5 +140,14 @@ export class MatchLobbyController {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
             }
         });
+
+        this.router.get('/:id/locked', async (req: Request, res: Response) => {
+            try {
+                const locked = await this.matchLobbyService.getLockedStatus(req.params.id);
+                res.json(locked);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching lock status' });
+            }
+        });
     }
 }

@@ -112,4 +112,7 @@ export class MatchLobbyService {
         console.log('game locked', isLocked);
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/locked`, { isLocked });
     }
+    getLockStatus(lobbyId: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/${lobbyId}/locked`);
+    }
 }
