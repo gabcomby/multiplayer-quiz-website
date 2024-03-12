@@ -82,9 +82,7 @@ export class GameWaitComponent {
         }
     }
 
-    makeLocked(lobbyCode: string, isLocked: boolean) {
-        this.matchLobbyService.gameLocked(lobbyCode, isLocked).subscribe((response) => {
-            this.gameService.matchLobby.isLocked = response.isLocked;
-        });
+    makeLocked() {
+        this.socketService.toggleRoomLock();
     }
 }

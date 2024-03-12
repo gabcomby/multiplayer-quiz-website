@@ -12,6 +12,8 @@ import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 
+const FETCH_TIMEOUT = 5000;
+
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
@@ -30,6 +32,16 @@ export class MainPageComponent {
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
+
+    async fetchLobbyLockStatus(lobbyCode: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.socketService.verifyRoomLock(lobbyCode);
+            this.socketService.onRoomLockStatus((isLocked: boolean) => {
+                resolve(isLocked);
+            });
+            setTimeout(reject, FETCH_TIMEOUT);
+        });
+    }
 
     openAdminDialog(): void {
         const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
@@ -50,6 +62,7 @@ export class MainPageComponent {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
+        this.socketService.connect();
         const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
         const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
         const resultName = await lastValueFrom(resultName$);
@@ -61,7 +74,6 @@ export class MainPageComponent {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
-                                this.socketService.connect();
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.router.navigate(['/gameWait']);
@@ -123,13 +135,9 @@ export class MainPageComponent {
         const result = await lastValueFrom(result$);
 
         if (!result) {
-            const isLocked$ = await this.matchLobbyService.getLockStatus(lobbyCode);
-            const isLocked = await lastValueFrom(isLocked$);
-            if (isLocked) {
-                this.gameService.matchLobby.isLocked = isLocked;
-            }
+            const lockStatus = await this.fetchLobbyLockStatus(lobbyCode);
 
-            if (this.gameService.matchLobby.isLocked) {
+            if (lockStatus) {
                 this.snackbarService.openSnackBar('La partie est verrouillée');
                 return false;
             } else {

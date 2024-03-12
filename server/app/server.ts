@@ -113,6 +113,22 @@ export class Server {
                 }
             });
 
+            socket.on('toggle-room-lock', () => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().roomLocked = !getRoom().roomLocked;
+                } else {
+                    throw new Error('Error trying to toggle the lock of a room that does not exist');
+                }
+            });
+
+            socket.on('verify-room-lock', (roomId: string) => {
+                if (roomExists(roomId)) {
+                    this.io.to(socket.id).emit('room-lock-status', this.rooms.get(roomId).roomLocked);
+                } else {
+                    throw new Error('Error trying to get the lock status of a room that does not exist');
+                }
+            });
+
             socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');
@@ -154,6 +170,7 @@ export class Server {
                 }
             });
 
+            // FONCTION DE GESTION DES RÉPONSES
             socket.on('answer-submitted', () => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().answersLocked += 1;

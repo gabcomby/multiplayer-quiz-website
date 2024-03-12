@@ -90,7 +90,6 @@ export class MatchLobbyService {
                 },
                 { new: true },
             );
-            // await this.removePlayerByName(playerName, lobbyId);
             return updatedLobby;
         } catch (error) {
             // eslint-disable-next-line no-console
