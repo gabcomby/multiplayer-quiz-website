@@ -35,7 +35,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             playerList: [],
             gameId,
-            bannedNames: [],
+            bannedNames: ['Organisateur'],
             lobbyCode: generateLobbyId(),
             isLocked: false,
             hostId: generateNewId(),

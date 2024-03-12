@@ -20,7 +20,7 @@
         <mat-slide-toggle (change)="makeLocked(lobbyCode, this.lockStatus)"> </mat-slide-toggle>
         <h2>Qui veut tu banir?</h2>
         <div *ngFor="let player of players">
-            <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1">
+            <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1 && player.name !== 'Organisateur'">
                 <div>
                     {{ player.name }}
                     <button id="bannedPlayer" type="checkbox" (click)="makeBannedPlayer(player.name)">banir</button>
