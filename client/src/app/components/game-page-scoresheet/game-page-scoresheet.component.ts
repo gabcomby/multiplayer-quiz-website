@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import type { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
+import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -9,20 +10,18 @@ import { GameService } from '@app/services/game.service';
 })
 export class GamePageScoresheetComponent {
     @Input() playerList: Player[];
-    bannedList: string[] = this.gameService.matchLobby.bannedNames;
-    constructor(private gameService: GameService) {}
+    bannedList: string[];
+    constructor(
+        private gameService: GameService,
+        private gameWaitComponent: GameWaitComponent,
+    ) {}
     get banned() {
-        /* this.matchLobbyService.getBannedArray(this.gameService.matchLobby.lobbyCode).subscribe((response) => {
-            this.bannedList = response;
-        });*/
-        this.bannedList = this.gameService.matchLobby.bannedNames;
+        console.log(this.gameWaitComponent.bannedFromGame);
+        this.bannedList = this.gameWaitComponent.bannedFromGame;
+        // this.bannedList = this.gameService.matchLobby.bannedNames;
         return this.bannedList;
     }
     get isHost() {
         return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
     }
-    /* isBanned(playerName: string): boolean {
-        // this.gameService.refreshPlayerList();
-        return this.gameService.matchLobby.bannedNames.includes(playerName);
-    }*/
 }
