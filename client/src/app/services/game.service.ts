@@ -53,6 +53,7 @@ export class GameService {
     currentPlayerId: string;
     currentPlayerName: string;
     answerIdx: number[];
+    playerGoneList: Player[] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
@@ -135,8 +136,8 @@ export class GameService {
         return this.lobbyData.playerList;
     }
 
-    get playerGoneListFromLobby(): Player[] {
-        return this.lobbyData.playerGoneList;
+    get playerGoneListValue(): Player[] {
+        return this.playerGoneList;
     }
 
     get matchLobby(): MatchLobby {
@@ -250,10 +251,10 @@ export class GameService {
                         this.socketService.disconnect();
                         this.router.navigate(['/home']);
                     } else {
-                        const playerGone = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
-                        if (playerGone) {
-                            this.lobbyData.playerGoneList.push(playerGone);
-                        }
+                        // const playerGone = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId);
+                        // if (playerGone) {
+                        //     this.lobbyData.playerGoneList.push(playerGone);
+                        // }
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
                                 this.socketService.leaveRoom();
@@ -331,6 +332,10 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect((playerId) => {
+            const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
+            if (playerGone) {
+                this.playerGoneList.push(playerGone);
+            }
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
         this.socketService.onLastPlayerDisconnected(() => {

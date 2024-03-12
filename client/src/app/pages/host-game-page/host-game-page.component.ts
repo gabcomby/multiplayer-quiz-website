@@ -70,8 +70,7 @@ export class HostGamePageComponent {
     }
 
     get playerGoneList() {
-        console.log(this.gameService.playerGoneListFromLobby);
-        return this.gameService.playerGoneListFromLobby;
+        return this.gameService.playerGoneList;
     }
 
     handleGameLeave(): void {
