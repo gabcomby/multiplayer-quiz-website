@@ -223,6 +223,10 @@ export class GameService {
         this.answerIdx = answerIdx;
     }
 
+    clickPlayerAnswer(answerIdx: number[]) {
+        this.socketService.sendClickedAnswer(answerIdx);
+    }
+
     sendPlayerAnswer(answer: AnswersPlayer) {
         this.socketService.sendPlayerAnswer(answer);
     }

@@ -194,6 +194,14 @@ export class Server {
                 }
             });
 
+            socket.on('sendClickedAnswer', (answerIdx: number[]) => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().livePlayerAnswers.set(socket.id, answerIdx);
+                    console.log('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                    this.io.to(getRoom().idAdmin).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                }
+            });
+
             socket.on('playerAnswer', (answer) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().playersAnswers.push(answer);

@@ -76,6 +76,7 @@ export class HostGamePageComponent {
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }
+
     goToResult(): void {
         this.socketService.goToResult();
     }
