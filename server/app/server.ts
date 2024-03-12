@@ -53,12 +53,40 @@ export class Server {
                 this.io.emit('deleteId', deletedId);
             });
 
-            // HAS ROOMS
-            socket.on('join-room', (roomId, playerId) => {
-                if (this.rooms.has(roomId)) {
+            const getRoom = () => {
+                const roomsArray = Array.from(socket.rooms);
+                return this.rooms.get(roomsArray[1]);
+            };
+
+            const setRoom = (room: Room) => {
+                const roomsArray = Array.from(socket.rooms);
+                this.rooms.set(roomsArray[1], room);
+            };
+
+            const roomExists = (roomId: string) => {
+                return this.rooms.has(roomId);
+            };
+
+            // FONCTIONS DE GESTION DES JOUEURS DANS LA ROOM (REJOINDRE/QUITTER)
+
+            socket.on('create-room', (roomId) => {
+                if (!roomExists(roomId)) {
                     socket.join(roomId);
-                    this.rooms.get(roomId).player.set(socket.id, playerId);
-                    this.rooms.get(roomId).score.set(playerId, 0);
+                    setRoom(new Room(roomId));
+                    getRoom().idAdmin = socket.id;
+                    // eslint-disable-next-line no-console
+                    console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
+                } else {
+                    throw new Error('The room you are trying to create already exists');
+                }
+            });
+
+            socket.on('join-room', (roomId, playerId) => {
+                if (roomExists(roomId)) {
+                    socket.join(roomId);
+                    getRoom().player.set(socket.id, playerId);
+                    getRoom().score.set(playerId, 0);
+                    this.io.to(getRoom().roomId).emit('new-player-connected');
                     // eslint-disable-next-line no-console
                     console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
@@ -66,119 +94,136 @@ export class Server {
                 }
             });
 
-            // HAS ROOMS
-            socket.on('create-room', (roomId) => {
-                if (this.rooms.has(roomId)) {
-                    throw new Error('Room already exists');
-                }
-                this.rooms.set(roomId, new Room(roomId));
-                this.rooms.get(roomId).idAdmin = socket.id;
-                socket.join(roomId);
-                // eslint-disable-next-line no-console
-                console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
-            });
+            // TODO: Pourquoi ne pas mettre ça directement dans le "join-room" ?
+            // socket.on('new-player', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         this.io.to(getRoom().roomId).emit('new-player-connected');
+            //     } else {
+            //         throw new Error('Error trying to emit a new player');
+            //     }
+            // });
 
-            // socket.on('set-game-info', )
+            // TODO: Unifier les deux fonctions
+            // socket.on('admin-disconnect', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         this.io.to(getRoom().roomId).emit('adminDisconnected');
+            //         this.rooms.delete(getRoom().roomId);
+            //     } else {
+            //         throw new Error('Error trying to disconnect the admin');
+            //     }
+            // });
 
-            // HAS ROOMS
-            socket.on('set-timer-duration', (duration) => {
-                const roomsArray = Array.from(socket.rooms);
-                if (parseInt(duration, 10) > 0) {
-                    if (this.rooms.has(roomsArray[1]) === true) {
-                        this.rooms.get(roomsArray[1]).duration = parseInt(duration, 10);
+            // socket.on('player-disconnect', () => {
+            //     const roomsArray = Array.from(socket.rooms);
+            //     if (this.rooms.has(roomsArray[1])) {
+            //         this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
+            //         this.rooms.get(roomsArray[1]).player.delete(socket.id);
+            //         if (this.rooms.get(roomsArray[1]).player.size === 0) {
+            //             this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
+            //         }
+            //     }
+            // });
+
+            socket.on('leave-room', () => {
+                if (roomExists(getRoom().roomId)) {
+                    if (getRoom().idAdmin === socket.id) {
+                        this.io.to(getRoom().roomId).emit('adminDisconnected');
+                        this.rooms.delete(getRoom().roomId);
+                    } else {
+                        this.io.to(getRoom().roomId).emit('playerDisconnected', getRoom().player.get(socket.id));
+                        getRoom().player.delete(socket.id);
+                        if (getRoom().player.size === 0) {
+                            this.io.to(getRoom().roomId).emit('lastPlayerDisconnected');
+                        }
                     }
                 } else {
-                    throw new Error('Invalid duration');
+                    throw new Error('Error trying to leave a room that does not exist');
                 }
             });
 
-            // HAS ROOMS
+            socket.on('disconnect', () => {
+                // eslint-disable-next-line no-console
+                console.log('user disconnected');
+            });
+
+            // FONCTIONS DE GESTION DU TIMER
+
+            socket.on('set-timer-duration', (duration) => {
+                if (roomExists(getRoom().roomId)) {
+                    if (parseInt(duration, 10) > 0) {
+                        getRoom().duration = parseInt(duration, 10);
+                    } else {
+                        throw new Error('Invalid duration');
+                    }
+                } else {
+                    throw new Error('The room you are trying to set the timer for does not exist');
+                }
+            });
+
             socket.on('start-timer', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).isRunning === false) {
-                    this.rooms.get(roomsArray[1]).isRunning = true;
-                    this.rooms.get(roomsArray[1]).firstAnswer = true;
-                    this.rooms.get(roomsArray[1]).startCountdownTimer(this.io, roomsArray[1]);
+                if (roomExists(getRoom().roomId)) {
+                    if (!getRoom().isRunning && getRoom().idAdmin === socket.id) {
+                        getRoom().isRunning = true;
+                        getRoom().firstAnswer = true;
+                        getRoom().startCountdownTimer(this.io, getRoom().roomId);
+                    }
+                } else {
+                    throw new Error('Error trying to start the timer of a room that does not exist');
                 }
             });
 
-            // TODO: Maybe add an 'answersLocked = 0' line to reset it
             socket.on('stop-timer', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1]) && this.rooms.get(roomsArray[1]).timerId && this.rooms.get(roomsArray[1]).isRunning === true) {
-                    this.rooms.get(roomsArray[1]).resetTimerCountdown();
+                if (roomExists(getRoom().roomId)) {
+                    if (getRoom().isRunning && getRoom().idAdmin === socket.id) {
+                        getRoom().resetTimerCountdown();
+                    }
+                } else {
+                    throw new Error('Error trying to stop the timer of a room that does not exist');
                 }
             });
 
-            // TODO: Check why it's bugging
+            // TODO: Vérifier pourquoi ces deux fonctions ne sont pas unifiées
             socket.on('answer-submitted', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.rooms.get(roomsArray[1]).answersLocked += 1;
-                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
-                        this.io.to(roomsArray[1]).emit('stop-timer');
-                        this.rooms.get(roomsArray[1]).resetTimerCountdown();
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().answersLocked += 1;
+                    if (getRoom().answersLocked === getRoom().player.size) {
+                        this.io.to(getRoom().roomId).emit('stop-timer');
+                        getRoom().resetTimerCountdown();
                     }
+                } else {
+                    throw new Error('Error trying to submit the answer');
                 }
             });
 
+            // TODO: Vérifier pourquoi ces deux fonctions ne sont pas unifiées
             socket.on('playerAnswer', (answer) => {
-                const roomId = Array.from(socket.rooms)[1];
-                if (this.rooms.has(roomId)) {
-                    this.rooms.get(roomId).playersAnswers.push(answer);
-                }
-
-                if (this.rooms.get(roomId).playersAnswers.length === this.rooms.get(roomId).player.size) {
-                    this.io.to(roomId).emit('sendPlayerAnswers', this.rooms.get(roomId).playersAnswers);
-                }
-            });
-
-            // HAS ROOMS
-            socket.on('new-player', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('new-player-connected');
-                }
-            });
-
-            socket.on('admin-disconnect', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('adminDisconnected');
-                    this.rooms.delete(roomsArray[1]);
-                }
-            });
-
-            socket.on('player-disconnect', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
-                    this.rooms.get(roomsArray[1]).player.delete(socket.id);
-                    if (this.rooms.get(roomsArray[1]).player.size === 0) {
-                        this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().playersAnswers.push(answer);
+                    if (getRoom().playersAnswers.length === getRoom().player.size) {
+                        this.io.to(getRoom().roomId).emit('sendPlayerAnswers', getRoom().playersAnswers);
                     }
+                } else {
+                    throw new Error('Error trying to submit the answer');
                 }
             });
 
             socket.on('endGame', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.rooms.get(roomsArray[1]).answersLocked += 1;
-                    if (this.rooms.get(roomsArray[1]).answersLocked === this.rooms.get(roomsArray[1]).player.size) {
-                        this.rooms.get(roomsArray[1]).answersLocked = 0;
-                        this.io.to(roomsArray[1]).emit('endGame');
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().answersLocked += 1;
+                    if (getRoom().answersLocked === getRoom().player.size) {
+                        getRoom().answersLocked = 0;
+                        this.io.to(getRoom().roomId).emit('endGame');
                     }
+                } else {
+                    throw new Error('Error trying to end the game of a room that does not exist');
                 }
             });
 
-            // HAS ROOMS TODO lint
             socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
-                const roomsArray = Array.from(socket.rooms);
-                const roomId = roomsArray[1];
-                const playerId = this.rooms.get(roomId).player.get(socket.id);
+                const playerId = getRoom().player.get(socket.id);
                 const choices: IChoice[] = question.choices;
-                this.rooms.get(roomId).assertedAnswers += 1;
-                if (this.rooms.has(roomId)) {
+                this.rooms.get(getRoom().roomId).assertedAnswers += 1;
+                if (roomExists(getRoom().roomId)) {
                     if (answerIdx.length === 0) {
                         this.io.to(socket.id).emit('answer-verification', false, 1);
                         return;
@@ -197,57 +242,56 @@ export class Server {
                         isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
                     }
 
-                    if (isCorrect && this.rooms.get(roomId).firstAnswer) {
-                        this.rooms.get(roomId).firstAnswer = false;
-                        const currentScore = this.rooms.get(roomId).score.get(playerId);
-                        this.rooms.get(roomId).score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
+                    if (isCorrect && getRoom().firstAnswer) {
+                        getRoom().firstAnswer = false;
+                        const currentScore = getRoom().score.get(playerId);
+                        getRoom().score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
                     } else if (isCorrect) {
-                        const currentScore = this.rooms.get(roomId).score.get(playerId);
-                        this.rooms.get(roomId).score.set(playerId, question.points + currentScore);
+                        const currentScore = getRoom().score.get(playerId);
+                        getRoom().score.set(playerId, question.points + currentScore);
                     }
 
-                    if (this.rooms.get(roomId).assertedAnswers === this.rooms.get(roomId).player.size) {
-                        this.io.to(roomId).emit('answer-verification', Array.from(this.rooms.get(roomId).score));
-                        this.rooms.get(roomId).assertedAnswers = 0;
+                    if (getRoom().assertedAnswers === getRoom().player.size) {
+                        this.io.to(getRoom().roomId).emit('answer-verification', Array.from(getRoom().score));
+                        getRoom().assertedAnswers = 0;
                     }
+                } else {
+                    throw new Error('Error trying to calculate the score of a room that does not exist');
                 }
             });
 
             socket.on('chatMessage', ({ message, playerName, isHost }) => {
                 const senderName = isHost ? 'Organisateur' : playerName;
 
-                socket.broadcast.emit('chatMessage', {
+                socket.broadcast.to(getRoom().roomId).emit('chatMessage', {
                     text: message,
                     sender: senderName,
                     timeStamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 });
             });
+
             socket.on('goToResult', () => {
-                const roomsArray = Array.from(socket.rooms);
-                const roomId = roomsArray[1];
-                if (this.rooms.has(roomId)) {
-                    this.io.to(roomId).emit('resultView');
+                if (roomExists(getRoom().roomId)) {
+                    this.io.to(getRoom().roomId).emit('resultView');
+                } else {
+                    throw new Error('Error trying to go to the result view of a room that does not exist');
                 }
             });
+
             socket.on('goNextQuestion', () => {
-                const roomsArray = Array.from(socket.rooms);
-                const roomId = roomsArray[1];
-                if (this.rooms.has(roomId)) {
-                    this.io.to(roomId).emit('handleNextQuestion');
+                if (roomExists(getRoom().roomId)) {
+                    this.io.to(getRoom().roomId).emit('handleNextQuestion');
+                } else {
+                    throw new Error('Error trying to go to the next question of a room that does not exist');
                 }
             });
 
-            // HAS ROOMS
             socket.on('start', () => {
-                const roomsArray = Array.from(socket.rooms);
-                if (this.rooms.has(roomsArray[1])) {
-                    this.io.to(roomsArray[1]).emit('game-started');
+                if (roomExists(getRoom().roomId)) {
+                    this.io.to(getRoom().roomId).emit('game-started');
+                } else {
+                    throw new Error('Error trying to start the game of a room that does not exist');
                 }
-            });
-
-            socket.on('disconnect', () => {
-                // eslint-disable-next-line no-console
-                console.log('user disconnected');
             });
         });
 

@@ -100,20 +100,23 @@ export class SocketService {
             callback();
         });
     }
-    newPlayerJoin() {
-        this.socket.emit('new-player');
-    }
+    // newPlayerJoin() {
+    //     this.socket.emit('new-player');
+    // }
     onNewPlayerJoin(callback: () => void) {
         this.socket.on('new-player-connected', () => {
             callback();
         });
     }
-    adminDisconnect() {
-        this.socket.emit('admin-disconnect');
+    leaveRoom() {
+        this.socket.emit('leave-room');
     }
-    playerDisconnect() {
-        this.socket.emit('player-disconnect');
-    }
+    // adminDisconnect() {
+    //     this.socket.emit('admin-disconnect');
+    // }
+    // playerDisconnect() {
+    //     this.socket.emit('player-disconnect');
+    // }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {
             callback();

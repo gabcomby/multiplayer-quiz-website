@@ -230,7 +230,7 @@ export class GameService {
         if (this.matchLobby.hostId === this.currentPlayerId) {
             this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
                 next: () => {
-                    this.socketService.adminDisconnect();
+                    this.socketService.leaveRoom();
                     this.socketService.disconnect();
                     this.router.navigate(['/home']);
                 },
@@ -247,7 +247,7 @@ export class GameService {
                     } else {
                         this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
                             next: () => {
-                                this.socketService.playerDisconnect();
+                                this.socketService.leaveRoom();
                                 this.socketService.disconnect();
                                 this.router.navigate(['/home']);
                             },
@@ -364,7 +364,7 @@ export class GameService {
                     player.score = 0;
                 }
                 // if (multiplier === BONUS_MULTIPLIER) {
-                    // this.lobbyData.playerList[index].bonus++;
+                // this.lobbyData.playerList[index].bonus++;
                 // }
             }
         });
