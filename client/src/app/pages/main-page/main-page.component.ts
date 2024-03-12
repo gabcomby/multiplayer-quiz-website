@@ -62,7 +62,7 @@ export class MainPageComponent {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
                                 this.socketService.connect();
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
-                                this.socketService.newPlayerJoin();
+                                // this.socketService.newPlayerJoin();
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.router.navigate(['/gameWait']);
                             },
