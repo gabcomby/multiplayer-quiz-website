@@ -10,6 +10,8 @@ import { MatchLobbyService } from '@app/services/match-lobby.service';
 })
 export class GamePageScoresheetComponent {
     @Input() playerList: Player[];
+    @Input() playerGoneList: Player[];
+    @Input() isHost: boolean;
     lobbyCode: string;
     bannedPlayers: string[];
     constructor(
