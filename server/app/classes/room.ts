@@ -9,6 +9,7 @@ export class Room {
     currentTime = 0;
     isRunning = false;
     idAdmin = '';
+    roomLocked = false;
     player = new Map<string, string>();
     score = new Map<string, number>();
     assertedAnswers: number = 0;

@@ -16,14 +16,14 @@
         <div *ngIf="this.playerList.length !== 0 && this.lockStatus === true">
             <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>
         </div>
-        <h2>Tu veux verouiller la partie?</h2>
-        <mat-slide-toggle (change)="makeLocked(lobbyCode, this.lockStatus)"> </mat-slide-toggle>
-        <h2>Qui veut tu banir?</h2>
+        <h2>Tu veux verrouiller la partie?</h2>
+        <mat-slide-toggle (change)="makeLocked()"> </mat-slide-toggle>
+        <h2>Qui veut tu bannir?</h2>
         <div *ngFor="let player of players">
             <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1 && player.name !== 'Organisateur'">
                 <div>
                     {{ player.name }}
-                    <button id="bannedPlayer" type="checkbox" (click)="makeBannedPlayer(player.name)">banir</button>
+                    <button id="bannedPlayer" type="checkbox" (click)="makeBannedPlayer(player.name)">bannir</button>
                 </div>
             </div>
         </div>
