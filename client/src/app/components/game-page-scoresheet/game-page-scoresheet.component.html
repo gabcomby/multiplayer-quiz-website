@@ -6,5 +6,10 @@
         <mat-card-content *ngFor="let player of playerList"
             >{{ player.name }} - {{ player.score }} <button type="checkbox" (click)="makeBannedPlayer(player.name)"></button
         ></mat-card-content>
+        <div *ngIf="isHost" class="goneplayers">
+            <mat-card-content *ngFor="let player of playerGoneList"
+                >{{ player.name }} - {{ player.score }} <button type="checkbox" (click)="makeBannedPlayer(player.name)"></button
+            ></mat-card-content>
+        </div>
     </mat-card>
 </div>

@@ -69,6 +69,10 @@ export class HostGamePageComponent {
         return this.gameService.nextQuestion;
     }
 
+    get playerGoneList() {
+        return this.gameService.playerGoneListFromLobby;
+    }
+
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }

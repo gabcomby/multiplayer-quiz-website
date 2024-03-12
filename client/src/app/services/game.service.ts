@@ -41,6 +41,7 @@ export class GameService {
     lobbyData: MatchLobby = {
         id: '',
         playerList: [],
+        playerGoneList: [],
         gameId: '',
         bannedNames: [],
         lobbyCode: '',
@@ -132,6 +133,10 @@ export class GameService {
 
     get playerListFromLobby(): Player[] {
         return this.lobbyData.playerList;
+    }
+
+    get playerGoneListFromLobby(): Player[] {
+        return this.lobbyData.playerGoneList;
     }
 
     get matchLobby(): MatchLobby {
@@ -321,12 +326,13 @@ export class GameService {
             }
         });
 
-        this.socketService.onAdminDisconnect(() => {
-            this.handleGameLeave();
-        });
-
         this.socketService.onPlayerDisconnect((playerId) => {
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
+            const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
+            if (playerGone) {
+                this.lobbyData.playerGoneList.push(playerGone);
+            }
+            console.log('playerGoneList', this.lobbyData.playerGoneList);
         });
         this.socketService.onLastPlayerDisconnected(() => {
             this.handleGameLeave();

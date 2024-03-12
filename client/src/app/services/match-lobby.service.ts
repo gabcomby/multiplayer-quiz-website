@@ -34,6 +34,7 @@ export class MatchLobbyService {
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [],
+            playerGoneList: [],
             gameId,
             bannedNames: [],
             lobbyCode: generateLobbyId(),
@@ -54,6 +55,7 @@ export class MatchLobbyService {
         const lobby: MatchLobby = {
             id: generateNewId(),
             playerList: [player],
+            playerGoneList: [player],
             gameId,
             bannedNames: [],
             lobbyCode: generateLobbyId(),
