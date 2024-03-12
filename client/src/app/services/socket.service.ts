@@ -31,15 +31,6 @@ export class SocketService {
         });
     }
 
-    // async deleteId(): Promise<string> {
-    //     return new Promise<string>((resolve) => {
-    //         this.socket = io(this.url, { autoConnect: true });
-    //         this.socket.on('deleteId', (gameId) => {
-    //             resolve(gameId);
-    //         });
-    //     });
-    // }
-
     verifyAnswers(question: Question, answerIdx: number[]) {
         this.socket.emit('assert-answers', question, answerIdx);
     }
@@ -100,9 +91,6 @@ export class SocketService {
             callback();
         });
     }
-    // newPlayerJoin() {
-    //     this.socket.emit('new-player');
-    // }
     onNewPlayerJoin(callback: () => void) {
         this.socket.on('new-player-connected', () => {
             callback();
@@ -111,12 +99,6 @@ export class SocketService {
     leaveRoom() {
         this.socket.emit('leave-room');
     }
-    // adminDisconnect() {
-    //     this.socket.emit('admin-disconnect');
-    // }
-    // playerDisconnect() {
-    //     this.socket.emit('player-disconnect');
-    // }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {
             callback();
