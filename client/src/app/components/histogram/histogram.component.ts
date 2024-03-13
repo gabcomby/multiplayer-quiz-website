@@ -38,7 +38,6 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.answersPlayer) {
-            // console.log('answersPlayer', this.answersPlayer);
             this.constructLiveHistogramData();
         }
     }
@@ -66,6 +65,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     private constructHistogramsData(): void {
+        this.histogramsData = [];
         this.questionsGame.forEach((question) => {
             const answerCountsMap = this.calculateAnswerCounts(question);
             const histogramData = this.mapToHistogramData(answerCountsMap);
