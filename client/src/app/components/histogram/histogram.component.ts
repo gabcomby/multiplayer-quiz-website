@@ -59,7 +59,10 @@ export class HistogramComponent implements OnInit, OnChanges {
         });
         const histogramData: { name: string; value: number }[] = [];
         for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
-            histogramData.push({ name: this.questionsGame[0].choices[i].text, value: array[i] });
+            const choiceText = this.questionsGame[0].choices[i].isCorrect
+                ? `${this.questionsGame[0].choices[i].text} (correct)`
+                : this.questionsGame[0].choices[i].text;
+            histogramData.push({ name: choiceText, value: array[i] });
         }
         this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
     }
@@ -96,7 +99,7 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {
         return Array.from(answerCountsMap.entries()).map(([choice, count]) => ({
-            name: choice.text,
+            name: choice.isCorrect ? `${choice.text} (correct)` : choice.text,
             value: count,
         }));
     }
