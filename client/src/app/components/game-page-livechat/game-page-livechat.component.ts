@@ -4,7 +4,7 @@ import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
-const DISAPPEAR_DELAY = 3000;
+const DISAPPEAR_DELAY = 8000;
 
 interface Message {
     text: string;
@@ -60,6 +60,11 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
 
     sendMessage(): void {
         const trimmedText = this.text.trim();
+        if (!this.isHost && !this.playerName) {
+            this.snackbar.openSnackBar('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
+            return;
+        }
+
         if (trimmedText) {
             this.handleNewMessage({ text: trimmedText, sender: this.isHost ? 'Organisateur' : this.playerName, timestamp: new Date() });
             this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
