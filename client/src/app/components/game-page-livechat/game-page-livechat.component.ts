@@ -1,17 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { SocketService } from '@app/services/socket.service';
+import type { Message } from '@app/interfaces/message';
 import { Subscription } from 'rxjs';
+import { ChatService } from 'src/app/services/chat.service';
 import { SnackbarService } from 'src/app/services/snackbar.service';
-
-const DISAPPEAR_DELAY = 8000;
-
-interface Message {
-    text: string;
-    sender: string;
-    timestamp?: Date | string;
-    visible?: boolean;
-}
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -28,36 +20,27 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     @Input() playerName: string;
     @Input() isHost: boolean;
     @Input() roomId: string;
-    @ViewChild('textbox') textbox: ElementRef;
     @ViewChild('messagesContainer') private messagesContainer: ElementRef;
 
     messages: Message[] = [];
     text: string = '';
-
-    private chatSubscription: Subscription;
+    private messagesSubscription: Subscription;
 
     constructor(
+        private chatService: ChatService,
         private snackbar: SnackbarService,
-        private socket: SocketService,
     ) {}
 
     ngOnInit(): void {
-        this.listenForMessages();
+        this.subscribeToMessages();
     }
 
     ngOnDestroy() {
-        this.chatSubscription?.unsubscribe();
+        this.messagesSubscription?.unsubscribe();
     }
 
     ngAfterViewChecked() {
         this.scrollToBottom();
-    }
-
-    listenForMessages(): void {
-        this.chatSubscription = this.socket.onChatMessage().subscribe({
-            next: (message) => this.handleNewMessage(message),
-            error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
-        });
     }
 
     onChatInput(event: Event): void {
@@ -73,28 +56,25 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
         }
 
         if (trimmedText) {
-            this.handleNewMessage({ text: trimmedText, sender: this.isHost ? 'Organisateur' : this.playerName, timestamp: new Date() });
-            this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
-        }
-        this.text = '';
-    }
-
-    handleNewMessage(message: Message): void {
-        const newMessage = { ...message, timestamp: message.timestamp ? new Date(message.timestamp) : new Date(), visible: true };
-        this.messages.push(newMessage);
-        setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
-    }
-
-    hideMessage(message: Message): void {
-        const index = this.messages.indexOf(message);
-        // eslint-disable-next-line -- Used to hide message
-        if (index !== -1) {
-            this.messages[index].visible = false;
-            this.messages = [...this.messages];
+            const newMessage: Message = {
+                text: trimmedText,
+                sender: this.isHost ? 'Organisateur' : this.playerName,
+                timestamp: new Date(),
+                visible: true,
+            };
+            this.messages.push(newMessage);
+            this.chatService.sendMessage(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
+            this.text = '';
         }
     }
 
     scrollToBottom(): void {
         this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }
+
+    private subscribeToMessages(): void {
+        this.messagesSubscription = this.chatService.getNewMessage().subscribe((message) => {
+            this.messages.push(message);
+        });
     }
 }
