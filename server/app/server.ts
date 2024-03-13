@@ -1,12 +1,13 @@
 import { Application } from '@app/app';
 import { Room } from '@app/classes/room';
 import type { IChoice } from '@app/model/questions.model';
+import { GameService } from '@app/services/game.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 import { IQuestion } from './model/game.model';
-// import { MatchLobbyService } from './services/match-lobby.service';
+import { IPlayer } from './model/match.model';
 
 const BASE_TEN = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
@@ -69,23 +70,23 @@ export class Server {
 
             // FONCTIONS DE GESTION DES JOUEURS DANS LA ROOM (REJOINDRE/QUITTER)
 
-            socket.on('create-room', (roomId) => {
-                if (!roomExists(roomId)) {
-                    socket.join(roomId);
-                    setRoom(new Room(roomId));
-                    getRoom().idAdmin = socket.id;
-                    // eslint-disable-next-line no-console
-                    console.log('Created room', roomId, 'room is', this.rooms.get(roomId));
-                } else {
-                    throw new Error('The room you are trying to create already exists');
-                }
+            socket.on('create-room', async (gameId: string) => {
+                const gameService = new GameService();
+                const game = await gameService.getGame(gameId);
+                const room = new Room(game);
+                socket.join(room.roomId);
+                setRoom(room);
+                getRoom().hostId = socket.id;
+                console.log('Room created', getRoom().roomId);
+                this.io.to(getRoom().roomId).emit('room-created', getRoom().roomId);
             });
 
-            socket.on('join-room', (roomId, playerId) => {
+            socket.on('join-room', (roomId: string, player: IPlayer) => {
+                // TODO: Authentifier le nom de l'utilisateur
                 if (roomExists(roomId)) {
                     socket.join(roomId);
-                    getRoom().player.set(socket.id, playerId);
-                    getRoom().score.set(playerId, 0);
+                    getRoom().playerList.set(socket.id, player);
+                    // getRoom().score.set(playerId, 0);
                     this.io.to(getRoom().roomId).emit('new-player-connected');
                     // eslint-disable-next-line no-console
                     console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
@@ -96,7 +97,7 @@ export class Server {
 
             socket.on('leave-room', () => {
                 if (roomExists(getRoom().roomId)) {
-                    if (getRoom().idAdmin === socket.id) {
+                    if (getRoom().hostId === socket.id) {
                         this.io.to(getRoom().roomId).emit('adminDisconnected');
                         this.rooms.delete(getRoom().roomId);
                     } else {
@@ -150,7 +151,7 @@ export class Server {
 
             socket.on('start-timer', () => {
                 if (roomExists(getRoom().roomId)) {
-                    if (!getRoom().isRunning && getRoom().idAdmin === socket.id) {
+                    if (!getRoom().isRunning && getRoom().hostId === socket.id) {
                         getRoom().isRunning = true;
                         getRoom().firstAnswer = true;
                         getRoom().startCountdownTimer(this.io, getRoom().roomId);
@@ -162,7 +163,7 @@ export class Server {
 
             socket.on('stop-timer', () => {
                 if (roomExists(getRoom().roomId)) {
-                    if (getRoom().isRunning && getRoom().idAdmin === socket.id) {
+                    if (getRoom().isRunning && getRoom().hostId === socket.id) {
                         getRoom().resetTimerCountdown();
                     }
                 } else {
@@ -188,7 +189,7 @@ export class Server {
                     const playerId = getRoom().player.get(socket.id);
                     getRoom().livePlayerAnswers.set(playerId, answerIdx);
                     // jusqu'ici la vie est belle
-                    this.io.to(getRoom().idAdmin).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
             });
 

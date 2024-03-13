@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import type { AnswersPlayer, Question } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
@@ -11,6 +12,7 @@ export class SocketService {
     private socket: Socket;
     private readonly url: string = environment.socketUrl;
 
+    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
     connect(): string[] {
         this.socket = io(this.url, { autoConnect: true });
         const arrayM: string[] = [];
@@ -25,6 +27,15 @@ export class SocketService {
             this.socket.disconnect();
         }
     }
+
+    onRoomCreated(callback: (roomId: string) => void): void {
+        this.socket.on('room-created', (roomId: string) => {
+            callback(roomId);
+        });
+    }
+
+    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
+
     deletedGame(callback: (gameId: string) => void) {
         this.socket.on('deleteId', (gameId: string) => {
             callback(gameId);
@@ -75,8 +86,8 @@ export class SocketService {
     createRoom(roomId: string): void {
         this.socket.emit('create-room', roomId);
     }
-    joinRoom(roomId: string, playerId: string): void {
-        this.socket.emit('join-room', roomId, playerId);
+    joinRoom(roomId: string, player: Player): void {
+        this.socket.emit('join-room', roomId, player);
     }
     onPlayerDisconnect(callback: (playerId: string) => void) {
         this.socket.on('playerDisconnected', (playerId: string) => {

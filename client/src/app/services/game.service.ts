@@ -20,6 +20,7 @@ const START_TIMER_DURATION = 5;
     providedIn: 'root',
 })
 export class GameService {
+    lobbyCode: string;
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
     playerAnswers: Subject<AnswersPlayer> = new Subject<AnswersPlayer>();
@@ -76,6 +77,10 @@ export class GameService {
         private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
+    }
+
+    get lobbyCodeValue(): string {
+        return this.lobbyCode;
     }
 
     get timerCountdownValue(): number {
@@ -317,9 +322,17 @@ export class GameService {
     }
 
     setupWebsocketEvents(): void {
+        // ==================== FUNCTIONS USED AFTER REFACTOR ====================
+
+        this.socketService.onRoomCreated((roomId) => {
+            this.lobbyCode = roomId;
+        });
+
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
         });
+
+        // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
         this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
             this.answersSelected.next(answer);
@@ -350,6 +363,8 @@ export class GameService {
         this.socketService.onLastPlayerDisconnected(() => {
             this.handleGameLeave();
         });
+
+        // TODO: Quand new player join emit du serveur, le serveur devrait emit sa lite de joueurs
         this.socketService.onNewPlayerJoin(() => {
             this.refreshPlayerList();
         });

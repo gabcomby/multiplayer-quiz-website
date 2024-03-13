@@ -31,7 +31,7 @@ export class GameWaitComponent {
     }
 
     get lobbyCode() {
-        return this.gameService.matchLobby.lobbyCode;
+        return this.gameService.lobbyCodeValue;
     }
 
     get currentPlayerName() {
@@ -45,8 +45,7 @@ export class GameWaitComponent {
             }
         });
         subscription.unsubscribe();
-        this.bannedFromGame = bannedArray;
-        return this.bannedFromGame;
+        return bannedArray;
     }
 
     backHome() {

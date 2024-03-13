@@ -140,17 +140,11 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.ngOnInit();
             return false;
         } else {
-            this.createNewMatchLobby(game.id).subscribe({
-                next: (matchLobby) => {
-                    this.socketService.connect();
-                    this.socketService.createRoom(matchLobby.lobbyCode);
-                    this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
-                    this.router.navigate(['/gameWait']);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
-                },
-            });
+            this.socketService.connect();
+            this.socketService.createRoom(game.id);
+            this.gameService.setupWebsocketEvents();
+            // this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
+            this.router.navigate(['/gameWait']);
             return true;
         }
     }
