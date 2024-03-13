@@ -34,6 +34,36 @@ export class SocketService {
         });
     }
 
+    onPlayerListChange(callback: (playerList: [[string, Player]]) => void) {
+        this.socket.on('playerlist-change', (playerList: [[string, Player]]) => {
+            callback(playerList);
+        });
+    }
+
+    createRoom(roomId: string): void {
+        this.socket.emit('create-room', roomId);
+    }
+
+    joinRoom(roomId: string, player: Player): void {
+        this.socket.emit('join-room', roomId, player);
+    }
+
+    leaveRoom() {
+        this.socket.emit('leave-room');
+    }
+
+    onLobbyDeleted(callback: () => void) {
+        this.socket.on('lobby-deleted', () => {
+            callback();
+        });
+    }
+
+    onRoomJoined(callback: (roomId: string) => void) {
+        this.socket.on('room-joined', (roomId: string) => {
+            callback(roomId);
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     deletedGame(callback: (gameId: string) => void) {
@@ -83,12 +113,6 @@ export class SocketService {
             callback();
         });
     }
-    createRoom(roomId: string): void {
-        this.socket.emit('create-room', roomId);
-    }
-    joinRoom(roomId: string, player: Player): void {
-        this.socket.emit('join-room', roomId, player);
-    }
     onPlayerDisconnect(callback: (playerId: string) => void) {
         this.socket.on('playerDisconnected', (playerId: string) => {
             callback(playerId);
@@ -101,14 +125,6 @@ export class SocketService {
         this.socket.on('stop-timer', () => {
             callback();
         });
-    }
-    onNewPlayerJoin(callback: () => void) {
-        this.socket.on('new-player-connected', () => {
-            callback();
-        });
-    }
-    leaveRoom() {
-        this.socket.emit('leave-room');
     }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {

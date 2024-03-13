@@ -54,6 +54,7 @@ export class Server {
                 this.io.emit('deleteId', deletedId);
             });
 
+            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
                 return this.rooms.get(roomsArray[1]);
@@ -68,8 +69,6 @@ export class Server {
                 return this.rooms.has(roomId);
             };
 
-            // FONCTIONS DE GESTION DES JOUEURS DANS LA ROOM (REJOINDRE/QUITTER)
-
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
@@ -77,8 +76,7 @@ export class Server {
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                console.log('Room created', getRoom().roomId);
-                this.io.to(getRoom().roomId).emit('room-created', getRoom().roomId);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId);
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
@@ -86,8 +84,8 @@ export class Server {
                 if (roomExists(roomId)) {
                     socket.join(roomId);
                     getRoom().playerList.set(socket.id, player);
-                    // getRoom().score.set(playerId, 0);
-                    this.io.to(getRoom().roomId).emit('new-player-connected');
+                    this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
+                    this.io.to(socket.id).emit('room-joined', getRoom().roomId);
                     // eslint-disable-next-line no-console
                     console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
                 } else {
@@ -98,13 +96,14 @@ export class Server {
             socket.on('leave-room', () => {
                 if (roomExists(getRoom().roomId)) {
                     if (getRoom().hostId === socket.id) {
-                        this.io.to(getRoom().roomId).emit('adminDisconnected');
+                        this.io.to(getRoom().roomId).emit('lobby-deleted');
                         this.rooms.delete(getRoom().roomId);
                     } else {
-                        this.io.to(getRoom().roomId).emit('playerDisconnected', getRoom().player.get(socket.id));
-                        getRoom().player.delete(socket.id);
-                        if (getRoom().player.size === 0) {
-                            this.io.to(getRoom().roomId).emit('lastPlayerDisconnected');
+                        getRoom().playerList.delete(socket.id);
+                        if (getRoom().playerList.size === 0) {
+                            this.io.to(getRoom().roomId).emit('lobby-deleted');
+                        } else {
+                            this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                         }
                         // eslint-disable-next-line no-console
                         console.log('Players are now', getRoom().player);
@@ -113,6 +112,8 @@ export class Server {
                     throw new Error('Error trying to leave a room that does not exist');
                 }
             });
+
+            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('toggle-room-lock', () => {
                 if (roomExists(getRoom().roomId)) {

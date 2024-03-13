@@ -22,8 +22,9 @@ export class GameWaitComponent {
         private matchLobbyService: MatchLobbyService,
     ) {}
     get playerList() {
-        this.players = this.gameService.matchLobby.playerList;
-        return this.players;
+        // this.players = this.gameService.matchLobby.playerList;
+        // return this.players;
+        return this.gameService.playerListValue;
     }
 
     get isHost() {
@@ -58,7 +59,7 @@ export class GameWaitComponent {
     }
 
     handleGameLeave() {
-        this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 
     makeBannedPlayer(name: string) {
