@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
@@ -24,13 +24,16 @@ interface Message {
         ]),
     ],
 })
-export class GamePageLivechatComponent implements OnInit, OnDestroy {
-    @ViewChild('textbox') textbox: ElementRef;
+export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewChecked {
     @Input() playerName: string;
     @Input() isHost: boolean;
     @Input() roomId: string;
+    @ViewChild('textbox') textbox: ElementRef;
+    @ViewChild('messagesContainer') private messagesContainer: ElementRef;
+
     messages: Message[] = [];
     text: string = '';
+
     private chatSubscription: Subscription;
 
     constructor(
@@ -44,6 +47,10 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.chatSubscription?.unsubscribe();
+    }
+
+    ngAfterViewChecked() {
+        this.scrollToBottom();
     }
 
     listenForMessages(): void {
@@ -85,5 +92,9 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
             this.messages[index].visible = false;
             this.messages = [...this.messages];
         }
+    }
+
+    scrollToBottom(): void {
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }
 }
