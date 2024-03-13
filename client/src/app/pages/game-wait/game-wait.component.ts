@@ -21,6 +21,10 @@ export class GameWaitComponent {
         private gameService: GameService,
         private matchLobbyService: MatchLobbyService,
     ) {}
+    get currentPlayerName() {
+        return this.gameService.currentPlayerName;
+    }
+    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
     get playerList() {
         // this.players = this.gameService.matchLobby.playerList;
         // return this.players;
@@ -28,16 +32,18 @@ export class GameWaitComponent {
     }
 
     get isHost() {
-        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+        return this.gameService.isHostValue;
     }
 
     get lobbyCode() {
         return this.gameService.lobbyCodeValue;
     }
 
-    get currentPlayerName() {
-        return this.gameService.currentPlayerName;
+    banPlayer(name: string) {
+        this.gameService.banPlayer(name);
     }
+    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
+
     bannedPlayers(): string[] {
         const bannedArray: string[] = [];
         const subscription = this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {

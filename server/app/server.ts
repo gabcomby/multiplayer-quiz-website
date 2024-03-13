@@ -113,6 +113,17 @@ export class Server {
                 }
             });
 
+            socket.on('ban-player', (name: string) => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().bannedNames.push(name);
+                    // eslint-disable-next-line
+                    const playerToBan = [...getRoom().playerList.entries()].find(([key, value]) => value.name === name)?.[0];
+                    this.io.to(playerToBan).emit('banned-from-game');
+                } else {
+                    throw new Error('Error trying to ban a player from a room that does not exist');
+                }
+            });
+
             // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('toggle-room-lock', () => {

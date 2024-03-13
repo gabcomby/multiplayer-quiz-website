@@ -19,11 +19,11 @@
         <h2>Tu veux verrouiller la partie?</h2>
         <mat-slide-toggle (change)="makeLocked()" (change)="changeLockStatus()"> </mat-slide-toggle>
         <h2>Qui veut tu bannir?</h2>
-        <div *ngFor="let player of players">
+        <div *ngFor="let player of playerList">
             <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1 && player.name !== 'Organisateur'">
                 <div>
                     {{ player.name }}
-                    <button id="bannedPlayer" type="checkbox" (click)="makeBannedPlayer(player.name)">bannir</button>
+                    <button id="bannedPlayer" type="checkbox" (click)="banPlayer(player.name)">bannir</button>
                 </div>
             </div>
         </div>

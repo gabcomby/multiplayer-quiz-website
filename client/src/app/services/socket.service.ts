@@ -64,6 +64,16 @@ export class SocketService {
         });
     }
 
+    banPlayer(name: string) {
+        this.socket.emit('ban-player', name);
+    }
+
+    onBannedFromGame(callback: () => void) {
+        this.socket.on('banned-from-game', () => {
+            callback();
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     deletedGame(callback: (gameId: string) => void) {
