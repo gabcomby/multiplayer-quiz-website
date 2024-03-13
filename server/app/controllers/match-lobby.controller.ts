@@ -152,7 +152,6 @@ export class MatchLobbyController {
         this.router.post('/:id/isTaken', async (req: Request, res: Response) => {
             try {
                 const lobby = await this.matchLobbyService.authentificateNameOfUser(req.body.player, req.params.id);
-                console.log('response isTAken', lobby);
                 res.json(lobby);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error authenticating user' });

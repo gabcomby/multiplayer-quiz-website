@@ -66,7 +66,6 @@ export class MainPageComponent {
         const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
         const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
         const resultName = await lastValueFrom(resultName$);
-        console.log(resultName);
         if (result.lobbyCode) {
             this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
                 next: (lobby) => {
@@ -83,7 +82,7 @@ export class MainPageComponent {
                             },
                         });
                     } else {
-                        // this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
+                        this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
                     }
                 },
                 error: (error) => {

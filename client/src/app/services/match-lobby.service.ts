@@ -118,8 +118,6 @@ export class MatchLobbyService {
     }
 
     authentificateNameOfUser(playerName: string, lobbyCode: string): Observable<boolean> {
-        console.log('name', playerName);
-        console.log('name to lowercase', playerName);
         const body = { player: playerName };
         return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/isTaken`, body);
     }
