@@ -55,7 +55,7 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
                 this.messages.push({ text: message.text, sender: message.sender, timestamp: message.timestamp, visible: true });
                 // You might want to scroll to the latest message or perform other UI updates here
             },
-            error: (error) => console.error(error),
+            error: () => this.snackbar.openSnackBar('Erreur lors de la réception des messages', 'Fermer'),
         });
     }
 
