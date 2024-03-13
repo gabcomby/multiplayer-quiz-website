@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 
 const START_TIMER_DURATION = 5;
@@ -12,11 +13,15 @@ const START_TIMER_DURATION = 5;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
+export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
+    answersClicked: [string, number[]][] = [];
     unsubscribeSubject: Subscription[];
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService,
+        private socketService: SocketService,
+    ) {}
 
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
@@ -46,6 +51,10 @@ export class HostGamePageComponent {
         return this.gameService.getCurrentQuestion();
     }
 
+    get currentQuestionArray(): Question[] {
+        return [this.gameService.currentQuestion];
+    }
+
     get playerListValue(): Player[] {
         return this.gameService.playerListFromLobby;
     }
@@ -61,6 +70,23 @@ export class HostGamePageComponent {
     get endGame(): boolean {
         return this.gameService.endGame;
     }
+    get nextQuestion(): boolean {
+        return this.gameService.nextQuestion;
+    }
+
+    get playerGoneList() {
+        return this.gameService.playerGoneList;
+    }
+
+    get answersClickedValue() {
+        return this.gameService.answersClicked;
+    }
+
+    ngOnInit(): void {
+        this.socketService.onLivePlayerAnswers((answers) => {
+            this.answersClicked = answers;
+        });
+    }
 
     get getHost() {
         return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
@@ -72,5 +98,12 @@ export class HostGamePageComponent {
 
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
+    }
+
+    goToResult(): void {
+        this.socketService.goToResult();
+    }
+    goNextQuestion(): void {
+        this.socketService.nextQuestion();
     }
 }

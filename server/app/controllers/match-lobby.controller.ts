@@ -77,24 +77,6 @@ export class MatchLobbyController {
             }
         });
 
-        this.router.get('/:id/ban', async (req: Request, res: Response) => {
-            try {
-                const banned = await this.matchLobbyService.getBannedPlayers(req.params.id);
-                res.json(banned);
-            } catch (error) {
-                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching banned players from lobby' });
-            }
-        });
-
-        this.router.patch('/:id/ban/:name', async (req: Request, res: Response) => {
-            try {
-                const lobby = await this.matchLobbyService.banPlayer(req.params.id, req.params.name);
-                res.json(lobby);
-            } catch (error) {
-                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error banning player from lobby' });
-            }
-        });
-
         this.router.get('/joinLobby/:code', async (req: Request, res: Response) => {
             try {
                 const lobby = await this.matchLobbyService.getLobbyByCode(req.params.code);
@@ -119,6 +101,60 @@ export class MatchLobbyController {
                 res.json(player);
             } catch (error) {
                 res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching player from lobby' });
+            }
+        });
+
+        this.router.patch('/:id/banned', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.banPlayer(req.body.name, req.params.id);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating banned names' });
+            }
+        });
+
+        this.router.get('/:id/banned', async (req: Request, res: Response) => {
+            try {
+                const banned = await this.matchLobbyService.getBannedPlayers(req.params.id);
+                res.json(banned);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching banned names' });
+            }
+        });
+
+        this.router.post('/:id/banned', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.isABannedPlayer(req.body.player, req.params.id);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating banned names' });
+            }
+        });
+
+        this.router.patch('/:id/locked', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.lockLobby(req.params.id, req.body.isLocked);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error updating player score' });
+            }
+        });
+
+        this.router.get('/:id/locked', async (req: Request, res: Response) => {
+            try {
+                const locked = await this.matchLobbyService.getLockedStatus(req.params.id);
+                res.json(locked);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error fetching lock status' });
+            }
+        });
+
+        this.router.post('/:id/isTaken', async (req: Request, res: Response) => {
+            try {
+                const lobby = await this.matchLobbyService.authentificateNameOfUser(req.body.player, req.params.id);
+                res.json(lobby);
+            } catch (error) {
+                res.status(StatusCodes.NOT_FOUND).send({ error: 'Error authenticating user' });
             }
         });
     }

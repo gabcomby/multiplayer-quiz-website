@@ -3,8 +3,10 @@
         <mat-card-header>
             <mat-card-title>Scores de la partie</mat-card-title>
         </mat-card-header>
-        <mat-card-content *ngFor="let player of playerList"
-            >{{ player.name }} - {{ player.score }} <button type="checkbox" (click)="makeBannedPlayer(player.name)"></button
-        ></mat-card-content>
+        <mat-card-content *ngFor="let player of playerList">
+            <div *ngIf="banned.indexOf(player.name) === -1 && player.name !== 'Organisateur' ">
+            {{ player.name }} - {{ player.score }}
+            </div>
+        </mat-card-content>
     </mat-card>
 </div>

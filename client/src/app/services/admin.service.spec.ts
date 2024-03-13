@@ -5,24 +5,24 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { API_BASE_URL } from '@app/app.module';
 import { AdminService } from './admin.service';
 import { ApiService } from './api.service';
-import { GameService } from './game.service';
 import { SnackbarService } from './snackbar.service';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Game } from '@app/interfaces/game';
 import { of, throwError } from 'rxjs';
 import { SocketService } from './socket.service';
+import { GameValidationService } from './game-validation.service';
 
 describe('AdminService', () => {
     let service: AdminService;
     let apiServiceSpy: jasmine.SpyObj<ApiService>;
-    let gameServiceSpy: jasmine.SpyObj<GameService>;
+    let gameServiceSpy: jasmine.SpyObj<GameValidationService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let gameMock = {} as unknown as Game;
 
     beforeEach(() => {
-        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameService', ['isValidGame']);
+        const SPY_GAME_SERVICE = jasmine.createSpyObj('GameValidationService', ['isValidGame']);
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['connect']);
         const SPY_API_SERVICE = jasmine.createSpyObj('ApiService', ['getGame', 'getGames', 'patchGame', 'createGame', 'deleteGame']);
@@ -31,7 +31,7 @@ describe('AdminService', () => {
             providers: [
                 AdminService,
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
-                { provide: GameService, useValue: SPY_GAME_SERVICE },
+                { provide: GameValidationService, useValue: SPY_GAME_SERVICE },
                 { provide: SnackbarService, useValue: SPY_SNACKBAR_SERVICE },
                 { provide: SocketService, useValue: SPY_SOCKET_SERVICE },
                 { provide: ApiService, useValue: SPY_API_SERVICE },
@@ -40,7 +40,7 @@ describe('AdminService', () => {
         });
         gameMock = { id: '1', isVisible: true } as unknown as Game;
         service = TestBed.inject(AdminService);
-        gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+        gameServiceSpy = TestBed.inject(GameValidationService) as jasmine.SpyObj<GameValidationService>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         apiServiceSpy = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;

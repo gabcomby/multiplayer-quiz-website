@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
 const SIZE1 = 400;
@@ -8,7 +8,7 @@ const SIZE2 = 400;
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
 })
-export class HistogramComponent implements OnInit {
+export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string, number[]][];
     @Input() questionsGame: Question[];
 
@@ -36,6 +36,12 @@ export class HistogramComponent implements OnInit {
         this.constructHistogramsData();
     }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.answersPlayer) {
+            this.constructLiveHistogramData();
+        }
+    }
+
     navigate(offset: number): void {
         const newIndex = this.currentIndex + offset;
         if (newIndex >= 0 && newIndex < this.histogramsData.length) {
@@ -43,7 +49,26 @@ export class HistogramComponent implements OnInit {
         }
     }
 
+    private constructLiveHistogramData(): void {
+        const array = new Array(this.questionsGame[0].choices.length).fill(0);
+        // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
+        this.answersPlayer.forEach(([playerId, answerIdx]) => {
+            answerIdx.forEach((idx) => {
+                array[idx]++;
+            });
+        });
+        const histogramData: { name: string; value: number }[] = [];
+        for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
+            const choiceText = this.questionsGame[0].choices[i].isCorrect
+                ? `${this.questionsGame[0].choices[i].text} (correct)`
+                : this.questionsGame[0].choices[i].text;
+            histogramData.push({ name: choiceText, value: array[i] });
+        }
+        this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
+    }
+
     private constructHistogramsData(): void {
+        this.histogramsData = [];
         this.questionsGame.forEach((question) => {
             const answerCountsMap = this.calculateAnswerCounts(question);
             const histogramData = this.mapToHistogramData(answerCountsMap);
@@ -74,7 +99,7 @@ export class HistogramComponent implements OnInit {
 
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {
         return Array.from(answerCountsMap.entries()).map(([choice, count]) => ({
-            name: choice.text,
+            name: choice.isCorrect ? `${choice.text} (correct)` : choice.text,
             value: count,
         }));
     }

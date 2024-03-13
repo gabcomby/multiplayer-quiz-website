@@ -35,7 +35,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             playerList: [],
             gameId,
-            bannedNames: [],
+            bannedNames: ['organisateur'],
             lobbyCode: generateLobbyId(),
             isLocked: false,
             hostId: generateNewId(),
@@ -49,6 +49,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: creatorName,
             score: 0,
+            bonus: 0,
         };
         const lobby: MatchLobby = {
             id: generateNewId(),
@@ -71,6 +72,7 @@ export class MatchLobbyService {
             id: generateNewId(),
             name: playerName,
             score: 0,
+            bonus: 0,
         };
         return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/players`, player);
     }
@@ -99,7 +101,24 @@ export class MatchLobbyService {
         return this.http.get<string[]>(`${this.apiUrl}/${lobbyId}/banned`);
     }
 
-    banPlayer(lobby: string, name: string): Observable<string[]> {
-        return this.http.patch<string[]>(`${this.apiUrl}/${lobby}/banned`, { name });
+    banPlayer(name: string, lobby: string): Observable<MatchLobby> {
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobby}/banned`, { name });
+    }
+
+    authenticateUser(playerName: string, lobbyCode: string): Observable<boolean> {
+        const body = { player: playerName.toLowerCase() };
+        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/banned`, body);
+    }
+
+    gameLocked(lobbyId: string, isLocked: boolean): Observable<MatchLobby> {
+        return this.http.patch<MatchLobby>(`${this.apiUrl}/${lobbyId}/locked`, { isLocked });
+    }
+    getLockStatus(lobbyId: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/${lobbyId}/locked`);
+    }
+
+    authentificateNameOfUser(playerName: string, lobbyCode: string): Observable<boolean> {
+        const body = { player: playerName };
+        return this.http.post<boolean>(`${this.apiUrl}/${lobbyCode}/isTaken`, body);
     }
 }

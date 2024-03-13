@@ -9,13 +9,13 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Game, Question } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
 import SpyObj = jasmine.SpyObj;
+import { GameValidationService } from '@app/services/game-validation.service';
 
 @Component({
     selector: 'app-modified-question',
@@ -35,7 +35,7 @@ class AppNewQuestionStubComponent {
 
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
-    let gameServiceSpy: SpyObj<GameService>;
+    let gameServiceSpy: SpyObj<GameValidationService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
     let apiServiceSpy: SpyObj<ApiService>;
     let routerSpy: SpyObj<Router>;
@@ -143,7 +143,7 @@ describe('CreateQGamePageComponent', () => {
             declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
-                { provide: GameService, useValue: gameServiceSpy },
+                { provide: GameValidationService, useValue: gameServiceSpy },
                 { provide: ApiService, useValue: apiServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },

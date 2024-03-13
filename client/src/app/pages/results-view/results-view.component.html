@@ -19,8 +19,13 @@
                 <mat-cell *matCellDef="let element"> {{ element.score }} </mat-cell>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="['name', 'score']"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: ['name', 'score']"></mat-row>
+            <ng-container matColumnDef="bonus">
+                <mat-header-cell *matHeaderCellDef> Nombre de bonus obtenu </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.bonus }} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="['name', 'score', 'bonus']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name', 'score', 'bonus']"></mat-row>
         </mat-table>
         <app-game-page-livechat class="live-chat"></app-game-page-livechat>
     </div>

@@ -9,7 +9,11 @@ export class Room {
     currentTime = 0;
     isRunning = false;
     idAdmin = '';
-    player = new Map();
+    livePlayerAnswers = new Map<string, number[]>();
+    roomLocked = false;
+    player = new Map<string, string>();
+    score = new Map<string, number>();
+    assertedAnswers: number = 0;
     answersLocked = 0;
     roomId = '';
     firstAnswer = true;
@@ -26,10 +30,21 @@ export class Room {
             () => {
                 this.currentTime -= 1;
                 io.to(roomId).emit('timer-countdown', this.currentTime);
+                if (this.currentTime === 0) {
+                    io.to(roomId).emit('stop-timer');
+                    this.resetTimerCountdown();
+                }
             },
             ONE_SECOND_IN_MS,
             this.currentTime,
         );
         this.timerId = timerId;
+    }
+
+    resetTimerCountdown(): void {
+        clearInterval(this.timerId);
+        this.isRunning = false;
+        this.currentTime = this.duration;
+        this.answersLocked = 0;
     }
 }

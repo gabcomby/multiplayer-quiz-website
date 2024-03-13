@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { AnswersPlayer, Choice } from '@app/interfaces/game';
+import type { AnswersPlayer, Question } from '@app/interfaces/game';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
@@ -31,17 +31,8 @@ export class SocketService {
         });
     }
 
-    async deleteId(): Promise<string> {
-        return new Promise<string>((resolve) => {
-            this.socket = io(this.url, { autoConnect: true });
-            this.socket.on('deleteId', (gameId) => {
-                resolve(gameId);
-            });
-        });
-    }
-
-    verifyAnswers(choices: Choice[] | undefined, answerIdx: number[], playerId: string) {
-        this.socket.emit('assert-answers', choices, answerIdx, playerId);
+    verifyAnswers(question: Question, answerIdx: number[]) {
+        this.socket.emit('assert-answers', question, answerIdx);
     }
 
     setTimerDuration(duration: number): void {
@@ -62,11 +53,12 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (data: boolean, playerId: string, multiplier: number) => void): void {
-        this.socket.on('answer-verification', (data: boolean, playerId: string, multiplier: number) => {
-            callback(data, playerId, multiplier);
+    onAnswerVerification(callback: (score: [[string, number]]) => void): void {
+        this.socket.on('answer-verification', (score: [[string, number]]) => {
+            callback(score);
         });
     }
+
     startGame(): void {
         this.socket.emit('start');
     }
@@ -99,19 +91,13 @@ export class SocketService {
             callback();
         });
     }
-    newPlayerJoin() {
-        this.socket.emit('new-player');
-    }
     onNewPlayerJoin(callback: () => void) {
         this.socket.on('new-player-connected', () => {
             callback();
         });
     }
-    adminDisconnect() {
-        this.socket.emit('admin-disconnect');
-    }
-    playerDisconnect() {
-        this.socket.emit('player-disconnect');
+    leaveRoom() {
+        this.socket.emit('leave-room');
     }
     onGameLaunch(callback: () => void) {
         this.socket.on('game-started', () => {
@@ -124,6 +110,17 @@ export class SocketService {
     submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
         this.socket.emit('player-answers', idPlayer, answerIdx);
     }
+    toggleRoomLock() {
+        this.socket.emit('toggle-room-lock');
+    }
+    verifyRoomLock(roomId: string) {
+        this.socket.emit('verify-room-lock', roomId);
+    }
+    onRoomLockStatus(callback: (isLocked: boolean) => void) {
+        this.socket.on('room-lock-status', (isLocked: boolean) => {
+            callback(isLocked);
+        });
+    }
 
     gameIsFinishedSocket() {
         this.socket.emit('endGame');
@@ -134,6 +131,12 @@ export class SocketService {
             this.socket.on('endGame', () => {
                 observer.next();
             });
+        });
+    }
+
+    onGotBonus(callback: (playerId: string) => void) {
+        this.socket.on('got-bonus', (playerId) => {
+            callback(playerId);
         });
     }
 
@@ -166,17 +169,46 @@ export class SocketService {
         });
     }
 
-    updatePlayerList(lobbyId: string, incr: number) {
-        this.socket.emit('update', lobbyId, incr);
-    }
-    onUpdateList(callback: () => void) {
-        this.socket.on('updatePlayerList', () => {
-            callback();
-        });
-    }
     onLastPlayerDisconnected(callback: () => void) {
         this.socket.on('lastPlayerDisconnected', () => {
             callback();
+        });
+    }
+    bannedPlayer(idPlayer: string) {
+        this.socket.connect();
+        this.socket.emit('banFromGame', idPlayer);
+    }
+
+    async onBannedPlayer(callback: () => void) {
+        await this.socket.on('bannedFromHost', () => {
+            callback();
+        });
+    }
+
+    goToResult() {
+        this.socket.emit('goToResult');
+    }
+    onResultView(callback: () => void) {
+        this.socket.on('resultView', () => {
+            callback();
+        });
+    }
+    nextQuestion() {
+        this.socket.emit('goNextQuestion');
+    }
+    onNextQuestion(callback: () => void) {
+        this.socket.on('handleNextQuestion', () => {
+            callback();
+        });
+    }
+
+    sendClickedAnswer(answerIdx: number[]) {
+        this.socket.emit('sendClickedAnswer', answerIdx);
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+            callback(answersArray);
         });
     }
 }
