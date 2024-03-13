@@ -1,17 +1,11 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import type { Message } from '@app/interfaces/message';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
 const DISAPPEAR_DELAY = 8000;
-
-interface Message {
-    text: string;
-    sender: string;
-    timestamp?: Date | string;
-    visible?: boolean;
-}
 
 @Component({
     selector: 'app-game-page-livechat',
