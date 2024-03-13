@@ -52,6 +52,7 @@ export class GameService {
     currentPlayerId: string;
     currentPlayerName: string;
     answerIdx: number[];
+    playerGoneList: Player[] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
@@ -132,6 +133,10 @@ export class GameService {
 
     get playerListFromLobby(): Player[] {
         return this.lobbyData.playerList;
+    }
+
+    get playerGoneListValue(): Player[] {
+        return this.playerGoneList;
     }
 
     get matchLobby(): MatchLobby {
@@ -330,6 +335,10 @@ export class GameService {
         });
 
         this.socketService.onPlayerDisconnect((playerId) => {
+            const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
+            if (playerGone) {
+                this.playerGoneList.push(playerGone);
+            }
             this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
         });
         this.socketService.onLastPlayerDisconnected(() => {
@@ -366,9 +375,9 @@ export class GameService {
         });
 
         this.socketService.onAnswerVerification((score) => {
-            score = new Map(score);
+            const scoreMap = new Map(score);
             for (const player of this.lobbyData.playerList) {
-                const newScore = score.get(player.id);
+                const newScore = scoreMap.get(player.id);
                 if (newScore) {
                     player.score = newScore;
                 } else {
