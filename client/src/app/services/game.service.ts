@@ -152,8 +152,8 @@ export class GameService {
         return this.isLaunchTimer;
     }
 
-    get answerClickedValue() {
-        return this.answersClicked;
+    get lockStatus(): boolean {
+        return this.lobbyData.isLocked;
     }
 
     set answerIndex(answerIdx: number[]) {
@@ -354,6 +354,10 @@ export class GameService {
             this.refreshPlayerList();
         });
 
+        this.socketService.onGotBonus((playerId: string) => {
+            this.calculateBonus(playerId);
+        });
+
         this.socketService.onGameLaunch(() => {
             if (this.currentPlayerId === this.lobbyData.hostId) {
                 this.router.navigate(['/host-game-page']);
@@ -372,11 +376,14 @@ export class GameService {
             }, TIME_BETWEEN_QUESTIONS);
             this.nextQuestion = false;
         });
+        this.socketService.onBannedPlayer(() => {
+            this.handleGameLeave();
+        });
 
         this.socketService.onAnswerVerification((score) => {
-            score = new Map(score);
+            const scoreMap = new Map(score);
             for (const player of this.lobbyData.playerList) {
-                const newScore = score.get(player.id);
+                const newScore = scoreMap.get(player.id);
                 if (newScore) {
                     player.score = newScore;
                 } else {
@@ -395,6 +402,15 @@ export class GameService {
 
     addAnswersClicked(answersClicked: [string, number[]][]): void {
         this.answersClicked = answersClicked;
+    }
+
+    private calculateBonus(playerId: string) {
+        let player: Player;
+        for (player of this.playerListFromLobby) {
+            if (player.id === playerId) {
+                player.bonus++;
+            }
+        }
     }
 
     private handleNextQuestion(): void {

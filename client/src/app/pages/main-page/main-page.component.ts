@@ -7,11 +7,12 @@ import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/pl
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { AuthService } from '@app/services/auth.service';
 import { GameService } from '@app/services/game.service';
-import { JoinGameValidationService } from '@app/services/join-game-validation.service';
 import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+
+const FETCH_TIMEOUT = 5000;
 
 @Component({
     selector: 'app-main-page',
@@ -28,10 +29,19 @@ export class MainPageComponent {
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
         private matchLobbyService: MatchLobbyService,
-        private joinGameValidation: JoinGameValidationService,
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
+
+    async fetchLobbyLockStatus(lobbyCode: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.socketService.verifyRoomLock(lobbyCode);
+            this.socketService.onRoomLockStatus((isLocked: boolean) => {
+                resolve(isLocked);
+            });
+            setTimeout(reject, FETCH_TIMEOUT);
+        });
+    }
 
     openAdminDialog(): void {
         const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
@@ -46,23 +56,24 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-        await this.joinGameValidation.receiveNameAndLobby(result.userName, result.lobbyCode);
+        this.handleDialogCloseBanned(result.userName, result.lobbyCode);
 
         if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
-        // TODO: Refactor this code to remove the nested subscribe (Pierre-Emmanuel)
+        this.socketService.connect();
+        const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
+        const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
+        const resultName = await lastValueFrom(resultName$);
         if (result.lobbyCode) {
             this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
                 next: (lobby) => {
-                    if (lobby) {
+                    if (lobby && authenticated && resultName) {
                         this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
                             next: (lobbyUpdated) => {
                                 const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
-                                this.socketService.connect();
                                 this.socketService.joinRoom(result.lobbyCode, newPlayerId);
-                                // this.socketService.newPlayerJoin();
                                 this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
                                 this.router.navigate(['/gameWait']);
                             },
@@ -71,7 +82,7 @@ export class MainPageComponent {
                             },
                         });
                     } else {
-                        this.snackbarService.openSnackBar("Cette partie n'existe pas");
+                        this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
                     }
                 },
                 error: (error) => {
@@ -113,4 +124,27 @@ export class MainPageComponent {
             });
         }
     };
+
+    private handleDialogCloseBanned = (name: string, lobbyCode: string) => {
+        this.authenticateUserIfBanned(name, lobbyCode);
+    };
+
+    private async authenticateUserIfBanned(name: string, lobbyCode: string): Promise<boolean> {
+        const result$ = await this.matchLobbyService.authenticateUser(name, lobbyCode);
+        const result = await lastValueFrom(result$);
+
+        if (!result) {
+            const lockStatus = await this.fetchLobbyLockStatus(lobbyCode);
+
+            if (lockStatus) {
+                this.snackbarService.openSnackBar('La partie est verrouillée');
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
+            return false;
+        }
+    }
 }

@@ -83,7 +83,7 @@ describe('MatchLobbyController', () => {
     it('should return all banned players on GET /:id/ban', async () => {
         matchLobbyService.getBannedPlayers.resolves(mockLobbyData.toObject());
 
-        const response = await supertest(expressApp).get(`/api/lobbies/${mockLobbyData.id}/ban`).expect(StatusCodes.OK);
+        const response = await supertest(expressApp).get(`/api/lobbies/${'ABCD'}/banned`).expect(StatusCodes.OK);
 
         chai.expect(response.body).to.deep.equal(JSON.parse(JSON.stringify(mockLobbyData)));
     });
