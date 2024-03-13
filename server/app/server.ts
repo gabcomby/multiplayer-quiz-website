@@ -196,7 +196,9 @@ export class Server {
 
             socket.on('sendClickedAnswer', (answerIdx: number[]) => {
                 if (roomExists(getRoom().roomId)) {
-                    getRoom().livePlayerAnswers.set(socket.id, answerIdx);
+                    const playerId = getRoom().player.get(socket.id);
+                    getRoom().livePlayerAnswers.set(playerId, answerIdx);
+                    // jusqu'ici la vie est belle
                     this.io.to(getRoom().idAdmin).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
             });

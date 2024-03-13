@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
@@ -13,9 +13,10 @@ const START_TIMER_DURATION = 5;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
+export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
+    answersClicked: [string, number[]][] = [];
     unsubscribeSubject: Subscription[];
     constructor(
         private gameService: GameService,
@@ -79,6 +80,12 @@ export class HostGamePageComponent {
 
     get answersClickedValue() {
         return this.gameService.answersClicked;
+    }
+
+    ngOnInit(): void {
+        this.socketService.onLivePlayerAnswers((answers) => {
+            this.answersClicked = answers;
+        });
     }
 
     handleGameLeave(): void {

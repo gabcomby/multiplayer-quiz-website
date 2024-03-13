@@ -388,9 +388,9 @@ export class GameService {
             }
         });
 
-        this.socketService.onLivePlayerAnswers((answers) => {
-            this.addAnswersClicked(answers);
-        });
+        // this.socketService.onLivePlayerAnswers((answers) => {
+        //     this.addAnswersClicked(answers);
+        // });
     }
 
     addAnswersClicked(answersClicked: [string, number[]][]): void {

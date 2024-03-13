@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
 
 const SIZE1 = 400;
@@ -8,7 +8,7 @@ const SIZE2 = 400;
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
 })
-export class HistogramComponent implements OnInit {
+export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string, number[]][];
     @Input() questionsGame: Question[];
 
@@ -36,11 +36,33 @@ export class HistogramComponent implements OnInit {
         this.constructHistogramsData();
     }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.answersPlayer) {
+            // console.log('answersPlayer', this.answersPlayer);
+            this.constructLiveHistogramData();
+        }
+    }
+
     navigate(offset: number): void {
         const newIndex = this.currentIndex + offset;
         if (newIndex >= 0 && newIndex < this.histogramsData.length) {
             this.currentIndex = newIndex;
         }
+    }
+
+    private constructLiveHistogramData(): void {
+        const array = new Array(this.questionsGame[0].choices.length).fill(0);
+        // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
+        this.answersPlayer.forEach(([playerId, answerIdx]) => {
+            answerIdx.forEach((idx) => {
+                array[idx]++;
+            });
+        });
+        const histogramData: { name: string; value: number }[] = [];
+        for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
+            histogramData.push({ name: this.questionsGame[0].choices[i].text, value: array[i] });
+        }
+        this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
     }
 
     private constructHistogramsData(): void {
