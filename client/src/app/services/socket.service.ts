@@ -154,8 +154,8 @@ export class SocketService {
         });
     }
 
-    sendMessages(message: string, playerName: string, isHost: boolean) {
-        this.socket.emit('chatMessage', { message, playerName, isHost });
+    sendMessageToServer(message: string, playerName: string, roomId: string): void {
+        this.socket.emit('chatMessage', { message, playerName, roomId });
     }
 
     onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
@@ -165,6 +165,7 @@ export class SocketService {
             });
         });
     }
+
     updatePlayerList(lobbyId: string, incr: number) {
         this.socket.emit('update', lobbyId, incr);
     }

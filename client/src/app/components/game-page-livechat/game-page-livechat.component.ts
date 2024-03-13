@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SocketService } from '@app/services/socket.service';
+import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
 const DISAPPEAR_DELAY = 10000;
@@ -9,6 +10,7 @@ const MESSAGE_NOT_FOUND = -1;
 interface Message {
     text: string;
     sender: string;
+    timestamp?: string;
     visible?: boolean;
 }
 
@@ -23,18 +25,39 @@ interface Message {
         ]),
     ],
 })
-export class GamePageLivechatComponent {
+export class GamePageLivechatComponent implements OnInit, OnDestroy {
     @ViewChild('textbox') textbox: ElementRef;
     @Input() playerName: string;
     @Input() isHost: boolean;
     @Input() roomId: string;
     messages: Message[] = [];
     text: string = '';
+    private chatSubscription: Subscription;
 
     constructor(
         private snackbar: SnackbarService,
         private socket: SocketService,
     ) {}
+
+    ngOnInit(): void {
+        this.listenForMessages();
+    }
+
+    ngOnDestroy() {
+        if (this.chatSubscription) {
+            this.chatSubscription.unsubscribe();
+        }
+    }
+
+    listenForMessages(): void {
+        this.chatSubscription = this.socket.onChatMessage().subscribe({
+            next: (message) => {
+                this.messages.push({ text: message.text, sender: message.sender, timestamp: message.timestamp, visible: true });
+                // You might want to scroll to the latest message or perform other UI updates here
+            },
+            error: (error) => console.error(error),
+        });
+    }
 
     onChatClick(): void {
         this.textbox.nativeElement.focus();

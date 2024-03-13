@@ -200,6 +200,17 @@ export class Server {
                     }
                 }
             });
+
+            socket.on('chatMessage', ({ message, playerName, roomId }) => {
+                console.log('Received message: ', message, ' from ', playerName, ' in room ', roomId);
+
+                socket.to(roomId).emit('chatMessage', {
+                    text: message,
+                    sender: playerName,
+                    timestamp: new Date().toISOString(),
+                });
+            });
+
             // HAS ROOMS
             socket.on('start', () => {
                 const roomsArray = Array.from(socket.rooms);

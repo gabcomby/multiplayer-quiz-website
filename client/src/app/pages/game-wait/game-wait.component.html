@@ -7,7 +7,7 @@
         </mat-toolbar>
     </div>
     <app-game-page-scoresheet class="score" [playerList]="playerList"></app-game-page-scoresheet>
-    <app-game-page-livechat class="live-chat" [playerName]="currentPlayerName"></app-game-page-livechat>
+    <app-game-page-livechat class="live-chat" [playerName]="currentPlayerName" [isHost]="isHost" [roomId]="lobbyCode"></app-game-page-livechat>
     <div class="lobby-info">
         <p class="lobby-text">Code pour rejoindre le match: {{ lobbyCode }}</p>
     </div>
