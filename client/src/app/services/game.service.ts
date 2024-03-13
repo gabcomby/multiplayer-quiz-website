@@ -151,6 +151,10 @@ export class GameService {
         return this.isLaunchTimer;
     }
 
+    get lockStatus(): boolean {
+        return this.lobbyData.isLocked;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
@@ -365,6 +369,9 @@ export class GameService {
                 this.handleNextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
             this.nextQuestion = false;
+        });
+        this.socketService.onBannedPlayer(() => {
+            this.handleGameLeave();
         });
 
         this.socketService.onAnswerVerification((score) => {

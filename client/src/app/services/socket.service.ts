@@ -110,6 +110,17 @@ export class SocketService {
     submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
         this.socket.emit('player-answers', idPlayer, answerIdx);
     }
+    toggleRoomLock() {
+        this.socket.emit('toggle-room-lock');
+    }
+    verifyRoomLock(roomId: string) {
+        this.socket.emit('verify-room-lock', roomId);
+    }
+    onRoomLockStatus(callback: (isLocked: boolean) => void) {
+        this.socket.on('room-lock-status', (isLocked: boolean) => {
+            callback(isLocked);
+        });
+    }
 
     gameIsFinishedSocket() {
         this.socket.emit('endGame');
@@ -157,19 +168,23 @@ export class SocketService {
             });
         });
     }
-    updatePlayerList(lobbyId: string, incr: number) {
-        this.socket.emit('update', lobbyId, incr);
-    }
-    onUpdateList(callback: () => void) {
-        this.socket.on('updatePlayerList', () => {
-            callback();
-        });
-    }
+
     onLastPlayerDisconnected(callback: () => void) {
         this.socket.on('lastPlayerDisconnected', () => {
             callback();
         });
     }
+    bannedPlayer(idPlayer: string) {
+        this.socket.connect();
+        this.socket.emit('banFromGame', idPlayer);
+    }
+
+    async onBannedPlayer(callback: () => void) {
+        await this.socket.on('bannedFromHost', () => {
+            callback();
+        });
+    }
+
     goToResult() {
         this.socket.emit('goToResult');
     }

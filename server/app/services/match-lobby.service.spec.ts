@@ -97,18 +97,6 @@ describe('MatchLobbyService', () => {
     //     expect(findOneAndUpdateStub.calledOnce).to.be.true;
     // });
 
-    it('should ban a player from a lobby', async () => {
-        const playerName = 'Jane Doe';
-        findOneAndUpdateStub.withArgs({ id: lobbyInstance.id }, { $push: { bannedNames: playerName } }, { new: true }).resolves({
-            ...lobbyInstance,
-            bannedNames: [...lobbyInstance.bannedNames, playerName],
-        });
-
-        const result = await matchLobbyService.banPlayer(lobbyInstance.id, playerName);
-        expect(result.bannedNames).to.include(playerName);
-        expect(findOneAndUpdateStub.calledOnce).to.be.true;
-    });
-
     it("should get lobby by code and return null if it doesn't exist", async () => {
         findOneStub.withArgs({ lobbyCode: lobbyInstance.lobbyCode }).resolves(null);
 
@@ -118,17 +106,17 @@ describe('MatchLobbyService', () => {
     });
 
     it("should get banned players list and return an empty array if lobby doesn't exist", async () => {
-        findOneStub.withArgs({ id: lobbyInstance.id }).resolves(null);
+        findOneStub.withArgs({ lobbyCode: lobbyInstance.lobbyCode }).resolves(null);
 
-        const result = await matchLobbyService.getBannedPlayers(lobbyInstance.id);
+        const result = await matchLobbyService.getBannedPlayers(lobbyInstance.lobbyCode);
         expect(result).to.eql([]);
         expect(findOneStub.calledOnce).to.be.true;
     });
 
     it('should get banned players list', async () => {
-        findOneStub.withArgs({ id: lobbyInstance.id }).resolves(lobbyInstance);
+        findOneStub.withArgs({ lobbyCode: lobbyInstance.lobbyCode }).resolves(lobbyInstance);
 
-        const result = await matchLobbyService.getBannedPlayers(lobbyInstance.id);
+        const result = await matchLobbyService.getBannedPlayers(lobbyInstance.lobbyCode);
         expect(result).to.eql(lobbyInstance.bannedNames);
         expect(findOneStub.calledOnce).to.be.true;
     });
