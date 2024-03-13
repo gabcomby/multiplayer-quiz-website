@@ -201,10 +201,8 @@ export class Server {
                 }
             });
 
-            socket.on('chatMessage', ({ message, playerName, roomId }) => {
-                console.log('Received message: ', message, ' from ', playerName, ' in room ', roomId);
-
-                socket.to(roomId).emit('chatMessage', {
+            socket.on('chat-message', ({ message, playerName, roomId }) => {
+                socket.to(roomId).emit('chat-message', {
                     text: message,
                     sender: playerName,
                     timestamp: new Date().toISOString(),
