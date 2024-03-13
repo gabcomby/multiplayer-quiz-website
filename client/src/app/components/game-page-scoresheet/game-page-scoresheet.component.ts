@@ -10,6 +10,10 @@ import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
 })
 export class GamePageScoresheetComponent {
     @Input() playerList: Player[];
+    @Input() playerGoneList: Player[];
+    @Input() isHost: boolean;
+    lobbyCode: string;
+    bannedPlayers: string[];
     bannedList: string[];
     constructor(
         private gameService: GameService,
@@ -19,7 +23,7 @@ export class GamePageScoresheetComponent {
         this.bannedList = this.gameWaitComponent.bannedFromGame;
         return this.bannedList;
     }
-    get isHost() {
+    get host() {
         return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
     }
 }
