@@ -4,8 +4,7 @@ import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
-const DISAPPEAR_DELAY = 10000;
-const MESSAGE_NOT_FOUND = -1;
+const DISAPPEAR_DELAY = 3000;
 
 interface Message {
     text: string;
@@ -44,58 +43,42 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.chatSubscription) {
-            this.chatSubscription.unsubscribe();
-        }
+        this.chatSubscription?.unsubscribe();
     }
 
     listenForMessages(): void {
         this.chatSubscription = this.socket.onChatMessage().subscribe({
-            next: (message) => {
-                const newMessage = { text: message.text, sender: message.sender, timestamp: new Date(message.timestamp), visible: true };
-                this.messages.push(newMessage);
-                // Automatically hide the message after the specified delay
-                setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
-                // TODO: scroll to the latest message or perform other UI updates here
-            },
+            next: (message) => this.handleNewMessage(message),
             error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
         });
     }
 
-    onChatClick(): void {
-        this.textbox.nativeElement.focus();
-    }
-
-    onChatEnterPressed(event: Event): void {
+    onChatInput(event: Event): void {
         event.preventDefault();
         this.sendMessage();
     }
 
     sendMessage(): void {
-        this.text = this.text.trim();
-        if (this.text) {
-            this.addMessageToData();
-            this.socket.sendMessageToServer(this.text, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
+        const trimmedText = this.text.trim();
+        if (trimmedText) {
+            this.handleNewMessage({ text: trimmedText, sender: this.isHost ? 'Organisateur' : this.playerName, timestamp: new Date() });
+            this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
         }
         this.text = '';
     }
 
-    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
-        message.visible = false;
-        const index = this.messages.indexOf(message);
-        if (index !== MESSAGE_NOT_FOUND) {
-            this.messages.splice(index, 1);
-        }
+    handleNewMessage(message: Message): void {
+        const newMessage = { ...message, timestamp: message.timestamp ? new Date(message.timestamp) : new Date(), visible: true };
+        this.messages.push(newMessage);
+        setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
     }
 
-    private addMessageToData(): void {
-        const playerName = this.isHost ? 'Organisateur' : this.playerName;
-        const message = { text: this.text, sender: playerName, visible: true, timestamp: new Date() };
-        if (message.sender === undefined) {
-            this.snackbar.openSnackBar('Vous devez être connecté pour envoyer un message');
-            return;
+    hideMessage(message: Message): void {
+        const index = this.messages.indexOf(message);
+        // eslint-disable-next-line -- Used to hide message
+        if (index !== -1) {
+            this.messages[index].visible = false;
+            this.messages = [...this.messages];
         }
-        this.messages.push(message);
-        setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
     }
 }
