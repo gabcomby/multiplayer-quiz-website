@@ -52,7 +52,10 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
     listenForMessages(): void {
         this.chatSubscription = this.socket.onChatMessage().subscribe({
             next: (message) => {
-                this.messages.push({ text: message.text, sender: message.sender, timestamp: new Date(message.timestamp), visible: true });
+                const newMessage = { text: message.text, sender: message.sender, timestamp: new Date(message.timestamp), visible: true };
+                this.messages.push(newMessage);
+                // Automatically hide the message after the specified delay
+                setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
                 // TODO: scroll to the latest message or perform other UI updates here
             },
             error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
