@@ -1,5 +1,5 @@
 <div class="chat-container">
-    <div class="messages-container" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+    <div class="messages-container">
         <ng-container *ngFor="let message of messages">
             <mat-card *ngIf="message.visible" [@fade]="true">
                 <mat-card-header>
