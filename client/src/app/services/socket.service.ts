@@ -201,4 +201,14 @@ export class SocketService {
             callback();
         });
     }
+
+    sendClickedAnswer(answerIdx: number[]) {
+        this.socket.emit('sendClickedAnswer', answerIdx);
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+            callback(answersArray);
+        });
+    }
 }

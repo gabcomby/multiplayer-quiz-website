@@ -183,6 +183,15 @@ export class Server {
                 }
             });
 
+            socket.on('sendClickedAnswer', (answerIdx: number[]) => {
+                if (roomExists(getRoom().roomId)) {
+                    const playerId = getRoom().player.get(socket.id);
+                    getRoom().livePlayerAnswers.set(playerId, answerIdx);
+                    // jusqu'ici la vie est belle
+                    this.io.to(getRoom().idAdmin).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                }
+            });
+
             socket.on('playerAnswer', (answer) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().playersAnswers.push(answer);

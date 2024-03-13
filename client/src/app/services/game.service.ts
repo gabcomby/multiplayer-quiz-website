@@ -53,6 +53,7 @@ export class GameService {
     currentPlayerName: string;
     answerIdx: number[];
     playerGoneList: Player[] = [];
+    answersClicked: [string, number[]][] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
@@ -178,6 +179,7 @@ export class GameService {
 
     initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
+        this.answersClicked = [];
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
@@ -225,6 +227,10 @@ export class GameService {
 
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+    }
+
+    clickPlayerAnswer(answerIdx: number[]) {
+        this.socketService.sendClickedAnswer(answerIdx);
     }
 
     sendPlayerAnswer(answer: AnswersPlayer) {
@@ -388,6 +394,14 @@ export class GameService {
                 // }
             }
         });
+
+        // this.socketService.onLivePlayerAnswers((answers) => {
+        //     this.addAnswersClicked(answers);
+        // });
+    }
+
+    addAnswersClicked(answersClicked: [string, number[]][]): void {
+        this.answersClicked = answersClicked;
     }
 
     private calculateBonus(playerId: string) {
