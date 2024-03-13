@@ -24,13 +24,17 @@ export class ResultsViewComponent implements OnInit {
     }
 
     async ngOnInit() {
-        this.gameService.getPlayerAnswers().subscribe((answers: AnswersPlayer[]) => {
-            this.answersQuestions = answers;
-            this.updateAnswersQuestions(answers);
+        this.gameService.getPlayerAnswers().subscribe({
+            next: (answers: AnswersPlayer[]) => {
+                this.answersQuestions = answers;
+                this.updateAnswersQuestions(answers);
+            },
         });
 
-        this.gameService.questionGame.subscribe((question: Question[]) => {
-            this.questions = question;
+        this.gameService.questionGame.subscribe({
+            next: (question: Question[]) => {
+                this.questions = question;
+            },
         });
 
         this.dataSource = this.playerListValue;

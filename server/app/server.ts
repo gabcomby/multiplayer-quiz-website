@@ -94,36 +94,6 @@ export class Server {
                 }
             });
 
-            // TODO: Pourquoi ne pas mettre ça directement dans le "join-room" ?
-            // socket.on('new-player', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         this.io.to(getRoom().roomId).emit('new-player-connected');
-            //     } else {
-            //         throw new Error('Error trying to emit a new player');
-            //     }
-            // });
-
-            // TODO: Unifier les deux fonctions
-            // socket.on('admin-disconnect', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         this.io.to(getRoom().roomId).emit('adminDisconnected');
-            //         this.rooms.delete(getRoom().roomId);
-            //     } else {
-            //         throw new Error('Error trying to disconnect the admin');
-            //     }
-            // });
-
-            // socket.on('player-disconnect', () => {
-            //     const roomsArray = Array.from(socket.rooms);
-            //     if (this.rooms.has(roomsArray[1])) {
-            //         this.io.to(roomsArray[1]).emit('playerDisconnected', this.rooms.get(roomsArray[1]).player.get(socket.id));
-            //         this.rooms.get(roomsArray[1]).player.delete(socket.id);
-            //         if (this.rooms.get(roomsArray[1]).player.size === 0) {
-            //             this.io.to(roomsArray[1]).emit('lastPlayerDisconnected');
-            //         }
-            //     }
-            // });
-
             socket.on('leave-room', () => {
                 if (roomExists(getRoom().roomId)) {
                     if (getRoom().idAdmin === socket.id) {
@@ -135,9 +105,27 @@ export class Server {
                         if (getRoom().player.size === 0) {
                             this.io.to(getRoom().roomId).emit('lastPlayerDisconnected');
                         }
+                        // eslint-disable-next-line no-console
+                        console.log('Players are now', getRoom().player);
                     }
                 } else {
                     throw new Error('Error trying to leave a room that does not exist');
+                }
+            });
+
+            socket.on('toggle-room-lock', () => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().roomLocked = !getRoom().roomLocked;
+                } else {
+                    throw new Error('Error trying to toggle the lock of a room that does not exist');
+                }
+            });
+
+            socket.on('verify-room-lock', (roomId: string) => {
+                if (roomExists(roomId)) {
+                    this.io.to(socket.id).emit('room-lock-status', this.rooms.get(roomId).roomLocked);
+                } else {
+                    throw new Error('Error trying to get the lock status of a room that does not exist');
                 }
             });
 
@@ -182,6 +170,7 @@ export class Server {
                 }
             });
 
+            // FONCTION DE GESTION DES RÉPONSES
             socket.on('answer-submitted', () => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().answersLocked += 1;
@@ -191,6 +180,15 @@ export class Server {
                     }
                 } else {
                     throw new Error('Error trying to submit the answer');
+                }
+            });
+
+            socket.on('sendClickedAnswer', (answerIdx: number[]) => {
+                if (roomExists(getRoom().roomId)) {
+                    const playerId = getRoom().player.get(socket.id);
+                    getRoom().livePlayerAnswers.set(playerId, answerIdx);
+                    // jusqu'ici la vie est belle
+                    this.io.to(getRoom().idAdmin).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
             });
 
@@ -290,6 +288,20 @@ export class Server {
                     this.io.to(getRoom().roomId).emit('game-started');
                 } else {
                     throw new Error('Error trying to start the game of a room that does not exist');
+                }
+            });
+
+            socket.on('banFromGame', (idPlayer) => {
+                const roomsArray = Array.from(socket.rooms);
+                let socketToBeBanned: string;
+                if (this.rooms.has(roomsArray[1])) {
+                    const players = this.rooms.get(roomsArray[1]).player;
+                    for (const [key, value] of players.entries()) {
+                        if (value === idPlayer) socketToBeBanned = key;
+                    }
+                    if (socketToBeBanned) {
+                        this.io.to(socketToBeBanned).emit('bannedFromHost');
+                    }
                 }
             });
         });
