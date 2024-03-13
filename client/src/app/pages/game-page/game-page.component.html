@@ -11,7 +11,7 @@
         </mat-toolbar>
     </div>
     <div class="live-chat" *ngIf="!isLaunchTimer">
-        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="isHost" [roomId]="lobby.id"></app-game-page-livechat>
+        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="getHost" [roomId]="lobbyCode"></app-game-page-livechat>
     </div>
     <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>

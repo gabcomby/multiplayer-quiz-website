@@ -62,6 +62,14 @@ export class HostGamePageComponent {
         return this.gameService.endGame;
     }
 
+    get getHost() {
+        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+    }
+
+    get lobbyCode() {
+        return this.gameService.matchLobby.lobbyCode;
+    }
+
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }
