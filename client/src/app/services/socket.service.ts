@@ -53,8 +53,8 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (score: Map<string, number>) => void): void {
-        this.socket.on('answer-verification', (score: Map<string, number>) => {
+    onAnswerVerification(callback: (score: [[string, number]]) => void): void {
+        this.socket.on('answer-verification', (score: [[string, number]]) => {
             callback(score);
         });
     }

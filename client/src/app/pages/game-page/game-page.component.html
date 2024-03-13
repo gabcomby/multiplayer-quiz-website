@@ -28,11 +28,10 @@
     </div>
 
     <div *ngIf="currentPlayerId === hostId">
-        <p>Je suis administrateur</p>
         <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
     </div>
 
     <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [playerList]="playerListValue"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="playerListValue" [isHost]="false"></app-game-page-scoresheet>
     </div>
 </div>
