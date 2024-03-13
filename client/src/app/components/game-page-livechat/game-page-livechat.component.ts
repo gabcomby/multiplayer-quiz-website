@@ -3,7 +3,6 @@ import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, View
 import type { Message } from '@app/interfaces/message';
 import { Subscription } from 'rxjs';
 import { ChatService } from 'src/app/services/chat.service';
-import { SnackbarService } from 'src/app/services/snackbar.service';
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -26,10 +25,7 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     text: string = '';
     private messagesSubscription: Subscription;
 
-    constructor(
-        private chatService: ChatService,
-        private snackbar: SnackbarService,
-    ) {}
+    constructor(private chatService: ChatService) {}
 
     ngOnInit(): void {
         this.subscribeToMessages();
@@ -49,23 +45,8 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     }
 
     sendMessage(): void {
-        const trimmedText = this.text.trim();
-        if (!this.isHost && !this.playerName) {
-            this.snackbar.openSnackBar('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
-            return;
-        }
-
-        if (trimmedText) {
-            const newMessage: Message = {
-                text: trimmedText,
-                sender: this.isHost ? 'Organisateur' : this.playerName,
-                timestamp: new Date(),
-                visible: true,
-            };
-            this.messages.push(newMessage);
-            this.chatService.sendMessage(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
-            this.text = '';
-        }
+        this.chatService.sendMessage(this.text, this.playerName, this.roomId, this.isHost, this.playerName);
+        this.text = '';
     }
 
     scrollToBottom(): void {

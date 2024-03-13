@@ -28,8 +28,25 @@ export class ChatService {
         return this.newMessage.asObservable();
     }
 
-    sendMessage(text: string, sender: string, roomId: string): void {
-        this.socket.sendMessageToServer(text, sender, roomId);
+    sendMessage(text: string, sender: string, roomId: string, isHost: boolean, playerName: string): void {
+        const trimmedText = text.trim();
+        if (!isHost && !playerName) {
+            this.snackbar.openSnackBar('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
+            return;
+        }
+
+        if (trimmedText) {
+            const newMessage: Message = {
+                text: trimmedText,
+                sender: isHost ? 'Organisateur' : playerName,
+                timestamp: new Date(),
+                visible: true,
+            };
+
+            this.messages.push(newMessage);
+            this.newMessage.next(newMessage);
+            this.socket.sendMessageToServer(trimmedText, isHost ? 'Organisateur' : playerName, roomId);
+        }
     }
 
     hideMessage(index: number): void {
