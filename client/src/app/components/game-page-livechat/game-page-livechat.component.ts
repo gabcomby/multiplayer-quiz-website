@@ -10,7 +10,7 @@ const MESSAGE_NOT_FOUND = -1;
 interface Message {
     text: string;
     sender: string;
-    timestamp?: string;
+    timestamp?: Date | string;
     visible?: boolean;
 }
 
@@ -52,10 +52,10 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
     listenForMessages(): void {
         this.chatSubscription = this.socket.onChatMessage().subscribe({
             next: (message) => {
-                this.messages.push({ text: message.text, sender: message.sender, timestamp: message.timestamp, visible: true });
+                this.messages.push({ text: message.text, sender: message.sender, timestamp: new Date(message.timestamp), visible: true });
                 // TODO: scroll to the latest message or perform other UI updates here
             },
-            error: () => this.snackbar.openSnackBar('Erreur lors de la réception des messages', 'Fermer'),
+            error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
         });
     }
 
@@ -87,12 +87,11 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy {
 
     private addMessageToData(): void {
         const playerName = this.isHost ? 'Organisateur' : this.playerName;
-        const message = { text: this.text, sender: playerName, visible: true };
+        const message = { text: this.text, sender: playerName, visible: true, timestamp: new Date() };
         if (message.sender === undefined) {
-            this.snackbar.openSnackBar('Vous devez être connecté pour envoyer un message', 'Fermer');
+            this.snackbar.openSnackBar('Vous devez être connecté pour envoyer un message');
             return;
         }
-        console.log('message', message);
         this.messages.push(message);
         setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
     }
