@@ -13,6 +13,10 @@ import { SocketService } from '@app/services/socket.service';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 
 const FETCH_TIMEOUT = 5000;
+interface DialogResult {
+    userName: string;
+    lobbyCode: string;
+}
 
 @Component({
     selector: 'app-main-page',
@@ -55,10 +59,10 @@ export class MainPageComponent {
                 isShown: true,
             },
         });
-        const result = await lastValueFrom(dialogRef.afterClosed());
+        const result = await lastValueFrom<DialogResult>(dialogRef.afterClosed());
         this.handleDialogCloseBanned(result.userName, result.lobbyCode);
 
-        if (this.isEmpyDialog(result)) {
+        if (this.isEmptyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
@@ -67,32 +71,36 @@ export class MainPageComponent {
         const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
         const resultName = await lastValueFrom(resultName$);
         if (result.lobbyCode) {
-            this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
-                next: (lobby) => {
-                    if (lobby && authenticated && resultName) {
-                        this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
-                            next: (lobbyUpdated) => {
-                                const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
-                                this.socketService.joinRoom(result.lobbyCode, newPlayerId);
-                                this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
-                                this.router.navigate(['/gameWait']);
-                            },
-                            error: (error) => {
-                                this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
-                            },
-                        });
-                    } else {
-                        this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
-                    }
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar('Erreur ' + error + 'lors de la récupération du salon');
-                },
-            });
+            this.addPlayer(result, authenticated, resultName);
         }
     }
 
-    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+    private addPlayer(result: DialogResult, authenticated: boolean, resultName: boolean) {
+        this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
+            next: (lobby) => {
+                if (lobby && authenticated && resultName) {
+                    this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
+                        next: (lobbyUpdated) => {
+                            const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
+                            this.socketService.joinRoom(result.lobbyCode, newPlayerId);
+                            this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
+                            this.router.navigate(['/gameWait']);
+                        },
+                        error: (error) => {
+                            this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
+                        },
+                    });
+                } else {
+                    this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
+                }
+            },
+            error: (error) => {
+                this.snackbarService.openSnackBar('Erreur ' + error + 'lors de la récupération du salon');
+            },
+        });
+    }
+
+    private isEmptyDialog(result: DialogResult): boolean {
         return result.userName.trim() === '' || result.lobbyCode.trim() === '';
     }
 

@@ -8,9 +8,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
+import { Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { GamePageComponent } from './game-page.component';
-import { Question } from '@app/interfaces/game';
 
 // const TEN = 10;
 
@@ -73,26 +73,6 @@ const questionMock: Question[] = [
         id: 'q2',
     },
 ];
-// const mockedGameData: Game = {
-//     id: 'game123',
-//     title: 'Test Game',
-//     description: 'Test Game Description',
-//     isVisible: true,
-//     duration: 10,
-//     lastModification: new Date(),
-//     questions: questionMock,
-// };
-// const mockedMatchData: Match = {
-//     id: 'match123',
-//     playerList: [
-//         { id: 'player1', name: 'Player 1', score: 0 },
-//         { id: 'player2', name: 'Player 2', score: 0 },
-//     ],
-// };
-// const updatedMatchDataWithPlayer: Match = {
-//     ...mockedMatchData,
-//     playerList: [{ id: 'playertest', name: 'Player 1', score: 0 }],
-// };
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -107,8 +87,8 @@ describe('GamePageComponent', () => {
             },
         };
 
-        gameServiceSpy = jasmine.createSpyObj('GameService',['handleGameLeave', 'setAnswerIndex', 'clickPlayerAnswer', 'getCurrentQuestion'], {
-            matchLobby : {
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['handleGameLeave', 'setAnswerIndex', 'clickPlayerAnswer', 'getCurrentQuestion'], {
+            matchLobby: {
                 id: 'match123',
                 playerList: [
                     { id: 'player1', name: 'Player 1', score: 0 },
@@ -224,7 +204,6 @@ describe('GamePageComponent', () => {
     it('should call handleGameLeave from gameService with handleGameLeave', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.handleGameLeave).toHaveBeenCalled();
-        
     });
     it('should call setAnswerIndex and clickPlayerAnswer from gameService with setAnswerIndex', () => {
         const answerIdx = [1];
