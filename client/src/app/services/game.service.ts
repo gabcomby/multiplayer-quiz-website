@@ -5,11 +5,7 @@ import { API_BASE_URL } from '@app/app.module';
 import type { AnswersPlayer, Game, Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-import { AnswerStateService } from '@app/services/answer-state.service';
-import { ApiService } from '@app/services/api.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -77,13 +73,9 @@ export class GameService {
 
     // eslint-disable-next-line max-params
     constructor(
-        private apiService: ApiService,
         @Inject(API_BASE_URL) apiBaseURL: string,
-        private matchLobbyService: MatchLobbyService,
         private socketService: SocketService,
-        private snackbarService: SnackbarService,
         private router: Router,
-        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -372,137 +364,13 @@ export class GameService {
     }
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
 
-    // gameEnded(): void {
-    //     this.socketService.onEndGame().subscribe(() => {
-    //         this.calculateFinalResults();
-    //     });
-    // }
-
-    // gameIsFinished(): void {
-    //     if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
-    //         this.socketService.gameIsFinishedSocket();
-    //     }
-    // }
     calculateFinalResults(): void {
         this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
         this.finalResultsEmitter.next(finalResults);
     }
 
-    initializeLobbyAndGame(lobbyId: string, playerId: string): void {
-        this.lobbyId = lobbyId;
-        this.answersClicked = [];
-        this.currentPlayerId = playerId;
-        this.currentQuestionIndex = 0;
-        this.previousQuestionIndex = 0;
-        this.answerIdx = [];
-        this.questionHasExpired = false;
-        this.isLaunchTimer = true;
-        this.endGame = false;
-        this.questions = [];
-        this.playerChoice = new Map();
-        this.answerStateService.resetAnswerState();
-        this.matchLobbyService.getLobby(this.lobbyId).subscribe({
-            next: (lobbyData) => {
-                this.lobbyData = lobbyData;
-                if (this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)) {
-                    // eslint-disable-next-line
-                    this.currentPlayerName = this.lobbyData.playerList.find((player) => player.id === this.currentPlayerId)!.name;
-                }
-                this.apiService.getGame(this.lobbyData.gameId).subscribe({
-                    next: (gameData) => {
-                        this.gameData = gameData;
-                        this.setupWebsocketEvents();
-                    },
-                    error: (error) => {
-                        this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-                    },
-                });
-            },
-        });
-    }
-
-    getCurrentQuestion(): Question {
-        if (this.gameData.questions.length > 0) {
-            return this.gameData.questions[this.currentQuestionIndex];
-        } else {
-            return {
-                type: '',
-                text: '',
-                points: 0,
-                lastModification: new Date(),
-                id: '',
-                choices: [],
-            };
-        }
-    }
-
-    // clickPlayerAnswer(answerIdx: number[]) {
-    //     this.socketService.sendClickedAnswer(answerIdx);
-    // }
-
-    // sendPlayerAnswer(answer: AnswersPlayer) {
-    //     this.socketService.sendPlayerAnswer(answer);
-    // }
-
     getPlayerAnswers(): Observable<AnswersPlayer[]> {
         return this.answersSelected.asObservable();
     }
-
-    // onTimerComplete(): void {
-    //     if (this.isLaunchTimer) {
-    //         this.isLaunchTimer = false;
-    //         this.socketService.setTimerDuration(this.gameData.duration);
-    //         this.socketService.startTimer();
-    //         return;
-    //     } else {
-    //         this.questionHasExpired = true;
-    //         this.previousQuestionIndex = this.currentQuestionIndex;
-    //         if (this.currentPlayerId !== this.lobbyData.hostId) {
-    //             this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex], this.answerIdx);
-    //         }
-    //         if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
-    //             if (this.currentPlayerId !== this.lobbyData.hostId) {
-    //                 this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-    //                 this.sendPlayerAnswer(this.playerChoice);
-    //             }
-
-    //             this.questions.push(this.currentQuestion);
-    //             this.questionGame.next(this.questions);
-    //             // this.handleGameLeave();
-    //         }
-    //         this.gameIsFinished();
-    //     }
-    // }
-
-    refreshPlayerList(): void {
-        this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
-            next: (data) => {
-                this.lobbyData.playerList = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
-            },
-        });
-    }
-
-    // private calculateBonus(playerId: string) {
-    //     let player: Player;
-    //     for (player of this.playerListFromLobby) {
-    //         if (player.id === playerId) {
-    //             player.bonus++;
-    //         }
-    //     }
-    // }
-
-    // private handleNextQuestion(): void {
-    //     if (this.currentPlayerId !== this.lobbyData.hostId) {
-    //         this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-    //     }
-    //     this.questions.push(this.currentQuestion);
-
-    //     this.currentQuestionIndex++;
-    //     this.questionHasExpired = false;
-    //     this.socketService.startTimer();
-    // }
 }
