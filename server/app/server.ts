@@ -53,7 +53,6 @@ export class Server {
                 this.io.emit('deleteId', deletedId);
             });
 
-            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
                 return rooms.get(roomsArray[1]);
@@ -79,7 +78,6 @@ export class Server {
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
-                // TODO: Authentifier le nom de l'utilisateur
                 if (roomExists(roomId)) {
                     socket.join(roomId);
                     getRoom().playerList.set(socket.id, player);
@@ -154,77 +152,6 @@ export class Server {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
-                }
-            });
-
-            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
-
-            socket.on('playerAnswer', (answer) => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().playersAnswers.push(answer);
-                    if (getRoom().playersAnswers.length === getRoom().player.size) {
-                        this.io.to(getRoom().roomId).emit('sendPlayerAnswers', getRoom().playersAnswers);
-                    }
-                } else {
-                    throw new Error('Error trying to submit the answer');
-                }
-            });
-
-            // socket.on('endGame', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         getRoom().answersLocked += 1;
-            //         if (getRoom().answersLocked === getRoom().player.size) {
-            //             getRoom().answersLocked = 0;
-            //             this.io.to(getRoom().roomId).emit('endGame');
-            //         }
-            //     } else {
-            //         throw new Error('Error trying to end the game of a room that does not exist');
-            //     }
-            // });
-
-            socket.on('chat-message', ({ message, playerName, roomId }) => {
-                socket.to(roomId).emit('chat-message', {
-                    text: message,
-                    sender: playerName,
-                    timestamp: new Date().toISOString(),
-                });
-            });
-
-            socket.on('goToResult', () => {
-                if (roomExists(getRoom().roomId)) {
-                    this.io.to(getRoom().roomId).emit('resultView');
-                } else {
-                    throw new Error('Error trying to go to the result view of a room that does not exist');
-                }
-            });
-
-            socket.on('goNextQuestion', () => {
-                if (roomExists(getRoom().roomId)) {
-                    this.io.to(getRoom().roomId).emit('handleNextQuestion');
-                } else {
-                    throw new Error('Error trying to go to the next question of a room that does not exist');
-                }
-            });
-
-            socket.on('start', () => {
-                if (roomExists(getRoom().roomId)) {
-                    this.io.to(getRoom().roomId).emit('game-started');
-                } else {
-                    throw new Error('Error trying to start the game of a room that does not exist');
-                }
-            });
-
-            socket.on('banFromGame', (idPlayer) => {
-                const roomsArray = Array.from(socket.rooms);
-                let socketToBeBanned: string;
-                if (rooms.has(roomsArray[1])) {
-                    const players = rooms.get(roomsArray[1]).player;
-                    for (const [key, value] of players.entries()) {
-                        if (value === idPlayer) socketToBeBanned = key;
-                    }
-                    if (socketToBeBanned) {
-                        this.io.to(socketToBeBanned).emit('bannedFromHost');
-                    }
                 }
             });
         });

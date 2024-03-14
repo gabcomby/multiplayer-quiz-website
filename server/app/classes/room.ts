@@ -1,6 +1,5 @@
 import { IGame } from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
-import type { AnswersPlayer } from '@app/model/questions.model';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
@@ -31,11 +30,6 @@ export class Room {
     livePlayerAnswers = new Map<string, number[]>();
     globalAnswerIndex: number[] = [];
     allAnswersForQuestion = new Map<string, number[]>();
-
-    player = new Map<string, string>();
-    score = new Map<string, number>();
-    firstAnswer = true;
-    playersAnswers: AnswersPlayer[] = [];
 
     constructor(game: IGame, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
