@@ -27,4 +27,13 @@ describe('PlayerNameDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+    it('should submit answer', () => {
+        component.userName = 'alex';
+        component.lobbyCode = '1223';
+        component.onSubmit();
+        expect(dialogRefMock.close).toHaveBeenCalledWith({
+            userName: 'alex',
+            lobbyCode: '1223',
+        });
+    });
 });

@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AnswerStateService } from '@app/services/answer-state.service';
+import { SocketService } from '@app/services/socket.service';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
 @Component({
@@ -15,12 +16,17 @@ describe('GamePageQuestionsComponent', () => {
     let component: GamePageQuestionsComponent;
     let fixture: ComponentFixture<GamePageQuestionsComponent>;
     let answerStateServiceSpy: jasmine.SpyObj<AnswerStateService>;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
 
     beforeEach(() => {
         answerStateServiceSpy = jasmine.createSpyObj('AnswerStateService', ['lockAnswer']);
+        socketServiceSpy = jasmine.createSpyObj('SocketService', ['submitAnswer']);
         TestBed.configureTestingModule({
             declarations: [GamePageQuestionsComponent, AppGamePageQuestionsStubComponent],
-            providers: [{ provide: AnswerStateService, useValue: answerStateServiceSpy }],
+            providers: [
+                { provide: AnswerStateService, useValue: answerStateServiceSpy },
+                { provide: SocketService, useValue: socketServiceSpy },
+            ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         fixture = TestBed.createComponent(GamePageQuestionsComponent);
@@ -90,15 +96,14 @@ describe('GamePageQuestionsComponent', () => {
         expect(component.answerIsLocked).toBe(false);
     });
 
-    // TODO: Fix this test
-    // it('should lock the answer when submitAnswer is called', () => {
-    //     expect(component.answerIsLocked).toBeFalse();
+    it('should lock the answer when submitAnswer is called', () => {
+        expect(component.answerIsLocked).toBeFalse();
 
-    //     component.submitAnswer();
+        component.submitAnswer();
 
-    //     expect(component.answerIsLocked).toBeTrue();
-    //     expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
-    // });
+        expect(component.answerIsLocked).toBeTrue();
+        expect(answerStateServiceSpy.lockAnswer).toHaveBeenCalledWith(true);
+    });
 
     it('should call resetAnswerState when choices change', () => {
         spyOn(component, 'resetAnswerState');

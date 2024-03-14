@@ -3,7 +3,7 @@ import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDest
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { SocketService } from '@app/services/socket.service';
-
+const answerIndex = -1;
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -19,7 +19,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
-    // answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
 
     constructor(
@@ -60,12 +59,10 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     toggleAnswer(index: number) {
         if (this.timerExpired || this.answerIsLocked) return;
-        if (!this.checkIfMultipleChoice()) {
-            this.selectedChoices = [];
-        }
+        if (!this.checkIfMultipleChoice()) this.selectedChoices = [];
+
         const answerIdx = this.selectedChoices.indexOf(index);
-        // eslint-disable-next-line
-        if (answerIdx > -1) {
+        if (answerIdx > answerIndex) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
