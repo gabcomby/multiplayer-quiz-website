@@ -30,7 +30,6 @@ export class GameService {
     totalQuestionDuration: number = 0;
     currentQuestion: Question;
     timerStopped: boolean = false;
-    answerIdx: number[];
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -74,6 +73,7 @@ export class GameService {
     endGame = false;
     private isLaunchTimer: boolean;
     // À BOUGER DANS LE SERVEUR??
+    private answerIdx: number[];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -195,6 +195,7 @@ export class GameService {
 
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+        console.log('answerIdx', this.answerIdx);
     }
 
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
@@ -223,6 +224,10 @@ export class GameService {
         setTimeout(() => {
             this.socketService.nextQuestion();
         }, TIME_BETWEEN_QUESTIONS);
+    }
+
+    submitAnswer(): void {
+        this.socketService.sendAnswers(this.answerIdx);
     }
 
     setupWebsocketEvents(): void {
@@ -423,10 +428,6 @@ export class GameService {
                 choices: [],
             };
         }
-    }
-
-    setAnswerIndex(answerIdx: number[]) {
-        this.answerIdx = answerIdx;
     }
 
     // clickPlayerAnswer(answerIdx: number[]) {

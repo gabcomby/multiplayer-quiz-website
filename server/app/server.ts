@@ -83,6 +83,7 @@ export class Server {
                 if (roomExists(roomId)) {
                     socket.join(roomId);
                     getRoom().playerList.set(socket.id, player);
+                    getRoom().playerHasAnswered.set(socket.id, false);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('room-joined', getRoom().roomId);
                 }

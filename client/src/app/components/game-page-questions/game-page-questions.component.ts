@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
-// import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game.service';
 
 @Component({
     selector: 'app-game-page-questions',
@@ -24,7 +24,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
-        private answerStateService: AnswerStateService, // private socketService: SocketService,
+        private answerStateService: AnswerStateService,
+        private gameService: GameService,
     ) {}
 
     @HostListener('keydown', ['$event'])
@@ -78,7 +79,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
-        // this.socketService.submitAnswer();
+        this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }

@@ -26,6 +26,7 @@ export class Room {
     currentQuestionIndex = -1;
     firstAnswerForBonus = true;
     assertedAnswers: number = 0;
+    playerHasAnswered = new Map<string, boolean>();
 
     livePlayerAnswers = new Map<string, number[]>();
     player = new Map<string, string>();
@@ -52,6 +53,9 @@ export class Room {
                 this.assertedAnswers = 0;
                 this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
                 this.isRunning = true;
+                this.playerHasAnswered.forEach((value, key) => {
+                    this.playerHasAnswered.set(key, false);
+                });
                 this.startCountdownTimer();
             }
         }
@@ -90,9 +94,12 @@ export class Room {
     }
 
     verifyAnswers(playerId: string, answerIdx: number[]): void {
-        if (!answerIdx) {
+        if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
+        console.log('verifyAnswers', playerId, answerIdx);
+        console.log(this.firstAnswerForBonus);
+        this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
         if (answerIdx.length === 0) {
