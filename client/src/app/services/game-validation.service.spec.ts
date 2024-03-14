@@ -261,7 +261,6 @@ describe('GameValidationService', () => {
         expect(service.validateBasicGameProperties).toHaveBeenCalledWith(defaultGame[0], errors);
     });
     it('should return false if errors lenght not 0', async () => {
-        // const errors: string[] = [];
         spyOn(service, 'validateBasicGameProperties').and.callFake(async (g: Game, err: string[]) => {
             err.push('erros');
         });
@@ -276,5 +275,34 @@ describe('GameValidationService', () => {
 
         expect(result).toBeFalse();
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalled();
+    });
+    it('should return add error to error array if game doesn t have valid data', async () => {
+        const game = { ...defaultGame[0], title: '', description: ' ', duration: 5, questions: [] };
+        const errors: string[] = [];
+        service.validateBasicGameProperties(game, errors);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        expect(errors.length).toBe(5);
+    });
+    it('should return add error to error array if game doesn t have valid data', async () => {
+        const game = {
+            ...defaultGame[0],
+            title: '',
+            description: '',
+            duration: 0,
+            lastModification: null as unknown as Date,
+            questions: [],
+        };
+        const errors: string[] = [];
+        service.validateBasicGameProperties(game, errors);
+
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        expect(errors.length).toBe(8);
+    });
+    it('should return add error to error array if game doesn t have valid data', async () => {
+        const game = { ...defaultGame[0] };
+        const errors: string[] = [];
+        service.validateBasicGameProperties(game, errors);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        expect(errors.length).toBe(0);
     });
 });

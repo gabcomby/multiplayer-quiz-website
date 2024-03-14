@@ -19,7 +19,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
-    answerGivenIsCorrect: boolean;
+    // answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
 
     constructor(

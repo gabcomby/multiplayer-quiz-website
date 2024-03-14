@@ -6,13 +6,12 @@ import { ApiService } from './api.service';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
-
+const minDuration = 10;
+const maxDuration = 60;
 @Injectable({
     providedIn: 'root',
 })
 export class GameValidationService {
-    private minDuration: number;
-    private maxDuration: number;
     // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
@@ -43,19 +42,16 @@ export class GameValidationService {
     }
     async gameValidationWhenModified(gameForm: FormGroup, gameModified: Game): Promise<boolean> {
         const modifiedGame = this.createNewGame(false, gameForm, gameModified);
-        try {
-            if (await this.isValidGame(modifiedGame)) {
-                if (await this.validateDeletedGame(modifiedGame)) {
-                    await this.apiService.patchGame(modifiedGame);
-                } else {
-                    await this.apiService.createGame(modifiedGame);
-                }
-                return true;
+
+        if (await this.isValidGame(modifiedGame)) {
+            if (await this.validateDeletedGame(modifiedGame)) {
+                await this.apiService.patchGame(modifiedGame);
+            } else {
+                await this.apiService.createGame(modifiedGame);
             }
-            return false;
-        } catch (error) {
-            throw new Error('handling error');
+            return true;
         }
+        return false;
     }
 
     createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
@@ -71,21 +67,18 @@ export class GameValidationService {
     }
     async isValidGame(game: Game) {
         const errors: string[] = [];
-        try {
-            this.validateBasicGameProperties(game, errors);
-            for (const question of game.questions) {
-                if (!this.questionValidationService.validateQuestion(question)) {
-                    return false;
-                }
-                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                    return false;
-                }
-                if (!this.questionValidationService.answerValid(question.choices)) {
-                    return false;
-                }
+
+        this.validateBasicGameProperties(game, errors);
+        for (const question of game.questions) {
+            if (!this.questionValidationService.validateQuestion(question)) {
+                return false;
             }
-        } catch (error) {
-            throw new Error('handling error');
+            if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                return false;
+            }
+            if (!this.questionValidationService.answerValid(question.choices)) {
+                return false;
+            }
         }
 
         await this.validateDuplicationGame(game, errors);
@@ -99,9 +92,10 @@ export class GameValidationService {
     validateBasicGameProperties(game: Game, errors: string[]): void {
         if (!game.title) errors.push('Le titre est requis');
         if (game.title.trim().length === 0) errors.push('Pas juste des espaces');
+        if (game.description.trim().length === 0) errors.push('Pas juste des espaces');
         if (!game.description) errors.push('La description est requise');
         if (!game.duration) errors.push('La durée est requise');
-        if (game.duration && (game.duration < this.minDuration || game.duration > this.maxDuration)) {
+        if (game.duration < minDuration || game.duration > maxDuration) {
             errors.push('La durée doit être entre 10 et 60 secondes');
         }
         if (!game.lastModification) errors.push('La date de mise à jour est requise');
