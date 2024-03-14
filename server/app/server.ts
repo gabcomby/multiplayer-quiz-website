@@ -142,78 +142,20 @@ export class Server {
                 getRoom().handleEarlyAnswers(socket.id, answerIdx);
             });
 
-            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
-
-            socket.on('verify-room-lock', (roomId: string) => {
-                if (roomExists(roomId)) {
-                    this.io.to(socket.id).emit('room-lock-status', rooms.get(roomId).roomLocked);
-                } else {
-                    throw new Error('Error trying to get the lock status of a room that does not exist');
-                }
-            });
-
             socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');
             });
 
-            // FONCTIONS DE GESTION DU TIMER
-
-            socket.on('set-timer-duration', (duration) => {
-                if (roomExists(getRoom().roomId)) {
-                    if (parseInt(duration, 10) > 0) {
-                        getRoom().duration = parseInt(duration, 10);
-                    } else {
-                        throw new Error('Invalid duration');
-                    }
-                } else {
-                    throw new Error('The room you are trying to set the timer for does not exist');
-                }
-            });
-
-            // socket.on('start-timer', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         if (!getRoom().isRunning && getRoom().hostId === socket.id) {
-            //             getRoom().isRunning = true;
-            //             getRoom().firstAnswer = true;
-            //             getRoom().startCountdownTimer(this.io, getRoom().roomId);
-            //         }
-            //     } else {
-            //         throw new Error('Error trying to start the timer of a room that does not exist');
-            //     }
-            // });
-
-            // socket.on('stop-timer', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         if (getRoom().isRunning && getRoom().hostId === socket.id) {
-            //             getRoom().resetTimerCountdown();
-            //         }
-            //     } else {
-            //         throw new Error('Error trying to stop the timer of a room that does not exist');
-            //     }
-            // });
-
-            // // FONCTION DE GESTION DES RÉPONSES
-            // socket.on('answer-submitted', () => {
-            //     if (roomExists(getRoom().roomId)) {
-            //         getRoom().answersLocked += 1;
-            //         if (getRoom().answersLocked === getRoom().player.size) {
-            //             this.io.to(getRoom().roomId).emit('stop-timer');
-            //             getRoom().resetTimerCountdown();
-            //         }
-            //     } else {
-            //         throw new Error('Error trying to submit the answer');
-            //     }
-            // });
-
-            socket.on('sendClickedAnswer', (answerIdx: number[]) => {
+            socket.on('send-live-answers', (answerIdx: number[]) => {
                 if (roomExists(getRoom().roomId)) {
                     const playerId = getRoom().player.get(socket.id);
                     getRoom().livePlayerAnswers.set(playerId, answerIdx);
-                    // jusqu'ici la vie est belle
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
             });
+
+            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('playerAnswer', (answer) => {
                 if (roomExists(getRoom().roomId)) {
@@ -235,48 +177,6 @@ export class Server {
             //         }
             //     } else {
             //         throw new Error('Error trying to end the game of a room that does not exist');
-            //     }
-            // });
-
-            // socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
-            //     const playerId = getRoom().player.get(socket.id);
-            //     const choices: IChoice[] = question.choices;
-            //     rooms.get(getRoom().roomId).assertedAnswers += 1;
-            //     if (roomExists(getRoom().roomId)) {
-            //         if (answerIdx.length === 0) {
-            //             this.io.to(socket.id).emit('answer-verification', false, 1);
-            //             return;
-            //         }
-            //         const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-            //         const isMultipleAnswer = totalCorrectChoices > 1;
-
-            //         const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
-
-            //         let isCorrect = false;
-            //         if (!isMultipleAnswer) {
-            //             isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
-            //         } else {
-            //             const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
-            //             const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-            //             isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
-            //         }
-
-            //         if (isCorrect && getRoom().firstAnswer) {
-            //             getRoom().firstAnswer = false;
-            //             const currentScore = getRoom().score.get(playerId);
-            //             getRoom().score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
-            //             this.io.to(getRoom().roomId).emit('got-bonus', playerId);
-            //         } else if (isCorrect) {
-            //             const currentScore = getRoom().score.get(playerId);
-            //             getRoom().score.set(playerId, question.points + currentScore);
-            //         }
-
-            //         if (getRoom().assertedAnswers === getRoom().player.size) {
-            //             this.io.to(getRoom().roomId).emit('answer-verification', Array.from(getRoom().score));
-            //             getRoom().assertedAnswers = 0;
-            //         }
-            //     } else {
-            //         throw new Error('Error trying to calculate the score of a room that does not exist');
             //     }
             // });
 

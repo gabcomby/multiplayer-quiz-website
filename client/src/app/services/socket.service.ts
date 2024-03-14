@@ -129,6 +129,16 @@ export class SocketService {
         this.socket.emit('send-locked-answers', answerIdx);
     }
 
+    sendLiveAnswers(answerIdx: number[]) {
+        this.socket.emit('send-live-answers', answerIdx);
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+            callback(answersArray);
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     // onStopTimer(callback: () => void) {
@@ -267,16 +277,6 @@ export class SocketService {
     // onNextQuestion(callback: () => void) {
     //     this.socket.on('handleNextQuestion', () => {
     //         callback();
-    //     });
-    // }
-
-    // sendClickedAnswer(answerIdx: number[]) {
-    //     this.socket.emit('sendClickedAnswer', answerIdx);
-    // }
-
-    // onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
-    //     this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
-    //         callback(answersArray);
     //     });
     // }
 }

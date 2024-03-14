@@ -132,8 +132,6 @@ export class Room {
     handleEarlyAnswers(playerId: string, answerIdx: number[]): void {
         this.lockedAnswers += 1;
         this.verifyAnswers(playerId, answerIdx);
-        console.log('lockedAnswers', this.lockedAnswers);
-        console.log('playerList.size', this.playerList.size);
         if (this.lockedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('timer-stopped');
             this.handleTimerEnd();

@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
-    answersClicked: [string, number[]][] = [];
     unsubscribeSubject: Subscription[];
     constructor(
         private gameService: GameService, // private socketService: SocketService,
@@ -48,18 +47,22 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.playerListValue;
     }
 
+    get answersClicked() {
+        return this.gameService.answersClicked;
+    }
+
+    get currentQuestionArray(): Question[] {
+        if (this.gameService.currentQuestionValue === null) {
+            return [];
+        } else {
+            return [this.gameService.currentQuestionValue];
+        }
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
         return this.gameService.currentGameTitle;
-    }
-
-    get currentQuestionArray(): Question[] {
-        if (this.gameService.currentQuestion === null) {
-            return [];
-        } else {
-            return [this.gameService.currentQuestion];
-        }
     }
 
     get isLaunchTimer(): boolean {

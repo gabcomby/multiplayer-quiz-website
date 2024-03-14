@@ -30,6 +30,7 @@ export class GameService {
     totalQuestionDuration: number = 0;
     currentQuestion: Question | null;
     timerStopped: boolean = false;
+    answersClicked: [string, number[]][] = [];
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -63,7 +64,6 @@ export class GameService {
     currentPlayerId: string;
     currentPlayerName: string;
     playerGoneList: Player[] = [];
-    answersClicked: [string, number[]][] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     // currentQuestionIndex: number;
@@ -136,6 +136,10 @@ export class GameService {
     get timerStoppedValue(): boolean {
         return this.timerStopped;
     }
+
+    get liveAnswersClickedValue(): [string, number[]][] {
+        return this.answersClicked;
+    }
     // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
     get gameDataValue(): Game {
@@ -195,6 +199,7 @@ export class GameService {
 
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+        this.socketService.sendLiveAnswers(this.answerIdx);
     }
 
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
@@ -246,7 +251,6 @@ export class GameService {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
-            console.log('playerList', this.playerList);
         });
 
         this.socketService.onLobbyDeleted(() => {
@@ -293,6 +297,12 @@ export class GameService {
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
             this.socketService.sendAnswers(this.answerIdx);
+        });
+
+        this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
+            console.log(answers);
+            const newAnswers = [...answers];
+            this.answersClicked = [...newAnswers];
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================
@@ -358,10 +368,6 @@ export class GameService {
         //         // this.lobbyData.playerList[index].bonus++;
         //         // }
         //     }
-        // });
-
-        // this.socketService.onLivePlayerAnswers((answers) => {
-        //     this.addAnswersClicked(answers);
         // });
     }
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
@@ -478,10 +484,6 @@ export class GameService {
                 this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en actualisant la liste des joueurs: ${error}`);
             },
         });
-    }
-
-    addAnswersClicked(answersClicked: [string, number[]][]): void {
-        this.answersClicked = answersClicked;
     }
 
     // private calculateBonus(playerId: string) {
