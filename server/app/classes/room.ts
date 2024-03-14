@@ -49,11 +49,8 @@ export class Room {
                 this.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
-                console.log('index', this.currentQuestionIndex);
-                console.log('length', this.game.questions.length);
                 if (this.currentQuestionIndex === this.game.questions.length) {
-                    console.log('end');
-                    this.io.to(this.roomId).emit('go-to-results', Array.from(this.playerList));
+                    this.io.to(this.roomId).emit('go-to-results', Array.from(this.playerList), this.game.questions);
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;

@@ -28,6 +28,7 @@ export class GameService {
     timerStopped: boolean = false;
     answersClicked: [string, number[]][] = [];
     answerIdx: number[] = [];
+    allQuestionsFromGame: Question[] = [];
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -132,6 +133,10 @@ export class GameService {
     get liveAnswersClickedValue(): [string, number[]][] {
         return this.answersClicked;
     }
+
+    get allQuestionsFromGameValue(): Question[] {
+        return this.allQuestionsFromGame;
+    }
     // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
     get gameDataValue(): Game {
@@ -212,6 +217,7 @@ export class GameService {
         this.roomLocked = false;
         this.currentQuestion = null;
         this.answerIdx = [];
+        this.allQuestionsFromGame = [];
     }
 
     startGame(): void {
@@ -300,10 +306,11 @@ export class GameService {
             this.answersClicked = answers;
         });
 
-        this.socketService.onGoToResult((playerList: [[string, Player]]) => {
+        this.socketService.onGoToResult((playerList: [[string, Player]], questionList: Question[]) => {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
+            this.allQuestionsFromGame = questionList;
             this.router.navigate(['/resultsView']);
         });
 

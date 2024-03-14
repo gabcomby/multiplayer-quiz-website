@@ -11,16 +11,22 @@ import { GameService } from '@app/services/game.service';
 export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
-    dataSource: Player[] = [];
+    playerDataSource: Player[] = [];
     answersArray: [string, number[]][] = [];
 
     constructor(private gameService: GameService) {}
-    get playerListValue(): Player[] {
-        return this.gameService.playerListFromLobby;
+    get playerList(): Player[] {
+        this.playerDataSource = this.gameService.playerListValue;
+        this.sortDataSource();
+        return this.playerDataSource;
+    }
+
+    get allQuestionsFromGame(): Question[] {
+        return this.gameService.allQuestionsFromGameValue;
     }
 
     handleGameLeave(): void {
-        // this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 
     async ngOnInit() {
@@ -37,12 +43,12 @@ export class ResultsViewComponent implements OnInit {
             },
         });
 
-        this.dataSource = this.playerListValue;
+        // this.dataSource = this.playerListValue;
         this.sortDataSource();
     }
 
     private sortDataSource() {
-        this.dataSource.sort((a, b) => {
+        this.playerDataSource.sort((a, b) => {
             if (b.score !== a.score) {
                 return b.score - a.score;
             } else {
