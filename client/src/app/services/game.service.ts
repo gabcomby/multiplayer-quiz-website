@@ -28,7 +28,7 @@ export class GameService {
     currentQuestionIndex: number = 0;
     nbrOfQuestions: number = 0;
     totalQuestionDuration: number = 0;
-    currentQuestion: Question;
+    currentQuestion: Question | null;
     timerStopped: boolean = false;
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
@@ -129,7 +129,7 @@ export class GameService {
         }
     }
 
-    get currentQuestionValue(): Question {
+    get currentQuestionValue(): Question | null {
         return this.currentQuestion;
     }
 
@@ -195,7 +195,6 @@ export class GameService {
 
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
-        console.log('answerIdx', this.answerIdx);
     }
 
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
@@ -214,6 +213,7 @@ export class GameService {
         this.playerList = [];
         this.isHost = false;
         this.roomLocked = false;
+        this.currentQuestion = null;
     }
 
     startGame(): void {
@@ -227,7 +227,7 @@ export class GameService {
     }
 
     submitAnswer(): void {
-        this.socketService.sendAnswers(this.answerIdx);
+        this.socketService.sendLockedAnswers(this.answerIdx);
     }
 
     setupWebsocketEvents(): void {
@@ -246,6 +246,7 @@ export class GameService {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
+            console.log('playerList', this.playerList);
         });
 
         this.socketService.onLobbyDeleted(() => {

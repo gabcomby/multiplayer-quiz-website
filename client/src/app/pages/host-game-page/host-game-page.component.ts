@@ -36,7 +36,7 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.totalQuestionDurationValue;
     }
 
-    get currentQuestion(): Question {
+    get currentQuestion(): Question | null {
         return this.gameService.currentQuestionValue;
     }
 
@@ -55,7 +55,11 @@ export class HostGamePageComponent implements OnInit {
     }
 
     get currentQuestionArray(): Question[] {
-        return [this.gameService.currentQuestion];
+        if (this.gameService.currentQuestion === null) {
+            return [];
+        } else {
+            return [this.gameService.currentQuestion];
+        }
     }
 
     get isLaunchTimer(): boolean {

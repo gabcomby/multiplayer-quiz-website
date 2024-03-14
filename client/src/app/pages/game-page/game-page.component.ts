@@ -49,7 +49,7 @@ export class GamePageComponent {
         return this.gameService.currentPlayerNameValue;
     }
 
-    get currentQuestion(): Question {
+    get currentQuestion(): Question | null {
         return this.gameService.currentQuestionValue;
     }
 

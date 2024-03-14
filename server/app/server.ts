@@ -138,6 +138,10 @@ export class Server {
                 getRoom().verifyAnswers(socket.id, answerIdx);
             });
 
+            socket.on('send-locked-answers', (answerIdx: number[]) => {
+                getRoom().handleEarlyAnswers(socket.id, answerIdx);
+            });
+
             // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('verify-room-lock', (roomId: string) => {
@@ -222,17 +226,17 @@ export class Server {
                 }
             });
 
-            socket.on('endGame', () => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().answersLocked += 1;
-                    if (getRoom().answersLocked === getRoom().player.size) {
-                        getRoom().answersLocked = 0;
-                        this.io.to(getRoom().roomId).emit('endGame');
-                    }
-                } else {
-                    throw new Error('Error trying to end the game of a room that does not exist');
-                }
-            });
+            // socket.on('endGame', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         getRoom().answersLocked += 1;
+            //         if (getRoom().answersLocked === getRoom().player.size) {
+            //             getRoom().answersLocked = 0;
+            //             this.io.to(getRoom().roomId).emit('endGame');
+            //         }
+            //     } else {
+            //         throw new Error('Error trying to end the game of a room that does not exist');
+            //     }
+            // });
 
             // socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
             //     const playerId = getRoom().player.get(socket.id);

@@ -27,11 +27,11 @@ export class Room {
     firstAnswerForBonus = true;
     assertedAnswers: number = 0;
     playerHasAnswered = new Map<string, boolean>();
+    lockedAnswers = 0;
 
     livePlayerAnswers = new Map<string, number[]>();
     player = new Map<string, string>();
     score = new Map<string, number>();
-    answersLocked = 0;
     firstAnswer = true;
     playersAnswers: AnswersPlayer[] = [];
 
@@ -85,7 +85,7 @@ export class Room {
         clearInterval(this.timerId);
         this.isRunning = false;
         this.currentTime = this.duration;
-        this.answersLocked = 0;
+        this.lockedAnswers = 0;
         if (this.launchTimer) {
             this.launchTimer = false;
             this.duration = this.game.duration;
@@ -97,8 +97,6 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
-        console.log('verifyAnswers', playerId, answerIdx);
-        console.log(this.firstAnswerForBonus);
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
@@ -128,6 +126,17 @@ export class Room {
         }
         if (this.assertedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
+        }
+    }
+
+    handleEarlyAnswers(playerId: string, answerIdx: number[]): void {
+        this.lockedAnswers += 1;
+        this.verifyAnswers(playerId, answerIdx);
+        console.log('lockedAnswers', this.lockedAnswers);
+        console.log('playerList.size', this.playerList.size);
+        if (this.lockedAnswers === this.playerList.size) {
+            this.io.to(this.roomId).emit('timer-stopped');
+            this.handleTimerEnd();
         }
     }
 

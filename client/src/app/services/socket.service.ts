@@ -125,6 +125,10 @@ export class SocketService {
         this.socket.emit('send-answers', answerIdx);
     }
 
+    sendLockedAnswers(answerIdx: number[]): void {
+        this.socket.emit('send-locked-answers', answerIdx);
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     // onStopTimer(callback: () => void) {
