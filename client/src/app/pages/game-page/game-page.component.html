@@ -16,7 +16,7 @@
     <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
-    <div class="question" *ngIf="!endGame && !isLaunchTimer">
+    <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
             [question]="currentQuestion.text || ''"
             [mark]="currentQuestion.points || 0"

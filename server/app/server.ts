@@ -123,7 +123,7 @@ export class Server {
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
-                    getRoom().startCountdownTimer();
+                    getRoom().startQuestion();
                 }
             });
 

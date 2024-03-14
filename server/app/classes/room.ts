@@ -18,7 +18,7 @@ export class Room {
     hostId = '';
     launchTimer = true;
     // eslint-disable-next-line
-    duration = 5;
+    duration = 0;
     timerId = 0;
     currentTime = 0;
     isRunning = false;
@@ -45,6 +45,7 @@ export class Room {
                 this.isRunning = true;
                 this.startCountdownTimer();
             } else {
+                this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex]);
                 this.isRunning = true;
                 this.startCountdownTimer();
             }
@@ -59,7 +60,8 @@ export class Room {
                 this.currentTime -= 1;
                 this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
                 if (this.currentTime === 0) {
-                    this.io.to(this.roomId).emit('stop-timer');
+                    // this.io.to(this.roomId).emit('stop-timer');
+                    this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
                     this.handleTimerEnd();
                 }
             },
@@ -74,11 +76,12 @@ export class Room {
         this.isRunning = false;
         this.currentTime = this.duration;
         this.answersLocked = 0;
-        this.currentQuestionIndex += 1;
         if (this.launchTimer) {
             this.launchTimer = false;
             this.duration = this.game.duration;
             this.startQuestion();
+        } else {
+            this.currentQuestionIndex += 1;
         }
     }
 

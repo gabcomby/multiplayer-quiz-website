@@ -37,14 +37,14 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.totalQuestionDurationValue;
     }
 
+    get currentQuestion(): Question {
+        return this.gameService.currentQuestionValue;
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
         return this.gameService.currentGameTitle;
-    }
-
-    get currentQuestion(): Question {
-        return this.gameService.getCurrentQuestion();
     }
 
     get currentQuestionArray(): Question[] {
@@ -94,7 +94,7 @@ export class HostGamePageComponent implements OnInit {
     }
 
     handleGameLeave(): void {
-        // this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 
     goToResult(): void {

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
 import { Socket, io } from 'socket.io-client';
@@ -98,13 +99,25 @@ export class SocketService {
         });
     }
 
-    onStopTimer(callback: () => void) {
-        this.socket.on('stop-timer', () => {
-            callback();
+    onQuestionTimeUpdated(callback: (data: number) => void): void {
+        this.socket.on('question-time-updated', (data: number) => {
+            callback(data);
+        });
+    }
+
+    onQuestion(callback: (question: Question) => void): void {
+        this.socket.on('question', (question: Question) => {
+            callback(question);
         });
     }
 
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
+
+    // onStopTimer(callback: () => void) {
+    //     this.socket.on('stop-timer', () => {
+    //         callback();
+    //     });
+    // }
 
     // deletedGame(callback: (gameId: string) => void) {
     //     this.socket.on('deleteId', (gameId: string) => {

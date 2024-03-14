@@ -28,6 +28,7 @@ export class GameService {
     currentQuestionIndex: number = 0;
     nbrOfQuestions: number = 0;
     totalQuestionDuration: number = 0;
+    currentQuestion: Question;
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -127,6 +128,22 @@ export class GameService {
             return this.totalQuestionDuration;
         }
     }
+
+    get currentQuestionValue(): Question {
+        // if (this.currentQuestion) {
+        //     return this.currentQuestion;
+        // } else {
+        //     return {
+        //         type: '',
+        //         text: '',
+        //         points: 0,
+        //         lastModification: new Date(),
+        //         id: '',
+        //         choices: [],
+        //     };
+        // }
+        return this.currentQuestion;
+    }
     // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
     get gameDataValue(): Game {
@@ -150,21 +167,6 @@ export class GameService {
 
     get totalGameDuration(): number {
         return this.gameData.duration;
-    }
-
-    get currentQuestion(): Question {
-        if (this.gameData.questions.length > 0) {
-            return this.gameData.questions[this.currentQuestionIndex];
-        } else {
-            return {
-                type: '',
-                text: '',
-                points: 0,
-                lastModification: new Date(),
-                id: '',
-                choices: [],
-            };
-        }
     }
 
     get questionHasExpiredValue(): boolean {
@@ -271,6 +273,17 @@ export class GameService {
             }
         });
 
+        this.socketService.onQuestionTimeUpdated((data: number) => {
+            this.launchTimer = false;
+            this.totalQuestionDuration = data;
+        });
+
+        this.socketService.onQuestion((question: Question) => {
+            this.currentQuestion = question;
+        });
+
+        // ==================== SOCKETS USED AFTER REFACTOR ====================
+
         // this.socketService.onStopTimer(() => {
         //     // this.onTimerComplete();
         //     // if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
@@ -278,8 +291,6 @@ export class GameService {
         //     // }
         //     console.log('stop-timer');
         // });
-
-        // ==================== SOCKETS USED AFTER REFACTOR ====================
 
         // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
         //     this.answersSelected.next(answer);

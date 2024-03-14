@@ -43,7 +43,7 @@ export class GamePageComponent {
     }
 
     get currentQuestion(): Question {
-        return this.gameService.getCurrentQuestion();
+        return this.gameService.currentQuestionValue;
     }
 
     get questionHasExpiredValue(): boolean {
@@ -88,6 +88,6 @@ export class GamePageComponent {
     }
 
     handleGameLeave(): void {
-        // this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 }
