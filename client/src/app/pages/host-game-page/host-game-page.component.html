@@ -5,20 +5,20 @@
                 <mat-icon>logout</mat-icon>
             </button>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ currentGameLength }}</span>
+            <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ nbrOfQuestions }}</span>
             <span class="large-bar-spacer"></span>
             <span class="top-bar-text">Organisateur</span>
             <span class="large-bar-spacer"></span>
             <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
-    <div class="live-chat" *ngIf="!isLaunchTimer">
+    <!--<div class="live-chat" *ngIf="!isLaunchTimer">
         <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="getHost" [roomId]="lobbyCode"></app-game-page-livechat>
-    </div>
+    </div>-->
     <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
-    <div class="question" *ngIf="!endGame && !isLaunchTimer">
+    <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
             [isHost]="true"
             [question]="currentQuestion.text || ''"
@@ -26,11 +26,27 @@
         ></app-game-page-questions>
     </div>
     <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [isHost]="true" [playerList]="playerListValue" [playerGoneList]="playerGoneList"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="playerList"></app-game-page-scoresheet>
     </div>
     <div class="histogram" *ngIf="!isLaunchTimer">
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
     </div>
-    <button mat-raised-button color="primary" class="results" *ngIf="endGame" (click)="goToResult()">Voir les résultats</button>
-    <button mat-raised-button color="primary" class="nextQuestion" *ngIf="nextQuestion" (click)="goNextQuestion()">Prochaine question</button>
+    <button
+        mat-raised-button
+        color="primary"
+        class="nextQuestion"
+        *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
+        (click)="nextQuestion()"
+    >
+        Voir les résultats
+    </button>
+    <button
+        mat-raised-button
+        color="primary"
+        class="nextQuestion"
+        *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
+        (click)="nextQuestion()"
+    >
+        Prochaine question
+    </button>
 </div>

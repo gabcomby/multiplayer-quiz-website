@@ -5,33 +5,29 @@
                 <mat-icon>logout</mat-icon>
             </button>
             <span class="large-bar-spacer"></span>
-            <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ currentGameLength }}</span>
+            <span class="top-bar-text">Question {{ currentQuestionIndexValue + 1 }}/{{ nbrOfQuestions }}</span>
             <span class="large-bar-spacer"></span>
             <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
     <div class="live-chat" *ngIf="!isLaunchTimer">
-        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="getHost" [roomId]="lobbyCode"></app-game-page-livechat>
+        <!--<app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="getHost" [roomId]="lobbyCode"></app-game-page-livechat>-->
     </div>
     <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>
-    <div class="question" *ngIf="!endGame && !isLaunchTimer">
+    <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
             [question]="currentQuestion.text || ''"
             [mark]="currentQuestion.points || 0"
             [choices]="currentQuestion.choices || []"
-            [timerExpired]="questionHasExpiredValue"
+            [timerExpired]="timerStopped"
             (answerIdx)="setAnswerIndex($event)"
-            [answerIsCorrect]="answerIsCorrectValue"
+            [answerIsCorrect]="true"
         ></app-game-page-questions>
     </div>
 
-    <div *ngIf="currentPlayerId === hostId">
-        <button mat-raised-button color="primary" class="results" *ngIf="endGame" routerLink="/resultsView">Voir les résultats</button>
-    </div>
-
     <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [playerList]="playerListValue" [isHost]="false"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="playerList"></app-game-page-scoresheet>
     </div>
 </div>

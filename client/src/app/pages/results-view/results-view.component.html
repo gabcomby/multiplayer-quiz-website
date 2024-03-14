@@ -8,7 +8,7 @@
     </div>
 
     <div class="palmares-container">
-        <mat-table [dataSource]="dataSource">
+        <mat-table [dataSource]="playerList">
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
@@ -30,6 +30,6 @@
         <app-game-page-livechat class="live-chat"></app-game-page-livechat>
     </div>
     <div class="histogram">
-        <app-histogram [answersPlayer]="answersArray" [questionsGame]="questions"></app-histogram>
+        <app-histogram [answersPlayer]="allAnswersIndex" [questionsGame]="allQuestionsFromGame"></app-histogram>
     </div>
 </div>

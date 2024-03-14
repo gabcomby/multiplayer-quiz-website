@@ -1,9 +1,6 @@
 /* eslint-disable max-params */
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SocketService } from '@app/services/socket.service';
 
 @Component({
@@ -12,78 +9,39 @@ import { SocketService } from '@app/services/socket.service';
     styleUrls: ['./game-wait.component.scss'],
 })
 export class GameWaitComponent {
-    players: Player[] = [];
-    bannedFromGame: string[] = [];
-    lockStatus: boolean = false;
     constructor(
-        private router: Router,
         private socketService: SocketService,
         private gameService: GameService,
-        private matchLobbyService: MatchLobbyService,
     ) {}
     get playerList() {
-        this.players = this.gameService.matchLobby.playerList;
-        return this.players;
+        return this.gameService.playerListValue;
     }
 
     get isHost() {
-        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+        return this.gameService.isHostValue;
     }
 
     get lobbyCode() {
-        return this.gameService.matchLobby.lobbyCode;
+        return this.gameService.lobbyCodeValue;
     }
 
-    get currentPlayerName() {
-        return this.gameService.currentPlayerName;
-    }
-    bannedPlayers(): string[] {
-        const bannedArray: string[] = [];
-        const subscription = this.matchLobbyService.getBannedArray(this.lobbyCode).subscribe((response) => {
-            for (const elem of response) {
-                bannedArray.push(elem);
-            }
-        });
-        subscription.unsubscribe();
-        this.bannedFromGame = bannedArray;
-        return this.bannedFromGame;
+    get roomIsLocked() {
+        return this.gameService.roomIsLockedValue;
     }
 
-    backHome() {
-        this.socketService.disconnect();
-        this.router.navigate(['/home']);
-    }
-
-    handleGameLaunch() {
-        this.socketService.startGame();
+    banPlayer(name: string) {
+        this.gameService.banPlayer(name);
     }
 
     handleGameLeave() {
-        this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 
-    makeBannedPlayer(name: string) {
-        if (this.bannedFromGame.includes(name)) {
-            return;
-        } else {
-            for (const element of this.players) {
-                if (element.name === name) {
-                    this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
-                    this.socketService.bannedPlayer(element.id);
-                }
-            }
-            const subscribe = this.matchLobbyService.banPlayer(name, this.lobbyCode).subscribe();
-            subscribe.unsubscribe();
-            this.bannedFromGame.push(name);
-            this.players = this.playerList;
-        }
-    }
-
-    makeLocked() {
+    toggleRoomLock() {
         this.socketService.toggleRoomLock();
     }
 
-    changeLockStatus() {
-        this.lockStatus = !this.lockStatus;
+    handleGameLaunch() {
+        this.gameService.startGame();
     }
 }

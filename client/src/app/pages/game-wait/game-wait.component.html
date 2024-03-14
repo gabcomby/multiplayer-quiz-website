@@ -7,24 +7,22 @@
         </mat-toolbar>
     </div>
     <app-game-page-scoresheet class="score" [playerList]="playerList"></app-game-page-scoresheet>
-    <app-game-page-livechat class="live-chat" [playerName]="currentPlayerName" [isHost]="isHost" [roomId]="lobbyCode"></app-game-page-livechat>
+    <!--<app-game-page-livechat class="live-chat" [playerName]="currentPlayerName" [isHost]="isHost" [roomId]="lobbyCode"></app-game-page-livechat>-->
     <div class="lobby-info">
         <p class="lobby-text">Code pour rejoindre le match: {{ lobbyCode }}</p>
     </div>
     <div *ngIf="isHost === true" class="start-game">
         <h2>Bonjour host!</h2>
-        <div *ngIf="this.playerList.length !== 0 && this.lockStatus === true">
+        <div *ngIf="this.playerList.length !== 0 && roomIsLocked">
             <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>
         </div>
-        <h2>Tu veux verrouiller la partie?</h2>
-        <mat-slide-toggle (change)="makeLocked()" (change)="changeLockStatus()"> </mat-slide-toggle>
-        <h2>Qui veut tu bannir?</h2>
-        <div *ngFor="let player of players">
-            <div *ngIf="this.bannedFromGame.indexOf(player.name) === -1 && player.name !== 'Organisateur'">
-                <div>
-                    {{ player.name }}
-                    <button id="bannedPlayer" type="checkbox" (click)="makeBannedPlayer(player.name)">bannir</button>
-                </div>
+        <h2>Verrouiller la partie?</h2>
+        <mat-slide-toggle (change)="toggleRoomLock()"> </mat-slide-toggle>
+        <h2>Qui veux-tu bannir?</h2>
+        <div *ngFor="let player of playerList">
+            <div>
+                {{ player.name }}
+                <button id="bannedPlayer" type="checkbox" (click)="banPlayer(player.name)">bannir</button>
             </div>
         </div>
     </div>
