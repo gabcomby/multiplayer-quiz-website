@@ -14,11 +14,8 @@ export class HostGamePageComponent {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
-    constructor(
-        private gameService: GameService, // private socketService: SocketService,
-    ) {}
+    constructor(private gameService: GameService) {}
 
-    // ==================== GETTERS USED AFTER REFACTOR ====================
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
@@ -67,9 +64,6 @@ export class HostGamePageComponent {
         return 'Placeholder';
     }
 
-    // ==================== GETTERS USED AFTER REFACTOR ====================
-
-    // ==================== FCT USED AFTER REFACTOR ====================
     nextQuestion(): void {
         this.gameService.nextQuestion();
     }
@@ -77,5 +71,4 @@ export class HostGamePageComponent {
     handleGameLeave(): void {
         this.gameService.leaveRoom();
     }
-    // ==================== FCT USED AFTER REFACTOR ====================
 }

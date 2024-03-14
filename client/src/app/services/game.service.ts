@@ -13,7 +13,6 @@ const LAUNCH_TIMER_DURATION = 5;
     providedIn: 'root',
 })
 export class GameService {
-    // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     lobbyCode: string = '';
     playerList: Player[] = [];
     isHost: boolean = false;
@@ -30,7 +29,6 @@ export class GameService {
     allAnswersIndex: [string, number[]][] = [];
     apiUrl: string;
     timerCountdown: number;
-    // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
 
     // eslint-disable-next-line max-params
     constructor(
@@ -41,7 +39,6 @@ export class GameService {
         this.apiUrl = `${apiBaseURL}/games`;
     }
 
-    // ==================== NEW GETTERS USED AFTER REFACTOR ====================
     get lobbyCodeValue(): string {
         return this.lobbyCode;
     }
@@ -106,9 +103,7 @@ export class GameService {
         this.answerIdx = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIdx);
     }
-    // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
-    // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
     leaveRoom(): void {
         this.socketService.leaveRoom();
         this.socketService.disconnect();
@@ -226,8 +221,5 @@ export class GameService {
             this.allAnswersIndex = allAnswersIndex;
             this.router.navigate(['/resultsView']);
         });
-
-        // ==================== SOCKETS USED AFTER REFACTOR ====================
     }
-    // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
 }

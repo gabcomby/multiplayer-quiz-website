@@ -14,7 +14,7 @@ export class GamePageComponent {
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
-    // ==================== GETTERS USED AFTER REFACTOR ====================
+
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
@@ -46,8 +46,6 @@ export class GamePageComponent {
     get isLaunchTimer(): boolean {
         return this.gameService.launchTimerValue;
     }
-
-    // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
         // return this.gameService.currentGameTitle;

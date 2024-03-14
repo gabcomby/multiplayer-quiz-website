@@ -13,7 +13,6 @@ export class GameWaitComponent {
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
-    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
     get playerList() {
         return this.gameService.playerListValue;
     }
@@ -45,5 +44,4 @@ export class GameWaitComponent {
     handleGameLaunch() {
         this.gameService.startGame();
     }
-    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 }
