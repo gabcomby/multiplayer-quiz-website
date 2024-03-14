@@ -13,6 +13,7 @@ import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 // const TIME_BETWEEN_QUESTIONS = 3000;
+const LAUNCH_TIMER_DURATION = 5;
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +24,10 @@ export class GameService {
     playerList: Player[] = [];
     isHost: boolean = false;
     roomLocked: boolean = false;
+    launchTimer: boolean = true;
+    currentQuestionIndex: number = 0;
+    nbrOfQuestions: number = 0;
+    totalQuestionDuration: number = 0;
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -60,7 +65,7 @@ export class GameService {
     answersClicked: [string, number[]][] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
-    currentQuestionIndex: number;
+    // currentQuestionIndex: number;
     previousQuestionIndex: number;
     answerIsCorrect: boolean;
     subscription: Subscription;
@@ -98,18 +103,34 @@ export class GameService {
     get roomIsLockedValue(): boolean {
         return this.roomLocked;
     }
-    // ==================== NEW GETTERS USED AFTER REFACTOR ====================
+
+    get launchTimerValue(): boolean {
+        return this.launchTimer;
+    }
 
     get timerCountdownValue(): number {
         return this.timerCountdown;
     }
 
-    get gameDataValue(): Game {
-        return this.gameData;
-    }
-
     get currentQuestionIndexValue(): number {
         return this.currentQuestionIndex;
+    }
+
+    get nbrOfQuestionsValue(): number {
+        return this.nbrOfQuestions;
+    }
+
+    get totalQuestionDurationValue(): number {
+        if (this.launchTimer) {
+            return LAUNCH_TIMER_DURATION;
+        } else {
+            return this.totalQuestionDuration;
+        }
+    }
+    // ==================== NEW GETTERS USED AFTER REFACTOR ====================
+
+    get gameDataValue(): Game {
+        return this.gameData;
     }
 
     get currentGameLength(): number {
@@ -238,11 +259,14 @@ export class GameService {
             this.roomLocked = isLocked;
         });
 
-        this.socketService.onGameLaunch(() => {
+        this.socketService.onGameLaunch((questionDuration: number, nbrOfQuestions: number) => {
+            this.launchTimer = true;
+            this.nbrOfQuestions = nbrOfQuestions;
+            this.totalQuestionDuration = questionDuration;
+            this.currentQuestionIndex = 0;
             if (this.isHost) {
                 this.router.navigate(['/host-game-page']);
             } else {
-                console.log('Navigating to player view');
                 this.router.navigate(['/game']);
             }
         });

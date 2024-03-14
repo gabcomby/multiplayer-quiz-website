@@ -44,9 +44,9 @@ export class GameWaitComponent {
     toggleRoomLock() {
         this.socketService.toggleRoomLock();
     }
-    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     handleGameLaunch() {
         this.gameService.startGame();
     }
+    // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 }

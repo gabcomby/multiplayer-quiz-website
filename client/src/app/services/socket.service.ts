@@ -86,15 +86,14 @@ export class SocketService {
         this.socket.emit('start-game');
     }
 
-    onGameLaunch(callback: () => void) {
-        this.socket.on('game-started', () => {
-            callback();
+    onGameLaunch(callback: (questionDuration: number, nbrOfQuestions: number) => void) {
+        this.socket.on('game-started', (questionDuration: number, nbrOfQuestions: number) => {
+            callback(questionDuration, nbrOfQuestions);
         });
     }
 
     onTimerCountdown(callback: (data: number) => void): void {
         this.socket.on('timer-countdown', (data: number) => {
-            console.log('timer-countdown');
             callback(data);
         });
     }

@@ -6,8 +6,6 @@ import { GameService } from '@app/services/game.service';
 // import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 
-const START_TIMER_DURATION = 5;
-
 @Component({
     selector: 'app-host-game-page',
     templateUrl: './host-game-page.component.html',
@@ -22,16 +20,13 @@ export class HostGamePageComponent implements OnInit {
         private gameService: GameService, // private socketService: SocketService,
     ) {}
 
+    // ==================== GETTERS USED AFTER REFACTOR ====================
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
 
-    get currentGameLength(): number {
-        return this.gameService.currentGameLength;
-    }
-
-    get currentGameTitle(): string {
-        return this.gameService.currentGameTitle;
+    get nbrOfQuestions(): number {
+        return this.gameService.nbrOfQuestionsValue;
     }
 
     get currentTimerCountdown(): number {
@@ -39,11 +34,13 @@ export class HostGamePageComponent implements OnInit {
     }
 
     get totalGameDuration(): number {
-        if (this.isLaunchTimer) {
-            return START_TIMER_DURATION;
-        } else {
-            return this.gameService.totalGameDuration;
-        }
+        return this.gameService.totalQuestionDurationValue;
+    }
+
+    // ==================== GETTERS USED AFTER REFACTOR ====================
+
+    get currentGameTitle(): string {
+        return this.gameService.currentGameTitle;
     }
 
     get currentQuestion(): Question {

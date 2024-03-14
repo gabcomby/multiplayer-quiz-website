@@ -5,8 +5,6 @@ import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
 
-const START_TIMER_DURATION = 5;
-
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -17,20 +15,13 @@ export class GamePageComponent {
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
+    // ==================== GETTERS USED AFTER REFACTOR ====================
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
 
-    get currentGameLength(): number {
-        return this.gameService.currentGameLength;
-    }
-
-    get currentGameTitle(): string {
-        return this.gameService.currentGameTitle;
-    }
-
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
+    get nbrOfQuestions(): number {
+        return this.gameService.nbrOfQuestionsValue;
     }
 
     get currentTimerCountdown(): number {
@@ -38,11 +29,17 @@ export class GamePageComponent {
     }
 
     get totalGameDuration(): number {
-        if (this.isLaunchTimer) {
-            return START_TIMER_DURATION;
-        } else {
-            return this.gameService.totalGameDuration;
-        }
+        return this.gameService.totalQuestionDurationValue;
+    }
+
+    // ==================== GETTERS USED AFTER REFACTOR ====================
+
+    get currentGameTitle(): string {
+        return this.gameService.currentGameTitle;
+    }
+
+    get currentPlayerNameValue(): string {
+        return this.gameService.currentPlayerNameValue;
     }
 
     get currentQuestion(): Question {
