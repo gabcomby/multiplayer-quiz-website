@@ -139,9 +139,9 @@ export class SocketService {
         });
     }
 
-    onGoToResult(callback: (playerList: [[string, Player]], questionList: Question[]) => void): void {
-        this.socket.on('go-to-results', (playerList: [[string, Player]], questionList: Question[]) => {
-            callback(playerList, questionList);
+    onGoToResult(callback: (playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => void): void {
+        this.socket.on('go-to-results', (playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {
+            callback(playerList, questionList, allAnswersIndex);
         });
     }
 

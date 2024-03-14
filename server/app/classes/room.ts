@@ -29,6 +29,8 @@ export class Room {
     playerHasAnswered = new Map<string, boolean>();
     lockedAnswers = 0;
     livePlayerAnswers = new Map<string, number[]>();
+    globalAnswerIndex: number[] = [];
+    allAnswersForQuestion = new Map<string, number[]>();
 
     player = new Map<string, string>();
     score = new Map<string, number>();
@@ -50,7 +52,9 @@ export class Room {
             } else {
                 this.currentQuestionIndex += 1;
                 if (this.currentQuestionIndex === this.game.questions.length) {
-                    this.io.to(this.roomId).emit('go-to-results', Array.from(this.playerList), this.game.questions);
+                    this.io
+                        .to(this.roomId)
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
@@ -112,6 +116,9 @@ export class Room {
         if (answerIdx.length === 0) {
             return;
         }
+        answerIdx.forEach((index) => {
+            this.globalAnswerIndex.push(index);
+        });
         const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
         const isMultipleAnswer = totalCorrectChoices > 1;
         let isCorrect = false;
@@ -135,6 +142,8 @@ export class Room {
         }
         if (this.assertedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
+            this.allAnswersForQuestion.set(question.text, this.globalAnswerIndex);
+            this.globalAnswerIndex = [];
         }
     }
 

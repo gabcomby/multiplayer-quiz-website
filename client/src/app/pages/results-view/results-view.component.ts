@@ -12,13 +12,17 @@ export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
     playerDataSource: Player[] = [];
-    answersArray: [string, number[]][] = [];
+    // answersArray: [string, number[]][] = [];
 
     constructor(private gameService: GameService) {}
     get playerList(): Player[] {
         this.playerDataSource = this.gameService.playerListValue;
         this.sortDataSource();
         return this.playerDataSource;
+    }
+
+    get allAnswersIndex(): [string, number[]][] {
+        return this.gameService.allAnswersIndexValue;
     }
 
     get allQuestionsFromGame(): Question[] {
@@ -33,7 +37,7 @@ export class ResultsViewComponent implements OnInit {
         this.gameService.getPlayerAnswers().subscribe({
             next: (answers: AnswersPlayer[]) => {
                 this.answersQuestions = answers;
-                this.updateAnswersQuestions(answers);
+                // this.updateAnswersQuestions(answers);
             },
         });
 
@@ -57,13 +61,13 @@ export class ResultsViewComponent implements OnInit {
         });
     }
 
-    private updateAnswersQuestions(answers: AnswersPlayer[]) {
-        for (const answer of answers) {
-            for (const playerChoice of Object.entries(answer)) {
-                if (playerChoice) {
-                    this.answersArray.push([playerChoice[1].key, playerChoice[1].value]);
-                }
-            }
-        }
-    }
+    // private updateAnswersQuestions(answers: AnswersPlayer[]) {
+    //     for (const answer of answers) {
+    //         for (const playerChoice of Object.entries(answer)) {
+    //             if (playerChoice) {
+    //                 this.answersArray.push([playerChoice[1].key, playerChoice[1].value]);
+    //             }
+    //         }
+    //     }
+    // }
 }
