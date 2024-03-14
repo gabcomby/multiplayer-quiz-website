@@ -82,6 +82,14 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.answersClicked;
     }
 
+    get getHost() {
+        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+    }
+
+    get lobbyCode() {
+        return this.gameService.matchLobby.lobbyCode;
+    }
+
     ngOnInit(): void {
         this.socketService.onLivePlayerAnswers((answers) => {
             this.answersClicked = answers;

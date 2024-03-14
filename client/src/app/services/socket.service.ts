@@ -157,13 +157,13 @@ export class SocketService {
         });
     }
 
-    sendMessages(message: string, playerName: string, isHost: boolean) {
-        this.socket.emit('chatMessage', { message, playerName, isHost });
+    sendMessageToServer(message: string, playerName: string, roomId: string): void {
+        this.socket.emit('chat-message', { message, playerName, roomId });
     }
 
     onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
         return new Observable((observer) => {
-            this.socket.on('chatMessage', (data) => {
+            this.socket.on('chat-message', (data) => {
                 observer.next(data);
             });
         });

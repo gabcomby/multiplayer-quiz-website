@@ -257,13 +257,11 @@ export class Server {
                 }
             });
 
-            socket.on('chatMessage', ({ message, playerName, isHost }) => {
-                const senderName = isHost ? 'Organisateur' : playerName;
-
-                socket.broadcast.to(getRoom().roomId).emit('chatMessage', {
+            socket.on('chat-message', ({ message, playerName, roomId }) => {
+                socket.to(roomId).emit('chat-message', {
                     text: message,
-                    sender: senderName,
-                    timeStamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    sender: playerName,
+                    timestamp: new Date().toISOString(),
                 });
             });
 
