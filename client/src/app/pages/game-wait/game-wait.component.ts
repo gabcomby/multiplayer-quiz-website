@@ -47,6 +47,6 @@ export class GameWaitComponent {
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     handleGameLaunch() {
-        this.socketService.startGame();
+        this.gameService.startGame();
     }
 }

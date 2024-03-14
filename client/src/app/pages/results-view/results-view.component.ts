@@ -20,7 +20,7 @@ export class ResultsViewComponent implements OnInit {
     }
 
     handleGameLeave(): void {
-        this.gameService.handleGameLeave();
+        // this.gameService.handleGameLeave();
     }
 
     async ngOnInit() {

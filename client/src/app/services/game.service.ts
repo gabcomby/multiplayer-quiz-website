@@ -12,9 +12,7 @@ import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
-const TIME_BETWEEN_QUESTIONS = 3000;
-const START_TIMER_DURATION = 5;
-// const BONUS_MULTIPLIER = 1.2;
+// const TIME_BETWEEN_QUESTIONS = 3000;
 
 @Injectable({
     providedIn: 'root',
@@ -202,6 +200,10 @@ export class GameService {
         this.roomLocked = false;
     }
 
+    startGame(): void {
+        this.socketService.startGame();
+    }
+
     setupWebsocketEvents(): void {
         // ==================== SOCKETS USED AFTER REFACTOR ====================
 
@@ -236,78 +238,79 @@ export class GameService {
             this.roomLocked = isLocked;
         });
 
-        // ==================== SOCKETS USED AFTER REFACTOR ====================
-
-        this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
-            this.answersSelected.next(answer);
-        });
-
-        this.socketService.onEndGame().subscribe(() => {
-            this.calculateFinalResults();
-        });
-
-        this.socketService.onStopTimer(() => {
-            this.onTimerComplete();
-            if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-                this.nextQuestion = true;
-            }
-        });
-
-        this.socketService.onAdminDisconnect(() => {
-            this.handleGameLeave();
-        });
-
-        this.socketService.onPlayerDisconnect((playerId) => {
-            const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
-            if (playerGone) {
-                this.playerGoneList.push(playerGone);
-            }
-            this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
-        });
-        this.socketService.onLastPlayerDisconnected(() => {
-            this.handleGameLeave();
-        });
-
-        this.socketService.onGotBonus((playerId: string) => {
-            this.calculateBonus(playerId);
-        });
-
         this.socketService.onGameLaunch(() => {
-            if (this.currentPlayerId === this.lobbyData.hostId) {
+            if (this.isHost) {
                 this.router.navigate(['/host-game-page']);
             } else {
+                console.log('Navigating to player view');
                 this.router.navigate(['/game']);
             }
-            this.socketService.setTimerDuration(START_TIMER_DURATION);
-            this.socketService.startTimer();
-        });
-        this.socketService.onResultView(() => {
-            this.router.navigate(['/resultsView']);
-        });
-        this.socketService.onNextQuestion(() => {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
-            this.nextQuestion = false;
-        });
-        this.socketService.onBannedPlayer(() => {
-            this.handleGameLeave();
         });
 
-        this.socketService.onAnswerVerification((score) => {
-            const scoreMap = new Map(score);
-            for (const player of this.lobbyData.playerList) {
-                const newScore = scoreMap.get(player.id);
-                if (newScore) {
-                    player.score = newScore;
-                } else {
-                    player.score = 0;
-                }
-                // if (multiplier === BONUS_MULTIPLIER) {
-                // this.lobbyData.playerList[index].bonus++;
-                // }
-            }
-        });
+        // this.socketService.onStopTimer(() => {
+        //     // this.onTimerComplete();
+        //     // if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
+        //     //     this.nextQuestion = true;
+        //     // }
+        //     console.log('stop-timer');
+        // });
+
+        // ==================== SOCKETS USED AFTER REFACTOR ====================
+
+        // this.socketService.onPlayerAnswer().subscribe((answer: AnswersPlayer[]) => {
+        //     this.answersSelected.next(answer);
+        // });
+
+        // this.socketService.onEndGame().subscribe(() => {
+        //     this.calculateFinalResults();
+        // });
+
+        // this.socketService.onAdminDisconnect(() => {
+        //     this.handleGameLeave();
+        // });
+
+        // this.socketService.onPlayerDisconnect((playerId) => {
+        //     const playerGone = this.lobbyData.playerList.find((player) => player.id === playerId);
+        //     if (playerGone) {
+        //         this.playerGoneList.push(playerGone);
+        //     }
+        //     this.lobbyData.playerList = this.lobbyData.playerList.filter((player) => player.id !== playerId);
+        // });
+        // this.socketService.onLastPlayerDisconnected(() => {
+        //     this.handleGameLeave();
+        // });
+
+        // this.socketService.onGotBonus((playerId: string) => {
+        //     this.calculateBonus(playerId);
+        // });
+
+        // this.socketService.onResultView(() => {
+        //     this.router.navigate(['/resultsView']);
+        // });
+        // this.socketService.onNextQuestion(() => {
+        //     setTimeout(() => {
+        //         this.handleNextQuestion();
+        //     }, TIME_BETWEEN_QUESTIONS);
+        //     this.nextQuestion = false;
+        // });
+        // this.socketService.onBannedPlayer(() => {
+        //     this.handleGameLeave();
+        // });
+
+        // this.socketService.onAnswerVerification((score) => {
+        //     const scoreMap = new Map(score);
+        //     for (const player of this.lobbyData.playerList) {
+        //         const newScore = scoreMap.get(player.id);
+        //         if (newScore) {
+        //             player.score = newScore;
+        //         } else {
+        //             player.score = 0;
+        //         }
+        //         // if (multiplier === BONUS_MULTIPLIER) {
+        //         // this.lobbyData.playerList[index].bonus++;
+        //         // }
+        //     }
+        // });
 
         // this.socketService.onLivePlayerAnswers((answers) => {
         //     this.addAnswersClicked(answers);
@@ -315,17 +318,17 @@ export class GameService {
     }
     // ==================== NEW FUNCTIONS USED AFTER REFACTOR ====================
 
-    gameEnded(): void {
-        this.socketService.onEndGame().subscribe(() => {
-            this.calculateFinalResults();
-        });
-    }
+    // gameEnded(): void {
+    //     this.socketService.onEndGame().subscribe(() => {
+    //         this.calculateFinalResults();
+    //     });
+    // }
 
-    gameIsFinished(): void {
-        if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
-            this.socketService.gameIsFinishedSocket();
-        }
-    }
+    // gameIsFinished(): void {
+    //     if (this.currentQuestionIndex + 1 === this.gameDataValue.questions.length) {
+    //         this.socketService.gameIsFinishedSocket();
+    //     }
+    // }
     calculateFinalResults(): void {
         this.endGame = true;
         const finalResults: Player[] = this.playerListFromLobby;
@@ -384,81 +387,43 @@ export class GameService {
         this.answerIdx = answerIdx;
     }
 
-    clickPlayerAnswer(answerIdx: number[]) {
-        this.socketService.sendClickedAnswer(answerIdx);
-    }
+    // clickPlayerAnswer(answerIdx: number[]) {
+    //     this.socketService.sendClickedAnswer(answerIdx);
+    // }
 
-    sendPlayerAnswer(answer: AnswersPlayer) {
-        this.socketService.sendPlayerAnswer(answer);
-    }
+    // sendPlayerAnswer(answer: AnswersPlayer) {
+    //     this.socketService.sendPlayerAnswer(answer);
+    // }
 
     getPlayerAnswers(): Observable<AnswersPlayer[]> {
         return this.answersSelected.asObservable();
     }
 
-    handleGameLeave() {
-        if (this.matchLobby.hostId === this.currentPlayerId) {
-            this.matchLobbyService.deleteLobby(this.lobbyId).subscribe({
-                next: () => {
-                    this.socketService.leaveRoom();
-                    this.socketService.disconnect();
-                    this.router.navigate(['/home']);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant et en supprimant la partie: ${error}`);
-                },
-            });
-        } else {
-            this.matchLobbyService.lobbyExists(this.lobbyId).subscribe({
-                next: (data) => {
-                    if (data === false) {
-                        this.socketService.disconnect();
-                        this.router.navigate(['/home']);
-                    } else {
-                        this.matchLobbyService.removePlayer(this.lobbyId, this.currentPlayerId).subscribe({
-                            next: () => {
-                                this.socketService.leaveRoom();
-                                this.socketService.disconnect();
-                                this.router.navigate(['/home']);
-                            },
-                            error: (error) => {
-                                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en quittant la partie: ${error}`);
-                            },
-                        });
-                    }
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante en chargeant le lobby: ${error}`);
-                },
-            });
-        }
-    }
+    // onTimerComplete(): void {
+    //     if (this.isLaunchTimer) {
+    //         this.isLaunchTimer = false;
+    //         this.socketService.setTimerDuration(this.gameData.duration);
+    //         this.socketService.startTimer();
+    //         return;
+    //     } else {
+    //         this.questionHasExpired = true;
+    //         this.previousQuestionIndex = this.currentQuestionIndex;
+    //         if (this.currentPlayerId !== this.lobbyData.hostId) {
+    //             this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex], this.answerIdx);
+    //         }
+    //         if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
+    //             if (this.currentPlayerId !== this.lobbyData.hostId) {
+    //                 this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+    //                 this.sendPlayerAnswer(this.playerChoice);
+    //             }
 
-    onTimerComplete(): void {
-        if (this.isLaunchTimer) {
-            this.isLaunchTimer = false;
-            this.socketService.setTimerDuration(this.gameData.duration);
-            this.socketService.startTimer();
-            return;
-        } else {
-            this.questionHasExpired = true;
-            this.previousQuestionIndex = this.currentQuestionIndex;
-            if (this.currentPlayerId !== this.lobbyData.hostId) {
-                this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex], this.answerIdx);
-            }
-            if (!(this.currentQuestionIndex < this.gameData.questions.length - 1)) {
-                if (this.currentPlayerId !== this.lobbyData.hostId) {
-                    this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-                    this.sendPlayerAnswer(this.playerChoice);
-                }
-
-                this.questions.push(this.currentQuestion);
-                this.questionGame.next(this.questions);
-                // this.handleGameLeave();
-            }
-            this.gameIsFinished();
-        }
-    }
+    //             this.questions.push(this.currentQuestion);
+    //             this.questionGame.next(this.questions);
+    //             // this.handleGameLeave();
+    //         }
+    //         this.gameIsFinished();
+    //     }
+    // }
 
     refreshPlayerList(): void {
         this.matchLobbyService.getPlayers(this.lobbyId).subscribe({
@@ -475,23 +440,23 @@ export class GameService {
         this.answersClicked = answersClicked;
     }
 
-    private calculateBonus(playerId: string) {
-        let player: Player;
-        for (player of this.playerListFromLobby) {
-            if (player.id === playerId) {
-                player.bonus++;
-            }
-        }
-    }
+    // private calculateBonus(playerId: string) {
+    //     let player: Player;
+    //     for (player of this.playerListFromLobby) {
+    //         if (player.id === playerId) {
+    //             player.bonus++;
+    //         }
+    //     }
+    // }
 
-    private handleNextQuestion(): void {
-        if (this.currentPlayerId !== this.lobbyData.hostId) {
-            this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
-        }
-        this.questions.push(this.currentQuestion);
+    // private handleNextQuestion(): void {
+    //     if (this.currentPlayerId !== this.lobbyData.hostId) {
+    //         this.playerChoice.set(this.currentQuestion.text, this.answerIdx);
+    //     }
+    //     this.questions.push(this.currentQuestion);
 
-        this.currentQuestionIndex++;
-        this.questionHasExpired = false;
-        this.socketService.startTimer();
-    }
+    //     this.currentQuestionIndex++;
+    //     this.questionHasExpired = false;
+    //     this.socketService.startTimer();
+    // }
 }

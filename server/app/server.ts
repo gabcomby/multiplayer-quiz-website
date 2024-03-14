@@ -1,19 +1,17 @@
 import { Application } from '@app/app';
 import { Room } from '@app/classes/room';
-import type { IChoice } from '@app/model/questions.model';
 import { GameService } from '@app/services/game.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
-import { IQuestion } from './model/game.model';
 import { IPlayer } from './model/match.model';
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 // const rooms = require('@app/module');
 import { rooms } from './module';
 
 const BASE_TEN = 10;
-const FIRST_ANSWER_MULTIPLIER = 1.2;
+// const FIRST_ANSWER_MULTIPLIER = 1.2;
 
 @Service()
 export class Server {
@@ -73,7 +71,7 @@ export class Server {
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game);
+                const room = new Room(game, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
@@ -87,8 +85,6 @@ export class Server {
                     getRoom().playerList.set(socket.id, player);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('room-joined', getRoom().roomId);
-                    // eslint-disable-next-line no-console
-                    console.log('Joined', roomId, 'room is', rooms.get(roomId));
                 }
             });
 
@@ -124,6 +120,13 @@ export class Server {
                 }
             });
 
+            socket.on('start-game', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    this.io.to(getRoom().roomId).emit('game-started');
+                    getRoom().startCountdownTimer();
+                }
+            });
+
             // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('verify-room-lock', (roomId: string) => {
@@ -153,40 +156,40 @@ export class Server {
                 }
             });
 
-            socket.on('start-timer', () => {
-                if (roomExists(getRoom().roomId)) {
-                    if (!getRoom().isRunning && getRoom().hostId === socket.id) {
-                        getRoom().isRunning = true;
-                        getRoom().firstAnswer = true;
-                        getRoom().startCountdownTimer(this.io, getRoom().roomId);
-                    }
-                } else {
-                    throw new Error('Error trying to start the timer of a room that does not exist');
-                }
-            });
+            // socket.on('start-timer', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         if (!getRoom().isRunning && getRoom().hostId === socket.id) {
+            //             getRoom().isRunning = true;
+            //             getRoom().firstAnswer = true;
+            //             getRoom().startCountdownTimer(this.io, getRoom().roomId);
+            //         }
+            //     } else {
+            //         throw new Error('Error trying to start the timer of a room that does not exist');
+            //     }
+            // });
 
-            socket.on('stop-timer', () => {
-                if (roomExists(getRoom().roomId)) {
-                    if (getRoom().isRunning && getRoom().hostId === socket.id) {
-                        getRoom().resetTimerCountdown();
-                    }
-                } else {
-                    throw new Error('Error trying to stop the timer of a room that does not exist');
-                }
-            });
+            // socket.on('stop-timer', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         if (getRoom().isRunning && getRoom().hostId === socket.id) {
+            //             getRoom().resetTimerCountdown();
+            //         }
+            //     } else {
+            //         throw new Error('Error trying to stop the timer of a room that does not exist');
+            //     }
+            // });
 
-            // FONCTION DE GESTION DES RÉPONSES
-            socket.on('answer-submitted', () => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().answersLocked += 1;
-                    if (getRoom().answersLocked === getRoom().player.size) {
-                        this.io.to(getRoom().roomId).emit('stop-timer');
-                        getRoom().resetTimerCountdown();
-                    }
-                } else {
-                    throw new Error('Error trying to submit the answer');
-                }
-            });
+            // // FONCTION DE GESTION DES RÉPONSES
+            // socket.on('answer-submitted', () => {
+            //     if (roomExists(getRoom().roomId)) {
+            //         getRoom().answersLocked += 1;
+            //         if (getRoom().answersLocked === getRoom().player.size) {
+            //             this.io.to(getRoom().roomId).emit('stop-timer');
+            //             getRoom().resetTimerCountdown();
+            //         }
+            //     } else {
+            //         throw new Error('Error trying to submit the answer');
+            //     }
+            // });
 
             socket.on('sendClickedAnswer', (answerIdx: number[]) => {
                 if (roomExists(getRoom().roomId)) {
@@ -220,47 +223,47 @@ export class Server {
                 }
             });
 
-            socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
-                const playerId = getRoom().player.get(socket.id);
-                const choices: IChoice[] = question.choices;
-                rooms.get(getRoom().roomId).assertedAnswers += 1;
-                if (roomExists(getRoom().roomId)) {
-                    if (answerIdx.length === 0) {
-                        this.io.to(socket.id).emit('answer-verification', false, 1);
-                        return;
-                    }
-                    const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-                    const isMultipleAnswer = totalCorrectChoices > 1;
+            // socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
+            //     const playerId = getRoom().player.get(socket.id);
+            //     const choices: IChoice[] = question.choices;
+            //     rooms.get(getRoom().roomId).assertedAnswers += 1;
+            //     if (roomExists(getRoom().roomId)) {
+            //         if (answerIdx.length === 0) {
+            //             this.io.to(socket.id).emit('answer-verification', false, 1);
+            //             return;
+            //         }
+            //         const totalCorrectChoices = choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+            //         const isMultipleAnswer = totalCorrectChoices > 1;
 
-                    const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
+            //         const selectedCorrectAnswers = answerIdx.reduce((count, index) => (choices[index].isCorrect ? count + 1 : count), 0);
 
-                    let isCorrect = false;
-                    if (!isMultipleAnswer) {
-                        isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
-                    } else {
-                        const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
-                        const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
-                        isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
-                    }
+            //         let isCorrect = false;
+            //         if (!isMultipleAnswer) {
+            //             isCorrect = selectedCorrectAnswers === 1 && choices[answerIdx[0]].isCorrect;
+            //         } else {
+            //             const selectedIncorrectAnswers = answerIdx.length - selectedCorrectAnswers;
+            //             const omittedCorrectAnswers = totalCorrectChoices - selectedCorrectAnswers;
+            //             isCorrect = selectedIncorrectAnswers === 0 && omittedCorrectAnswers === 0;
+            //         }
 
-                    if (isCorrect && getRoom().firstAnswer) {
-                        getRoom().firstAnswer = false;
-                        const currentScore = getRoom().score.get(playerId);
-                        getRoom().score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
-                        this.io.to(getRoom().roomId).emit('got-bonus', playerId);
-                    } else if (isCorrect) {
-                        const currentScore = getRoom().score.get(playerId);
-                        getRoom().score.set(playerId, question.points + currentScore);
-                    }
+            //         if (isCorrect && getRoom().firstAnswer) {
+            //             getRoom().firstAnswer = false;
+            //             const currentScore = getRoom().score.get(playerId);
+            //             getRoom().score.set(playerId, FIRST_ANSWER_MULTIPLIER * question.points + currentScore);
+            //             this.io.to(getRoom().roomId).emit('got-bonus', playerId);
+            //         } else if (isCorrect) {
+            //             const currentScore = getRoom().score.get(playerId);
+            //             getRoom().score.set(playerId, question.points + currentScore);
+            //         }
 
-                    if (getRoom().assertedAnswers === getRoom().player.size) {
-                        this.io.to(getRoom().roomId).emit('answer-verification', Array.from(getRoom().score));
-                        getRoom().assertedAnswers = 0;
-                    }
-                } else {
-                    throw new Error('Error trying to calculate the score of a room that does not exist');
-                }
-            });
+            //         if (getRoom().assertedAnswers === getRoom().player.size) {
+            //             this.io.to(getRoom().roomId).emit('answer-verification', Array.from(getRoom().score));
+            //             getRoom().assertedAnswers = 0;
+            //         }
+            //     } else {
+            //         throw new Error('Error trying to calculate the score of a room that does not exist');
+            //     }
+            // });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
                 socket.to(roomId).emit('chat-message', {

@@ -8,6 +8,7 @@ const ONE_SECOND_IN_MS = 1000;
 const ID_LOBBY_LENGTH = 4;
 
 export class Room {
+    io: SocketIoServer;
     roomId = '';
     playerList = new Map<string, IPlayer>();
     playerLeftList: string[] = [];
@@ -15,11 +16,14 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
-
-    duration = 0;
+    launchTimer = true;
+    // eslint-disable-next-line
+    duration = 5;
     timerId = 0;
     currentTime = 0;
     isRunning = false;
+    currentQuestionIndex = 0;
+
     livePlayerAnswers = new Map<string, number[]>();
     player = new Map<string, string>();
     score = new Map<string, number>();
@@ -28,24 +32,35 @@ export class Room {
     firstAnswer = true;
     playersAnswers: AnswersPlayer[] = [];
 
-    constructor(game: IGame) {
+    constructor(game: IGame, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
-        // Promise.resolve(this.gameService.getGame(gameId)).then((game) => {
-        //     this.game = game;
-        // });
         this.game = game;
+        this.io = io;
     }
 
-    startCountdownTimer(io: SocketIoServer, roomId: string): void {
+    startQuestion(): void {
+        if (!this.isRunning) {
+            if (this.launchTimer) {
+                this.duration = 5;
+                this.isRunning = true;
+                this.startCountdownTimer();
+            } else {
+                this.isRunning = true;
+                this.startCountdownTimer();
+            }
+        }
+    }
+
+    startCountdownTimer(): void {
         this.currentTime = this.duration;
-        io.to(roomId).emit('timer-countdown', this.duration);
+        this.io.to(this.roomId).emit('timer-countdown', this.duration);
         const timerId = setInterval(
             () => {
                 this.currentTime -= 1;
-                io.to(roomId).emit('timer-countdown', this.currentTime);
+                this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
                 if (this.currentTime === 0) {
-                    io.to(roomId).emit('stop-timer');
-                    this.resetTimerCountdown();
+                    this.io.to(this.roomId).emit('stop-timer');
+                    this.handleTimerEnd();
                 }
             },
             ONE_SECOND_IN_MS,
@@ -54,11 +69,17 @@ export class Room {
         this.timerId = timerId;
     }
 
-    resetTimerCountdown(): void {
+    handleTimerEnd(): void {
         clearInterval(this.timerId);
         this.isRunning = false;
         this.currentTime = this.duration;
         this.answersLocked = 0;
+        this.currentQuestionIndex += 1;
+        if (this.launchTimer) {
+            this.launchTimer = false;
+            this.duration = this.game.duration;
+            this.startQuestion();
+        }
     }
 
     generateLobbyId = (): string => {

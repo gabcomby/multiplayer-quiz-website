@@ -3,7 +3,7 @@ import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { SocketService } from '@app/services/socket.service';
+// import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 
 const START_TIMER_DURATION = 5;
@@ -19,8 +19,7 @@ export class HostGamePageComponent implements OnInit {
     answersClicked: [string, number[]][] = [];
     unsubscribeSubject: Subscription[];
     constructor(
-        private gameService: GameService,
-        private socketService: SocketService,
+        private gameService: GameService, // private socketService: SocketService,
     ) {}
 
     get currentQuestionIndexValue(): number {
@@ -91,19 +90,20 @@ export class HostGamePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.socketService.onLivePlayerAnswers((answers) => {
-            this.answersClicked = answers;
-        });
+        // this.socketService.onLivePlayerAnswers((answers) => {
+        //     this.answersClicked = answers;
+        // });
+        console.log('lol');
     }
 
     handleGameLeave(): void {
-        this.gameService.handleGameLeave();
+        // this.gameService.handleGameLeave();
     }
 
     goToResult(): void {
-        this.socketService.goToResult();
+        // this.socketService.goToResult();
     }
     goNextQuestion(): void {
-        this.socketService.nextQuestion();
+        // this.socketService.nextQuestion();
     }
 }
