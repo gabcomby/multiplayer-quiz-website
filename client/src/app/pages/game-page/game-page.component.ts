@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import type { Question } from '@app/interfaces/game';
-import type { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
@@ -36,6 +35,10 @@ export class GamePageComponent {
         return this.gameService.timerStoppedValue;
     }
 
+    get playerList() {
+        return this.gameService.playerListValue;
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
@@ -56,10 +59,6 @@ export class GamePageComponent {
 
     get answerIsCorrectValue(): boolean {
         return this.gameService.answerIsCorrect;
-    }
-
-    get playerListValue(): Player[] {
-        return this.gameService.playerListFromLobby;
     }
 
     get currentPlayerId(): string {

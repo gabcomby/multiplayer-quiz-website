@@ -105,9 +105,9 @@ export class SocketService {
         });
     }
 
-    onQuestion(callback: (question: Question) => void): void {
-        this.socket.on('question', (question: Question) => {
-            callback(question);
+    onQuestion(callback: (question: Question, questionIndex: number) => void): void {
+        this.socket.on('question', (question: Question, questionIndex: number) => {
+            callback(question, questionIndex);
         });
     }
 
@@ -115,6 +115,14 @@ export class SocketService {
         this.socket.on('timer-stopped', () => {
             callback();
         });
+    }
+
+    nextQuestion(): void {
+        this.socket.emit('next-question');
+    }
+
+    sendAnswers(answerIdx: number[]): void {
+        this.socket.emit('send-answers', answerIdx);
     }
 
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================

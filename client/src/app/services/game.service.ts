@@ -12,7 +12,7 @@ import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
-// const TIME_BETWEEN_QUESTIONS = 3000;
+const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
 
 @Injectable({
@@ -30,6 +30,7 @@ export class GameService {
     totalQuestionDuration: number = 0;
     currentQuestion: Question;
     timerStopped: boolean = false;
+    answerIdx: number[];
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -62,7 +63,6 @@ export class GameService {
     gameId: string;
     currentPlayerId: string;
     currentPlayerName: string;
-    answerIdx: number[];
     playerGoneList: Player[] = [];
     answersClicked: [string, number[]][] = [];
     // À BOUGER DANS LE SERVEUR??
@@ -72,7 +72,6 @@ export class GameService {
     answerIsCorrect: boolean;
     subscription: Subscription;
     endGame = false;
-    nextQuestion = false;
     private isLaunchTimer: boolean;
     // À BOUGER DANS LE SERVEUR??
 
@@ -220,6 +219,12 @@ export class GameService {
         this.socketService.startGame();
     }
 
+    nextQuestion(): void {
+        setTimeout(() => {
+            this.socketService.nextQuestion();
+        }, TIME_BETWEEN_QUESTIONS);
+    }
+
     setupWebsocketEvents(): void {
         // ==================== SOCKETS USED AFTER REFACTOR ====================
 
@@ -234,7 +239,8 @@ export class GameService {
 
         this.socketService.onPlayerListChange((playerList: [[string, Player]]) => {
             const playerListOriginal = new Map(playerList);
-            this.playerList = [...playerListOriginal.values()];
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
         });
 
         this.socketService.onLobbyDeleted(() => {
@@ -272,13 +278,15 @@ export class GameService {
             this.totalQuestionDuration = data;
         });
 
-        this.socketService.onQuestion((question: Question) => {
+        this.socketService.onQuestion((question: Question, questionIndex: number) => {
             this.timerStopped = false;
+            this.currentQuestionIndex = questionIndex;
             this.currentQuestion = question;
         });
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
+            this.socketService.sendAnswers(this.answerIdx);
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================

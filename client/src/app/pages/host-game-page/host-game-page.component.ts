@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 // import { SocketService } from '@app/services/socket.service';
@@ -45,6 +44,10 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.timerStoppedValue;
     }
 
+    get playerList() {
+        return this.gameService.playerListValue;
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
@@ -53,10 +56,6 @@ export class HostGamePageComponent implements OnInit {
 
     get currentQuestionArray(): Question[] {
         return [this.gameService.currentQuestion];
-    }
-
-    get playerListValue(): Player[] {
-        return this.gameService.playerListFromLobby;
     }
 
     get isLaunchTimer(): boolean {
@@ -69,9 +68,6 @@ export class HostGamePageComponent implements OnInit {
 
     get endGame(): boolean {
         return this.gameService.endGame;
-    }
-    get nextQuestion(): boolean {
-        return this.gameService.nextQuestion;
     }
 
     get playerGoneList() {
@@ -90,6 +86,12 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.matchLobby.lobbyCode;
     }
 
+    // ==================== FCT USED AFTER REFACTOR ====================
+    nextQuestion(): void {
+        this.gameService.nextQuestion();
+    }
+    // ==================== FCT USED AFTER REFACTOR ====================
+
     ngOnInit(): void {
         // this.socketService.onLivePlayerAnswers((answers) => {
         //     this.answersClicked = answers;
@@ -103,8 +105,5 @@ export class HostGamePageComponent implements OnInit {
 
     goToResult(): void {
         // this.socketService.goToResult();
-    }
-    goNextQuestion(): void {
-        // this.socketService.nextQuestion();
     }
 }

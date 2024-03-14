@@ -127,6 +127,16 @@ export class Server {
                 }
             });
 
+            socket.on('next-question', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().startQuestion();
+                }
+            });
+
+            socket.on('send-answers', (answerIdx: number[]) => {
+                getRoom().verifyAnswers(socket.id, answerIdx);
+            });
+
             // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('verify-room-lock', (roomId: string) => {

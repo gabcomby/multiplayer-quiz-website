@@ -6,6 +6,7 @@ import { Server as SocketIoServer } from 'socket.io';
 
 const ONE_SECOND_IN_MS = 1000;
 const ID_LOBBY_LENGTH = 4;
+const FIRST_ANSWER_MULTIPLIER = 1.2;
 
 export class Room {
     io: SocketIoServer;
@@ -17,17 +18,18 @@ export class Room {
     roomLocked = false;
     hostId = '';
     launchTimer = true;
-    // eslint-disable-next-line
     duration = 0;
     timerId = 0;
     currentTime = 0;
     isRunning = false;
-    currentQuestionIndex = 0;
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
+    currentQuestionIndex = -1;
+    firstAnswerForBonus = true;
+    assertedAnswers: number = 0;
 
     livePlayerAnswers = new Map<string, number[]>();
     player = new Map<string, string>();
     score = new Map<string, number>();
-    assertedAnswers: number = 0;
     answersLocked = 0;
     firstAnswer = true;
     playersAnswers: AnswersPlayer[] = [];
@@ -45,7 +47,10 @@ export class Room {
                 this.isRunning = true;
                 this.startCountdownTimer();
             } else {
-                this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex]);
+                this.currentQuestionIndex += 1;
+                this.firstAnswerForBonus = true;
+                this.assertedAnswers = 0;
+                this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
                 this.isRunning = true;
                 this.startCountdownTimer();
             }
@@ -60,6 +65,7 @@ export class Room {
                 this.currentTime -= 1;
                 this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
                 if (this.currentTime === 0) {
+                    this.firstAnswerForBonus = false;
                     this.io.to(this.roomId).emit('timer-stopped');
                     this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
                     this.handleTimerEnd();
@@ -80,8 +86,41 @@ export class Room {
             this.launchTimer = false;
             this.duration = this.game.duration;
             this.startQuestion();
+        }
+    }
+
+    verifyAnswers(playerId: string, answerIdx: number[]): void {
+        if (!answerIdx) {
+            return;
+        }
+        const question = this.game.questions[this.currentQuestionIndex];
+        this.assertedAnswers += 1;
+        if (answerIdx.length === 0) {
+            return;
+        }
+        const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+        const isMultipleAnswer = totalCorrectChoices > 1;
+        let isCorrect = false;
+        if (!isMultipleAnswer) {
+            isCorrect = question.choices[answerIdx[0]].isCorrect;
         } else {
-            this.currentQuestionIndex += 1;
+            for (const index of answerIdx) {
+                if (!question.choices[index].isCorrect) {
+                    isCorrect = false;
+                    break;
+                }
+                isCorrect = true;
+            }
+        }
+        if (isCorrect && this.firstAnswerForBonus) {
+            this.firstAnswerForBonus = false;
+            this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
+            // this.io.to(getRoom().roomId).emit('got-bonus', playerId);
+        } else if (isCorrect) {
+            this.playerList.get(playerId).score += question.points;
+        }
+        if (this.assertedAnswers === this.playerList.size) {
+            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
         }
     }
 
