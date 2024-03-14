@@ -111,6 +111,12 @@ export class SocketService {
         });
     }
 
+    onTimerStopped(callback: () => void): void {
+        this.socket.on('timer-stopped', () => {
+            callback();
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     // onStopTimer(callback: () => void) {

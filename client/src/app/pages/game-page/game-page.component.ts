@@ -32,6 +32,10 @@ export class GamePageComponent {
         return this.gameService.totalQuestionDurationValue;
     }
 
+    get timerStopped(): boolean {
+        return this.gameService.timerStoppedValue;
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {

@@ -60,7 +60,7 @@ export class Room {
                 this.currentTime -= 1;
                 this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
                 if (this.currentTime === 0) {
-                    // this.io.to(this.roomId).emit('stop-timer');
+                    this.io.to(this.roomId).emit('timer-stopped');
                     this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
                     this.handleTimerEnd();
                 }

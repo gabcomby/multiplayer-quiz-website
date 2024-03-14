@@ -29,6 +29,7 @@ export class GameService {
     nbrOfQuestions: number = 0;
     totalQuestionDuration: number = 0;
     currentQuestion: Question;
+    timerStopped: boolean = false;
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -130,19 +131,11 @@ export class GameService {
     }
 
     get currentQuestionValue(): Question {
-        // if (this.currentQuestion) {
-        //     return this.currentQuestion;
-        // } else {
-        //     return {
-        //         type: '',
-        //         text: '',
-        //         points: 0,
-        //         lastModification: new Date(),
-        //         id: '',
-        //         choices: [],
-        //     };
-        // }
         return this.currentQuestion;
+    }
+
+    get timerStoppedValue(): boolean {
+        return this.timerStopped;
     }
     // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
@@ -263,6 +256,7 @@ export class GameService {
 
         this.socketService.onGameLaunch((questionDuration: number, nbrOfQuestions: number) => {
             this.launchTimer = true;
+            this.timerStopped = false;
             this.nbrOfQuestions = nbrOfQuestions;
             this.totalQuestionDuration = questionDuration;
             this.currentQuestionIndex = 0;
@@ -279,7 +273,12 @@ export class GameService {
         });
 
         this.socketService.onQuestion((question: Question) => {
+            this.timerStopped = false;
             this.currentQuestion = question;
+        });
+
+        this.socketService.onTimerStopped(() => {
+            this.timerStopped = true;
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================

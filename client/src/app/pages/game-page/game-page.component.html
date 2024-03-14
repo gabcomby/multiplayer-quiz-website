@@ -21,7 +21,7 @@
             [question]="currentQuestion.text || ''"
             [mark]="currentQuestion.points || 0"
             [choices]="currentQuestion.choices || []"
-            [timerExpired]="questionHasExpiredValue"
+            [timerExpired]="timerStopped"
             (answerIdx)="setAnswerIndex($event)"
             [answerIsCorrect]="answerIsCorrectValue"
         ></app-game-page-questions>

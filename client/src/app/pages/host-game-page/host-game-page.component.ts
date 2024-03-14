@@ -41,6 +41,10 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.currentQuestionValue;
     }
 
+    get timerStopped(): boolean {
+        return this.gameService.timerStoppedValue;
+    }
+
     // ==================== GETTERS USED AFTER REFACTOR ====================
 
     get currentGameTitle(): string {
