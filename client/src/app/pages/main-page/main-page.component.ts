@@ -138,12 +138,11 @@ export class MainPageComponent {
     };
 
     private async authenticateUserIfBanned(name: string, lobbyCode: string): Promise<boolean> {
-        const result$ = await this.matchLobbyService.authenticateUser(name, lobbyCode);
+        const result$ = this.matchLobbyService.authenticateUser(name, lobbyCode);
         const result = await lastValueFrom(result$);
 
         if (!result) {
             const lockStatus = await this.fetchLobbyLockStatus(lobbyCode);
-
             if (lockStatus) {
                 this.snackbarService.openSnackBar('La partie est verrouillée');
                 return false;
