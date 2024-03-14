@@ -225,7 +225,6 @@ export class GameService {
     }
 
     submitAnswer(): void {
-        console.log('submitting because locked');
         this.socketService.sendLockedAnswers(this.answerIdx);
     }
 

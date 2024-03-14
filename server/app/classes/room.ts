@@ -102,7 +102,6 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
-        console.log('assertedAnswers', this.assertedAnswers);
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
@@ -131,7 +130,6 @@ export class Room {
             this.playerList.get(playerId).score += question.points;
         }
         if (this.assertedAnswers === this.playerList.size) {
-            console.log('sending answers', this.playerList);
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
         }
     }
