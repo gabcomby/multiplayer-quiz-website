@@ -144,7 +144,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.socketService.createRoom(game.id);
             this.gameService.resetGameVariables();
             this.gameService.setupWebsocketEvents();
-            // this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
             this.router.navigate(['/gameWait']);
             return true;
         }

@@ -74,6 +74,16 @@ export class SocketService {
         });
     }
 
+    toggleRoomLock() {
+        this.socket.emit('toggle-room-lock');
+    }
+
+    onRoomLockStatus(callback: (isLocked: boolean) => void) {
+        this.socket.on('room-lock-status', (isLocked: boolean) => {
+            callback(isLocked);
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     deletedGame(callback: (gameId: string) => void) {
@@ -146,17 +156,6 @@ export class SocketService {
     }
     submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
         this.socket.emit('player-answers', idPlayer, answerIdx);
-    }
-    toggleRoomLock() {
-        this.socket.emit('toggle-room-lock');
-    }
-    verifyRoomLock(roomId: string) {
-        this.socket.emit('verify-room-lock', roomId);
-    }
-    onRoomLockStatus(callback: (isLocked: boolean) => void) {
-        this.socket.on('room-lock-status', (isLocked: boolean) => {
-            callback(isLocked);
-        });
     }
 
     gameIsFinishedSocket() {

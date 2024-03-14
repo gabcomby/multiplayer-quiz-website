@@ -12,6 +12,7 @@ import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
 import { MatchLobbyController } from './controllers/match-lobby.controller';
 import { QuestionsController } from './controllers/questions.controller';
+import { RoomController } from './controllers/room.controller';
 import { env } from './env';
 
 const DB_URL = env.dbUrl;
@@ -29,6 +30,7 @@ export class Application {
         private readonly questionsController: QuestionsController,
         private readonly matchController: MatchController,
         private readonly matchLobbyController: MatchLobbyController,
+        private readonly roomController: RoomController,
     ) {
         this.app = express();
 
@@ -93,6 +95,7 @@ export class Application {
         this.app.use('/api/authenticate', this.authController.router);
         this.app.use('/api/matches', this.matchController.router);
         this.app.use('/api/lobbies', this.matchLobbyController.router);
+        this.app.use('/api/rooms', this.roomController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

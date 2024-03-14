@@ -19,8 +19,6 @@ const FIRST_ANSWER_MULTIPLIER = 1.2;
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
 
-    // rooms = new Map<string, Room>();
-
     private server: http.Server;
     private io: SocketIoServer;
 
@@ -91,8 +89,6 @@ export class Server {
                     this.io.to(socket.id).emit('room-joined', getRoom().roomId);
                     // eslint-disable-next-line no-console
                     console.log('Joined', roomId, 'room is', rooms.get(roomId));
-                } else {
-                    throw new Error('The room you are trying to join does not exist');
                 }
             });
 
@@ -114,24 +110,21 @@ export class Server {
 
             socket.on('ban-player', (name: string) => {
                 if (roomExists(getRoom().roomId)) {
-                    getRoom().bannedNames.push(name);
+                    getRoom().bannedNames.push(name.toLowerCase());
                     // eslint-disable-next-line
                     const playerToBan = [...getRoom().playerList.entries()].find(([key, value]) => value.name === name)?.[0];
                     this.io.to(playerToBan).emit('banned-from-game');
-                } else {
-                    throw new Error('Error trying to ban a player from a room that does not exist');
                 }
             });
-
-            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('toggle-room-lock', () => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().roomLocked = !getRoom().roomLocked;
-                } else {
-                    throw new Error('Error trying to toggle the lock of a room that does not exist');
+                    this.io.to(getRoom().hostId).emit('room-lock-status', getRoom().roomLocked);
                 }
             });
+
+            // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
             socket.on('verify-room-lock', (roomId: string) => {
                 if (roomExists(roomId)) {

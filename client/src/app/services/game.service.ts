@@ -24,6 +24,7 @@ export class GameService {
     lobbyCode: string = '';
     playerList: Player[] = [];
     isHost: boolean = false;
+    roomLocked: boolean = false;
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -94,6 +95,10 @@ export class GameService {
 
     get isHostValue(): boolean {
         return this.isHost;
+    }
+
+    get roomIsLockedValue(): boolean {
+        return this.roomLocked;
     }
     // ==================== NEW GETTERS USED AFTER REFACTOR ====================
 
@@ -194,6 +199,7 @@ export class GameService {
         this.lobbyCode = '';
         this.playerList = [];
         this.isHost = false;
+        this.roomLocked = false;
     }
 
     setupWebsocketEvents(): void {
@@ -224,6 +230,10 @@ export class GameService {
 
         this.socketService.onBannedFromGame(() => {
             this.leaveRoom();
+        });
+
+        this.socketService.onRoomLockStatus((isLocked: boolean) => {
+            this.roomLocked = isLocked;
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================
