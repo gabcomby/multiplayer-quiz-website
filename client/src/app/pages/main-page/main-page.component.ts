@@ -72,6 +72,7 @@ export class MainPageComponent {
         };
         this.socketService.connect();
         this.socketService.joinRoom(result.lobbyCode, newPlayer);
+        this.gameService.resetGameVariables();
         this.gameService.setupWebsocketEvents();
         // this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
         this.router.navigate(['/gameWait']);

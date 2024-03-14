@@ -8,6 +8,9 @@ import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 import { IQuestion } from './model/game.model';
 import { IPlayer } from './model/match.model';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+// const rooms = require('@app/module');
+import { rooms } from './module';
 
 const BASE_TEN = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
@@ -16,7 +19,7 @@ const FIRST_ANSWER_MULTIPLIER = 1.2;
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
 
-    rooms = new Map<string, Room>();
+    // rooms = new Map<string, Room>();
 
     private server: http.Server;
     private io: SocketIoServer;
@@ -57,16 +60,16 @@ export class Server {
             // ==================== FUNCTIONS USED AFTER REFACTOR ====================
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
-                return this.rooms.get(roomsArray[1]);
+                return rooms.get(roomsArray[1]);
             };
 
             const setRoom = (room: Room) => {
                 const roomsArray = Array.from(socket.rooms);
-                this.rooms.set(roomsArray[1], room);
+                rooms.set(roomsArray[1], room);
             };
 
             const roomExists = (roomId: string) => {
-                return this.rooms.has(roomId);
+                return rooms.has(roomId);
             };
 
             socket.on('create-room', async (gameId: string) => {
@@ -87,7 +90,7 @@ export class Server {
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('room-joined', getRoom().roomId);
                     // eslint-disable-next-line no-console
-                    console.log('Joined', roomId, 'room is', this.rooms.get(roomId));
+                    console.log('Joined', roomId, 'room is', rooms.get(roomId));
                 } else {
                     throw new Error('The room you are trying to join does not exist');
                 }
@@ -97,7 +100,7 @@ export class Server {
                 if (roomExists(getRoom().roomId)) {
                     if (getRoom().hostId === socket.id) {
                         this.io.to(getRoom().roomId).emit('lobby-deleted');
-                        this.rooms.delete(getRoom().roomId);
+                        rooms.delete(getRoom().roomId);
                     } else {
                         getRoom().playerList.delete(socket.id);
                         if (getRoom().playerList.size === 0) {
@@ -105,11 +108,7 @@ export class Server {
                         } else {
                             this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                         }
-                        // eslint-disable-next-line no-console
-                        console.log('Players are now', getRoom().player);
                     }
-                } else {
-                    throw new Error('Error trying to leave a room that does not exist');
                 }
             });
 
@@ -136,7 +135,7 @@ export class Server {
 
             socket.on('verify-room-lock', (roomId: string) => {
                 if (roomExists(roomId)) {
-                    this.io.to(socket.id).emit('room-lock-status', this.rooms.get(roomId).roomLocked);
+                    this.io.to(socket.id).emit('room-lock-status', rooms.get(roomId).roomLocked);
                 } else {
                     throw new Error('Error trying to get the lock status of a room that does not exist');
                 }
@@ -231,7 +230,7 @@ export class Server {
             socket.on('assert-answers', async (question: IQuestion, answerIdx: number[]) => {
                 const playerId = getRoom().player.get(socket.id);
                 const choices: IChoice[] = question.choices;
-                this.rooms.get(getRoom().roomId).assertedAnswers += 1;
+                rooms.get(getRoom().roomId).assertedAnswers += 1;
                 if (roomExists(getRoom().roomId)) {
                     if (answerIdx.length === 0) {
                         this.io.to(socket.id).emit('answer-verification', false, 1);
@@ -305,8 +304,8 @@ export class Server {
             socket.on('banFromGame', (idPlayer) => {
                 const roomsArray = Array.from(socket.rooms);
                 let socketToBeBanned: string;
-                if (this.rooms.has(roomsArray[1])) {
-                    const players = this.rooms.get(roomsArray[1]).player;
+                if (rooms.has(roomsArray[1])) {
+                    const players = rooms.get(roomsArray[1]).player;
                     for (const [key, value] of players.entries()) {
                         if (value === idPlayer) socketToBeBanned = key;
                     }

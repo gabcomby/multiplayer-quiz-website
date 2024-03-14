@@ -190,6 +190,12 @@ export class GameService {
         this.socketService.banPlayer(name);
     }
 
+    resetGameVariables(): void {
+        this.lobbyCode = '';
+        this.playerList = [];
+        this.isHost = false;
+    }
+
     setupWebsocketEvents(): void {
         // ==================== SOCKETS USED AFTER REFACTOR ====================
 
