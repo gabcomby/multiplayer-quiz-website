@@ -41,7 +41,7 @@ export class ResultsViewComponent implements OnInit {
         this.sortDataSource();
     }
 
-    sortDataSource() {
+    private sortDataSource() {
         this.dataSource.sort((a, b) => {
             if (b.score !== a.score) {
                 return b.score - a.score;
@@ -51,7 +51,7 @@ export class ResultsViewComponent implements OnInit {
         });
     }
 
-    updateAnswersQuestions(answers: AnswersPlayer[]) {
+    private updateAnswersQuestions(answers: AnswersPlayer[]) {
         for (const answer of answers) {
             for (const playerChoice of Object.entries(answer)) {
                 if (playerChoice) {

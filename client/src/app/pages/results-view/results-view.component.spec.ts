@@ -129,46 +129,23 @@ describe('ResultsViewComponent', () => {
         expect(component.questions).toEqual(fakeQuestions);
     });
 
-    // it('should update answersArray when updateAnswersQuestions is called', () => {
-    //     const mockAnswers: AnswersPlayer[] = [
-    //         new Map<string, number[]>([
-    //             ['player1', [1, 2, 3]],
-    //             ['player2', [1, 2, 3]],
-    //         ]),
-    //         new Map<string, number[]>([
-    //             ['player3', [1, 2, 3]],
-    //             ['player4', [1, 2, 3]],
-    //         ]),
-    //     ];
-    //     const expectedAnswersArray: [string, number[]][] = [
-    //         ['player1', [1, 2, 3]],
-    //         ['player2', [1, 2, 3]],
-    //         ['player3', [1, 2, 3]],
-    //         ['player4', [1, 2, 3]],
-    //     ];
-    //     component.updateAnswersQuestions(mockAnswers);
-    //     expect(component.answersArray).toEqual(expectedAnswersArray);
-    // });
+    it('should sort dataSource correctly', () => {
+        const unsortedPlayers: Player[] = [
+            { name: 'Player 1', score: 10, id: 'a', bonus: 1 },
+            { name: 'Player 3', score: 5, id: 'b', bonus: 2 },
+            { name: 'Player 2', score: 10, id: 'c', bonus: 1 },
+        ];
+        const sortedPlayers: Player[] = [
+            { name: 'Player 1', score: 10, id: 'a', bonus: 1 },
+            { name: 'Player 2', score: 10, id: 'c', bonus: 1 },
+            { name: 'Player 3', score: 5, id: 'b', bonus: 2 },
+        ];
 
-    // it('should sort dataSource on ngOnInit', () => {
-    //     const players: Player[] = [
-    //         {
-    //             id: 'player1',
-    //             name: 'John',
-    //             score: 0,
-    //             bonus: 0,
-    //             isLocked: false,
-    //         },
-    //         {
-    //             id: 'player2',
-    //             name: 'Alice',
-    //             score: 0,
-    //             bonus: 0,
-    //             isLocked: false,
-    //         },
-    //     ];
-    //     spyOnProperty(gameService, 'playerListFromLobby', 'get').and.returnValue(players);
-    //     component.sortDataSource();
-    //     expect(component.dataSource).toEqual(players);
-    // });
+        component.dataSource = unsortedPlayers;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sortDataSourceSpy = spyOn<any>(component, 'sortDataSource').and.callThrough();
+        sortDataSourceSpy.call(component);
+        expect(sortDataSourceSpy).toHaveBeenCalled();
+        expect(component.dataSource).toEqual(sortedPlayers);
+    });
 });
