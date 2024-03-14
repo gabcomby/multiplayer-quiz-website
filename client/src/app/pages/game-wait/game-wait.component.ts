@@ -13,9 +13,6 @@ export class GameWaitComponent {
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
-    get currentPlayerName() {
-        return this.gameService.currentPlayerName;
-    }
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
     get playerList() {
         return this.gameService.playerListValue;

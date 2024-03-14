@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import type { Question } from '@app/interfaces/game';
+import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
@@ -39,50 +39,19 @@ export class GamePageComponent {
         return this.gameService.playerListValue;
     }
 
-    // ==================== GETTERS USED AFTER REFACTOR ====================
-
-    get currentGameTitle(): string {
-        return this.gameService.currentGameTitle;
-    }
-
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
-    }
-
     get currentQuestion(): Question | null {
         return this.gameService.currentQuestionValue;
     }
 
-    get questionHasExpiredValue(): boolean {
-        return this.gameService.questionHasExpired;
-    }
-
-    get answerIsCorrectValue(): boolean {
-        return this.gameService.answerIsCorrect;
-    }
-
-    get currentPlayerId(): string {
-        return this.gameService.currentPlayerId;
-    }
-
-    get hostId(): string {
-        return this.gameService.matchLobby.hostId;
-    }
-
     get isLaunchTimer(): boolean {
-        return this.gameService.isLaunchTimerValue;
+        return this.gameService.launchTimerValue;
     }
 
-    get lobbyCode() {
-        return this.gameService.matchLobby.lobbyCode;
-    }
+    // ==================== GETTERS USED AFTER REFACTOR ====================
 
-    get getHost() {
-        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
-    }
-
-    get endGame(): boolean {
-        return this.gameService.endGame;
+    get currentGameTitle(): string {
+        // return this.gameService.currentGameTitle;
+        return 'Placeholder';
     }
 
     setAnswerIndex(answerIdx: number[]): void {

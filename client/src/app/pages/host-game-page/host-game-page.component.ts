@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnInit {
+export class HostGamePageComponent {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
@@ -51,6 +51,10 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.answersClicked;
     }
 
+    get isLaunchTimer(): boolean {
+        return this.gameService.launchTimerValue;
+    }
+
     get currentQuestionArray(): Question[] {
         if (this.gameService.currentQuestionValue === null) {
             return [];
@@ -59,58 +63,19 @@ export class HostGamePageComponent implements OnInit {
         }
     }
 
-    // ==================== GETTERS USED AFTER REFACTOR ====================
-
     get currentGameTitle(): string {
-        return this.gameService.currentGameTitle;
+        return 'Placeholder';
     }
 
-    get isLaunchTimer(): boolean {
-        return this.gameService.isLaunchTimerValue;
-    }
-
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
-    }
-
-    get endGame(): boolean {
-        return this.gameService.endGame;
-    }
-
-    get playerGoneList() {
-        return this.gameService.playerGoneList;
-    }
-
-    get answersClickedValue() {
-        return this.gameService.answersClicked;
-    }
-
-    get getHost() {
-        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
-    }
-
-    get lobbyCode() {
-        return this.gameService.matchLobby.lobbyCode;
-    }
+    // ==================== GETTERS USED AFTER REFACTOR ====================
 
     // ==================== FCT USED AFTER REFACTOR ====================
     nextQuestion(): void {
         this.gameService.nextQuestion();
     }
-    // ==================== FCT USED AFTER REFACTOR ====================
-
-    ngOnInit(): void {
-        // this.socketService.onLivePlayerAnswers((answers) => {
-        //     this.answersClicked = answers;
-        // });
-        console.log('lol');
-    }
 
     handleGameLeave(): void {
         this.gameService.leaveRoom();
     }
-
-    goToResult(): void {
-        // this.socketService.goToResult();
-    }
+    // ==================== FCT USED AFTER REFACTOR ====================
 }
