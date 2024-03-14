@@ -4,6 +4,7 @@ export interface IPlayer extends Document {
     id: string;
     name: string;
     score: number;
+    bonus: number;
 }
 
 export interface IMatch extends Document {

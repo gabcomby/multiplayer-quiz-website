@@ -139,6 +139,12 @@ export class SocketService {
         });
     }
 
+    onGoToResult(callback: (playerList: [[string, Player]]) => void): void {
+        this.socket.on('go-to-results', (playerList: [[string, Player]]) => {
+            callback(playerList);
+        });
+    }
+
     // ==================== FUNCTIONS USED AFTER REFACTOR ====================
 
     // onStopTimer(callback: () => void) {

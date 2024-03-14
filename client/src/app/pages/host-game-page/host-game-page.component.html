@@ -32,5 +32,22 @@
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
     </div>
     <button mat-raised-button color="primary" class="results" *ngIf="endGame" (click)="goToResult()">Voir les résultats</button>
-    <button mat-raised-button color="primary" class="nextQuestion" *ngIf="timerStopped" (click)="nextQuestion()">Prochaine question</button>
+    <button
+        mat-raised-button
+        color="primary"
+        class="nextQuestion"
+        *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
+        (click)="nextQuestion()"
+    >
+        Voir les résultats
+    </button>
+    <button
+        mat-raised-button
+        color="primary"
+        class="nextQuestion"
+        *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
+        (click)="nextQuestion()"
+    >
+        Prochaine question
+    </button>
 </div>

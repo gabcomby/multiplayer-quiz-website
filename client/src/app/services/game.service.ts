@@ -219,9 +219,13 @@ export class GameService {
     }
 
     nextQuestion(): void {
-        setTimeout(() => {
+        if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
             this.socketService.nextQuestion();
-        }, TIME_BETWEEN_QUESTIONS);
+        } else {
+            setTimeout(() => {
+                this.socketService.nextQuestion();
+            }, TIME_BETWEEN_QUESTIONS);
+        }
     }
 
     submitAnswer(): void {
@@ -294,6 +298,13 @@ export class GameService {
 
         this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
             this.answersClicked = answers;
+        });
+
+        this.socketService.onGoToResult((playerList: [[string, Player]]) => {
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
+            this.router.navigate(['/resultsView']);
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================

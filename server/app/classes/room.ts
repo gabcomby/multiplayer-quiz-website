@@ -49,17 +49,24 @@ export class Room {
                 this.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
-                this.firstAnswerForBonus = true;
-                this.assertedAnswers = 0;
-                this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
-                this.isRunning = true;
-                this.playerHasAnswered.forEach((value, key) => {
-                    this.playerHasAnswered.set(key, false);
-                });
-                this.livePlayerAnswers.forEach((value, key) => {
-                    this.livePlayerAnswers.set(key, []);
-                });
-                this.startCountdownTimer();
+                console.log('index', this.currentQuestionIndex);
+                console.log('length', this.game.questions.length);
+                if (this.currentQuestionIndex === this.game.questions.length) {
+                    console.log('end');
+                    this.io.to(this.roomId).emit('go-to-results', Array.from(this.playerList));
+                } else {
+                    this.firstAnswerForBonus = true;
+                    this.assertedAnswers = 0;
+                    this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
+                    this.isRunning = true;
+                    this.playerHasAnswered.forEach((value, key) => {
+                        this.playerHasAnswered.set(key, false);
+                    });
+                    this.livePlayerAnswers.forEach((value, key) => {
+                        this.livePlayerAnswers.set(key, []);
+                    });
+                    this.startCountdownTimer();
+                }
             }
         }
     }
@@ -125,7 +132,7 @@ export class Room {
         if (isCorrect && this.firstAnswerForBonus) {
             this.firstAnswerForBonus = false;
             this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-            // this.io.to(getRoom().roomId).emit('got-bonus', playerId);
+            this.playerList.get(playerId).bonus += 1;
         } else if (isCorrect) {
             this.playerList.get(playerId).score += question.points;
         }
