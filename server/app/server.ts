@@ -109,7 +109,7 @@ export class Server {
             });
 
             socket.on('ban-player', (name: string) => {
-                if (roomExists(getRoom().roomId)) {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().bannedNames.push(name.toLowerCase());
                     // eslint-disable-next-line
                     const playerToBan = [...getRoom().playerList.entries()].find(([key, value]) => value.name === name)?.[0];
@@ -118,7 +118,7 @@ export class Server {
             });
 
             socket.on('toggle-room-lock', () => {
-                if (roomExists(getRoom().roomId)) {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().roomLocked = !getRoom().roomLocked;
                     this.io.to(getRoom().hostId).emit('room-lock-status', getRoom().roomLocked);
                 }
