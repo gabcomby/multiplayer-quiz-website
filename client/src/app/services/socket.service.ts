@@ -53,8 +53,8 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (score: Map<string, number>) => void): void {
-        this.socket.on('answer-verification', (score: Map<string, number>) => {
+    onAnswerVerification(callback: (score: [[string, number]]) => void): void {
+        this.socket.on('answer-verification', (score: [[string, number]]) => {
             callback(score);
         });
     }
@@ -110,6 +110,17 @@ export class SocketService {
     submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
         this.socket.emit('player-answers', idPlayer, answerIdx);
     }
+    toggleRoomLock() {
+        this.socket.emit('toggle-room-lock');
+    }
+    verifyRoomLock(roomId: string) {
+        this.socket.emit('verify-room-lock', roomId);
+    }
+    onRoomLockStatus(callback: (isLocked: boolean) => void) {
+        this.socket.on('room-lock-status', (isLocked: boolean) => {
+            callback(isLocked);
+        });
+    }
 
     gameIsFinishedSocket() {
         this.socket.emit('endGame');
@@ -146,30 +157,34 @@ export class SocketService {
         });
     }
 
-    sendMessages(message: string, playerName: string, isHost: boolean) {
-        this.socket.emit('chatMessage', { message, playerName, isHost });
+    sendMessageToServer(message: string, playerName: string, roomId: string): void {
+        this.socket.emit('chat-message', { message, playerName, roomId });
     }
 
     onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
         return new Observable((observer) => {
-            this.socket.on('chatMessage', (data) => {
+            this.socket.on('chat-message', (data) => {
                 observer.next(data);
             });
         });
     }
-    updatePlayerList(lobbyId: string, incr: number) {
-        this.socket.emit('update', lobbyId, incr);
-    }
-    onUpdateList(callback: () => void) {
-        this.socket.on('updatePlayerList', () => {
-            callback();
-        });
-    }
+
     onLastPlayerDisconnected(callback: () => void) {
         this.socket.on('lastPlayerDisconnected', () => {
             callback();
         });
     }
+    bannedPlayer(idPlayer: string) {
+        this.socket.connect();
+        this.socket.emit('banFromGame', idPlayer);
+    }
+
+    async onBannedPlayer(callback: () => void) {
+        await this.socket.on('bannedFromHost', () => {
+            callback();
+        });
+    }
+
     goToResult() {
         this.socket.emit('goToResult');
     }
@@ -184,6 +199,16 @@ export class SocketService {
     onNextQuestion(callback: () => void) {
         this.socket.on('handleNextQuestion', () => {
             callback();
+        });
+    }
+
+    sendClickedAnswer(answerIdx: number[]) {
+        this.socket.emit('sendClickedAnswer', answerIdx);
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+            callback(answersArray);
         });
     }
 }

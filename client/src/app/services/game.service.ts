@@ -53,6 +53,7 @@ export class GameService {
     currentPlayerName: string;
     answerIdx: number[];
     playerGoneList: Player[] = [];
+    answersClicked: [string, number[]][] = [];
     // À BOUGER DANS LE SERVEUR??
     questionHasExpired: boolean;
     currentQuestionIndex: number;
@@ -151,6 +152,10 @@ export class GameService {
         return this.isLaunchTimer;
     }
 
+    get lockStatus(): boolean {
+        return this.lobbyData.isLocked;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
     }
@@ -174,6 +179,7 @@ export class GameService {
 
     initializeLobbyAndGame(lobbyId: string, playerId: string): void {
         this.lobbyId = lobbyId;
+        this.answersClicked = [];
         this.currentPlayerId = playerId;
         this.currentQuestionIndex = 0;
         this.previousQuestionIndex = 0;
@@ -221,6 +227,10 @@ export class GameService {
 
     setAnswerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
+    }
+
+    clickPlayerAnswer(answerIdx: number[]) {
+        this.socketService.sendClickedAnswer(answerIdx);
     }
 
     sendPlayerAnswer(answer: AnswersPlayer) {
@@ -366,11 +376,14 @@ export class GameService {
             }, TIME_BETWEEN_QUESTIONS);
             this.nextQuestion = false;
         });
+        this.socketService.onBannedPlayer(() => {
+            this.handleGameLeave();
+        });
 
         this.socketService.onAnswerVerification((score) => {
-            score = new Map(score);
+            const scoreMap = new Map(score);
             for (const player of this.lobbyData.playerList) {
-                const newScore = score.get(player.id);
+                const newScore = scoreMap.get(player.id);
                 if (newScore) {
                     player.score = newScore;
                 } else {
@@ -381,6 +394,14 @@ export class GameService {
                 // }
             }
         });
+
+        // this.socketService.onLivePlayerAnswers((answers) => {
+        //     this.addAnswersClicked(answers);
+        // });
+    }
+
+    addAnswersClicked(answersClicked: [string, number[]][]): void {
+        this.answersClicked = answersClicked;
     }
 
     private calculateBonus(playerId: string) {

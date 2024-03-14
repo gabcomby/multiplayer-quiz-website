@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
@@ -13,9 +13,10 @@ const START_TIMER_DURATION = 5;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
+export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
+    answersClicked: [string, number[]][] = [];
     unsubscribeSubject: Subscription[];
     constructor(
         private gameService: GameService,
@@ -50,6 +51,10 @@ export class HostGamePageComponent {
         return this.gameService.getCurrentQuestion();
     }
 
+    get currentQuestionArray(): Question[] {
+        return [this.gameService.currentQuestion];
+    }
+
     get playerListValue(): Player[] {
         return this.gameService.playerListFromLobby;
     }
@@ -73,9 +78,28 @@ export class HostGamePageComponent {
         return this.gameService.playerGoneList;
     }
 
+    get answersClickedValue() {
+        return this.gameService.answersClicked;
+    }
+
+    get getHost() {
+        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+    }
+
+    get lobbyCode() {
+        return this.gameService.matchLobby.lobbyCode;
+    }
+
+    ngOnInit(): void {
+        this.socketService.onLivePlayerAnswers((answers) => {
+            this.answersClicked = answers;
+        });
+    }
+
     handleGameLeave(): void {
         this.gameService.handleGameLeave();
     }
+
     goToResult(): void {
         this.socketService.goToResult();
     }

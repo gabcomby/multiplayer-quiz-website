@@ -73,12 +73,21 @@ export class GamePageComponent {
         return this.gameService.isLaunchTimerValue;
     }
 
+    get lobbyCode() {
+        return this.gameService.matchLobby.lobbyCode;
+    }
+
+    get getHost() {
+        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
+    }
+
     get endGame(): boolean {
         return this.gameService.endGame;
     }
 
     setAnswerIndex(answerIdx: number[]): void {
         this.gameService.setAnswerIndex(answerIdx);
+        this.gameService.clickPlayerAnswer(answerIdx);
     }
 
     handleGameLeave(): void {
