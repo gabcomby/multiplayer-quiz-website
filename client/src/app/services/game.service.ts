@@ -27,6 +27,7 @@ export class GameService {
     currentQuestion: Question | null;
     timerStopped: boolean = false;
     answersClicked: [string, number[]][] = [];
+    answerIdx: number[] = [];
     // ==================== NEW VARIABLES USED AFTER REFACTOR ====================
     finalResultsEmitter = new ReplaySubject<Player[]>(1);
     answersSelected = new ReplaySubject<AnswersPlayer[]>(1);
@@ -69,7 +70,6 @@ export class GameService {
     endGame = false;
     private isLaunchTimer: boolean;
     // À BOUGER DANS LE SERVEUR??
-    private answerIdx: number[];
 
     // eslint-disable-next-line max-params
     constructor(
@@ -211,6 +211,7 @@ export class GameService {
         this.isHost = false;
         this.roomLocked = false;
         this.currentQuestion = null;
+        this.answerIdx = [];
     }
 
     startGame(): void {
@@ -224,6 +225,7 @@ export class GameService {
     }
 
     submitAnswer(): void {
+        console.log('submitting because locked');
         this.socketService.sendLockedAnswers(this.answerIdx);
     }
 
@@ -292,9 +294,7 @@ export class GameService {
         });
 
         this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
-            console.log(answers);
-            const newAnswers = [...answers];
-            this.answersClicked = [...newAnswers];
+            this.answersClicked = answers;
         });
 
         // ==================== SOCKETS USED AFTER REFACTOR ====================

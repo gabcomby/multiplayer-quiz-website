@@ -84,6 +84,7 @@ export class Server {
                     socket.join(roomId);
                     getRoom().playerList.set(socket.id, player);
                     getRoom().playerHasAnswered.set(socket.id, false);
+                    getRoom().livePlayerAnswers.set(socket.id, []);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('room-joined', getRoom().roomId);
                 }
@@ -135,7 +136,9 @@ export class Server {
             });
 
             socket.on('send-answers', (answerIdx: number[]) => {
-                getRoom().verifyAnswers(socket.id, answerIdx);
+                if (socket.id !== getRoom().hostId) {
+                    getRoom().verifyAnswers(socket.id, answerIdx);
+                }
             });
 
             socket.on('send-locked-answers', (answerIdx: number[]) => {
@@ -149,8 +152,7 @@ export class Server {
 
             socket.on('send-live-answers', (answerIdx: number[]) => {
                 if (roomExists(getRoom().roomId)) {
-                    const playerId = getRoom().player.get(socket.id);
-                    getRoom().livePlayerAnswers.set(playerId, answerIdx);
+                    getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
             });

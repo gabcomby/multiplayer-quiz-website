@@ -28,8 +28,8 @@ export class Room {
     assertedAnswers: number = 0;
     playerHasAnswered = new Map<string, boolean>();
     lockedAnswers = 0;
-
     livePlayerAnswers = new Map<string, number[]>();
+
     player = new Map<string, string>();
     score = new Map<string, number>();
     firstAnswer = true;
@@ -56,6 +56,9 @@ export class Room {
                 this.playerHasAnswered.forEach((value, key) => {
                     this.playerHasAnswered.set(key, false);
                 });
+                this.livePlayerAnswers.forEach((value, key) => {
+                    this.livePlayerAnswers.set(key, []);
+                });
                 this.startCountdownTimer();
             }
         }
@@ -70,8 +73,9 @@ export class Room {
                 this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
                 if (this.currentTime === 0) {
                     this.firstAnswerForBonus = false;
-                    this.io.to(this.roomId).emit('timer-stopped');
-                    this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
+                    if (!this.launchTimer) {
+                        this.io.to(this.roomId).emit('timer-stopped');
+                    }
                     this.handleTimerEnd();
                 }
             },
@@ -88,6 +92,7 @@ export class Room {
         this.lockedAnswers = 0;
         if (this.launchTimer) {
             this.launchTimer = false;
+            this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
             this.duration = this.game.duration;
             this.startQuestion();
         }
@@ -97,6 +102,7 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
+        console.log('assertedAnswers', this.assertedAnswers);
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
@@ -125,6 +131,7 @@ export class Room {
             this.playerList.get(playerId).score += question.points;
         }
         if (this.assertedAnswers === this.playerList.size) {
+            console.log('sending answers', this.playerList);
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
         }
     }
