@@ -6,12 +6,9 @@ import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 import { IPlayer } from './model/match.model';
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-// const rooms = require('@app/module');
 import { rooms } from './module';
 
 const BASE_TEN = 10;
-// const FIRST_ANSWER_MULTIPLIER = 1.2;
 
 @Service()
 export class Server {
@@ -70,7 +67,7 @@ export class Server {
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, this.io);
+                const room = new Room(game, false, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
@@ -80,7 +77,7 @@ export class Server {
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, this.io);
+                const room = new Room(game, true, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;

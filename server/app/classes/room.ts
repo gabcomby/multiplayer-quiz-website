@@ -6,8 +6,10 @@ import { Server as SocketIoServer } from 'socket.io';
 const ONE_SECOND_IN_MS = 1000;
 const ID_LOBBY_LENGTH = 4;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
+const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 
 export class Room {
+    // Variables for the lobby
     io: SocketIoServer;
     roomId = '';
     playerList = new Map<string, IPlayer>();
@@ -16,11 +18,16 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
+    isTestRoom: boolean;
+
+    // Variables for the timer
     launchTimer = true;
     duration = 0;
     timerId = 0;
     currentTime = 0;
     isRunning = false;
+
+    // Variables for the questions & answers
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
     currentQuestionIndex = -1;
     firstAnswerForBonus = true;
@@ -31,9 +38,10 @@ export class Room {
     globalAnswerIndex: number[] = [];
     allAnswersForQuestion = new Map<string, number[]>();
 
-    constructor(game: IGame, io: SocketIoServer) {
+    constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
         this.game = game;
+        this.isTestRoom = isTestRoom;
         this.io = io;
     }
 
@@ -97,6 +105,12 @@ export class Room {
             this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
             this.duration = this.game.duration;
             this.startQuestion();
+            return;
+        }
+        if (this.isTestRoom) {
+            setInterval(() => {
+                this.startQuestion();
+            }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
         }
     }
 
