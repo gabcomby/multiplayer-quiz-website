@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -101,9 +102,26 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    async isTheGameModifiedTest(game: Game): Promise<void> {
-        // eslint-disable-next-line
-        console.log(game);
+    async isTheGameModifiedTest(game: Game): Promise<boolean> {
+        const isModified = await this.isOriginalGame(game);
+        if (!isModified) {
+            this.gameSelected[game.id] = false;
+            this.ngOnInit();
+            return false;
+        } else {
+            this.socketService.connect();
+            this.gameService.resetGameVariables();
+            const player: Player = {
+                id: 'test-player-id',
+                name: 'Test Player',
+                score: 0,
+                bonus: 0,
+            };
+            this.socketService.createRoomTest(game.id, player);
+            this.gameService.setupWebsocketEvents();
+            this.router.navigate(['/game']);
+            return true;
+        }
     }
 
     backHome() {

@@ -77,6 +77,21 @@ export class Server {
                 this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
             });
 
+            socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
+                const gameService = new GameService();
+                const game = await gameService.getGame(gameId);
+                const room = new Room(game, this.io);
+                socket.join(room.roomId);
+                setRoom(room);
+                getRoom().hostId = socket.id;
+                getRoom().playerList.set(socket.id, player);
+                getRoom().playerHasAnswered.set(socket.id, false);
+                getRoom().livePlayerAnswers.set(socket.id, []);
+                this.io.to(getRoom().roomId).emit('room-test-created', getRoom().game.title, Array.from(getRoom().playerList));
+                this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
+                getRoom().startQuestion();
+            });
+
             socket.on('join-room', (roomId: string, player: IPlayer) => {
                 if (roomExists(roomId)) {
                     socket.join(roomId);

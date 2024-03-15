@@ -44,8 +44,18 @@ export class SocketService {
         });
     }
 
-    createRoom(roomId: string): void {
-        this.socket.emit('create-room', roomId);
+    createRoom(gameId: string): void {
+        this.socket.emit('create-room', gameId);
+    }
+
+    createRoomTest(gameId: string, player: Player): void {
+        this.socket.emit('create-room-test', gameId, player);
+    }
+
+    onRoomTestCreated(callback: (gameTitle: string, playerList: [[string, Player]]) => void) {
+        this.socket.on('room-test-created', (gameTitle: string, playerList: [[string, Player]]) => {
+            callback(gameTitle, playerList);
+        });
     }
 
     joinRoom(roomId: string, player: Player): void {
