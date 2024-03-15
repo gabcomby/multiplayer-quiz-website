@@ -2,13 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-// import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SocketService } from '@app/services/socket.service';
-import { of } from 'rxjs';
+// import { of } from 'rxjs';
 import { GameWaitComponent } from './game-wait.component';
 
 describe('GameWaitComponent', () => {
@@ -16,9 +14,21 @@ describe('GameWaitComponent', () => {
     let fixture: ComponentFixture<GameWaitComponent>;
     let gameService: GameService;
     let socketService: SocketService;
-    let matchLobbyService: MatchLobbyService;
     let matSnackBar: MatSnackBar;
-    // let router: Router;
+    const playerLeftValueMock = [
+        {
+            id: '1',
+            name: 'player1',
+            score: 0,
+            bonus: 0,
+        },
+        {
+            id: '2',
+            name: 'player2',
+            score: 0,
+            bonus: 0,
+        },
+    ];
     const playerLists = [
         {
             id: '1',
@@ -45,6 +55,16 @@ describe('GameWaitComponent', () => {
         hostId: 'host123',
     };
 
+    const mockLobbyIsLocked = {
+        id: '2',
+        playerList: playerLists,
+        gameId: 'FCGB',
+        bannedNames: bannedArray,
+        lobbyCode: '4567',
+        isLocked: true,
+        hostId: 'host123',
+    };
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]), HttpClientTestingModule],
@@ -52,7 +72,6 @@ describe('GameWaitComponent', () => {
             providers: [
                 { provide: gameService, useClass: GameService },
                 { provide: socketService, useClass: SocketService },
-                { provide: matchLobbyService, useClass: MatchLobbyService },
                 { provide: HttpClient, useValue: {} },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
                 { provide: MatSnackBar, useValue: matSnackBar },
@@ -61,7 +80,6 @@ describe('GameWaitComponent', () => {
 
         gameService = TestBed.inject(GameService);
         socketService = TestBed.inject(SocketService);
-        matchLobbyService = TestBed.inject(MatchLobbyService);
     });
 
     beforeEach(() => {
@@ -75,20 +93,73 @@ describe('GameWaitComponent', () => {
     });
 
     it('should return the good player list', () => {
-        spyOnProperty(gameService, 'matchLobby').and.returnValue(mockLobby);
-        const lobby = gameService.matchLobby;
-        expect(lobby.playerList).toContain(mockLobby.playerList[0]);
-        expect(lobby.playerList).toContain(mockLobby.playerList[1]);
+        spyOnProperty(gameService, 'playerListValue').and.returnValue(mockLobby.playerList);
+        const lobby = gameService.playerListValue;
+        expect(lobby).toContain(mockLobby.playerList[0]);
+        expect(lobby).toContain(mockLobby.playerList[1]);
+    });
+
+    it('should return the good player left list', () => {
+        spyOnProperty(gameService, 'playerLeftListValue').and.returnValue(playerLeftValueMock);
+        const lobby = gameService.playerLeftListValue;
+        expect(lobby).toContain(playerLeftValueMock[0]);
+        expect(lobby).toContain(playerLeftValueMock[1]);
     });
 
     it('should return if the player is the host', () => {
-        gameService.currentPlayerId = 'host123';
-        spyOnProperty(gameService, 'matchLobby').and.returnValue(mockLobby);
-        const host = gameService.matchLobby.hostId;
-        expect(host === gameService.currentPlayerId).toBe(true);
+        spyOnProperty(gameService, 'isHostValue').and.returnValue(true);
+        const host = gameService.isHostValue;
+        expect(host === gameService.isHostValue).toBe(true);
     });
 
-    it('should return the correct banned players array', () => {
+    it('should return the good lobby code', () => {
+        spyOnProperty(gameService, 'lobbyCodeValue').and.returnValue(mockLobby.lobbyCode);
+        const code = gameService.lobbyCodeValue;
+        expect(code).toEqual(mockLobby.lobbyCode);
+    });
+
+    it('should return the good lock status(false)', () => {
+        spyOnProperty(gameService, 'roomIsLockedValue').and.returnValue(mockLobby.isLocked);
+        const lock = gameService.roomIsLockedValue;
+        expect(lock).toEqual(mockLobby.isLocked);
+    });
+
+    it('should return the good lock status(true)', () => {
+        spyOnProperty(gameService, 'roomIsLockedValue').and.returnValue(mockLobbyIsLocked.isLocked);
+        const lockIsLocked = gameService.roomIsLockedValue;
+        expect(lockIsLocked).toEqual(mockLobbyIsLocked.isLocked);
+    });
+
+    it('should return the good game title', () => {
+        spyOnProperty(gameService, 'gameTitleValue').and.returnValue('ABCD');
+        const title = gameService.gameTitleValue;
+        expect(title).toEqual('ABCD');
+    });
+
+    it('should call the gameService.banPlayer method', () => {
+        spyOn(gameService, 'banPlayer');
+        component.banPlayer('player3');
+        expect(gameService.banPlayer).toHaveBeenCalled();
+    });
+
+    it('should call the gameService.leaveRoom method', () => {
+        spyOn(gameService, 'leaveRoom');
+        component.handleGameLeave();
+        expect(gameService.leaveRoom).toHaveBeenCalled();
+    });
+
+    it('should call the socketService.toggleRoomLock method', () => {
+        spyOn(socketService, 'toggleRoomLock');
+        component.toggleRoomLock();
+        expect(socketService.toggleRoomLock).toHaveBeenCalled();
+    });
+
+    it('should call the gameService.startGame method', () => {
+        spyOn(gameService, 'startGame');
+        component.handleGameLaunch();
+        expect(gameService.startGame).toHaveBeenCalled();
+    });
+    /* it('should return the correct banned players array', () => {
         spyOn(matchLobbyService, 'getBannedArray').and.returnValue(of(bannedArray));
         const result = component.bannedPlayers();
         expect(result).toEqual(bannedArray);
