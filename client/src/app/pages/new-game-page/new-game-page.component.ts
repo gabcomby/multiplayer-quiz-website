@@ -1,22 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
-import { MatchLobby } from '@app/interfaces/match-lobby';
+import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
+const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
     templateUrl: './new-game-page.component.html',
     styleUrls: ['./new-game-page.component.scss'],
 })
-export class NewGamePageComponent implements OnInit, OnDestroy {
+export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
@@ -29,7 +29,6 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         private socketService: SocketService,
         private router: Router,
         private snackbarService: SnackbarService,
-        private matchLobbyService: MatchLobbyService,
         private apiService: ApiService,
         private gameService: GameService,
     ) {}
@@ -39,17 +38,10 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
             this.games = games;
         });
         this.gamesUnderscoreId = this.socketService.connect();
-        this.initializeSocket();
     }
 
     selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
-    }
-
-    initializeSocket() {
-        this.socketService.deletedGame((gameId: string) => {
-            this.deleteGameEvent(gameId);
-        });
     }
 
     deleteGameEvent(gameIdString: string) {
@@ -111,60 +103,45 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    async isTheGameModifiedTest(game: Game): Promise<boolean> {
+    async launchGameTest(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            return false;
         } else {
-            this.subscription = this.createNewMatchLobby(game.id).subscribe({
-                next: (matchLobby) => {
-                    this.router.navigate(['/game', matchLobby.id, matchLobby.playerList[0].id]);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
-                },
-            });
-            return true;
+            this.socketService.connect();
+            this.gameService.resetGameVariables();
+            const player: Player = {
+                id: 'test-player-id',
+                name: 'Test Player',
+                score: 0,
+                bonus: 0,
+            };
+            this.socketService.createRoomTest(game.id, player);
+            this.gameService.setupWebsocketEvents();
+            setTimeout(() => {
+                this.router.navigate(['/game']);
+            }, GAME_CREATION_DELAY);
         }
     }
+
     backHome() {
         this.socketService.disconnect();
     }
 
-    async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+    async launchGame(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            return false;
         } else {
-            this.createNewMatchLobby(game.id).subscribe({
-                next: (matchLobby) => {
-                    this.socketService.connect();
-                    this.socketService.createRoom(matchLobby.lobbyCode);
-                    this.gameService.initializeLobbyAndGame(matchLobby.id, matchLobby.hostId);
-                    this.router.navigate(['/gameWait']);
-                },
-                error: (error) => {
-                    this.snackbarService.openSnackBar('Error' + error + 'creating match lobby');
-                },
-            });
-            return true;
+            this.socketService.connect();
+            this.socketService.createRoom(game.id);
+            this.gameService.resetGameVariables();
+            this.gameService.setupWebsocketEvents();
+            setTimeout(() => {
+                this.router.navigate(['/gameWait']);
+            }, GAME_CREATION_DELAY);
         }
-    }
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
-    createNewMatchLobby(gameId: string): Observable<MatchLobby> {
-        return this.matchLobbyService.createLobby(gameId);
-    }
-
-    createNewTestLobby(playerName: string, gameId: string): Observable<MatchLobby> {
-        return this.matchLobbyService.createTestLobby(playerName, gameId);
     }
 }
