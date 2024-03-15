@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
@@ -29,8 +28,8 @@ export class GameService {
     allAnswersIndex: [string, number[]][] = [];
     apiUrl: string;
     timerCountdown: number;
+    playerLeftList: Player[] = [];
 
-    // eslint-disable-next-line max-params
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
         private socketService: SocketService,
@@ -45,6 +44,10 @@ export class GameService {
 
     get playerListValue(): Player[] {
         return this.playerList;
+    }
+
+    get playerLeftListValue(): Player[] {
+        return this.playerLeftList;
     }
 
     get isHostValue(): boolean {
@@ -123,8 +126,8 @@ export class GameService {
         this.answerIdx = [];
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
-        // Pas sûr
         this.answersClicked = [];
+        this.playerLeftList = [];
     }
 
     startGame(): void {
@@ -146,8 +149,6 @@ export class GameService {
     }
 
     setupWebsocketEvents(): void {
-        // ==================== SOCKETS USED AFTER REFACTOR ====================
-
         this.socketService.onRoomCreated((roomId) => {
             this.lobbyCode = roomId;
             this.isHost = true;
@@ -161,6 +162,10 @@ export class GameService {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
+        });
+
+        this.socketService.onPlayerLeftListChange((playerList: Player[]) => {
+            this.playerLeftList = playerList;
         });
 
         this.socketService.onLobbyDeleted(() => {

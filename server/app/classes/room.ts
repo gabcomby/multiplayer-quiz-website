@@ -11,7 +11,7 @@ export class Room {
     io: SocketIoServer;
     roomId = '';
     playerList = new Map<string, IPlayer>();
-    playerLeftList: string[] = [];
+    playerLeftList: IPlayer[] = [];
     game: IGame;
     bannedNames: string[] = [];
     roomLocked = false;

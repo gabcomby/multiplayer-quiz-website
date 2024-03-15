@@ -8,4 +8,5 @@ import type { Player } from '@app/interfaces/match';
 })
 export class GamePageScoresheetComponent {
     @Input() playerList: Player[];
+    @Input() playerLeftList: Player[];
 }

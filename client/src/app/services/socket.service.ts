@@ -38,6 +38,12 @@ export class SocketService {
         });
     }
 
+    onPlayerLeftListChange(callback: (playerList: Player[]) => void) {
+        this.socket.on('playerleftlist-change', (playerList: Player[]) => {
+            callback(playerList);
+        });
+    }
+
     createRoom(roomId: string): void {
         this.socket.emit('create-room', roomId);
     }

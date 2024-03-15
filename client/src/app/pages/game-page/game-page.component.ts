@@ -39,6 +39,10 @@ export class GamePageComponent {
         return this.gameService.playerListValue;
     }
 
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
+    }
+
     get currentQuestion(): Question | null {
         return this.gameService.currentQuestionValue;
     }
@@ -54,7 +58,6 @@ export class GamePageComponent {
 
     setAnswerIndex(answerIdx: number[]): void {
         this.gameService.answerIndex = answerIdx;
-        // this.gameService.clickPlayerAnswer(answerIdx);
     }
 
     handleGameLeave(): void {
