@@ -4,6 +4,7 @@
             <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="handleGameLeave()">
                 <mat-icon>logout</mat-icon>
             </button>
+            <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
     <app-game-page-scoresheet class="score" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>

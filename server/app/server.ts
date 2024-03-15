@@ -74,7 +74,7 @@ export class Server {
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
@@ -86,7 +86,7 @@ export class Server {
                     getRoom().livePlayerAnswers.set(socket.id, []);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId);
+                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title);
                 }
             });
 

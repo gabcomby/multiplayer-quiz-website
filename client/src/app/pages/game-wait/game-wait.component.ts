@@ -32,6 +32,10 @@ export class GameWaitComponent {
         return this.gameService.roomIsLockedValue;
     }
 
+    get currentGameTitle() {
+        return this.gameService.gameTitleValue;
+    }
+
     banPlayer(name: string) {
         this.gameService.banPlayer(name);
     }

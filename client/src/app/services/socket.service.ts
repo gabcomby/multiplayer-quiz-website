@@ -26,9 +26,9 @@ export class SocketService {
         }
     }
 
-    onRoomCreated(callback: (roomId: string) => void): void {
-        this.socket.on('room-created', (roomId: string) => {
-            callback(roomId);
+    onRoomCreated(callback: (roomId: string, gameTitle: string) => void): void {
+        this.socket.on('room-created', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
         });
     }
 
@@ -62,9 +62,9 @@ export class SocketService {
         });
     }
 
-    onRoomJoined(callback: (roomId: string) => void) {
-        this.socket.on('room-joined', (roomId: string) => {
-            callback(roomId);
+    onRoomJoined(callback: (roomId: string, gameTitle: string) => void) {
+        this.socket.on('room-joined', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
         });
     }
 

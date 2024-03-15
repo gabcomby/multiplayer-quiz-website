@@ -29,6 +29,7 @@ export class GameService {
     apiUrl: string;
     timerCountdown: number;
     playerLeftList: Player[] = [];
+    gameTitle = '';
 
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
@@ -102,6 +103,10 @@ export class GameService {
         return this.allAnswersIndex;
     }
 
+    get gameTitleValue(): string {
+        return this.gameTitle;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIdx);
@@ -149,9 +154,10 @@ export class GameService {
     }
 
     setupWebsocketEvents(): void {
-        this.socketService.onRoomCreated((roomId) => {
+        this.socketService.onRoomCreated((roomId, gameTitle: string) => {
             this.lobbyCode = roomId;
             this.isHost = true;
+            this.gameTitle = gameTitle;
         });
 
         this.socketService.onTimerCountdown((data) => {
@@ -173,8 +179,9 @@ export class GameService {
             this.router.navigate(['/home']);
         });
 
-        this.socketService.onRoomJoined((roomId) => {
+        this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
             this.lobbyCode = roomId;
+            this.gameTitle = gameTitle;
         });
 
         this.socketService.onBannedFromGame(() => {

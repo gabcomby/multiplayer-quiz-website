@@ -64,7 +64,7 @@ export class HostGamePageComponent {
     }
 
     get currentGameTitle(): string {
-        return 'Placeholder';
+        return this.gameService.gameTitleValue;
     }
 
     nextQuestion(): void {

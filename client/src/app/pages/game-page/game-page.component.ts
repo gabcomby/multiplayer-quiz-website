@@ -52,8 +52,7 @@ export class GamePageComponent {
     }
 
     get currentGameTitle(): string {
-        // return this.gameService.currentGameTitle;
-        return 'Placeholder';
+        return this.gameService.gameTitleValue;
     }
 
     setAnswerIndex(answerIdx: number[]): void {
