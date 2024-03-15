@@ -26,14 +26,20 @@ export class SocketService {
         }
     }
 
-    onRoomCreated(callback: (roomId: string) => void): void {
-        this.socket.on('room-created', (roomId: string) => {
-            callback(roomId);
+    onRoomCreated(callback: (roomId: string, gameTitle: string) => void): void {
+        this.socket.on('room-created', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
         });
     }
 
     onPlayerListChange(callback: (playerList: [[string, Player]]) => void) {
         this.socket.on('playerlist-change', (playerList: [[string, Player]]) => {
+            callback(playerList);
+        });
+    }
+
+    onPlayerLeftListChange(callback: (playerList: Player[]) => void) {
+        this.socket.on('playerleftlist-change', (playerList: Player[]) => {
             callback(playerList);
         });
     }
@@ -56,9 +62,9 @@ export class SocketService {
         });
     }
 
-    onRoomJoined(callback: (roomId: string) => void) {
-        this.socket.on('room-joined', (roomId: string) => {
-            callback(roomId);
+    onRoomJoined(callback: (roomId: string, gameTitle: string) => void) {
+        this.socket.on('room-joined', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
         });
     }
 

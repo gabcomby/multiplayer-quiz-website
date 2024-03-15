@@ -26,7 +26,7 @@
         ></app-game-page-questions>
     </div>
     <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [playerList]="playerList"></app-game-page-scoresheet>
+        <app-game-page-scoresheet [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
     </div>
     <div class="histogram" *ngIf="!isLaunchTimer">
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>

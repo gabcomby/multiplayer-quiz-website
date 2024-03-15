@@ -74,17 +74,19 @@ export class Server {
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
                 if (roomExists(roomId)) {
                     socket.join(roomId);
+                    // Move this to the room class
                     getRoom().playerList.set(socket.id, player);
                     getRoom().playerHasAnswered.set(socket.id, false);
                     getRoom().livePlayerAnswers.set(socket.id, []);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId);
+                    this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title);
                 }
             });
 
@@ -94,10 +96,16 @@ export class Server {
                         this.io.to(getRoom().roomId).emit('lobby-deleted');
                         rooms.delete(getRoom().roomId);
                     } else {
+                        // Move this to the room class
+                        const player = getRoom().playerList.get(socket.id);
                         getRoom().playerList.delete(socket.id);
                         if (getRoom().playerList.size === 0) {
                             this.io.to(getRoom().roomId).emit('lobby-deleted');
                         } else {
+                            if (!getRoom().bannedNames.includes(player.name.toLowerCase())) {
+                                getRoom().playerLeftList.push(player);
+                                this.io.to(getRoom().roomId).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                            }
                             this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                         }
                     }

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
@@ -29,8 +28,9 @@ export class GameService {
     allAnswersIndex: [string, number[]][] = [];
     apiUrl: string;
     timerCountdown: number;
+    playerLeftList: Player[] = [];
+    gameTitle = '';
 
-    // eslint-disable-next-line max-params
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
         private socketService: SocketService,
@@ -45,6 +45,10 @@ export class GameService {
 
     get playerListValue(): Player[] {
         return this.playerList;
+    }
+
+    get playerLeftListValue(): Player[] {
+        return this.playerLeftList;
     }
 
     get isHostValue(): boolean {
@@ -99,6 +103,10 @@ export class GameService {
         return this.allAnswersIndex;
     }
 
+    get gameTitleValue(): string {
+        return this.gameTitle;
+    }
+
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIdx);
@@ -123,8 +131,8 @@ export class GameService {
         this.answerIdx = [];
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
-        // Pas sûr
         this.answersClicked = [];
+        this.playerLeftList = [];
     }
 
     startGame(): void {
@@ -146,11 +154,10 @@ export class GameService {
     }
 
     setupWebsocketEvents(): void {
-        // ==================== SOCKETS USED AFTER REFACTOR ====================
-
-        this.socketService.onRoomCreated((roomId) => {
+        this.socketService.onRoomCreated((roomId, gameTitle: string) => {
             this.lobbyCode = roomId;
             this.isHost = true;
+            this.gameTitle = gameTitle;
         });
 
         this.socketService.onTimerCountdown((data) => {
@@ -163,13 +170,18 @@ export class GameService {
             this.playerList = [...newPlayerList];
         });
 
+        this.socketService.onPlayerLeftListChange((playerList: Player[]) => {
+            this.playerLeftList = playerList;
+        });
+
         this.socketService.onLobbyDeleted(() => {
             this.socketService.disconnect();
             this.router.navigate(['/home']);
         });
 
-        this.socketService.onRoomJoined((roomId) => {
+        this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
             this.lobbyCode = roomId;
+            this.gameTitle = gameTitle;
         });
 
         this.socketService.onBannedFromGame(() => {

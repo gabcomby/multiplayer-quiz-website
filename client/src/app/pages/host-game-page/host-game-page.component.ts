@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-// import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -44,6 +43,10 @@ export class HostGamePageComponent {
         return this.gameService.playerListValue;
     }
 
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
+    }
+
     get answersClicked() {
         return this.gameService.answersClicked;
     }
@@ -61,7 +64,7 @@ export class HostGamePageComponent {
     }
 
     get currentGameTitle(): string {
-        return 'Placeholder';
+        return this.gameService.gameTitleValue;
     }
 
     nextQuestion(): void {

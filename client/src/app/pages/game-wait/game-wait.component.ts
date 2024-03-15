@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import { Component } from '@angular/core';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
@@ -17,6 +16,10 @@ export class GameWaitComponent {
         return this.gameService.playerListValue;
     }
 
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
+    }
+
     get isHost() {
         return this.gameService.isHostValue;
     }
@@ -27,6 +30,10 @@ export class GameWaitComponent {
 
     get roomIsLocked() {
         return this.gameService.roomIsLockedValue;
+    }
+
+    get currentGameTitle() {
+        return this.gameService.gameTitleValue;
     }
 
     banPlayer(name: string) {
