@@ -7,5 +7,6 @@ import type { Player } from '@app/interfaces/match';
     styleUrls: ['./game-page-scoresheet.component.scss'],
 })
 export class GamePageScoresheetComponent {
-    @Input() playerList: Player[] | undefined;
+    @Input() playerList: Player[];
+    @Input() playerLeftList: Player[];
 }

@@ -10,8 +10,8 @@ import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { GameController } from './controllers/game.controller';
-import { MatchLobbyController } from './controllers/match-lobby.controller';
 import { QuestionsController } from './controllers/questions.controller';
+import { RoomController } from './controllers/room.controller';
 import { env } from './env';
 
 const DB_URL = env.dbUrl;
@@ -28,7 +28,7 @@ export class Application {
         private readonly authController: AuthController,
         private readonly questionsController: QuestionsController,
         private readonly matchController: MatchController,
-        private readonly matchLobbyController: MatchLobbyController,
+        private readonly roomController: RoomController,
     ) {
         this.app = express();
 
@@ -92,7 +92,7 @@ export class Application {
         this.app.use('/api/questions', this.questionsController.router);
         this.app.use('/api/authenticate', this.authController.router);
         this.app.use('/api/matches', this.matchController.router);
-        this.app.use('/api/lobbies', this.matchLobbyController.router);
+        this.app.use('/api/rooms', this.roomController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
@@ -101,7 +101,6 @@ export class Application {
     }
 
     private config(): void {
-        // Middlewares configuration
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
@@ -109,7 +108,6 @@ export class Application {
     }
 
     private errorHandling(): void {
-        // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
             const err: HttpException = new HttpException('Not Found');
             next(err);

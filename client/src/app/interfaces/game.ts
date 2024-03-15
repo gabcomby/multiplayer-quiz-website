@@ -13,6 +13,8 @@ export interface Choice {
     isCorrect: boolean;
 }
 
+export interface AnswersPlayer extends Map<string, number[]> {}
+
 export interface Question {
     type: string;
     text: string;

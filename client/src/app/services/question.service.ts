@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
-import { Question } from '@app/interfaces/game';
+import { Choice, Question } from '@app/interfaces/game';
 import { Observable, firstValueFrom } from 'rxjs';
+import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +16,10 @@ export class QuestionService {
 
     constructor(
         private http: HttpClient,
+        private questionValidationService: QuestionValidationService,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/questions`;
+        this.apiUrl = `${apiBaseURL}/questions`;
     }
 
     resetQuestions() {
@@ -61,5 +63,34 @@ export class QuestionService {
     updateList(question: Question[]) {
         this.questions = [];
         this.questions = question.map((item) => ({ ...item }));
+    }
+    saveQuestion(index: number, questionList: Question[], listQuestionBank: boolean): boolean {
+        questionList[index].lastModification = new Date();
+        const validated =
+            this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices) &&
+            this.questionValidationService.validateQuestion(questionList[index]);
+
+        if (listQuestionBank && validated) {
+            this.updateQuestion(questionList[index].id, questionList[index]);
+        } else if (validated) {
+            this.updateList(questionList);
+        }
+        return validated;
+    }
+
+    moveQuestionUp(index: number, array: Choice[] | Question[]): void {
+        if (index > 0) {
+            const temp = array[index];
+            array[index] = array[index - 1];
+            array[index - 1] = temp;
+        }
+    }
+
+    moveQuestionDown(index: number, array: Choice[] | Question[]): void {
+        if (index < array.length - 1) {
+            const temp = array[index];
+            array[index] = array[index + 1];
+            array[index + 1] = temp;
+        }
     }
 }

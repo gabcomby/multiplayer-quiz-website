@@ -2,14 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
-
-const MESSAGE_NOT_FOUND = -1;
-
-enum AnswerStatusEnum {
-    Correct,
-    Wrong,
-    Unanswered,
-}
+import { GameService } from '@app/services/game.service';
 
 @Component({
     selector: 'app-game-page-questions',
@@ -22,17 +15,17 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
     @Input() answerIsCorrect: boolean;
+    @Input() isHost: boolean;
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
-    answerStatusEnum = AnswerStatusEnum;
-    answerStatus: AnswerStatusEnum;
     answerIsLocked: boolean = false;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private answerStateService: AnswerStateService,
+        private gameService: GameService,
     ) {}
 
     @HostListener('keydown', ['$event'])
@@ -71,7 +64,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
             this.selectedChoices = [];
         }
         const answerIdx = this.selectedChoices.indexOf(index);
-        if (answerIdx > MESSAGE_NOT_FOUND) {
+        // eslint-disable-next-line
+        if (answerIdx > -1) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
@@ -85,6 +79,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
+        this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }

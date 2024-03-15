@@ -1,44 +1,54 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatchLobby } from '@app/interfaces/match-lobby';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { Component } from '@angular/core';
+import { GameService } from '@app/services/game.service';
+import { SocketService } from '@app/services/socket.service';
 
 @Component({
     selector: 'app-game-wait',
     templateUrl: './game-wait.component.html',
     styleUrls: ['./game-wait.component.scss'],
 })
-export class GameWaitComponent implements OnInit {
-    matchLobby: MatchLobby = {
-        id: '',
-        playerList: [],
-        gameId: '',
-        bannedNames: [],
-        lobbyCode: '',
-        isLocked: false,
-    };
-    private gameId: string;
-    // eslint-disable-next-line max-params
+export class GameWaitComponent {
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private matchLobbyService: MatchLobbyService,
-        private snackbarService: SnackbarService,
+        private socketService: SocketService,
+        private gameService: GameService,
     ) {}
-    ngOnInit() {
-        this.matchLobbyService.getLobby(this.route.snapshot.params['id']).subscribe({
-            next: (data) => {
-                this.matchLobby = data;
-                this.gameId = this.matchLobby.gameId;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar('Erreur' + error + "lors de l'obtention du lobby");
-            },
-        });
+    get playerList() {
+        return this.gameService.playerListValue;
+    }
+
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
+    }
+
+    get isHost() {
+        return this.gameService.isHostValue;
+    }
+
+    get lobbyCode() {
+        return this.gameService.lobbyCodeValue;
+    }
+
+    get roomIsLocked() {
+        return this.gameService.roomIsLockedValue;
+    }
+
+    get currentGameTitle() {
+        return this.gameService.gameTitleValue;
+    }
+
+    banPlayer(name: string) {
+        this.gameService.banPlayer(name);
+    }
+
+    handleGameLeave() {
+        this.gameService.leaveRoom();
+    }
+
+    toggleRoomLock() {
+        this.socketService.toggleRoomLock();
     }
 
     handleGameLaunch() {
-        this.router.navigate(['/game', this.gameId]);
+        this.gameService.startGame();
     }
 }

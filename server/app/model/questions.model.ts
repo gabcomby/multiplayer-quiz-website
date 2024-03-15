@@ -5,6 +5,8 @@ export interface IChoice extends Document {
     isCorrect?: boolean;
 }
 
+export interface AnswersPlayer extends Map<string, number[]> {}
+
 export interface IQuestion extends Document {
     type: string;
     text: string;
@@ -29,4 +31,3 @@ const questionSchema: Schema = new Schema({
 });
 
 export default mongoose.model<IQuestion>('Question', questionSchema);
-// export mongoose.model<IChoice>('Choice', choiceSchema);

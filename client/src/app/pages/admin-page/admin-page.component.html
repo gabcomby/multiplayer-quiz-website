@@ -16,14 +16,14 @@
         <ng-container matColumnDef="isVisible">
             <mat-header-cell *matHeaderCellDef> Visibilité </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element.id, $event.checked)"> </mat-slide-toggle>
+                <mat-slide-toggle [checked]="element.isVisible" (change)="toggleVisibility(element, $event.checked)"> </mat-slide-toggle>
             </mat-cell>
         </ng-container>
 
         <!-- Creation Date Column -->
         <ng-container matColumnDef="lastUpdate">
             <mat-header-cell *matHeaderCellDef> Dernière modification</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ formatLastModificationDate(element.lastModification) }} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{ formatDate(element.lastModification) }} </mat-cell>
         </ng-container>
 
         <!-- Export Column -->
@@ -33,13 +33,7 @@
                 <button mat-icon-button (click)="exportGameAsJson(element)">
                     <mat-icon>file_download</mat-icon>
                 </button>
-                <a
-                    #downloadLink
-                    *ngIf="downloadJson"
-                    [href]="downloadJson"
-                    [download]="'game_data_' + element.id + '.json'"
-                    style="display: none"
-                ></a>
+                <a #downloadLink [download]="'game_data_' + element.id + '.json'" style="display: none"></a>
             </mat-cell>
         </ng-container>
 

@@ -25,28 +25,12 @@ describe('ModifiedQuestionComponent', () => {
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     let questionValidationSpy: SpyObj<QuestionValidationService>;
     const defaultDate = new Date();
-    const questionList = [
-        {
-            type: 'QCM',
-            text: 'Ceci est une question de test',
-            points: 10,
-            id: 'dsdsd',
-            lastModification: defaultDate,
-            choices: [],
-        },
-        {
-            type: 'QCM',
-            text: 'Ceci est une question de test 2',
-            points: 20,
-            id: '45',
-            lastModification: defaultDate,
-            choices: [],
-        },
-    ];
+
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion', 'verifyOneGoodAndBadAnswer']);
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
+            saveQuestion: {},
             addQuestion: {},
             updateList: {},
             updateQuestion: {},
@@ -186,44 +170,18 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.menuSelected).toBeTrue();
     });
 
-    it('when saveQuestion is from questionBank, it should update list and disabled with valid data', () => {
-        component.disabled = [false, false];
-        component.listQuestionBank = true;
-
-        component.questionList = questionList;
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
-
-        questionValidationSpy.validateQuestion.and.returnValue(true);
+    it('should call saveQuestion from service when saveQuestion is called', () => {
         const index = 1;
         component.saveQuestion(index);
-        expect(questionServiceSpy.updateQuestion).toHaveBeenCalled();
-        expect(component.disabled[index]).toBeTrue();
+        expect(questionServiceSpy.saveQuestion).toHaveBeenCalled();
     });
-    it('when saveQuestion is not from questionBank, it should update list and disabled with valid data', () => {
+    it('should call saveQuestion from service when saveQuestion is called', () => {
         component.disabled = [false, false];
-        component.listQuestionBank = false;
-
-        component.questionList = questionList;
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
-
-        questionValidationSpy.validateQuestion.and.returnValue(true);
+        questionServiceSpy.saveQuestion.and.returnValue(true);
 
         const index = 1;
         component.saveQuestion(index);
-        expect(questionServiceSpy.updateList).toHaveBeenCalled();
         expect(component.disabled[index]).toBeTrue();
-    });
-
-    it('when saveQuestion with no valid data, it should not update list or update question', () => {
-        component.disabled = [false, false];
-        questionValidationSpy.validateQuestion.and.returnValue(false);
-        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
-        const index = 1;
-        component.questionList = questionList;
-
-        expect(questionServiceSpy.updateList).not.toHaveBeenCalled();
-        expect(questionServiceSpy.updateQuestion).not.toHaveBeenCalled();
-        expect(component.disabled[index]).toBeFalse();
     });
 
     it('should remove a question from questionList and disable input modification', () => {
@@ -241,61 +199,5 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.questionList).not.toContain(questionToRemove);
         expect(questionServiceSpy.updateList).toHaveBeenCalledWith(component.questionList);
         expect(component.disabled[index]).toBeTrue();
-    });
-
-    it('should switch the answer selected and the one on top', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
-
-        component.moveQuestionUp(1);
-        expect(component.questionList).toEqual([
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
-
-    it('should not switch the answers if its the first choice', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
-
-        component.moveQuestionUp(0);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
-
-    it('should switch the answer selected and the one underneath', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
-
-        component.moveQuestionDown(1);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
-    });
-
-    it('should not switch the answers if its the last choice', () => {
-        component.questionList = [
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ];
-
-        component.moveQuestionDown(3);
-        expect(component.questionList).toEqual([
-            { id: '1', text: 'Question 1', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '4', text: 'Question 2', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-            { id: '5', text: 'Question 3', type: 'QCM', points: 10, lastModification: defaultDate, choices: [] },
-        ]);
     });
 });

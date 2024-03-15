@@ -1,12 +1,21 @@
+@use 'sass:math';
+
+$base-font-size: 16;
+
+@function px-to-em($pixels, $context: $base-font-size) {
+    @return math.div($pixels, $context) * 1em;
+}
+
 #menu-bar {
     height: 100%;
 }
+
 .large-bar-spacer {
     flex: 1 1 auto;
 }
 
 .top-bar-text {
-    font-size: 1.5em;
+    font-size: px-to-em(24);
     font-weight: bold;
 }
 
@@ -14,7 +23,7 @@
     height: 100%;
     display: grid;
     grid-template-columns: 25% 50% 25%;
-    grid-template-rows: 50px 35% 65%;
+    grid-template-rows: px-to-em(50) 30% 60%;
     gap: 0px 0px;
     grid-auto-flow: row;
     grid-template-areas:
@@ -40,11 +49,12 @@
     grid-area: question;
     justify-content: center;
     align-items: center;
-    padding-bottom: 50%;
+    padding-bottom: px-to-em(30);
+    margin-top: px-to-em(-20);
 }
 
 .score {
-    margin-top: 20%;
+    margin-top: px-to-em(50);
     grid-area: score;
 }
 
@@ -54,4 +64,14 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    font-size: px-to-em(16);
+    margin-top: px-to-em(30);
+}
+
+.results {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 30%;
 }

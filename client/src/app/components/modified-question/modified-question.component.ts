@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-import { QuestionValidationService } from '@app/services/question-validation.service';
 import { QuestionService } from '@app/services/question.service';
 
 @Component({
@@ -17,10 +16,7 @@ export class ModifiedQuestionComponent implements OnInit {
     disabled: boolean[] = [];
     menuSelected: boolean = false;
 
-    constructor(
-        private questionService: QuestionService,
-        private questionValidationService: QuestionValidationService,
-    ) {}
+    constructor(protected questionService: QuestionService) {}
 
     ngOnInit() {
         if (this.listQuestionBank) {
@@ -55,33 +51,9 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     saveQuestion(index: number) {
-        this.questionList[index].lastModification = new Date();
-        const validated =
-            this.questionValidationService.verifyOneGoodAndBadAnswer(this.questionList[index].choices) &&
-            this.questionValidationService.validateQuestion(this.questionList[index]);
+        const validated = this.questionService.saveQuestion(index, this.questionList, this.listQuestionBank);
+
         this.disabled[index] = validated;
-
-        if (this.listQuestionBank && validated) {
-            this.questionService.updateQuestion(this.questionList[index].id, this.questionList[index]);
-        } else if (validated) {
-            this.questionService.updateList(this.questionList);
-        }
-    }
-
-    moveQuestionUp(index: number): void {
-        if (index > 0) {
-            const temp = this.questionList[index];
-            this.questionList[index] = this.questionList[index - 1];
-            this.questionList[index - 1] = temp;
-        }
-    }
-
-    moveQuestionDown(index: number): void {
-        if (index < this.questionList.length - 1) {
-            const temp = this.questionList[index];
-            this.questionList[index] = this.questionList[index + 1];
-            this.questionList[index + 1] = temp;
-        }
     }
 
     removeQuestion(question: Question, index: number) {

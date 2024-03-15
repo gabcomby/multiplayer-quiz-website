@@ -1,3 +1,17 @@
 mat-card {
     width: 75%;
 }
+button #bannedPlayer {
+    width: 15%; 
+    height: 55%;
+    background-color: #04AA6D; 
+    color: white;
+    text-align: center;
+    display: flex;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.goneplayers {
+    text-decoration: line-through;
+}

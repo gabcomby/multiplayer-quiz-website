@@ -6,15 +6,16 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import { Game, Question } from '@app/interfaces/game';
-import { GameService } from '@app/services/game.service';
+import { ApiService } from '@app/services/api.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
-import * as gameUtilsModule from '@app/utils/is-valid-game';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
 import SpyObj = jasmine.SpyObj;
+import { GameValidationService } from '@app/services/game-validation.service';
 
 @Component({
     selector: 'app-modified-question',
@@ -34,8 +35,9 @@ class AppNewQuestionStubComponent {
 
 describe('CreateQGamePageComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
-    let gameServiceSpy: SpyObj<GameService>;
+    let gameServiceSpy: SpyObj<GameValidationService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
+    let apiServiceSpy: SpyObj<ApiService>;
     let routerSpy: SpyObj<Router>;
     let component: CreateQGamePageComponent;
     let fixture: ComponentFixture<CreateQGamePageComponent>;
@@ -130,20 +132,25 @@ describe('CreateQGamePageComponent', () => {
             } as Game),
             validateDeletedGame: Promise.resolve({}),
             validateDuplicationGame: {},
+            gameValidationWhenModified: {},
+            createNewGame: {},
         });
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        apiServiceSpy = jasmine.createSpyObj('ApiService', { getGames: of(defaultGame) });
     });
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [CreateQGamePageComponent, AppModifiedQuestionStubComponent, AppNewQuestionStubComponent],
             providers: [
                 { provide: QuestionService, useValue: questionServiceSpy },
-                { provide: GameService, useValue: gameServiceSpy },
+                { provide: GameValidationService, useValue: gameServiceSpy },
+                { provide: ApiService, useValue: apiServiceSpy },
                 { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '123' })) } },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: Router, useValue: routerSpy },
                 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
                 { provide: MatDialog, useValue: { open: (_comp: unknown, _obj: unknown) => {} } },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
             ],
             imports: [HttpClientTestingModule, MatToolbarModule],
             schemas: [NO_ERRORS_SCHEMA],
@@ -160,9 +167,8 @@ describe('CreateQGamePageComponent', () => {
 
     it('should initialize with default values', () => {
         expect(component.modifiedQuestion).toBeFalse();
-        expect(component.gamesFromDB).toEqual([]);
+        expect(component.games).toEqual([]);
         expect(component.dataReady).toBeFalse();
-        expect(component.gamesFromDB).toEqual([]);
     });
 
     it('initialize forms controls', () => {
@@ -180,7 +186,7 @@ describe('CreateQGamePageComponent', () => {
         expect(component.dataReady).toBeTrue();
     });
     it('ngOnInit should initiliase if theres is an id', async () => {
-        gameServiceSpy.getGames.and.throwError('test error');
+        apiServiceSpy.getGames.and.throwError('test error');
         try {
             await component.ngOnInit();
         } catch (error) {
@@ -188,9 +194,9 @@ describe('CreateQGamePageComponent', () => {
         }
     });
     it('get game should find game with id in list should return game if found', () => {
-        component.gamesFromDB = defaultGame;
+        component.games = defaultGame;
         component.getGame('123');
-        expect(component.gameFromDB).toEqual({
+        expect(component.gameModified).toEqual({
             id: '123',
             title: 'allo',
             description: 'test',
@@ -213,7 +219,7 @@ describe('CreateQGamePageComponent', () => {
         });
     });
     it('get game should return undefined game with id if not found', () => {
-        component.gameFromDB = {
+        component.gameModified = {
             id: '',
             title: '',
             description: '',
@@ -222,13 +228,13 @@ describe('CreateQGamePageComponent', () => {
             lastModification: defaultDate,
             questions: [],
         };
-        component.gamesFromDB = defaultGame;
+        component.games = defaultGame;
         try {
             component.getGame('124');
         } catch (error) {
             expect(error).toEqual(new Error('Game with id 124 not found'));
         }
-        expect(component.gameFromDB).toEqual({
+        expect(component.gameModified).toEqual({
             id: '',
             title: '',
             description: '',
@@ -240,83 +246,32 @@ describe('CreateQGamePageComponent', () => {
     });
 
     it('initialize forms controls with value when gameId is not null', () => {
-        const MAGIC_NUMB = 10;
+        const TIMER_DURATION = 10;
         component.gameForm = new FormGroup({
             name: new FormControl(''),
             description: new FormControl(''),
             time: new FormControl(''),
         });
-        component.gameFromDB = defaultGame[0];
+        component.gameModified = defaultGame[0];
         component.insertIfExist();
         expect(component.gameForm).toBeTruthy();
         expect(component.gameForm.get('name')?.value).toBe('allo');
         expect(component.gameForm.get('description')?.value).toBe('test');
-        expect(component.gameForm.get('time')?.value).toBe(MAGIC_NUMB);
+        expect(component.gameForm.get('time')?.value).toBe(TIMER_DURATION);
     });
 
-    it('should call createNewGame when onSubmit', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        component.gameForm = new FormGroup({
-            name: new FormControl('allo'),
-            description: new FormControl('chose'),
-            time: new FormControl('10'),
-        });
-        spyOn(component, 'createNewGame');
+    it('should call createNewGame from service when onSubmit', async () => {
+        gameServiceSpy.gameValidationWhenModified.and.returnValue(Promise.resolve(true));
+
         await component.onSubmit();
-        fixture.detectChanges();
-        expect(component.createNewGame).toHaveBeenCalled();
-    });
-    it('should create new game when calling createNewGame', () => {
-        component.gameForm = new FormGroup({
-            name: new FormControl(''),
-            description: new FormControl(''),
-            visibility: new FormControl(''),
-            time: new FormControl(''),
-        });
-        const MAGIC_NUMB = 10;
-        component.gameForm.controls['name'].setValue('Test Game');
-        component.gameForm.controls['description'].setValue('Test Description');
-        component.gameForm.controls['time'].setValue(MAGIC_NUMB);
 
-        const newGame = component.createNewGame(true);
-        expect(newGame).toBeTruthy();
-        expect(newGame.id).toBeDefined();
-        expect(newGame.title).toBe('Test Game');
-        expect(newGame.description).toBe('Test Description');
-        expect(newGame.duration).toBe(MAGIC_NUMB);
-        expect(newGame.lastModification).toBeInstanceOf(Date);
-        expect(newGame.questions).toEqual(questionServiceSpy.getQuestion());
+        expect(routerSpy.navigate).toHaveBeenCalled();
     });
 
-    it('should call gameValidationWhenModified when gameID is not null in onSubmit', async () => {
-        spyOn(component, 'gameValidationWhenModified');
-        await component.onSubmit().then(async () => {
-            expect(component.gameId).toBe('123');
-            fixture.detectChanges();
-            expect(component.gameValidationWhenModified).toHaveBeenCalled();
-        });
-    });
-    it('should call patch when gameID is not null and validateDeletedGame return true in gameValidationModified', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(true));
-        component.gameValidationWhenModified().then(() => {
-            fixture.detectChanges();
-            expect(gameServiceSpy.patchGame).toHaveBeenCalled();
-        });
-    });
-    it('should call createGame when gameID is not null and validateDeletedGame return false in gameValidationModified', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.returnValue(Promise.resolve(true));
-        gameServiceSpy.validateDeletedGame.and.returnValue(Promise.resolve(false));
-        await component.gameValidationWhenModified().then(async () => {
-            fixture.detectChanges();
-            expect(gameServiceSpy.createGame).toHaveBeenCalled();
-        });
-    });
     it('should throw error if submitting with the server down', async () => {
-        spyOn(gameUtilsModule, 'isValidGame').and.throwError('test error');
-
+        gameServiceSpy.gameValidationWhenModified.and.throwError('error');
         try {
-            await component.gameValidationWhenModified();
+            await component.onSubmit();
         } catch (error) {
             expect(component.handleServerError).toHaveBeenCalled();
         }

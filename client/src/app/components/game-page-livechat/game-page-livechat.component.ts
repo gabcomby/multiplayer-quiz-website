@@ -1,8 +1,11 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import type { Message } from '@app/interfaces/message';
+// import { SocketService } from '@app/services/socket.service';
+import { Subscription } from 'rxjs';
+import { SnackbarService } from 'src/app/services/snackbar.service';
 
-const DISAPPEAR_DELAY = 10000;
-const MESSAGE_NOT_FOUND = -1;
+const DISAPPEAR_DELAY = 8000;
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -15,40 +18,76 @@ const MESSAGE_NOT_FOUND = -1;
         ]),
     ],
 })
-export class GamePageLivechatComponent {
-    @ViewChild('textbox') textbox: ElementRef;
+export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewChecked {
     @Input() playerName: string;
-    messages: { text: string; sender: string; visible: boolean }[] = [];
-    newMessage: string = '';
+    @Input() isHost: boolean;
+    @Input() roomId: string;
+    @ViewChild('textbox') textbox: ElementRef;
+    @ViewChild('messagesContainer') private messagesContainer: ElementRef;
 
-    onChatClick(): void {
-        this.textbox.nativeElement.focus();
+    messages: Message[] = [];
+    text: string = '';
+
+    private chatSubscription: Subscription;
+
+    constructor(
+        private snackbar: SnackbarService, // private socket: SocketService,
+    ) {}
+
+    ngOnInit(): void {
+        this.listenForMessages();
     }
 
-    onChatEnterPressed(event: Event): void {
+    ngOnDestroy() {
+        this.chatSubscription?.unsubscribe();
+    }
+
+    ngAfterViewChecked() {
+        this.scrollToBottom();
+    }
+
+    listenForMessages(): void {
+        // this.chatSubscription = this.socket.onChatMessage().subscribe({
+        //     next: (message) => this.handleNewMessage(message),
+        //     error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
+        // });
+    }
+
+    onChatInput(event: Event): void {
         event.preventDefault();
         this.sendMessage();
     }
 
     sendMessage(): void {
-        this.newMessage = this.newMessage.trim();
-        if (this.newMessage) {
-            this.addMessageToData();
+        const trimmedText = this.text.trim();
+        if (!this.isHost && !this.playerName) {
+            this.snackbar.openSnackBar('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
+            return;
         }
-        this.newMessage = '';
+
+        if (trimmedText) {
+            this.handleNewMessage({ text: trimmedText, sender: this.isHost ? 'Organisateur' : this.playerName, timestamp: new Date() });
+            // this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
+        }
+        this.text = '';
     }
 
-    hideMessage(message: { text: string; sender: string; visible: boolean }): void {
-        message.visible = false;
+    handleNewMessage(message: Message): void {
+        const newMessage = { ...message, timestamp: message.timestamp ? new Date(message.timestamp) : new Date(), visible: true };
+        this.messages.push(newMessage);
+        setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
+    }
+
+    hideMessage(message: Message): void {
         const index = this.messages.indexOf(message);
-        if (index !== MESSAGE_NOT_FOUND) {
-            this.messages.splice(index, 1);
+        // eslint-disable-next-line -- Used to hide message
+        if (index !== -1) {
+            this.messages[index].visible = false;
+            this.messages = [...this.messages];
         }
     }
 
-    private addMessageToData(): void {
-        const message = { text: this.newMessage, sender: this.playerName, visible: true };
-        this.messages.push(message);
-        setTimeout(() => this.hideMessage(message), DISAPPEAR_DELAY);
+    scrollToBottom(): void {
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }
 }

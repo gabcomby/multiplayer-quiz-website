@@ -1,67 +1,244 @@
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
-
+import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
-import type { Game } from '@app/interfaces/game';
+import type { Question } from '@app/interfaces/game';
+import type { Player } from '@app/interfaces/match';
+import { SocketService } from './socket.service';
+
+const TIME_BETWEEN_QUESTIONS = 3000;
+const LAUNCH_TIMER_DURATION = 5;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    private apiUrl: string;
+    lobbyCode: string = '';
+    playerList: Player[] = [];
+    isHost: boolean = false;
+    roomLocked: boolean = false;
+    launchTimer: boolean = true;
+    currentQuestionIndex: number = 0;
+    nbrOfQuestions: number = 0;
+    totalQuestionDuration: number = 0;
+    currentQuestion: Question | null;
+    timerStopped: boolean = false;
+    answersClicked: [string, number[]][] = [];
+    answerIdx: number[] = [];
+    allQuestionsFromGame: Question[] = [];
+    allAnswersIndex: [string, number[]][] = [];
+    apiUrl: string;
+    timerCountdown: number;
+    playerLeftList: Player[] = [];
+    gameTitle = '';
 
     constructor(
-        private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
+        private socketService: SocketService,
+        private router: Router,
     ) {
-        this.apiUrl = `${apiBaseURL}/api/games`;
+        this.apiUrl = `${apiBaseURL}/games`;
     }
 
-    getGame(gameId: string): Observable<Game> {
-        return this.http.get<Game>(`${this.apiUrl}/${gameId}`);
+    get lobbyCodeValue(): string {
+        return this.lobbyCode;
     }
 
-    async getGames(): Promise<Game[]> {
-        const games$ = this.http.get<Game[]>(this.apiUrl);
-        const games = await firstValueFrom(games$);
-        return games;
+    get playerListValue(): Player[] {
+        return this.playerList;
     }
 
-    async createGame(game: Game): Promise<Game> {
-        const game$ = this.http.post<Game>(this.apiUrl, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
+    get playerLeftListValue(): Player[] {
+        return this.playerLeftList;
     }
 
-    async deleteGame(gameId: string): Promise<void> {
-        const game$ = this.http.delete(`${this.apiUrl}/${gameId}`);
-        await firstValueFrom(game$);
+    get isHostValue(): boolean {
+        return this.isHost;
     }
 
-    async patchGame(game: Game): Promise<Game> {
-        const game$ = this.http.patch<Game>(`${this.apiUrl}/${game.id}`, game);
-        const newGame = await firstValueFrom(game$);
-        return newGame;
+    get roomIsLockedValue(): boolean {
+        return this.roomLocked;
     }
-    async validateDuplicationGame(game: Game, error: string[]) {
-        const gameList = await this.getGames();
-        const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
-        if (titleExisting) {
-            error.push('Il y a déjà un jeu avec ce nom');
-        }
-        if (descriptionExisting) {
-            error.push('Il y a déjà un jeu avec cet description');
-        }
+
+    get launchTimerValue(): boolean {
+        return this.launchTimer;
     }
-    async validateDeletedGame(game: Game) {
-        const gameList = await this.getGames();
-        const idExisting = gameList.find((element) => element.id === game.id);
-        if (idExisting) {
-            return true;
+
+    get timerCountdownValue(): number {
+        return this.timerCountdown;
+    }
+
+    get currentQuestionIndexValue(): number {
+        return this.currentQuestionIndex;
+    }
+
+    get nbrOfQuestionsValue(): number {
+        return this.nbrOfQuestions;
+    }
+
+    get totalQuestionDurationValue(): number {
+        if (this.launchTimer) {
+            return LAUNCH_TIMER_DURATION;
         } else {
-            return false;
+            return this.totalQuestionDuration;
         }
+    }
+
+    get currentQuestionValue(): Question | null {
+        return this.currentQuestion;
+    }
+
+    get timerStoppedValue(): boolean {
+        return this.timerStopped;
+    }
+
+    get liveAnswersClickedValue(): [string, number[]][] {
+        return this.answersClicked;
+    }
+
+    get allQuestionsFromGameValue(): Question[] {
+        return this.allQuestionsFromGame;
+    }
+
+    get allAnswersIndexValue(): [string, number[]][] {
+        return this.allAnswersIndex;
+    }
+
+    get gameTitleValue(): string {
+        return this.gameTitle;
+    }
+
+    set answerIndex(answerIdx: number[]) {
+        this.answerIdx = answerIdx;
+        this.socketService.sendLiveAnswers(this.answerIdx);
+    }
+
+    leaveRoom(): void {
+        this.socketService.leaveRoom();
+        this.socketService.disconnect();
+        this.router.navigate(['/home']);
+    }
+
+    banPlayer(name: string): void {
+        this.socketService.banPlayer(name);
+    }
+
+    resetGameVariables(): void {
+        this.lobbyCode = '';
+        this.playerList = [];
+        this.isHost = false;
+        this.roomLocked = false;
+        this.currentQuestion = null;
+        this.answerIdx = [];
+        this.allQuestionsFromGame = [];
+        this.allAnswersIndex = [];
+        this.answersClicked = [];
+        this.playerLeftList = [];
+    }
+
+    startGame(): void {
+        this.socketService.startGame();
+    }
+
+    nextQuestion(): void {
+        if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
+            this.socketService.nextQuestion();
+        } else {
+            setTimeout(() => {
+                this.socketService.nextQuestion();
+            }, TIME_BETWEEN_QUESTIONS);
+        }
+    }
+
+    submitAnswer(): void {
+        this.socketService.sendLockedAnswers(this.answerIdx);
+    }
+
+    setupWebsocketEvents(): void {
+        this.socketService.onRoomCreated((roomId, gameTitle: string) => {
+            this.lobbyCode = roomId;
+            this.isHost = true;
+            this.gameTitle = gameTitle;
+        });
+
+        this.socketService.onRoomTestCreated((gameTitle: string, playerList: [[string, Player]]) => {
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
+            this.gameTitle = gameTitle;
+        });
+
+        this.socketService.onTimerCountdown((data) => {
+            this.timerCountdown = data;
+        });
+
+        this.socketService.onPlayerListChange((playerList: [[string, Player]]) => {
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
+        });
+
+        this.socketService.onPlayerLeftListChange((playerList: Player[]) => {
+            this.playerLeftList = playerList;
+        });
+
+        this.socketService.onLobbyDeleted(() => {
+            this.socketService.disconnect();
+            this.router.navigate(['/home']);
+        });
+
+        this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
+            this.lobbyCode = roomId;
+            this.gameTitle = gameTitle;
+        });
+
+        this.socketService.onBannedFromGame(() => {
+            this.leaveRoom();
+        });
+
+        this.socketService.onRoomLockStatus((isLocked: boolean) => {
+            this.roomLocked = isLocked;
+        });
+
+        this.socketService.onGameLaunch((questionDuration: number, nbrOfQuestions: number) => {
+            this.launchTimer = true;
+            this.timerStopped = false;
+            this.nbrOfQuestions = nbrOfQuestions;
+            this.totalQuestionDuration = questionDuration;
+            this.currentQuestionIndex = 0;
+            if (this.isHost) {
+                this.router.navigate(['/host-game-page']);
+            } else {
+                this.router.navigate(['/game']);
+            }
+        });
+
+        this.socketService.onQuestionTimeUpdated((data: number) => {
+            this.launchTimer = false;
+            this.totalQuestionDuration = data;
+        });
+
+        this.socketService.onQuestion((question: Question, questionIndex: number) => {
+            this.timerStopped = false;
+            this.currentQuestionIndex = questionIndex;
+            this.currentQuestion = question;
+        });
+
+        this.socketService.onTimerStopped(() => {
+            this.timerStopped = true;
+            this.socketService.sendAnswers(this.answerIdx);
+        });
+
+        this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
+            this.answersClicked = answers;
+        });
+
+        this.socketService.onGoToResult((playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
+            this.allQuestionsFromGame = questionList;
+            this.allAnswersIndex = allAnswersIndex;
+            this.router.navigate(['/resultsView']);
+        });
     }
 }

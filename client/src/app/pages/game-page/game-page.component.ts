@@ -1,183 +1,65 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import type { Game, Question } from '@app/interfaces/game';
-import type { Match } from '@app/interfaces/match';
+import { Component } from '@angular/core';
+import { Question } from '@app/interfaces/game';
+import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { MatchService } from '@app/services/match.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
-import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { Observable, switchMap } from 'rxjs';
-
-const TIME_BETWEEN_QUESTIONS = 3000;
-const FIRST_TO_ANSWER_MULTIPLIER = 1.2;
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit {
-    gameData: Game = {
-        id: '',
-        title: '',
-        description: '',
-        isVisible: true,
-        duration: 0,
-        lastModification: new Date(),
-        questions: [],
-    };
-    currentQuestionIndex: number = 0;
-    questionHasExpired: boolean = false;
-    currentMatch: Match = { id: '', playerList: [] };
-    matchId: string;
-    gameId: string;
-    timerCountdown: number;
-    answerIsCorrect: boolean;
+export class GamePageComponent {
+    isHost: boolean;
+    lobby: MatchLobby;
+    unsubscribeSubject: Subscription[];
+    constructor(private gameService: GameService) {}
 
-    gameScore: { name: string; score: number }[] = [];
-
-    playerName: string;
-
-    answerIdx: number[];
-    previousQuestionIndex: number;
-
-    // eslint-disable-next-line max-params
-    constructor(
-        private router: Router,
-        private matchService: MatchService,
-        private route: ActivatedRoute,
-        private socketService: SocketService,
-        private gameService: GameService,
-        private snackbarService: SnackbarService,
-    ) {}
-
-    ngOnInit() {
-        // Get the game ID from the URL
-        this.gameId = this.route.snapshot.params['id'];
-        // Fetch the game data from the server
-        this.gameService.getGame(this.gameId).subscribe({
-            next: (data) => {
-                this.gameData = data;
-            },
-            error: (error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
-            },
-        });
-        // Create a new match with a new player, and then setup the WebSocket events
-        this.createAndSetupMatch();
+    get currentQuestionIndexValue(): number {
+        return this.gameService.currentQuestionIndexValue;
     }
 
-    createAndSetupMatch() {
-        this.createMatch()
-            .pipe(
-                switchMap((matchData) => {
-                    this.currentMatch = matchData;
-                    return this.addPlayerToMatch(this.matchId);
-                }),
-            )
-            .subscribe({
-                next: (data) => {
-                    this.currentMatch = data;
-                    this.setupWebSocketEvents();
-                    this.socketService.startTimer();
-                },
-                error: (error) => {
-                    alert(error.message);
-                },
-            });
+    get nbrOfQuestions(): number {
+        return this.gameService.nbrOfQuestionsValue;
     }
 
-    createMatch(): Observable<Match> {
-        this.matchId = generateNewId();
-        return this.matchService.createNewMatch({ id: this.matchId, playerList: [] });
+    get currentTimerCountdown(): number {
+        return this.gameService.timerCountdownValue;
     }
 
-    addPlayerToMatch(matchId: string): Observable<Match> {
-        return this.matchService.addPlayer({ id: 'playertest', name: 'Player 1', score: 0 }, matchId);
+    get totalGameDuration(): number {
+        return this.gameService.totalQuestionDurationValue;
     }
 
-    setupWebSocketEvents() {
-        this.socketService.connect();
-        this.socketService.onTimerCountdown((data) => {
-            this.timerCountdown = data;
-            if (this.timerCountdown === 0) {
-                this.onTimerComplete();
-            }
-        });
-        if (this.gameData && this.gameData.duration) {
-            this.socketService.setTimerDuration(this.gameData.duration);
-        }
-        this.socketService.onAnswerVerification((data) => {
-            this.answerIsCorrect = data;
-            if (data === true) {
-                this.updatePlayerScore(this.gameData.questions[this.previousQuestionIndex].points * FIRST_TO_ANSWER_MULTIPLIER);
-            }
-        });
+    get timerStopped(): boolean {
+        return this.gameService.timerStoppedValue;
     }
 
-    updatePlayerScore(scoreFromQuestion: number): void {
-        this.matchService.updatePlayerScore(this.matchId, 'playertest', this.currentMatch.playerList[0].score + scoreFromQuestion).subscribe({
-            next: (data) => {
-                this.currentMatch.playerList[0] = data;
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
+    get playerList() {
+        return this.gameService.playerListValue;
     }
 
-    handleGameLeave() {
-        this.matchService.deleteMatch(this.matchId).subscribe({
-            next: () => {
-                this.socketService.stopTimer();
-                this.socketService.disconnect();
-                this.router.navigate(['/new-game']);
-            },
-            error: (error) => {
-                alert(error.message);
-            },
-        });
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
     }
 
-    onTimerComplete(): void {
-        this.socketService.stopTimer();
-        this.questionHasExpired = true;
-        this.previousQuestionIndex = this.currentQuestionIndex;
-        this.socketService.verifyAnswers(this.gameData.questions[this.previousQuestionIndex].choices, this.answerIdx);
-        if (this.currentQuestionIndex < this.gameData.questions.length - 1) {
-            setTimeout(() => {
-                this.handleNextQuestion();
-            }, TIME_BETWEEN_QUESTIONS);
-        } else {
-            setTimeout(() => {
-                this.handleGameLeave();
-            }, TIME_BETWEEN_QUESTIONS);
-        }
+    get currentQuestion(): Question | null {
+        return this.gameService.currentQuestionValue;
     }
 
-    getCurrentQuestion(): Question {
-        if (this.gameData.questions.length > 0) {
-            return this.gameData.questions[this.currentQuestionIndex];
-        } else {
-            return {
-                type: '',
-                text: '',
-                points: 0,
-                lastModification: new Date(),
-                id: '',
-                choices: [],
-            };
-        }
+    get isLaunchTimer(): boolean {
+        return this.gameService.launchTimerValue;
     }
 
-    setAnswerIndex(answerIdx: number[]) {
-        this.answerIdx = answerIdx;
+    get currentGameTitle(): string {
+        return this.gameService.gameTitleValue;
     }
 
-    handleNextQuestion(): void {
-        this.currentQuestionIndex++;
-        this.questionHasExpired = false;
-        this.socketService.startTimer();
+    setAnswerIndex(answerIdx: number[]): void {
+        this.gameService.answerIndex = answerIdx;
+    }
+
+    handleGameLeave(): void {
+        this.gameService.leaveRoom();
     }
 }

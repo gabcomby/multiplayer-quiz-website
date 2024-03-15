@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" (click)="handleGameLeave()">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </mat-toolbar>
+    </div>
+
+    <div class="palmares-container">
+        <mat-table [dataSource]="playerList">
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="score">
+                <mat-header-cell *matHeaderCellDef> Score </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.score }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="bonus">
+                <mat-header-cell *matHeaderCellDef> Nombre de bonus obtenu </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{ element.bonus }} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="['name', 'score', 'bonus']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name', 'score', 'bonus']"></mat-row>
+        </mat-table>
+        <app-game-page-livechat class="live-chat"></app-game-page-livechat>
+    </div>
+    <div class="histogram">
+        <app-histogram [answersPlayer]="allAnswersIndex" [questionsGame]="allQuestionsFromGame"></app-histogram>
+    </div>
+</div>
