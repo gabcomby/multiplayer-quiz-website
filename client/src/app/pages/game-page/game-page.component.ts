@@ -1,11 +1,8 @@
 import { Component } from '@angular/core';
-import type { Question } from '@app/interfaces/game';
-import type { Player } from '@app/interfaces/match';
+import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
-
-const START_TIMER_DURATION = 5;
 
 @Component({
     selector: 'app-game-page',
@@ -17,20 +14,13 @@ export class GamePageComponent {
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
+
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
 
-    get currentGameLength(): number {
-        return this.gameService.currentGameLength;
-    }
-
-    get currentGameTitle(): string {
-        return this.gameService.currentGameTitle;
-    }
-
-    get currentPlayerNameValue(): string {
-        return this.gameService.currentPlayerNameValue;
+    get nbrOfQuestions(): number {
+        return this.gameService.nbrOfQuestionsValue;
     }
 
     get currentTimerCountdown(): number {
@@ -38,59 +28,38 @@ export class GamePageComponent {
     }
 
     get totalGameDuration(): number {
-        if (this.isLaunchTimer) {
-            return START_TIMER_DURATION;
-        } else {
-            return this.gameService.totalGameDuration;
-        }
+        return this.gameService.totalQuestionDurationValue;
     }
 
-    get currentQuestion(): Question {
-        return this.gameService.getCurrentQuestion();
+    get timerStopped(): boolean {
+        return this.gameService.timerStoppedValue;
     }
 
-    get questionHasExpiredValue(): boolean {
-        return this.gameService.questionHasExpired;
+    get playerList() {
+        return this.gameService.playerListValue;
     }
 
-    get answerIsCorrectValue(): boolean {
-        return this.gameService.answerIsCorrect;
+    get playerLeftList() {
+        return this.gameService.playerLeftListValue;
     }
 
-    get playerListValue(): Player[] {
-        return this.gameService.playerListFromLobby;
-    }
-
-    get currentPlayerId(): string {
-        return this.gameService.currentPlayerId;
-    }
-
-    get hostId(): string {
-        return this.gameService.matchLobby.hostId;
+    get currentQuestion(): Question | null {
+        return this.gameService.currentQuestionValue;
     }
 
     get isLaunchTimer(): boolean {
-        return this.gameService.isLaunchTimerValue;
+        return this.gameService.launchTimerValue;
     }
 
-    get lobbyCode() {
-        return this.gameService.matchLobby.lobbyCode;
-    }
-
-    get getHost() {
-        return this.gameService.matchLobby.hostId === this.gameService.currentPlayerId;
-    }
-
-    get endGame(): boolean {
-        return this.gameService.endGame;
+    get currentGameTitle(): string {
+        return this.gameService.gameTitleValue;
     }
 
     setAnswerIndex(answerIdx: number[]): void {
-        this.gameService.setAnswerIndex(answerIdx);
-        this.gameService.clickPlayerAnswer(answerIdx);
+        this.gameService.answerIndex = answerIdx;
     }
 
     handleGameLeave(): void {
-        this.gameService.handleGameLeave();
+        this.gameService.leaveRoom();
     }
 }

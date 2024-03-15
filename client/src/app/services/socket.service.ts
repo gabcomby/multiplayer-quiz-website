@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import type { AnswersPlayer, Question } from '@app/interfaces/game';
+import { Question } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
-import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 
 @Injectable({
@@ -25,26 +25,87 @@ export class SocketService {
             this.socket.disconnect();
         }
     }
-    deletedGame(callback: (gameId: string) => void) {
-        this.socket.on('deleteId', (gameId: string) => {
-            callback(gameId);
+
+    onRoomCreated(callback: (roomId: string, gameTitle: string) => void): void {
+        this.socket.on('room-created', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
         });
     }
 
-    verifyAnswers(question: Question, answerIdx: number[]) {
-        this.socket.emit('assert-answers', question, answerIdx);
+    onPlayerListChange(callback: (playerList: [[string, Player]]) => void) {
+        this.socket.on('playerlist-change', (playerList: [[string, Player]]) => {
+            callback(playerList);
+        });
     }
 
-    setTimerDuration(duration: number): void {
-        this.socket.emit('set-timer-duration', duration);
+    onPlayerLeftListChange(callback: (playerList: Player[]) => void) {
+        this.socket.on('playerleftlist-change', (playerList: Player[]) => {
+            callback(playerList);
+        });
     }
 
-    startTimer(): void {
-        this.socket.emit('start-timer');
+    createRoom(gameId: string): void {
+        this.socket.emit('create-room', gameId);
     }
 
-    stopTimer(): void {
-        this.socket.emit('stop-timer');
+    createRoomTest(gameId: string, player: Player): void {
+        this.socket.emit('create-room-test', gameId, player);
+    }
+
+    onRoomTestCreated(callback: (gameTitle: string, playerList: [[string, Player]]) => void) {
+        this.socket.on('room-test-created', (gameTitle: string, playerList: [[string, Player]]) => {
+            callback(gameTitle, playerList);
+        });
+    }
+
+    joinRoom(roomId: string, player: Player): void {
+        this.socket.emit('join-room', roomId, player);
+    }
+
+    leaveRoom() {
+        this.socket.emit('leave-room');
+    }
+
+    onLobbyDeleted(callback: () => void) {
+        this.socket.on('lobby-deleted', () => {
+            callback();
+        });
+    }
+
+    onRoomJoined(callback: (roomId: string, gameTitle: string) => void) {
+        this.socket.on('room-joined', (roomId: string, gameTitle: string) => {
+            callback(roomId, gameTitle);
+        });
+    }
+
+    banPlayer(name: string) {
+        this.socket.emit('ban-player', name);
+    }
+
+    onBannedFromGame(callback: () => void) {
+        this.socket.on('banned-from-game', () => {
+            callback();
+        });
+    }
+
+    toggleRoomLock() {
+        this.socket.emit('toggle-room-lock');
+    }
+
+    onRoomLockStatus(callback: (isLocked: boolean) => void) {
+        this.socket.on('room-lock-status', (isLocked: boolean) => {
+            callback(isLocked);
+        });
+    }
+
+    startGame(): void {
+        this.socket.emit('start-game');
+    }
+
+    onGameLaunch(callback: (questionDuration: number, nbrOfQuestions: number) => void) {
+        this.socket.on('game-started', (questionDuration: number, nbrOfQuestions: number) => {
+            callback(questionDuration, nbrOfQuestions);
+        });
     }
 
     onTimerCountdown(callback: (data: number) => void): void {
@@ -53,162 +114,49 @@ export class SocketService {
         });
     }
 
-    onAnswerVerification(callback: (score: [[string, number]]) => void): void {
-        this.socket.on('answer-verification', (score: [[string, number]]) => {
-            callback(score);
+    onQuestionTimeUpdated(callback: (data: number) => void): void {
+        this.socket.on('question-time-updated', (data: number) => {
+            callback(data);
         });
     }
 
-    startGame(): void {
-        this.socket.emit('start');
-    }
-    onTimerGame(callback: () => void): void {
-        this.socket.on('game-timer', () => {
-            callback();
-        });
-    }
-    onAdminDisconnect(callback: () => void): void {
-        this.socket.on('adminDisconnected', () => {
-            callback();
-        });
-    }
-    createRoom(roomId: string): void {
-        this.socket.emit('create-room', roomId);
-    }
-    joinRoom(roomId: string, playerId: string): void {
-        this.socket.emit('join-room', roomId, playerId);
-    }
-    onPlayerDisconnect(callback: (playerId: string) => void) {
-        this.socket.on('playerDisconnected', (playerId: string) => {
-            callback(playerId);
-        });
-    }
-    answerSubmit() {
-        this.socket.emit('answerSubmitted');
-    }
-    onStopTimer(callback: () => void) {
-        this.socket.on('stop-timer', () => {
-            callback();
-        });
-    }
-    onNewPlayerJoin(callback: () => void) {
-        this.socket.on('new-player-connected', () => {
-            callback();
-        });
-    }
-    leaveRoom() {
-        this.socket.emit('leave-room');
-    }
-    onGameLaunch(callback: () => void) {
-        this.socket.on('game-started', () => {
-            callback();
-        });
-    }
-    submitAnswer() {
-        this.socket.emit('answer-submitted');
-    }
-    submitPlayerAnswer(idPlayer: string, answerIdx: number[]) {
-        this.socket.emit('player-answers', idPlayer, answerIdx);
-    }
-    toggleRoomLock() {
-        this.socket.emit('toggle-room-lock');
-    }
-    verifyRoomLock(roomId: string) {
-        this.socket.emit('verify-room-lock', roomId);
-    }
-    onRoomLockStatus(callback: (isLocked: boolean) => void) {
-        this.socket.on('room-lock-status', (isLocked: boolean) => {
-            callback(isLocked);
+    onQuestion(callback: (question: Question, questionIndex: number) => void): void {
+        this.socket.on('question', (question: Question, questionIndex: number) => {
+            callback(question, questionIndex);
         });
     }
 
-    gameIsFinishedSocket() {
-        this.socket.emit('endGame');
-    }
-
-    onEndGame(): Observable<unknown> {
-        return new Observable((observer) => {
-            this.socket.on('endGame', () => {
-                observer.next();
-            });
-        });
-    }
-
-    onGotBonus(callback: (playerId: string) => void) {
-        this.socket.on('got-bonus', (playerId) => {
-            callback(playerId);
-        });
-    }
-
-    sendPlayerAnswer(answer: AnswersPlayer) {
-        const mapToArray = [];
-
-        for (const [key, value] of answer.entries()) {
-            mapToArray.push({ key, value });
-        }
-        this.socket.emit('playerAnswer', mapToArray);
-    }
-
-    onPlayerAnswer(): Observable<AnswersPlayer[]> {
-        return new Observable((observer) => {
-            this.socket.on('sendPlayerAnswers', (answers: AnswersPlayer[]) => {
-                observer.next(answers);
-            });
-        });
-    }
-
-    sendMessageToServer(message: string, playerName: string, roomId: string): void {
-        this.socket.emit('chat-message', { message, playerName, roomId });
-    }
-
-    onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
-        return new Observable((observer) => {
-            this.socket.on('chat-message', (data) => {
-                observer.next(data);
-            });
-        });
-    }
-
-    onLastPlayerDisconnected(callback: () => void) {
-        this.socket.on('lastPlayerDisconnected', () => {
-            callback();
-        });
-    }
-    bannedPlayer(idPlayer: string) {
-        this.socket.connect();
-        this.socket.emit('banFromGame', idPlayer);
-    }
-
-    async onBannedPlayer(callback: () => void) {
-        await this.socket.on('bannedFromHost', () => {
+    onTimerStopped(callback: () => void): void {
+        this.socket.on('timer-stopped', () => {
             callback();
         });
     }
 
-    goToResult() {
-        this.socket.emit('goToResult');
-    }
-    onResultView(callback: () => void) {
-        this.socket.on('resultView', () => {
-            callback();
-        });
-    }
-    nextQuestion() {
-        this.socket.emit('goNextQuestion');
-    }
-    onNextQuestion(callback: () => void) {
-        this.socket.on('handleNextQuestion', () => {
-            callback();
-        });
+    nextQuestion(): void {
+        this.socket.emit('next-question');
     }
 
-    sendClickedAnswer(answerIdx: number[]) {
-        this.socket.emit('sendClickedAnswer', answerIdx);
+    sendAnswers(answerIdx: number[]): void {
+        this.socket.emit('send-answers', answerIdx);
+    }
+
+    sendLockedAnswers(answerIdx: number[]): void {
+        this.socket.emit('send-locked-answers', answerIdx);
+    }
+
+    sendLiveAnswers(answerIdx: number[]) {
+        this.socket.emit('send-live-answers', answerIdx);
     }
 
     onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
         this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
             callback(answersArray);
+        });
+    }
+
+    onGoToResult(callback: (playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => void): void {
+        this.socket.on('go-to-results', (playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {
+            callback(playerList, questionList, allAnswersIndex);
         });
     }
 }

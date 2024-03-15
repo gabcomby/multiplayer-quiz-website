@@ -47,43 +47,12 @@ describe('SocketService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should emit "start-timer" when startTimer is called', () => {
-        service.startTimer();
-        expect(mockSocket.emit).toHaveBeenCalledWith('start-timer');
-    });
-
     it('should handle "timer-countdown" events', (done) => {
         service.onTimerCountdown((data: number) => {
             expect(data).toBe(TIMER_COUNTDOWN);
             done();
         });
     });
-
-    it('should emit "stop-timer" when stopTimer is called', () => {
-        service.stopTimer();
-        expect(mockSocket.emit).toHaveBeenCalledWith('stop-timer');
-    });
-
-    it('should emit "set-timer-duration" when setTimerDuration is called', () => {
-        const duration = 10;
-        service.setTimerDuration(duration);
-        expect(mockSocket.emit).toHaveBeenCalledWith('set-timer-duration', duration);
-    });
-
-    // TODO: These tests have to be changed according to the new answer verification system
-    // it('should emit "assert-answers" when verifyAnswers is called', () => {
-    //     const choices = [{ text: 'Choice 1', isCorrect: true }];
-    //     const answerIdx = [0];
-    //     service.verifyAnswers(choices, answerIdx, '123');
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('assert-answers', choices, answerIdx, '123');
-    // });
-
-    // it('should handle "answer-verification" events', (done) => {
-    //     service.onAnswerVerification((data: boolean) => {
-    //         expect(data).toBeTrue();
-    //         done();
-    //     });
-    // });
 
     it('should emit "disconnect" when disconnect is called', () => {
         service.disconnect();
