@@ -6,12 +6,9 @@ import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 import { IPlayer } from './model/match.model';
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-// const rooms = require('@app/module');
 import { rooms } from './module';
 
 const BASE_TEN = 10;
-// const FIRST_ANSWER_MULTIPLIER = 1.2;
 
 @Service()
 export class Server {
@@ -70,11 +67,26 @@ export class Server {
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, this.io);
+                const room = new Room(game, false, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
                 this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
+            });
+
+            socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
+                const gameService = new GameService();
+                const game = await gameService.getGame(gameId);
+                const room = new Room(game, true, this.io);
+                socket.join(room.roomId);
+                setRoom(room);
+                getRoom().hostId = socket.id;
+                getRoom().playerList.set(socket.id, player);
+                getRoom().playerHasAnswered.set(socket.id, false);
+                getRoom().livePlayerAnswers.set(socket.id, []);
+                this.io.to(getRoom().roomId).emit('room-test-created', getRoom().game.title, Array.from(getRoom().playerList));
+                this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
+                getRoom().startQuestion();
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {

@@ -1,6 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -9,12 +10,13 @@ import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
+const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
     templateUrl: './new-game-page.component.html',
     styleUrls: ['./new-game-page.component.scss'],
 })
-export class NewGamePageComponent implements OnInit, OnDestroy {
+export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
@@ -101,33 +103,45 @@ export class NewGamePageComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    async isTheGameModifiedTest(game: Game): Promise<void> {
-        // eslint-disable-next-line
-        console.log(game);
+    async launchGameTest(game: Game): Promise<void> {
+        const isModified = await this.isOriginalGame(game);
+        if (!isModified) {
+            this.gameSelected[game.id] = false;
+            this.ngOnInit();
+        } else {
+            this.socketService.connect();
+            this.gameService.resetGameVariables();
+            const player: Player = {
+                id: 'test-player-id',
+                name: 'Test Player',
+                score: 0,
+                bonus: 0,
+            };
+            this.socketService.createRoomTest(game.id, player);
+            this.gameService.setupWebsocketEvents();
+            setTimeout(() => {
+                this.router.navigate(['/game']);
+            }, GAME_CREATION_DELAY);
+        }
     }
 
     backHome() {
         this.socketService.disconnect();
     }
 
-    async isTheGameModifiedPlay(game: Game): Promise<boolean> {
+    async launchGame(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
             this.gameSelected[game.id] = false;
             this.ngOnInit();
-            return false;
         } else {
             this.socketService.connect();
             this.socketService.createRoom(game.id);
             this.gameService.resetGameVariables();
             this.gameService.setupWebsocketEvents();
-            this.router.navigate(['/gameWait']);
-            return true;
-        }
-    }
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
+            setTimeout(() => {
+                this.router.navigate(['/gameWait']);
+            }, GAME_CREATION_DELAY);
         }
     }
 }

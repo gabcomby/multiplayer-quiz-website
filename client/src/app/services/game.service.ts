@@ -160,6 +160,13 @@ export class GameService {
             this.gameTitle = gameTitle;
         });
 
+        this.socketService.onRoomTestCreated((gameTitle: string, playerList: [[string, Player]]) => {
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
+            this.gameTitle = gameTitle;
+        });
+
         this.socketService.onTimerCountdown((data) => {
             this.timerCountdown = data;
         });
