@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
-// import { SocketService } from '@app/services/socket.service';
+import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
@@ -31,7 +31,8 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     private chatSubscription: Subscription;
 
     constructor(
-        private snackbar: SnackbarService, // private socket: SocketService,
+        private snackbar: SnackbarService,
+        private socket: SocketService,
     ) {}
 
     ngOnInit(): void {
@@ -47,10 +48,10 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     }
 
     listenForMessages(): void {
-        // this.chatSubscription = this.socket.onChatMessage().subscribe({
-        //     next: (message) => this.handleNewMessage(message),
-        //     error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
-        // });
+        this.chatSubscription = this.socket.onChatMessage().subscribe({
+            next: (message) => this.handleNewMessage(message),
+            error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
+        });
     }
 
     onChatInput(event: Event): void {
@@ -67,7 +68,7 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
 
         if (trimmedText) {
             this.handleNewMessage({ text: trimmedText, sender: this.isHost ? 'Organisateur' : this.playerName, timestamp: new Date() });
-            // this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
+            this.socket.sendMessageToServer(trimmedText, this.isHost ? 'Organisateur' : this.playerName, this.roomId);
         }
         this.text = '';
     }
