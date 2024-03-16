@@ -25,66 +25,6 @@ describe('NewGamePageComponent', () => {
     // let routerSpy: jasmine.SpyObj<Router>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let apiService: ApiService;
-    /* const gamesMockFalseTrue: Game[] = [
-        {
-            id: 'un',
-            title: 'game1',
-            description: 'description1',
-            isVisible: false,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-        {
-            id: 'deux',
-            title: 'game2',
-            description: 'description2',
-            isVisible: true,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-    ];*/
-    /* const gamesMockTrueTrue: Game[] = [
-        {
-            id: 'un',
-            title: 'game1',
-            description: 'description1',
-            isVisible: true,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-        {
-            id: 'deux',
-            title: 'game2',
-            description: 'description2',
-            isVisible: true,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-    ];*/
-    /* const gamesMockTrueFalse: Game[] = [
-        {
-            id: 'un',
-            title: 'game1',
-            description: 'description1',
-            isVisible: true,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-        {
-            id: 'deux',
-            title: 'game2',
-            description: 'description2',
-            isVisible: false,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-    ];*/
     const gamesMock: Game[] = [
         {
             id: 'un',
@@ -96,53 +36,6 @@ describe('NewGamePageComponent', () => {
             questions: [],
         },
     ];
-
-    /* const gamesMockIsVisibleTrue: Game[] = [
-        {
-            id: 'un',
-            title: 'game1',
-            description: 'description1',
-            isVisible: true,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-    ];*/
-    /* const gamesMockIsVisibleFalse: Game[] = [
-        {
-            id: 'un',
-            title: 'game1',
-            description: 'description1',
-            isVisible: false,
-            lastModification: new Date(),
-            duration: 10,
-            questions: [],
-        },
-    ];*/
-    /* const matchLobbyMock = {
-        id: 'matchLobby1',
-        playerList: [
-            { id: 'host1', name: 'TestUser', score: 0, isLocked: false },
-            { id: 'player2', name: 'TestUser2', score: 0, isLocked: false },
-        ],
-        gameId: 'game1',
-        bannedNames: ['allo'],
-        lobbyCode: '1234',
-        isLocked: false,
-        hostId: 'host1',
-    };*/
-    /* const gameSelectedMock = {
-        un: true,
-    };
-    const gameSelectedMockTestModified = {
-        un: true,
-        deux: false,
-    };
-    const dialogMock = {
-        open: () => {
-            return { afterClosed: () => of(true) };
-        },
-    };*/
     beforeEach(async () => {
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames']);
         const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
@@ -195,5 +88,12 @@ describe('NewGamePageComponent', () => {
         const game = gamesMock[0];
         component.selected(game);
         expect(component.gameSelected[game.id]).toBeTrue();
+    });
+
+    it('should return the good index of the game', async () => {
+        const indexOfSpy = spyOn(gamesMock, 'indexOf').and.callThrough();
+        const result = gamesMock.indexOf(gamesMock[0]);
+        expect(indexOfSpy).toHaveBeenCalled();
+        expect(result).toEqual(0);
     });
 });

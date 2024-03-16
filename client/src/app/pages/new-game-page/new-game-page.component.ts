@@ -9,7 +9,7 @@ import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
-const INDEX_NOT_FOUND = -1;
+// const INDEX_NOT_FOUND = -1;
 const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
@@ -59,16 +59,36 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
+    suggestGame(game: Game): string {
+        for (const gameSuggestion of this.games) {
+            let gameSugg: Game = {
+                id: '',
+                title: '',
+                description: '',
+                isVisible: false,
+                lastModification: new Date(),
+                duration: 0,
+                questions: [],
+            };
+            this.apiService.getGame(gameSuggestion.id).subscribe((gameS) => {
+                gameSugg = gameS;
+                return gameS;
+            });
+            if (gameSugg.isVisible === true && gameSuggestion.id !== game.id) {
+                return gameSuggestion.title;
+            }
+        }
+        return '';
+    }
+
     snackbarHiddenGame(game: Game, indexGame: number) {
         let suggestion = '';
         if (indexGame === this.games.length - 1) {
-            const newSuggestedGameCase1 = this.games[0];
-            suggestion = ' we suggest to play ' + newSuggestedGameCase1.title;
+            suggestion = ' we suggest to play ' + this.suggestGame(game);
         } else if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
         } else {
-            const newSuggestedGame = this.games[indexGame + 1];
-            suggestion = ' we suggest you to play ' + newSuggestedGame.title;
+            suggestion = ' we suggest you to play ' + this.suggestGame(game);
         }
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + suggestion);
     }
@@ -76,26 +96,24 @@ export class NewGamePageComponent implements OnInit {
     snackbarDeletedGame(game: Game, indexGame: number) {
         let suggestion = '';
         if (indexGame === this.games.length - 1) {
-            const newSuggestedGameCase1 = this.games[0];
-            suggestion = ' we suggest to play ' + newSuggestedGameCase1.title;
+            suggestion = ' we suggest to play ' + this.suggestGame(game);
         } else if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
         } else {
-            const newSuggestedGame = this.games[indexGame + 1];
-            suggestion = ' we suggest you to play ' + newSuggestedGame.title;
+            suggestion = ' we suggest you to play ' + this.suggestGame(game);
         }
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + suggestion);
     }
 
     async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
-        const newGameArray = await this.apiService.getGames();
-        const indexG = newGameArray.findIndex((g) => g.id === game.id);
-        if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND) {
+        const newGameArray = this.apiService.getGames();
+        const indexG = (await newGameArray).indexOf(game);
+        if (this.deletedGamesId.indexOf(game.id) !== undefined) {
             const indexGame = this.games.indexOf(game);
             this.snackbarDeletedGame(game, indexGame);
             result = false;
-        } else if (!newGameArray[indexG].isVisible) {
+        } else if (!(await newGameArray)[indexG].isVisible) {
             const indexGame = this.games.indexOf(game);
             this.snackbarHiddenGame(game, indexGame);
             result = false;
