@@ -27,6 +27,7 @@ export class ChatService {
         });
     }
 
+    // eslint-disable-next-line -- needed to send message
     sendMessage(text: string, playerName: string, roomId: string, isHost: boolean): void {
         const trimmedText = text.trim();
         if (!isHost && !playerName) {
@@ -39,9 +40,9 @@ export class ChatService {
                 text: trimmedText,
                 sender: isHost ? 'Organisateur' : playerName,
                 timestamp: new Date(),
-                visible: true, // Assuming the Message interface has a visible property
+                visible: true,
             };
-            this.handleNewMessage(message); // Display own message
+            this.handleNewMessage(message);
             this.socket.sendMessageToServer(trimmedText, message.sender, roomId);
         }
     }
@@ -58,7 +59,7 @@ export class ChatService {
         // eslint-disable-next-line -- Used to hide message
         if (index !== -1) {
             this.messages[index].visible = false;
-            this.messagesSubject.next([...this.messages]); // Update subscribers with the new state
+            this.messagesSubject.next([...this.messages]);
         }
     }
 }
