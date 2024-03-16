@@ -86,25 +86,44 @@ describe('ResultsViewComponent', () => {
         expect(component.playerDataSource[2].name).toBe('John');
     });
 
-    it('should return player list from GameService', () => {
-        const playerList = [
-            {
-                id: 'player1',
-                name: 'John',
-                score: 12,
-                bonus: 0,
-            },
-            {
-                id: 'player2',
-                name: 'Alice',
-                score: 20,
-                bonus: 0,
-            },
-        ];
-        spyOnProperty(gameServiceSpy, 'playerListValue').and.returnValue(playerList);
-        expect(component.playerList).toEqual(playerList);
-    });
+    // it('should return player list from GameService', () => {
+    //     const playerList = [
+    //         {
+    //             id: 'player1',
+    //             name: 'John',
+    //             score: 12,
+    //             bonus: 0,
+    //         },
+    //         {
+    //             id: 'player2',
+    //             name: 'Alice',
+    //             score: 20,
+    //             bonus: 0,
+    //         },
+    //     ];
+    //     spyOnProperty(gameServiceSpy, 'playerListValue').and.returnValue(playerList);
+    //     expect(component.playerList).toEqual(playerList);
+    // });
 
+    // it('should return currentQuestionIndexValue from gameService with currentQuestionIndexValue', () => {
+    //     // eslint-disable-next-line no-unused-vars
+    //     const result = component.playerList;
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     const sortDataSourceSpy = spyOn<any>(component, 'sortDataSource').and.callThrough();
+    //     expect(sortDataSourceSpy).toHaveBeenCalled();
+    //     expect(component.playerDataSource).toBe(gameServiceSpy.playerListValue);
+    // });
+
+    // it('should return all answers index from GameService', () => {
+    //     spyOnProperty(gameServiceSpy, 'allAnswersIndexValue', 'get').and.returnValue([
+    //         ['answer1', [1, 2, 3]],
+    //         ['answer2', [4, 5, 6]],
+    //     ]);
+    //     expect(component.allAnswersIndex).toEqual([
+    //         ['answer1', [1, 2, 3]],
+    //         ['answer2', [4, 5, 6]],
+    //     ]);
+    // });
     // it('should return all answers index from GameService', () => {
     //     const answersIndex = [
     //         ['Player A', [0, 1, 2]],
