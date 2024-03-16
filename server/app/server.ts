@@ -163,6 +163,14 @@ export class Server {
                 getRoom().handleEarlyAnswers(socket.id, answerIdx);
             });
 
+            socket.on('chat-message', ({ message, playerName, roomId }) => {
+                socket.to(roomId).emit('chat-message', {
+                    text: message,
+                    sender: playerName,
+                    timestamp: new Date().toISOString(),
+                });
+            });
+
             socket.on('disconnect', () => {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');

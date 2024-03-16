@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { environment } from '@env/environment';
+import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 
 @Injectable({
@@ -146,6 +147,18 @@ export class SocketService {
 
     sendLiveAnswers(answerIdx: number[]) {
         this.socket.emit('send-live-answers', answerIdx);
+    }
+
+    sendMessageToServer(message: string, playerName: string, roomId: string): void {
+        this.socket.emit('chat-message', { message, playerName, roomId });
+    }
+
+    onChatMessage(): Observable<{ text: string; sender: string; timestamp: string }> {
+        return new Observable((observer) => {
+            this.socket.on('chat-message', (data) => {
+                observer.next(data);
+            });
+        });
     }
 
     onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
