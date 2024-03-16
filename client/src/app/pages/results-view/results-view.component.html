@@ -27,7 +27,7 @@
             <mat-header-row *matHeaderRowDef="['name', 'score', 'bonus']"></mat-header-row>
             <mat-row *matRowDef="let row; columns: ['name', 'score', 'bonus']"></mat-row>
         </mat-table>
-        <app-game-page-livechat class="live-chat"></app-game-page-livechat>
+        <app-game-page-livechat class="live-chat" [playerName]="playerName" [isHost]="isHostValue" [roomId]="lobbyCode"></app-game-page-livechat>
     </div>
     <div class="histogram">
         <app-histogram [answersPlayer]="allAnswersIndex" [questionsGame]="allQuestionsFromGame"></app-histogram>
