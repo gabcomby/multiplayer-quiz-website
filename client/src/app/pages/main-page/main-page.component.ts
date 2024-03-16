@@ -5,18 +5,14 @@ import { Router } from '@angular/router';
 import { PasswordDialogComponent } from '@app/components/password-dialog/password-dialog.component';
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
+import { Player } from '@app/interfaces/match';
 import { AuthService } from '@app/services/auth.service';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
+import { RoomService } from '@app/services/room.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
+import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
-
-const FETCH_TIMEOUT = 5000;
-interface DialogResult {
-    userName: string;
-    lobbyCode: string;
-}
 
 @Component({
     selector: 'app-main-page',
@@ -32,20 +28,10 @@ export class MainPageComponent {
         private router: Router,
         public dialog: MatDialog,
         private snackbarService: SnackbarService,
-        private matchLobbyService: MatchLobbyService,
         private socketService: SocketService,
         private gameService: GameService,
+        private roomService: RoomService,
     ) {}
-
-    async fetchLobbyLockStatus(lobbyCode: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.socketService.verifyRoomLock(lobbyCode);
-            this.socketService.onRoomLockStatus((isLocked: boolean) => {
-                resolve(isLocked);
-            });
-            setTimeout(reject, FETCH_TIMEOUT);
-        });
-    }
 
     openAdminDialog(): void {
         const dialogRef = this.dialog.open(PasswordDialogComponent, { width: '300px' });
@@ -59,48 +45,37 @@ export class MainPageComponent {
                 isShown: true,
             },
         });
-        const result = await lastValueFrom<DialogResult>(dialogRef.afterClosed());
-        this.handleDialogCloseBanned(result.userName, result.lobbyCode);
+        const result = await lastValueFrom(dialogRef.afterClosed());
 
-        if (this.isEmptyDialog(result)) {
+        if (this.isEmpyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
-        this.socketService.connect();
-        const authenticated = await this.authenticateUserIfBanned(result.userName, result.lobbyCode);
-        const resultName$ = await this.matchLobbyService.authentificateNameOfUser(result.userName, result.lobbyCode);
-        const resultName = await lastValueFrom(resultName$);
-        if (result.lobbyCode) {
-            this.addPlayer(result, authenticated, resultName);
-        }
-    }
-
-    private addPlayer(result: DialogResult, authenticated: boolean, resultName: boolean) {
-        this.matchLobbyService.getLobbyByCode(result.lobbyCode).subscribe({
-            next: (lobby) => {
-                if (lobby && authenticated && resultName) {
-                    this.matchLobbyService.addPlayer(result.userName, lobby.id).subscribe({
-                        next: (lobbyUpdated) => {
-                            const newPlayerId = lobbyUpdated.playerList[lobbyUpdated.playerList.length - 1].id;
-                            this.socketService.joinRoom(result.lobbyCode, newPlayerId);
-                            this.gameService.initializeLobbyAndGame(lobby.id, newPlayerId);
-                            this.router.navigate(['/gameWait']);
-                        },
-                        error: (error) => {
-                            this.snackbarService.openSnackBar('Erreur ' + error + "lors de l'ajout du joueur");
-                        },
-                    });
+        const newPlayer: Player = {
+            name: result.userName,
+            id: generateNewId(),
+            score: 0,
+            bonus: 0,
+        };
+        this.roomService.verifyPlayerCanJoin(result.lobbyCode, newPlayer).subscribe({
+            next: (canJoin: boolean) => {
+                if (canJoin) {
+                    this.socketService.connect();
+                    this.socketService.joinRoom(result.lobbyCode, newPlayer);
+                    this.gameService.resetGameVariables();
+                    this.gameService.setupWebsocketEvents();
+                    this.router.navigate(['/gameWait']);
                 } else {
-                    this.snackbarService.openSnackBar("Cette partie n'existe pas ou vous en avez été banni");
+                    this.snackbarService.openSnackBar("Vous n'avez pas pu rejoindre cette partie.");
                 }
             },
-            error: (error) => {
-                this.snackbarService.openSnackBar('Erreur ' + error + 'lors de la récupération du salon');
+            error: () => {
+                this.snackbarService.openSnackBar('Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?');
             },
         });
     }
 
-    private isEmptyDialog(result: DialogResult): boolean {
+    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
         return result.userName.trim() === '' || result.lobbyCode.trim() === '';
     }
 
@@ -132,26 +107,4 @@ export class MainPageComponent {
             });
         }
     };
-
-    private handleDialogCloseBanned = (name: string, lobbyCode: string) => {
-        this.authenticateUserIfBanned(name, lobbyCode);
-    };
-
-    private async authenticateUserIfBanned(name: string, lobbyCode: string): Promise<boolean> {
-        const result$ = this.matchLobbyService.authenticateUser(name, lobbyCode);
-        const result = await lastValueFrom(result$);
-
-        if (!result) {
-            const lockStatus = await this.fetchLobbyLockStatus(lobbyCode);
-            if (lockStatus) {
-                this.snackbarService.openSnackBar('La partie est verrouillée');
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            this.snackbarService.openSnackBar('Vous avez été banni de cette partie');
-            return false;
-        }
-    }
 }

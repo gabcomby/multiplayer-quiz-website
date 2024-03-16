@@ -2,8 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
-import { SocketService } from '@app/services/socket.service';
-const answerIndex = -1;
+import { GameService } from '@app/services/game.service';
+
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -19,12 +19,13 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Output() answerIdx = new EventEmitter<number[]>();
 
     selectedChoices: number[];
+    answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private answerStateService: AnswerStateService,
-        private socketService: SocketService,
+        private gameService: GameService,
     ) {}
 
     @HostListener('keydown', ['$event'])
@@ -59,10 +60,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     toggleAnswer(index: number) {
         if (this.timerExpired || this.answerIsLocked) return;
-        if (!this.checkIfMultipleChoice()) this.selectedChoices = [];
-
+        if (!this.checkIfMultipleChoice()) {
+            this.selectedChoices = [];
+        }
         const answerIdx = this.selectedChoices.indexOf(index);
-        if (answerIdx > answerIndex) {
+        // eslint-disable-next-line
+        if (answerIdx > -1) {
             this.selectedChoices.splice(answerIdx, 1);
         } else {
             this.selectedChoices.push(index);
@@ -76,7 +79,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
-        this.socketService.submitAnswer();
+        this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }
