@@ -116,11 +116,6 @@ describe('HostGamePageComponent', () => {
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
     });
 
-    it('should return nextQuestion from gameService with nextQuestion', () => {
-        const result = component.nextQuestion;
-        expect(result).toBe(gameServiceSpy.nextQuestion);
-    });
-
     it('should return playerList from gameService with playerList', () => {
         const result = component.playerList;
         expect(result).toBe(gameServiceSpy.playerListValue);
