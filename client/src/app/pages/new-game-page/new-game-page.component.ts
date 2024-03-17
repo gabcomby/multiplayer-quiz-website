@@ -74,11 +74,19 @@ export class NewGamePageComponent implements OnInit {
                 gameSugg = gameS;
                 return gameS;
             });
-            if (gameSugg.isVisible === true && gameSuggestion.id !== game.id) {
+            if (this.canItBeSuggested(gameSugg, game)) {
                 return gameSuggestion.title;
             }
         }
         return '';
+    }
+
+    canItBeSuggested(newGame: Game, oldGame: Game): boolean {
+        if (newGame.isVisible === true && newGame.id !== oldGame.id) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     snackbarHiddenGame(game: Game, indexGame: number) {
