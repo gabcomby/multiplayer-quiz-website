@@ -21,7 +21,7 @@ describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
     // let matchLobbyServiceSpy: jasmine.SpyObj<MatchLobbyService>;
-    // let socketServiceSpy: jasmine.SpyObj<SocketService>;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
     // let gameServiceSpy: jasmine.SpyObj<GameService>;
     // let socketSpy: jasmine.SpyObj<Socket>;
     // let routerSpy: jasmine.SpyObj<Router>;
@@ -82,9 +82,10 @@ describe('NewGamePageComponent', () => {
         deux: false,
     };*/
     beforeEach(async () => {
+        jasmine.clock().install();
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames', 'resetGameVariables', 'setupWebsocketEvents']);
         const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        const socketObj = jasmine.createSpyObj('SocketService', ['connect', 'deleteId', 'createRoom']);
+        const socketObj = jasmine.createSpyObj('SocketService', ['connect', 'deleteId', 'createRoom', 'disconnect', 'createRoomTest']);
         const socketIoObj = jasmine.createSpyObj('Socket', ['on']);
         const routerObj = jasmine.createSpyObj('Router', ['navigate']);
         const matDialogObj = jasmine.createSpyObj('MatDialog', ['open', 'close']);
@@ -112,7 +113,7 @@ describe('NewGamePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         // gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
-        // socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
+        socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         // socketSpy = TestBed.inject(Socket) as jasmine.SpyObj<Socket>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         // routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
@@ -121,6 +122,10 @@ describe('NewGamePageComponent', () => {
         // matDialogSpy = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
         // matchLobbyServiceSpy = TestBed.inject(MatchLobbyService) as jasmine.SpyObj<MatchLobbyService>;
     });
+    afterEach(() => {
+        jasmine.clock().uninstall();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -169,6 +174,7 @@ describe('NewGamePageComponent', () => {
         spySuggest.and.returnValue(gamesMock[0].title);
         const result = component.suggestGame(game);
         expect(result).toEqual('game1');
+        expect(apiService.getGame).toHaveBeenCalled();
     });
 
     it('should return nothing if no game can be suggested', () => {
@@ -250,7 +256,7 @@ describe('NewGamePageComponent', () => {
         component.snackbarDeletedGame(game, indexGame);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game1 has been deleted we have no other games to suggest');
     });
-    it('should launch game for test', async () => {
+    it('should launch game', async () => {
         component.games = gamesMock;
         component.gameSelected = { un: true, deux: false, trois: false };
         const game = gamesMock[0];
@@ -258,6 +264,8 @@ describe('NewGamePageComponent', () => {
         spyOn(component, 'isOriginalGame').and.returnValue(Promise.resolve(true));
         spyOn(component, 'launchGame').and.callThrough();
         await component.launchGame(game);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        jasmine.clock().tick(750);
         expect(component.isOriginalGame).toHaveBeenCalled();
         expect(component.launchGame).toHaveBeenCalled();
     });
@@ -292,5 +300,36 @@ describe('NewGamePageComponent', () => {
         const result = await component.isOriginalGame(game);
         expect(result).toBeFalse();
         expect(gamesMock[2].isVisible).toBeFalse();
+    });
+    it('should disconnect socket', () => {
+        spyOn(component, 'backHome').and.callThrough();
+        component.backHome();
+        expect(component.backHome).toHaveBeenCalled();
+        expect(socketServiceSpy.disconnect).toHaveBeenCalled();
+    });
+    it('should launch game for test', async () => {
+        component.games = gamesMock;
+        component.gameSelected = { un: true, deux: false, trois: false };
+        const game = gamesMock[0];
+        spyOn(apiService, 'getGames').and.returnValue(Promise.resolve(gamesMock));
+        spyOn(component, 'isOriginalGame').and.returnValue(Promise.resolve(true));
+        spyOn(component, 'launchGameTest').and.callThrough();
+        await component.launchGameTest(game);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        jasmine.clock().tick(750);
+        expect(component.isOriginalGame).toHaveBeenCalled();
+        expect(component.launchGameTest).toHaveBeenCalled();
+    });
+    it('if game is modified during the lauch test', async () => {
+        component.games = gamesMock;
+        component.gameSelected = { un: true, deux: false, trois: false };
+        const game = gamesMock[0];
+        spyOn(apiService, 'getGames').and.returnValue(Promise.resolve(gamesMock));
+        spyOn(component, 'isOriginalGame').and.returnValue(Promise.resolve(false));
+        spyOn(component, 'launchGameTest').and.callThrough();
+        await component.launchGameTest(game);
+        expect(component.gameSelected[game.id]).toBeFalse();
+        expect(component.isOriginalGame).toHaveBeenCalled();
+        expect(component.launchGameTest).toHaveBeenCalled();
     });
 });
