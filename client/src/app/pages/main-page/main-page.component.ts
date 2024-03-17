@@ -66,6 +66,7 @@ export class MainPageComponent {
                 if (canJoin) {
                     this.socketService.connect();
                     this.socketService.joinRoom(result.lobbyCode, newPlayer);
+                    this.gameService.setPlayerName(result.userName);
                     this.gameService.resetGameVariables();
                     this.gameService.setupWebsocketEvents();
                     this.router.navigate(['/gameWait']);

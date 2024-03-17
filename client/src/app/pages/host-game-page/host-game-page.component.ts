@@ -15,6 +15,10 @@ export class HostGamePageComponent {
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
 
+    get lobbyCode(): string {
+        return this.gameService.lobbyCodeValue;
+    }
+
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
