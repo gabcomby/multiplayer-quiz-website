@@ -14,7 +14,7 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
-    histogramData: { name: string; value: number }[];
+    histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
 
@@ -64,6 +64,7 @@ export class HistogramComponent implements OnInit, OnChanges {
                 : this.questionsGame[0].choices[i].text;
             histogramData.push({ name: choiceText, value: array[i] });
         }
+
         this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
     }
 

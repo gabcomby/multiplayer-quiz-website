@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
+import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
 
@@ -9,6 +10,7 @@ describe('QuestionService', () => {
     let service: QuestionService;
     let httpController: HttpTestingController;
     let snackbarServiceMock: jasmine.SpyObj<SnackbarService>;
+    let questionValidationServiceMock: jasmine.SpyObj<QuestionValidationService>;
     const defaultDate = new Date();
 
     const question: Question = {
@@ -37,8 +39,46 @@ describe('QuestionService', () => {
         ],
     };
 
+    const mockQuestionList: Question[] = [
+        {
+            type: 'QCM',
+            id: 'abc',
+            lastModification: new Date('2018-11-13T20:20:39+00:00'),
+            text: 'Test1',
+            points: 40,
+            choices: [
+                {
+                    text: 'var',
+                    isCorrect: true,
+                },
+                {
+                    text: 'self',
+                    isCorrect: false,
+                },
+            ],
+        },
+        {
+            type: 'QCM',
+            id: 'bcd',
+            lastModification: new Date('2018-11-13T20:20:39+00:00'),
+            text: 'Test2',
+            points: 40,
+            choices: [
+                {
+                    text: 'choice1',
+                    isCorrect: true,
+                },
+                {
+                    text: 'choice2',
+                    isCorrect: false,
+                },
+            ],
+        },
+    ];
+
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
+        questionValidationServiceMock = jasmine.createSpyObj('QuestionValidationService', ['verifyOneGoodAndBadAnswer', 'validateQuestion']);
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
@@ -46,6 +86,7 @@ describe('QuestionService', () => {
                 QuestionService,
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
+                { provide: QuestionValidationService, useValue: questionValidationServiceMock },
             ],
         });
         service = TestBed.inject(QuestionService);
@@ -198,6 +239,34 @@ describe('QuestionService', () => {
         ];
         service.updateList(questions);
         expect(service.questions).toEqual(questions);
+    });
+    it('should save question when listQuestionBank is true and question is valid', () => {
+        const index = 0;
+
+        questionValidationServiceMock.verifyOneGoodAndBadAnswer.and.returnValue(true);
+        questionValidationServiceMock.validateQuestion.and.returnValue(true);
+
+        const result = service.saveQuestion(index, mockQuestionList, true);
+        const req = httpController.expectOne('http://localhost:3000/questions/abc');
+
+        expect(questionValidationServiceMock.verifyOneGoodAndBadAnswer).toHaveBeenCalled();
+        expect(questionValidationServiceMock.validateQuestion).toHaveBeenCalled();
+        expect(result).toBeTrue();
+        expect(req.request.method).toEqual('PATCH');
+        req.flush({});
+    });
+
+    it('should save question when valid', () => {
+        const index = 0;
+
+        questionValidationServiceMock.verifyOneGoodAndBadAnswer.and.returnValue(true);
+        questionValidationServiceMock.validateQuestion.and.returnValue(true);
+
+        const result = service.saveQuestion(index, mockQuestionList, false);
+
+        expect(questionValidationServiceMock.verifyOneGoodAndBadAnswer).toHaveBeenCalled();
+        expect(questionValidationServiceMock.validateQuestion).toHaveBeenCalled();
+        expect(result).toBeTrue();
     });
 
     it('should switch the answer selected and the one on top', () => {
