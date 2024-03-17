@@ -11,15 +11,15 @@ describe('ResultsViewComponent', () => {
     let fixture: ComponentFixture<ResultsViewComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
 
-    beforeEach(() => {
-        gameServiceSpy = jasmine.createSpyObj('GameService', {
-            leaveRoom: undefined,
-        });
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        const spy = jasmine.createSpyObj('GameService', ['leaveRoom'], ['playerListValue']);
+
+        await TestBed.configureTestingModule({
             declarations: [ResultsViewComponent, HistogramComponent],
-            providers: [{ provide: GameService, useValue: gameServiceSpy }],
+            providers: [{ provide: GameService, useValue: spy }],
             imports: [MatToolbarModule, MatIconModule, MatTableModule],
-        });
+        }).compileComponents();
+        gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
         fixture = TestBed.createComponent(ResultsViewComponent);
         component = fixture.componentInstance;
     });
@@ -86,155 +86,24 @@ describe('ResultsViewComponent', () => {
         expect(component.playerDataSource[2].name).toBe('John');
     });
 
-    // it('should return player list from GameService', () => {
-    //     const playerList = [
-    //         {
-    //             id: 'player1',
-    //             name: 'John',
-    //             score: 12,
-    //             bonus: 0,
-    //         },
-    //         {
-    //             id: 'player2',
-    //             name: 'Alice',
-    //             score: 20,
-    //             bonus: 0,
-    //         },
-    //     ];
-    //     spyOnProperty(gameServiceSpy, 'playerListValue').and.returnValue(playerList);
-    //     expect(component.playerList).toEqual(playerList);
-    // });
+    it('should return player list from GameService', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sortDataSourceSpy = spyOn<any>(component, 'sortDataSource').and.callFake(() => {
+            return;
+        });
 
-    // it('should return currentQuestionIndexValue from gameService with currentQuestionIndexValue', () => {
-    //     // eslint-disable-next-line no-unused-vars
-    //     const result = component.playerList;
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     const sortDataSourceSpy = spyOn<any>(component, 'sortDataSource').and.callThrough();
-    //     expect(sortDataSourceSpy).toHaveBeenCalled();
-    //     expect(component.playerDataSource).toBe(gameServiceSpy.playerListValue);
-    // });
+        sortDataSourceSpy.call(component);
+        const result = component.playerList;
 
-    // it('should return all answers index from GameService', () => {
-    //     spyOnProperty(gameServiceSpy, 'allAnswersIndexValue', 'get').and.returnValue([
-    //         ['answer1', [1, 2, 3]],
-    //         ['answer2', [4, 5, 6]],
-    //     ]);
-    //     expect(component.allAnswersIndex).toEqual([
-    //         ['answer1', [1, 2, 3]],
-    //         ['answer2', [4, 5, 6]],
-    //     ]);
-    // });
-    // it('should return all answers index from GameService', () => {
-    //     const answersIndex = [
-    //         ['Player A', [0, 1, 2]],
-    //         ['Player B', [1, 2, 3]],
-    //     ];
-    //     spyOnProperty(component.gameService, 'allAnswersIndexValue').and.returnValue(answersIndex);
-    //     expect(component.allAnswersIndex).toEqual(answersIndex);
-    // });
+        expect(result).toEqual(gameServiceSpy.playerListValue);
+    });
+    it('should return all answers index from GameService', () => {
+        const result = component.allAnswersIndex;
+        expect(result).toEqual(gameServiceSpy.allAnswersIndexValue);
+    });
 
-    // it('should return all questions from GameService', () => {
-    //     const questions = [{ text: 'Question 1' }, { text: 'Question 2' }];
-    //     spyOnProperty(component.gameService, 'allQuestionsFromGameValue').and.returnValue(questions);
-    //     expect(component.allQuestionsFromGame).toEqual(questions);
-    // });
+    it('should return all questions from GameService', () => {
+        const result = component.allQuestionsFromGame;
+        expect(result).toEqual(gameServiceSpy.allQuestionsFromGameValue);
+    });
 });
-//     it('should return player list value from game service', () => {
-//         const players: Player[] = [
-//             {
-//                 id: 'player1',
-//                 name: 'John',
-//                 score: 0,
-//                 bonus: 0,
-//                 isLocked: false,
-//             },
-//             {
-//                 id: 'player2',
-//                 name: 'Alice',
-//                 score: 0,
-//                 bonus: 0,
-//                 isLocked: false,
-//             },
-//         ];
-//         spyOnProperty(gameService, 'playerListFromLobby', 'get').and.returnValue(players);
-//         const playerListValue = component.playerListValue;
-//         expect(playerListValue).toEqual(players);
-//     });
-
-//     it('should call handleGameLeave of GameService', () => {
-//         spyOn(gameService, 'handleGameLeave');
-//         component.handleGameLeave();
-//         expect(gameService.handleGameLeave).toHaveBeenCalled();
-//     });
-
-//     it('should update answersQuestions when getPlayerAnswers emits', () => {
-//         const mockAnswers: AnswersPlayer[] = [
-//             new Map<string, number[]>([
-//                 ['player1', [1, 2, 3]],
-//                 ['player2', [1, 2, 3]],
-//             ]),
-//             new Map<string, number[]>([
-//                 ['player3', [1, 2, 3]],
-//                 ['player4', [1, 2, 3]],
-//             ]),
-//         ];
-//         spyOn(gameService, 'getPlayerAnswers').and.returnValue(of(mockAnswers));
-//         component.ngOnInit();
-//         expect(component.answersQuestions).toEqual(mockAnswers);
-//     });
-
-//     it('should update questions when questionGame emits', () => {
-//         const fakeQuestions: Question[] = [
-//             {
-//                 type: 'Multiple Choice',
-//                 text: 'What is the capital of France?',
-//                 points: 10,
-//                 choices: [
-//                     { text: 'Paris', isCorrect: true },
-//                     { text: 'London', isCorrect: false },
-//                     { text: 'Berlin', isCorrect: false },
-//                     { text: 'Rome', isCorrect: false },
-//                 ],
-//                 lastModification: new Date(),
-//                 id: '1',
-//             },
-//             {
-//                 type: 'True/False',
-//                 text: 'The Earth is flat.',
-//                 points: 5,
-//                 choices: [
-//                     { text: 'True', isCorrect: false },
-//                     { text: 'False', isCorrect: true },
-//                 ],
-//                 lastModification: new Date(),
-//                 id: '2',
-//             },
-//         ];
-
-//         gameService.questionGame.next(fakeQuestions);
-
-//         component.ngOnInit();
-
-//         expect(component.questions).toEqual(fakeQuestions);
-//     });
-
-//     it('should sort dataSource correctly', () => {
-//         const unsortedPlayers: Player[] = [
-//             { name: 'Player 1', score: 10, id: 'a', bonus: 1 },
-//             { name: 'Player 3', score: 5, id: 'b', bonus: 2 },
-//             { name: 'Player 2', score: 10, id: 'c', bonus: 1 },
-//         ];
-//         const sortedPlayers: Player[] = [
-//             { name: 'Player 1', score: 10, id: 'a', bonus: 1 },
-//             { name: 'Player 2', score: 10, id: 'c', bonus: 1 },
-//             { name: 'Player 3', score: 5, id: 'b', bonus: 2 },
-//         ];
-
-//         component.dataSource = unsortedPlayers;
-//         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//         const sortDataSourceSpy = spyOn<any>(component, 'sortDataSource').and.callThrough();
-//         sortDataSourceSpy.call(component);
-//         expect(sortDataSourceSpy).toHaveBeenCalled();
-//         expect(component.dataSource).toEqual(sortedPlayers);
-//     });
-// });
