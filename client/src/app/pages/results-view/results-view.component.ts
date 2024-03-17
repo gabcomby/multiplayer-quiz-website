@@ -14,6 +14,19 @@ export class ResultsViewComponent {
     playerDataSource: Player[] = [];
 
     constructor(private gameService: GameService) {}
+
+    get playerName(): string {
+        return this.gameService.playerNameValue;
+    }
+
+    get lobbyCode(): string {
+        return this.gameService.lobbyCodeValue;
+    }
+
+    get isHostValue(): boolean {
+        return this.gameService.isHostValue;
+    }
+
     get playerList(): Player[] {
         this.playerDataSource = this.gameService.playerListValue;
         this.sortDataSource();

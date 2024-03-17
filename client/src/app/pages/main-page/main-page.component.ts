@@ -57,11 +57,13 @@ export class MainPageComponent {
             score: 0,
             bonus: 0,
         };
+
         this.roomService.verifyPlayerCanJoin(result.lobbyCode, newPlayer).subscribe({
             next: (canJoin: boolean) => {
                 if (canJoin) {
                     this.socketService.connect();
                     this.socketService.joinRoom(result.lobbyCode, newPlayer);
+                    this.gameService.setPlayerName(result.userName);
                     this.gameService.resetGameVariables();
                     this.gameService.setupWebsocketEvents();
                     this.router.navigate(['/gameWait']);

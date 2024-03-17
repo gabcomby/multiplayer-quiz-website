@@ -12,6 +12,11 @@ export class GameWaitComponent {
         private socketService: SocketService,
         private gameService: GameService,
     ) {}
+
+    get playerName() {
+        return this.gameService.playerNameValue;
+    }
+
     get playerList() {
         return this.gameService.playerListValue;
     }
