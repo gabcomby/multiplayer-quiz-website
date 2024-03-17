@@ -105,12 +105,14 @@ describe('NewQuestionComponent', () => {
     });
     it('should call nothing if question is not valid', () => {
         questionValidationSpy.addQuestion.and.returnValue(Promise.resolve(false));
-
+        spyOn(component, 'resetComponent');
         const newChoices: Choice[] = [
             { text: '1', isCorrect: false },
             { text: '2', isCorrect: true },
         ];
         component.addQuestion(newChoices, true);
+        expect(component.resetComponent).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
     });
 
     it('should call addQuestion from service on every question selected of the bank', () => {
