@@ -124,7 +124,6 @@ describe('MainPageComponent', () => {
         // @ts-expect-error -- handleDialogClose is private
         component.handleDialogClose('invalidPassword');
         expect(snackbarService.openSnackBar).toHaveBeenCalledWith('Mot de passe invalide');
-        // Add checks for ServerErrorDialogComponent as needed
     });
 
     it('should open ServerErrorDialogComponent for non-password related errors', () => {

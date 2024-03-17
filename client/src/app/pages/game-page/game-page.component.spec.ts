@@ -8,14 +8,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
-// import { Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { GamePageComponent } from './game-page.component';
-
-// const TEN = 10;
-
-// const TIME_BETWEEN_QUESTIONS = 3000;
-// const START_TIMER_DURATION = 5;
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -48,31 +42,6 @@ class AppGamePageTimerStubComponent {
 class AppGamePageChatStubComponent {
     @Input() timer: unknown;
 }
-
-// const questionMock: Question[] = [
-//     {
-//         type: 'multiple-choice',
-//         text: 'Question 1?',
-//         points: 10,
-//         choices: [
-//             { text: 'Answer 1', isCorrect: false },
-//             { text: 'Answer 2', isCorrect: true },
-//         ],
-//         lastModification: new Date(),
-//         id: 'q1',
-//     },
-//     {
-//         type: 'multiple-choice',
-//         text: 'Question 2?',
-//         points: 10,
-//         choices: [
-//             { text: 'Answer 1', isCorrect: true },
-//             { text: 'Answer 2', isCorrect: false },
-//         ],
-//         lastModification: new Date(),
-//         id: 'q2',
-//     },
-// ];
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -161,7 +130,7 @@ describe('GamePageComponent', () => {
         const result = component.playerLeftList;
         expect(result).toBe(gameServiceSpy.playerLeftListValue);
     });
- 
+
     it('should return isLaunchTimer from gameService with isLaunchTimer', () => {
         const result = component.isLaunchTimer;
         expect(result).toBe(gameServiceSpy.launchTimerValue);

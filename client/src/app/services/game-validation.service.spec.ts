@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 
-// import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { FormGroup } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { API_BASE_URL } from '@app/app.module';
@@ -13,7 +12,6 @@ import { SnackbarService } from './snackbar.service';
 
 describe('GameValidationService', () => {
     let service: GameValidationService;
-    // let httpController: HttpTestingController;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let questionServiceSpy: jasmine.SpyObj<QuestionService>;
     let questionServiceValidationSpy: jasmine.SpyObj<QuestionValidationService>;
@@ -86,11 +84,7 @@ describe('GameValidationService', () => {
             ],
         });
         service = TestBed.inject(GameValidationService);
-        // httpController = TestBed.inject(HttpTestingController);
     });
-    // afterEach(() => {
-    //     // httpController.verify();
-    // });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
@@ -163,17 +157,7 @@ describe('GameValidationService', () => {
         const result = await service.gameValidationWhenModified(formGroupMock, game);
         expect(result).toBeFalse();
     });
-    // it('should throw error if problem', async () => {
-    //     const formGroupMock = new FormGroup({});
-    //     const game = { ...defaultGame[0], description: 'good test', title: 'good' };
-    //     spyOn(service, 'isValidGame').and.throwError('error');
-    //     try {
-    //         service.gameValidationWhenModified(formGroupMock, game);
-    //     } catch (error) {
-    //         // expect(component.handleServerError).toHaveBeenCalled();
 
-    //     }
-    // });
     it('should create new Game', async () => {
         const formGroupMock = new FormGroup({});
         const game = { ...defaultGame[0], description: 'good test', title: 'good' };
