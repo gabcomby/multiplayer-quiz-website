@@ -12,9 +12,9 @@
             <span class="top-bar-text">{{ currentGameTitle }}</span>
         </mat-toolbar>
     </div>
-    <!--<div class="live-chat" *ngIf="!isLaunchTimer">
-        <app-game-page-livechat [playerName]="currentPlayerNameValue" id="sidebar" [isHost]="getHost" [roomId]="lobbyCode"></app-game-page-livechat>
-    </div>-->
+    <div class="live-chat" *ngIf="!isLaunchTimer">
+        <app-game-page-livechat [playerName]="'Organisateur'" id="sidebar" [isHost]="isHost" [roomId]="lobbyCode"></app-game-page-livechat>
+    </div>
     <div class="timer">
         <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
     </div>

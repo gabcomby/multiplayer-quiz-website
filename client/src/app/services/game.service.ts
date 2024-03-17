@@ -12,6 +12,7 @@ const LAUNCH_TIMER_DURATION = 5;
     providedIn: 'root',
 })
 export class GameService {
+    playerName: string;
     lobbyCode: string = '';
     playerList: Player[] = [];
     isHost: boolean = false;
@@ -37,6 +38,10 @@ export class GameService {
         private router: Router,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
+    }
+
+    get playerNameValue(): string {
+        return this.playerName;
     }
 
     get lobbyCodeValue(): string {
@@ -110,6 +115,10 @@ export class GameService {
     set answerIndex(answerIdx: number[]) {
         this.answerIdx = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIdx);
+    }
+
+    setPlayerName(playerName: string): void {
+        this.playerName = playerName;
     }
 
     leaveRoom(): void {
