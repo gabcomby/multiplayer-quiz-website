@@ -46,17 +46,21 @@ export class MainPageComponent {
             },
         });
         const result = await lastValueFrom(dialogRef.afterClosed());
-
-        if (this.isEmpyDialog(result)) {
+        if (this.isEmptyDialog(result)) {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
+
         const newPlayer: Player = {
             name: result.userName,
             id: generateNewId(),
             score: 0,
             bonus: 0,
         };
+        this.verifyPlayerCanJoin(result, newPlayer);
+    }
+
+    private verifyPlayerCanJoin(result: { userName: string; lobbyCode: string }, newPlayer: Player) {
         this.roomService.verifyPlayerCanJoin(result.lobbyCode, newPlayer).subscribe({
             next: (canJoin: boolean) => {
                 if (canJoin) {
@@ -75,7 +79,7 @@ export class MainPageComponent {
         });
     }
 
-    private isEmpyDialog(result: { userName: string; lobbyCode: string }): boolean {
+    private isEmptyDialog(result: { userName: string; lobbyCode: string }): boolean {
         return result.userName.trim() === '' || result.lobbyCode.trim() === '';
     }
 

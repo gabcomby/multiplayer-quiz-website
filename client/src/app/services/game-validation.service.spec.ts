@@ -305,4 +305,19 @@ describe('GameValidationService', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         expect(errors.length).toBe(0);
     });
+    it('should throw Error if error thrown', async () => {
+        const formGroupMock = new FormGroup({});
+        const game = { ...defaultGame[0], description: 'good test', title: 'good' };
+
+        spyOn(service, 'isValidGame').and.throwError('error');
+
+        await expectAsync(service.gameValidationWhenModified(formGroupMock, game)).toBeRejected();
+    });
+    it('should throw Error if error thrown', async () => {
+        const game = { ...defaultGame[0], description: 'good test', title: 'good' };
+
+        spyOn(service, 'validateBasicGameProperties').and.throwError('error');
+
+        await expectAsync(service.isValidGame(game)).toBeRejected();
+    });
 });

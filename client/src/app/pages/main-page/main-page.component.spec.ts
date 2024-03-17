@@ -10,10 +10,11 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
+import { Player } from '@app/interfaces/match';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AuthService } from '@app/services/auth.service';
 import { GameService } from '@app/services/game.service';
-import { MatchLobbyService } from '@app/services/match-lobby.service';
+import { RoomService } from '@app/services/room.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { of, throwError } from 'rxjs';
@@ -46,18 +47,13 @@ describe('MainPageComponent', () => {
     let snackbarService: SnackbarService;
     let dialog: MatDialog;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
-    let matchLobbyServiceSpy: jasmine.SpyObj<MatchLobbyService>;
+    let roomServiceSpy: jasmine.SpyObj<RoomService>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
 
     beforeEach(async () => {
         socketServiceSpy = jasmine.createSpyObj('SocketService', ['verifyRoomLock', 'onRoomLockStatus', 'connect', 'joinRoom']);
-        matchLobbyServiceSpy = jasmine.createSpyObj('MatchLobbyService', [
-            'authentificateNameOfUser',
-            'getLobbyByCode',
-            'addPlayer',
-            'authenticateUser',
-        ]);
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['initializeLobbyAndGame']);
+        roomServiceSpy = jasmine.createSpyObj('RoomServiceSpy', ['verifyPlayerCanJoin']);
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['resetGameVariables', 'setupWebsocketEvents']);
 
         await TestBed.configureTestingModule({
             imports: [
@@ -75,7 +71,7 @@ describe('MainPageComponent', () => {
                 { provide: HttpClient, useValue: {} },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
                 { provide: SocketService, useValue: socketServiceSpy },
-                { provide: MatchLobbyService, useValue: matchLobbyServiceSpy },
+                { provide: RoomService, useValue: roomServiceSpy },
                 { provide: GameService, useValue: gameServiceSpy },
             ],
         }).compileComponents();
@@ -149,22 +145,7 @@ describe('MainPageComponent', () => {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
         });
     });
-    it("should return true if locked'", async () => {
-        const lobbyCode = 'testCode';
-        socketServiceSpy.onRoomLockStatus.and.callFake((callback) => {
-            callback(true);
-        });
-        const result = await component.fetchLobbyLockStatus(lobbyCode);
-        expect(result).toBe(true);
-    });
-    it("should return false if not locked'", async () => {
-        const lobbyCode = 'testCode';
-        socketServiceSpy.onRoomLockStatus.and.callFake((callback) => {
-            callback(false);
-        });
-        const result = await component.fetchLobbyLockStatus(lobbyCode);
-        expect(result).toBe(false);
-    });
+
     it("should return false if userName or lobby code are not empty'", async () => {
         const result = { userName: 'string', lobbyCode: 'string' };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -179,27 +160,12 @@ describe('MainPageComponent', () => {
         const resultDialog = privateSpy.call(component, result);
         expect(resultDialog).toBeTrue();
     });
-    it("should add player to lobby when handleGameJoin'", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'isEmptyDialog');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'handleDialogCloseBanned');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'authenticateUserIfBanned');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'addPlayer');
 
-        matchLobbyServiceSpy.authentificateNameOfUser.and.returnValue(of(true));
-        spyOn(dialog, 'open').and.callThrough();
-        await component.handleGameJoin();
-        expect(socketServiceSpy.connect).toHaveBeenCalled();
-        expect(dialog.open).toHaveBeenCalled();
-    });
     it("should handle connection to lobby when handleGameJoin'", async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         spyOn<any>(component, 'isEmptyDialog').and.returnValue(true);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'handleDialogCloseBanned');
+        spyOn<any>(component, 'verifyPlayerCanJoin');
 
         spyOn(snackbarService, 'openSnackBar');
 
@@ -207,100 +173,68 @@ describe('MainPageComponent', () => {
         await component.handleGameJoin();
         expect(snackbarService.openSnackBar).toHaveBeenCalled();
     });
-    it("should add player to lobby when addplayer called'", async () => {
+    it("should handle connection to lobby when handleGameJoin'", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        spyOn<any>(component, 'isEmptyDialog').and.returnValue(false);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(component, 'verifyPlayerCanJoin');
+
+        spyOn(snackbarService, 'openSnackBar');
+
+        spyOn(dialog, 'open').and.callThrough();
+        await component.handleGameJoin();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+    it("should add player to lobby when verifyPlayerCanJoin return true'", async () => {
         const result = { userName: 'string', lobbyCode: 'string' };
-        const lobby = { id: '11', playerList: [], gameId: '22', bannedNames: [], lobbyCode: '333', isLocked: false, hostId: '444' };
-        matchLobbyServiceSpy.getLobbyByCode.and.returnValue(of(lobby));
-        matchLobbyServiceSpy.addPlayer.and.returnValue(
-            of({ ...lobby, playerList: [...lobby.playerList, { id: 'idPlayer', name: 'allo', score: 1, bonus: 2 }] }),
-        );
+        const newPlayer: Player = {
+            name: result.userName,
+            id: '123',
+            score: 0,
+            bonus: 0,
+        };
+        roomServiceSpy.verifyPlayerCanJoin.and.returnValue(of(true));
+
         spyOn(router, 'navigate');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'addPlayer').and.callThrough();
-        privateSpy.call(component, result, true, true);
+        const privateSpy = spyOn<any>(component, 'verifyPlayerCanJoin').and.callThrough();
+        privateSpy.call(component, result, newPlayer);
         expect(router.navigate).toHaveBeenCalled();
         expect(socketServiceSpy.joinRoom).toHaveBeenCalled();
-        expect(gameServiceSpy.initializeLobbyAndGame).toHaveBeenCalled();
+        expect(gameServiceSpy.resetGameVariables).toHaveBeenCalled();
+        expect(gameServiceSpy.setupWebsocketEvents).toHaveBeenCalled();
     });
-    it("should have error when error thrown'", async () => {
+    it("should have error when error thrown with verifyPlayerCanJoin'", async () => {
         const result = { userName: 'string', lobbyCode: 'string' };
-        matchLobbyServiceSpy.getLobbyByCode.and.returnValue(throwError(() => new Error('error')));
+        const newPlayer: Player = {
+            name: result.userName,
+            id: '123',
+            score: 0,
+            bonus: 0,
+        };
+        roomServiceSpy.verifyPlayerCanJoin.and.returnValue(throwError(() => new Error('error')));
         //
         spyOn(snackbarService, 'openSnackBar');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'addPlayer').and.callThrough();
-        privateSpy.call(component, result, true, true);
+        const privateSpy = spyOn<any>(component, 'verifyPlayerCanJoin').and.callThrough();
+        privateSpy.call(component, result, newPlayer);
         expect(snackbarService.openSnackBar).toHaveBeenCalled();
     });
-    it("should have error when error thrown'", async () => {
+    it("should have error when error thrown with verifyPlayerCanJoin'", async () => {
         const result = { userName: 'string', lobbyCode: 'string' };
-        const lobby = { id: '11', playerList: [], gameId: '22', bannedNames: [], lobbyCode: '333', isLocked: false, hostId: '444' };
-        matchLobbyServiceSpy.getLobbyByCode.and.returnValue(of(lobby));
-        matchLobbyServiceSpy.addPlayer.and.returnValue(throwError(() => new Error('error')));
+        const newPlayer: Player = {
+            name: result.userName,
+            id: '123',
+            score: 0,
+            bonus: 0,
+        };
+        roomServiceSpy.verifyPlayerCanJoin.and.returnValue(of(false));
         //
         spyOn(snackbarService, 'openSnackBar');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'addPlayer').and.callThrough();
-        privateSpy.call(component, result, true, true);
+        const privateSpy = spyOn<any>(component, 'verifyPlayerCanJoin').and.callThrough();
+        privateSpy.call(component, result, newPlayer);
         expect(snackbarService.openSnackBar).toHaveBeenCalled();
-    });
-    it("should have error when error thrown'", async () => {
-        const result = { userName: 'string', lobbyCode: 'string' };
-        const lobby = { id: '11', playerList: [], gameId: '22', bannedNames: [], lobbyCode: '333', isLocked: false, hostId: '444' };
-        matchLobbyServiceSpy.getLobbyByCode.and.returnValue(of(lobby));
-
-        spyOn(snackbarService, 'openSnackBar');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'addPlayer').and.callThrough();
-        privateSpy.call(component, result, false, false);
-        expect(snackbarService.openSnackBar).toHaveBeenCalled();
-    });
-    it("should call authenticateUserifBanned'", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        spyOn<any>(component, 'authenticateUserIfBanned');
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'handleDialogCloseBanned').and.callThrough();
-        privateSpy.call(component, 'result', '123');
-    });
-    it("should fetchlobbyLockStatus when authenticateUserIfBanned is called'", async () => {
-        matchLobbyServiceSpy.authenticateUser.and.returnValue(of(false));
-        // eslint-disable-next-line no-unused-vars
-        spyOn(component, 'fetchLobbyLockStatus').and.callFake(async (lobbyCode: string) => {
-            return Promise.resolve(true);
-        });
-
-        spyOn(snackbarService, 'openSnackBar');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'authenticateUserIfBanned').and.callThrough();
-        const result = await privateSpy.call(component, '123', '22');
-        expect(result).toBe(false);
-    });
-    it("should return true when result is false and lobby locked'", async () => {
-        matchLobbyServiceSpy.authenticateUser.and.returnValue(of(false));
-        // eslint-disable-next-line no-unused-vars
-        spyOn(component, 'fetchLobbyLockStatus').and.callFake(async (lobbyCode: string) => {
-            return Promise.resolve(false);
-        });
-
-        spyOn(snackbarService, 'openSnackBar');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'authenticateUserIfBanned').and.callThrough();
-        const result = await privateSpy.call(component, '123', '22');
-        expect(result).toBe(true);
-    });
-    it("should return true when result is false and lobby locked'", async () => {
-        matchLobbyServiceSpy.authenticateUser.and.returnValue(of(true));
-        // eslint-disable-next-line no-unused-vars
-        spyOn(component, 'fetchLobbyLockStatus').and.callFake(async (lobbyCode: string) => {
-            return Promise.resolve(false);
-        });
-
-        spyOn(snackbarService, 'openSnackBar');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privateSpy = spyOn<any>(component, 'authenticateUserIfBanned').and.callThrough();
-        const result = await privateSpy.call(component, '123', '22');
-        expect(result).toBe(false);
     });
 
     @Component({ template: '' })

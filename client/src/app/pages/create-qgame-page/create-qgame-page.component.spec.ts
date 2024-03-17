@@ -9,13 +9,13 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Game, Question } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
+import { GameValidationService } from '@app/services/game-validation.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
 import SpyObj = jasmine.SpyObj;
-import { GameValidationService } from '@app/services/game-validation.service';
 
 @Component({
     selector: 'app-modified-question',
@@ -134,6 +134,7 @@ describe('CreateQGamePageComponent', () => {
             validateDuplicationGame: {},
             gameValidationWhenModified: {},
             createNewGame: {},
+            isValidGame: {},
         });
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         apiServiceSpy = jasmine.createSpyObj('ApiService', { getGames: of(defaultGame) });
@@ -185,13 +186,12 @@ describe('CreateQGamePageComponent', () => {
         expect(component.insertIfExist).toHaveBeenCalled();
         expect(component.dataReady).toBeTrue();
     });
-    it('ngOnInit should initiliase if theres is an id', async () => {
+    it('ngOnInit should throw error if error thrown', async () => {
         apiServiceSpy.getGames.and.throwError('test error');
-        try {
-            await component.ngOnInit();
-        } catch (error) {
-            expect(component.handleServerError).toHaveBeenCalled();
-        }
+        spyOn(component, 'handleServerError');
+        await component.ngOnInit();
+
+        expect(component.handleServerError).toHaveBeenCalled();
     });
     it('get game should find game with id in list should return game if found', () => {
         component.games = defaultGame;
@@ -269,14 +269,14 @@ describe('CreateQGamePageComponent', () => {
     });
 
     it('should throw error if submitting with the server down', async () => {
-        gameServiceSpy.gameValidationWhenModified.and.throwError('error');
-        try {
-            await component.onSubmit();
-        } catch (error) {
-            expect(component.handleServerError).toHaveBeenCalled();
-        }
-    });
+        gameServiceSpy.gameValidationWhenModified.and.throwError('test error');
+        component.gameId = '123';
+        spyOn(component, 'handleServerError');
 
+        await component.onSubmit();
+
+        expect(component.handleServerError).toHaveBeenCalled();
+    });
     it('should toggle modifiedQuestion property', () => {
         expect(component.modifiedQuestion).toBeFalse();
 

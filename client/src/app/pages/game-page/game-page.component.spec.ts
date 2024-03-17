@@ -8,14 +8,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
-import { Question } from '@app/interfaces/game';
+// import { Question } from '@app/interfaces/game';
 import { GameService } from '@app/services/game.service';
 import { GamePageComponent } from './game-page.component';
 
 // const TEN = 10;
 
 // const TIME_BETWEEN_QUESTIONS = 3000;
-const START_TIMER_DURATION = 5;
+// const START_TIMER_DURATION = 5;
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -49,30 +49,30 @@ class AppGamePageChatStubComponent {
     @Input() timer: unknown;
 }
 
-const questionMock: Question[] = [
-    {
-        type: 'multiple-choice',
-        text: 'Question 1?',
-        points: 10,
-        choices: [
-            { text: 'Answer 1', isCorrect: false },
-            { text: 'Answer 2', isCorrect: true },
-        ],
-        lastModification: new Date(),
-        id: 'q1',
-    },
-    {
-        type: 'multiple-choice',
-        text: 'Question 2?',
-        points: 10,
-        choices: [
-            { text: 'Answer 1', isCorrect: true },
-            { text: 'Answer 2', isCorrect: false },
-        ],
-        lastModification: new Date(),
-        id: 'q2',
-    },
-];
+// const questionMock: Question[] = [
+//     {
+//         type: 'multiple-choice',
+//         text: 'Question 1?',
+//         points: 10,
+//         choices: [
+//             { text: 'Answer 1', isCorrect: false },
+//             { text: 'Answer 2', isCorrect: true },
+//         ],
+//         lastModification: new Date(),
+//         id: 'q1',
+//     },
+//     {
+//         type: 'multiple-choice',
+//         text: 'Question 2?',
+//         points: 10,
+//         choices: [
+//             { text: 'Answer 1', isCorrect: true },
+//             { text: 'Answer 2', isCorrect: false },
+//         ],
+//         lastModification: new Date(),
+//         id: 'q2',
+//     },
+// ];
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -87,7 +87,7 @@ describe('GamePageComponent', () => {
             },
         };
 
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['handleGameLeave', 'setAnswerIndex', 'clickPlayerAnswer', 'getCurrentQuestion'], {
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom'], {
             matchLobby: {
                 id: 'match123',
                 playerList: [
@@ -123,9 +123,9 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should return currentGameLenght from gameService with currentGameLenght', () => {
-        const result = component.currentGameLength;
-        expect(result).toBe(gameServiceSpy.currentGameLength);
+    it('should return nbrOfQuestionsValue from gameService with nbrOfQuestions', () => {
+        const result = component.nbrOfQuestions;
+        expect(result).toBe(gameServiceSpy.nbrOfQuestionsValue);
     });
     it('should return currentQuestionIndexValue from gameService with currentQuestionIndexValue', () => {
         const result = component.currentQuestionIndexValue;
@@ -133,82 +133,48 @@ describe('GamePageComponent', () => {
     });
     it('should return currentGameTitle from gameService with currentGameTitle', () => {
         const result = component.currentGameTitle;
-        expect(result).toBe(gameServiceSpy.currentGameTitle);
+        expect(result).toBe(gameServiceSpy.gameTitleValue);
     });
-    it('should return currentPlayerNameValue from gameService with currentPlayerNameValue', () => {
-        const result = component.currentPlayerNameValue;
-        expect(result).toBe(gameServiceSpy.currentPlayerNameValue);
+    it('should return timerStoppedValue from gameService with timerStopped', () => {
+        const result = component.timerStopped;
+        expect(result).toBe(gameServiceSpy.timerStoppedValue);
     });
     it('should return currentTimerCountdown from gameService with currentTimerCountdown', () => {
         const result = component.currentTimerCountdown;
         expect(result).toBe(gameServiceSpy.timerCountdownValue);
     });
     it('should return totalgameDuration with totalGameDuration if launchtimer is false', () => {
-        spyOnProperty(component, 'isLaunchTimer').and.returnValue(false);
         const result = component.totalGameDuration;
-        expect(result).toBe(gameServiceSpy.totalGameDuration);
+        expect(result).toBe(gameServiceSpy.totalQuestionDurationValue);
     });
-    it('should return start timer duration with totalGameDuration if launchtimer is true', () => {
-        spyOnProperty(component, 'isLaunchTimer').and.returnValue(true);
-        const result = component.totalGameDuration;
-        expect(result).toBe(START_TIMER_DURATION);
-    });
-    it('should call getCurrentQuestion from gameService with currentQuestion', () => {
-        gameServiceSpy.getCurrentQuestion.and.returnValue(questionMock[0]);
+
+    it('should call currentQuestionValue from gameService with currentQuestion', () => {
         const result = component.currentQuestion;
-        expect(result).toBe(questionMock[0]);
+        expect(result).toBe(gameServiceSpy.currentQuestionValue);
     });
-    it('should return questionHasExpired from gameService with questionHasExpiredValue', () => {
-        const result = component.questionHasExpiredValue;
-        expect(result).toBe(gameServiceSpy.questionHasExpired);
+
+    it('should return playerListValue from gameService with playerList', () => {
+        const result = component.playerList;
+        expect(result).toBe(gameServiceSpy.playerListValue);
     });
-    it('should return answerIsCorrect from gameService with answerIsCorrectValue', () => {
-        const result = component.answerIsCorrectValue;
-        expect(result).toBe(gameServiceSpy.answerIsCorrect);
+    it('should return playerLeftListValue from gameService with playerLeftList', () => {
+        const result = component.playerLeftList;
+        expect(result).toBe(gameServiceSpy.playerLeftListValue);
     });
-    it('should return playerListFromLobby from gameService with playerListValue', () => {
-        const result = component.playerListValue;
-        expect(result).toBe(gameServiceSpy.playerListFromLobby);
-    });
-    it('should return currentPlayerId from gameService with currentPlayerId', () => {
-        const result = component.currentPlayerId;
-        expect(result).toBe(gameServiceSpy.currentPlayerId);
-    });
-    it('should return hostId from gameService with hostId', () => {
-        const result = component.hostId;
-        expect(result).toBe(gameServiceSpy.matchLobby.hostId);
-    });
+ 
     it('should return isLaunchTimer from gameService with isLaunchTimer', () => {
         const result = component.isLaunchTimer;
-        expect(result).toBe(gameServiceSpy.isLaunchTimerValue);
+        expect(result).toBe(gameServiceSpy.launchTimerValue);
     });
-    it('should return lobbyCode from gameService with lobbyCode', () => {
-        const result = component.lobbyCode;
-        expect(result).toBe(gameServiceSpy.matchLobby.lobbyCode);
-    });
-    it('should return true if is the host', () => {
-        gameServiceSpy.matchLobby.hostId = '234';
-        gameServiceSpy.currentPlayerId = '234';
-        const result = component.getHost;
-        expect(result).toBeTrue();
-    });
-    it('should return false if is not the host', () => {
-        gameServiceSpy.currentPlayerId = '335';
-        const result = component.getHost;
-        expect(result).toBeFalse();
-    });
-    it('should return endGame from gameService with endGame', () => {
-        const result = component.endGame;
-        expect(result).toBe(gameServiceSpy.endGame);
-    });
+
     it('should call handleGameLeave from gameService with handleGameLeave', () => {
         component.handleGameLeave();
-        expect(gameServiceSpy.handleGameLeave).toHaveBeenCalled();
+        expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
     });
-    it('should call setAnswerIndex and clickPlayerAnswer from gameService with setAnswerIndex', () => {
-        const answerIdx = [1];
-        component.setAnswerIndex(answerIdx);
-        expect(gameServiceSpy.setAnswerIndex).toHaveBeenCalled();
-        expect(gameServiceSpy.clickPlayerAnswer).toHaveBeenCalled();
+    it('should call setAnswerIndex from gameService with setAnswerIndex', () => {
+        const newAnswerIdx = [1];
+        gameServiceSpy.answerIdx = [];
+        component.setAnswerIndex(newAnswerIdx);
+        expect(gameServiceSpy.answerIdx).toEqual(newAnswerIdx);
     });
 });

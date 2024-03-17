@@ -42,16 +42,19 @@ export class GameValidationService {
     }
     async gameValidationWhenModified(gameForm: FormGroup, gameModified: Game): Promise<boolean> {
         const modifiedGame = this.createNewGame(false, gameForm, gameModified);
-
-        if (await this.isValidGame(modifiedGame)) {
-            if (await this.validateDeletedGame(modifiedGame)) {
-                await this.apiService.patchGame(modifiedGame);
-            } else {
-                await this.apiService.createGame(modifiedGame);
+        try {
+            if (await this.isValidGame(modifiedGame)) {
+                if (await this.validateDeletedGame(modifiedGame)) {
+                    await this.apiService.patchGame(modifiedGame);
+                } else {
+                    await this.apiService.createGame(modifiedGame);
+                }
+                return true;
             }
-            return true;
+            return false;
+        } catch (error) {
+            throw new Error('handling error');
         }
-        return false;
     }
 
     createNewGame(isNewGame: boolean, gameForm: FormGroup, gameModified: Game) {
@@ -67,18 +70,21 @@ export class GameValidationService {
     }
     async isValidGame(game: Game) {
         const errors: string[] = [];
-
-        this.validateBasicGameProperties(game, errors);
-        for (const question of game.questions) {
-            if (!this.questionValidationService.validateQuestion(question)) {
-                return false;
+        try {
+            this.validateBasicGameProperties(game, errors);
+            for (const question of game.questions) {
+                if (!this.questionValidationService.validateQuestion(question)) {
+                    return false;
+                }
+                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                    return false;
+                }
+                if (!this.questionValidationService.answerValid(question.choices)) {
+                    return false;
+                }
             }
-            if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                return false;
-            }
-            if (!this.questionValidationService.answerValid(question.choices)) {
-                return false;
-            }
+        } catch (error) {
+            throw new Error('handling error');
         }
 
         await this.validateDuplicationGame(game, errors);
