@@ -91,10 +91,10 @@ export class NewGamePageComponent implements OnInit {
 
     snackbarHiddenGame(game: Game, indexGame: number) {
         let suggestion = '';
-        if (indexGame === this.games.length - 1) {
-            suggestion = ' we suggest to play ' + this.suggestGame(game);
-        } else if (this.games.length === 1) {
+        if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
+        } else if (indexGame === this.games.length - 1) {
+            suggestion = ' we suggest to play ' + this.suggestGame(game);
         } else {
             suggestion = ' we suggest you to play ' + this.suggestGame(game);
         }
@@ -103,10 +103,10 @@ export class NewGamePageComponent implements OnInit {
 
     snackbarDeletedGame(game: Game, indexGame: number) {
         let suggestion = '';
-        if (indexGame === this.games.length - 1) {
-            suggestion = ' we suggest to play ' + this.suggestGame(game);
-        } else if (this.games.length === 1) {
+        if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
+        } else if (indexGame === this.games.length - 1) {
+            suggestion = ' we suggest to play ' + this.suggestGame(game);
         } else {
             suggestion = ' we suggest you to play ' + this.suggestGame(game);
         }

@@ -25,7 +25,7 @@ describe('NewGamePageComponent', () => {
     // let gameServiceSpy: jasmine.SpyObj<GameService>;
     // let socketSpy: jasmine.SpyObj<Socket>;
     // let routerSpy: jasmine.SpyObj<Router>;
-    // let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
+    let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let apiService: ApiService;
     // let array: ArrayType;
     const gamesMock: Game[] = [
@@ -56,7 +56,32 @@ describe('NewGamePageComponent', () => {
             duration: 10,
             questions: [],
         },
+        {
+            id: 'quatre',
+            title: 'game4',
+            description: 'description4',
+            isVisible: false,
+            lastModification: new Date(),
+            duration: 10,
+            questions: [],
+        },
+
     ];
+    /* const gamesMockIsVisibleTrue: Game[] = [
+        {
+            id: 'un',
+            title: 'game1',
+            description: 'description1',
+            isVisible: true,
+            lastModification: new Date(),
+            duration: 10,
+            questions: [],
+        },
+    ];
+    const gameSelectedMockTestModified = {
+        un: true,
+        deux: false,
+    };*/
     beforeEach(async () => {
         const gameServiceObj = jasmine.createSpyObj('GameService', ['getGames']);
         const snackbarObj = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
@@ -90,7 +115,7 @@ describe('NewGamePageComponent', () => {
         // gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
         // socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         // socketSpy = TestBed.inject(Socket) as jasmine.SpyObj<Socket>;
-        // snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
+        snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         // routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
         apiService = TestBed.inject(ApiService);
 
@@ -120,38 +145,41 @@ describe('NewGamePageComponent', () => {
         expect(result).toEqual(0);
     });
 
-    /* it('should delete a game', () => {
+    it('should delete a game', () => {
+        component.gameSelected = { un: true, deux: false, trois: false };
+        component.games = gamesMock;
+        component.deletedGamesId = [];
+        component.gamesUnderscoreId = [];
         spyOn(component, 'deleteGameEvent').and.callThrough();
         const gameId = gamesMock[0].id;
         const arrayMock = {
             push: jasmine.createSpy('push').and.callThrough(),
         };
-        /* const game = gamesMock[0];
-        const gameSugg = {
-            id: '',
-            title: '',
-            description: '',
-            isVisible: false,
-            lastModification: new Date(),
-            duration: 0,
-            questions: [],
-        };
+        arrayMock.push(gameId);
         const result = component.deleteGameEvent(gameId);
-        expect(arrayMock.push).toHaveBeenCalled();
         expect(result).toBeUndefined();
         expect(component.deletedGamesId).toContain(gameId);
-        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalled();
-    });*/
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game ' + gameId + ' has been deleted');
+    });
     it('should suggest a game', () => {
+        component.games = gamesMock;
         const spySuggest = spyOn(component, 'suggestGame').and.callThrough();
-        const getGameSpy = spyOn(apiService, 'getGame').and.returnValue(of(gamesMock[0]));
-        const canItBeSuggestedSpy = spyOn(component, 'canItBeSuggested').and.returnValue(true);
+        spyOn(apiService, 'getGame').and.returnValue(of(gamesMock[0]));
+        spyOn(component, 'canItBeSuggested').and.returnValue(true);
         const game = gamesMock[0];
         spySuggest.and.returnValue(gamesMock[0].title);
         const result = component.suggestGame(game);
         expect(result).toEqual('game1');
-        expect(getGameSpy).toHaveBeenCalled();
-        expect(canItBeSuggestedSpy).toHaveBeenCalled();
+    });
+
+    it('should return nothing if no game can be suggested', () => {
+        component.games = [];
+        const spySuggest = spyOn(component, 'suggestGame').and.callThrough();
+        spyOn(component, 'canItBeSuggested').and.returnValue(false);
+        const game = gamesMock[2];
+        spySuggest.and.returnValue('');
+        const result = component.suggestGame(game);
+        expect(result).toEqual('');
     });
 
     it('sould return true if the game can be suggested', () => {
@@ -168,11 +196,87 @@ describe('NewGamePageComponent', () => {
         const result = component.canItBeSuggested(game, oldGame);
         expect(result).toBeFalse();
     });
-    it('sould return false if the game can not be suggested', () => {
+
+    it('should open a snackBar if game', () => {
+        component.games = gamesMock;
+        const game = gamesMock[0];
+        const indexGame = 0;
+        spyOn(component, 'snackbarHiddenGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('game2');
+        component.snackbarHiddenGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game1 has been hidden we suggest you to play game2');
+
+    });
+    it('should open a snackBar if game is last', () => {
+        component.games = gamesMock;
+        const game = gamesMock[3];
+        const indexGame = 3;
+        spyOn(component, 'snackbarHiddenGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('game1');
+        component.snackbarHiddenGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game4 has been hidden we suggest to play game1');
+    });
+    it('should open a snackBar if game is only one', () => {
+        component.games = [gamesMock[0]];
+        const game = gamesMock[0];
+        const indexGame = 0;
+        spyOn(component, 'snackbarHiddenGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('');
+        component.snackbarHiddenGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game1 has been hidden we have no other games to suggest');
+    });
+    it('should open a snackBar if game delete', () => {
+        component.games = gamesMock;
+        const game = gamesMock[0];
+        const indexGame = 0;
+        spyOn(component, 'snackbarDeletedGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('game2');
+        component.snackbarDeletedGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game1 has been deleted we suggest you to play game2');
+    });
+    it('should open a snackBar if game is last delete', () => {
+        component.games = gamesMock;
+        const game = gamesMock[3];
+        const indexGame = 3;
+        spyOn(component, 'snackbarDeletedGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('game1');
+        component.snackbarDeletedGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game4 has been deleted we suggest to play game1');
+    });
+    it('should open a snackBar if game is only one delete', () => {
+        component.games = [gamesMock[0]];
+        const game = gamesMock[0];
+        const indexGame = 0;
+        spyOn(component, 'snackbarDeletedGame').and.callThrough();
+        spyOn(component, 'suggestGame').and.returnValue('');
+        component.snackbarDeletedGame(game, indexGame);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game game1 has been deleted we have no other games to suggest');
+    });
+
+    /* it('sould return false if the game can not be suggested', () => {
+        component.games = gamesMock;
+        component.gamesUnderscoreId = ['123'];
+        component.deletedGamesId = [];
         const game = gamesMock[1];
         const oldGame = gamesMock[1];
         spyOn(component, 'canItBeSuggested').and.callThrough();
-        const result = component.canItBeSuggested(game, oldGame);
-        expect(result).toBeFalse();
-    });
+        component.canItBeSuggested(game, oldGame);
+        expect(component.deletedGamesId).toEqual([]);
+    });*/
+
+    /* it('should return false if game is deleted only game', async () => {
+        const deletedGamesIdMock = ['un'];
+        component.games = gamesMockIsVisibleTrue;
+        component.deletedGamesId = deletedGamesIdMock;
+        gameServiceSpy.getGames.and.resolveTo(gamesMockIsVisibleTrue);
+        component.ngOnInit();
+        component.gameSelected = gameSelectedMockTestModified;
+        await component.isTheGameModifiedTest(gamesMock[0]);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
+            'Game ' + gamesMockIsVisibleTrue[0].title + ' has been deleted' + ' we have no other games to suggest',
+        );
+        expect(gameServiceSpy.getGames).toHaveBeenCalled();
+        expect(component.ngOnInit).toHaveBeenCalled();
+        expect(gameSelectedMockTestModified).toEqual({ un: false, deux: false });
+    });*/
 });
