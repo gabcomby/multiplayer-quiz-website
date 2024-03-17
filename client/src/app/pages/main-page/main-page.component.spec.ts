@@ -53,7 +53,7 @@ describe('MainPageComponent', () => {
     beforeEach(async () => {
         socketServiceSpy = jasmine.createSpyObj('SocketService', ['verifyRoomLock', 'onRoomLockStatus', 'connect', 'joinRoom']);
         roomServiceSpy = jasmine.createSpyObj('RoomServiceSpy', ['verifyPlayerCanJoin']);
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['resetGameVariables', 'setupWebsocketEvents']);
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['resetGameVariables', 'setupWebsocketEvents', 'setPlayerName']);
 
         await TestBed.configureTestingModule({
             imports: [
