@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import type { Question } from '@app/interfaces/game';
 import { SocketService } from './socket.service';
 // eslint-disable-next-line -- It is a package name and should not be altered, or removed, or changed, eslint is cringe
 import * as SocketIOClient from 'socket.io-client';
 
 const TIMER_COUNTDOWN = 10;
 const QUESTION_TIME_UPDATE = 10;
+const GAME_DURATION = 10;
 
 class MockSocket {
     callbacks: { [eventName: string]: (data: unknown) => void } = {};
@@ -28,6 +30,17 @@ class MockSocket {
 
         if (eventName === 'question') {
             callback('question', 0);
+        }
+
+        if (eventName === 'livePlayerAnswers') {
+            callback([
+                ['player1', [1, 2, 3]],
+                ['player2', [3, 2, 1]],
+            ]);
+        }
+
+        if (eventName === 'game-started') {
+            callback(GAME_DURATION);
         }
     });
 
@@ -130,5 +143,40 @@ describe('SocketService', () => {
         service.sendLockedAnswers([0]);
         expect(mockSocket.emit).toHaveBeenCalledWith('send-locked-answers', [0]);
         done();
+    });
+
+    it('should emit "send-live-answers" events', () => {
+        service.sendLiveAnswers([0]);
+        expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [0]);
+    });
+
+    it('should handle "livePlayerAnswers" events', (done) => {
+        const fakeData: [string, number[]][] = [
+            ['player1', [1, 2, 3]],
+            ['player2', [3, 2, 1]],
+        ];
+
+        service.onLivePlayerAnswers((data: [string, number[]][]) => {
+            expect(data).toEqual(fakeData);
+            done();
+        });
+    });
+
+    it('should handle "question" events', (done) => {
+        const fakeQuestionIndex = 0;
+
+        service.onQuestion((question: Question, questionIndex: number) => {
+            expect(questionIndex).toBe(fakeQuestionIndex);
+            done();
+        });
+    });
+
+    it('should handle "game-started" events', (done) => {
+        const fakeQuestionDuration = 10;
+
+        service.onGameLaunch((questionDuration: number) => {
+            expect(questionDuration).toBe(fakeQuestionDuration);
+            done();
+        });
     });
 });
