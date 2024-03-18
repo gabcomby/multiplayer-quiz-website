@@ -195,8 +195,11 @@ export class GameService {
         });
 
         this.socketService.onLobbyDeleted(() => {
-            this.socketService.disconnect();
-            this.router.navigate(['/home']);
+            alert('Administrateur a quitter la partie');
+            setTimeout(() => {
+                this.socketService.disconnect();
+                this.router.navigate(['/home']);
+            }, TIME_BETWEEN_QUESTIONS);
         });
 
         this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
