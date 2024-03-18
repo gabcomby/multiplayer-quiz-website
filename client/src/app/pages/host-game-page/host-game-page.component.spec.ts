@@ -107,7 +107,7 @@ describe('HostGamePageComponent', () => {
     it('should return start timer duration with totalGameDuration if launchtimer is true', () => {
         spyOnProperty(component, 'isLaunchTimer').and.returnValue(false);
         const result = component.totalGameDuration;
-        expect(result).toBe(gameServiceSpy.totalQuestionDuration);
+        expect(result).toBe(gameServiceSpy['totalQuestionDuration']);
     });
 
     it('should call handleGameLeave from gameService with handleGameLeave', () => {
@@ -138,7 +138,7 @@ describe('HostGamePageComponent', () => {
 
     it('should return answersClicked from gameService with answersClicked', () => {
         const result = component.answersClicked;
-        expect(result).toBe(gameServiceSpy.answersClicked);
+        expect(result).toBe(gameServiceSpy['answersClicked']);
     });
 
     it('should return isLaunchTimer from gameService with launchTimerValue', () => {

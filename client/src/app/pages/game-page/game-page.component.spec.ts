@@ -142,8 +142,8 @@ describe('GamePageComponent', () => {
     });
     it('should call setAnswerIndex from gameService with setAnswerIndex', () => {
         const newAnswerIdx = [1];
-        gameServiceSpy.answerIdx = [];
+        gameServiceSpy['answerIndex'] = [];
         component.setAnswerIndex(newAnswerIdx);
-        expect(gameServiceSpy.answerIdx).toEqual(newAnswerIdx);
+        expect(gameServiceSpy['answerIndex']).toEqual(newAnswerIdx);
     });
 });
