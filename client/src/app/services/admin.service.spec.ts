@@ -10,8 +10,8 @@ import { SnackbarService } from './snackbar.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Game } from '@app/interfaces/game';
 import { of, throwError } from 'rxjs';
-import { SocketService } from './socket.service';
 import { GameValidationService } from './game-validation.service';
+import { SocketService } from './socket.service';
 
 describe('AdminService', () => {
     let service: AdminService;
@@ -148,16 +148,13 @@ describe('AdminService', () => {
         flush();
     }));
 
-    it('should handle error when fetching games fails', fakeAsync(() => {
-        apiServiceSpy.getGames.and.returnValue(Promise.reject(new Error('Error')));
-        try {
-            service['fetchGames']();
-        } catch (error) {
-            expect(error).toBeDefined();
-        }
-
-        flush();
-    }));
+    it('should handle error when fetching games fails', async () => {
+        apiServiceSpy.getGames.and.returnValue(Promise.reject('Error'));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(service, 'fetchGames').and.callThrough();
+        await privateSpy.call(service);
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalled();
+    });
 
     it('should remove unwanted fields from array of objects', () => {
         const inputData = [
