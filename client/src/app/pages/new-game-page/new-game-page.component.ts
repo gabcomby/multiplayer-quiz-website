@@ -44,15 +44,10 @@ export class NewGamePageComponent implements OnInit {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
 
-    deleteGameEvent(gameIdString: string) {
-        console.log('deletedGamesId', this.deletedGamesId);
-        // this.gamesUnderscoreId.push(gameIdString);
+    /* deleteGameEvent(gameIdString: string) {
         const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
-        console.log('index', index);
         const gameD = this.games[index];
-        console.log('gameD', gameD);
         if (gameD) {
-            console.log('gameD.id', gameD.id);
             this.deletedGamesId.push(gameD.id);
             const goodID = gameD.id;
             if (goodID !== undefined) {
@@ -61,27 +56,14 @@ export class NewGamePageComponent implements OnInit {
                 }
             }
         }
-    }
+    }*/
     suggestGame(game: Game): string {
         for (const gameSuggestion of this.games) {
-            let gameSugg: Game = {
-                id: '',
-                title: '',
-                description: '',
-                isVisible: false,
-                lastModification: new Date(),
-                duration: 0,
-                questions: [],
-            };
-            this.apiService.getGame(gameSuggestion.id).subscribe((gameS) => {
-                gameSugg = gameS;
-                return gameS;
-            });
-            if (this.canItBeSuggested(gameSugg, game)) {
-                return gameSuggestion.title;
+            if (this.canItBeSuggested(gameSuggestion, game)) {
+                return 'we suggest you to play' + ' ' + gameSuggestion.title;
             }
         }
-        return '';
+        return 'there is no more games to suggest';
     }
     canItBeSuggested(newGame: Game, oldGame: Game): boolean {
         if (newGame.isVisible === true && newGame.id !== oldGame.id) {
@@ -96,11 +78,11 @@ export class NewGamePageComponent implements OnInit {
         if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
         } else if (indexGame === this.games.length - 1) {
-            suggestion = ' we suggest to play ' + this.suggestGame(game);
+            suggestion = this.suggestGame(game);
         } else {
-            suggestion = ' we suggest you to play ' + this.suggestGame(game);
+            suggestion = this.suggestGame(game);
         }
-        this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + suggestion);
+        this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' ' + suggestion);
     }
 
     snackbarDeletedGame(game: Game, indexGame: number) {
@@ -108,25 +90,23 @@ export class NewGamePageComponent implements OnInit {
         if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
         } else if (indexGame === this.games.length - 1) {
-            suggestion = ' we suggest to play ' + this.suggestGame(game);
+            suggestion = this.suggestGame(game);
         } else {
-            suggestion = ' we suggest you to play ' + this.suggestGame(game);
+            suggestion = this.suggestGame(game);
         }
-        this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + suggestion);
+        this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' ' + suggestion);
     }
 
     async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
         const newGameArray = await this.apiService.getGames();
-        console.log('newGameArray', newGameArray);
         const indexG = newGameArray.findIndex((item) => item.id === game.id);
-        console.log('indexG', indexG);
-        console.log('deletedGamesId', this.deletedGamesId);
+        console.log(indexG);
         if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
             const indexGame = this.games.indexOf(game);
             this.snackbarDeletedGame(game, indexGame);
             result = false;
-        } else if (!newGameArray[indexG].isVisible || indexG) {
+        } else if (!newGameArray[indexG].isVisible) {
             const indexGame = this.games.indexOf(game);
             this.snackbarHiddenGame(game, indexGame);
             result = false;
