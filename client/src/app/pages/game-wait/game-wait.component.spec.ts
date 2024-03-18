@@ -6,7 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
-// import { of } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { GameWaitComponent } from './game-wait.component';
 
 describe('GameWaitComponent', () => {
@@ -67,7 +68,12 @@ describe('GameWaitComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]), HttpClientTestingModule],
+            imports: [
+                RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]),
+                HttpClientTestingModule,
+                MatIconModule,
+                MatToolbarModule,
+            ],
             declarations: [GameWaitComponent],
             providers: [
                 { provide: gameService, useClass: GameService },
