@@ -91,6 +91,18 @@ describe('GamePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+    it('should return playerNameValue fro service with playerName', () => {
+        const result = component.playerName;
+        expect(result).toBe(gameServiceSpy.playerNameValue);
+    });
+    it('should return lobbyCodeValue fro service with lobbyCode', () => {
+        const result = component.lobbyCode;
+        expect(result).toBe(gameServiceSpy.lobbyCodeValue);
+    });
+    it('should return isHostValue fro service with isHostValue', () => {
+        const result = component.isHostValue;
+        expect(result).toBe(gameServiceSpy.isHostValue);
+    });
 
     it('should return nbrOfQuestionsValue from gameService with nbrOfQuestions', () => {
         const result = component.nbrOfQuestions;
@@ -144,6 +156,6 @@ describe('GamePageComponent', () => {
         const newAnswerIdx = [1];
         gameServiceSpy['answerIndex'] = [];
         component.setAnswerIndex(newAnswerIdx);
-        expect(gameServiceSpy['answerIndex']).toEqual(newAnswerIdx);
+        expect(gameServiceSpy['answerIndexSetter']).toEqual(newAnswerIdx);
     });
 });
