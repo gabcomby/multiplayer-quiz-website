@@ -92,6 +92,10 @@ describe('HostGamePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+    it('should return lobbyCode from gameService with lobbyCodeValue', () => {
+        const result = component.lobbyCode;
+        expect(result).toBe(gameServiceSpy.lobbyCodeValue);
+    });
     it('should return currentQuestionIndexValue from gameService with currentQuestionIndexValue', () => {
         const result = component.currentQuestionIndexValue;
         expect(result).toBe(gameServiceSpy.currentQuestionIndexValue);
