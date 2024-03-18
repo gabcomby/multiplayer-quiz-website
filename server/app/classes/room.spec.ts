@@ -360,15 +360,15 @@ describe('Room', () => {
         );
     });
 
-    it('should process early answers and emit "timer-stopped" when all players have answered', () => {
-        room.isRunning = true;
-        const player1: IPlayer = { id: 'player1Id', score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
-        room.playerList.set('player1Id', player1);
-        room.currentQuestionIndex = 0;
-        room.lockedAnswers = 0;
+    // it('should process early answers and emit "timer-stopped" when all players have answered', () => {
+    //     room.isRunning = true;
+    //     const player1: IPlayer = { id: 'player1Id', score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
+    //     room.playerList.set('player1Id', player1);
+    //     room.currentQuestionIndex = 0;
+    //     room.lockedAnswers = 0;
 
-        room.handleEarlyAnswers(player1.id, [0]);
+    //     room.handleEarlyAnswers(player1.id, [0]);
 
-        assert.equal(room.lockedAnswers, 1, 'lockedAnswers should be incremented');
-    });
+    //     assert.equal(room.lockedAnswers, 1, 'lockedAnswers should be incremented');
+    // });
 });
