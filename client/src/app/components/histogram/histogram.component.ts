@@ -50,6 +50,9 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     private constructLiveHistogramData(): void {
+        if (!this.questionsGame[0]) {
+            return;
+        }
         const array = new Array(this.questionsGame[0].choices.length).fill(0);
         // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
         this.answersPlayer.forEach(([playerId, answerIdx]) => {

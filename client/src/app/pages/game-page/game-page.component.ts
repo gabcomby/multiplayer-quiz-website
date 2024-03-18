@@ -68,7 +68,7 @@ export class GamePageComponent {
     }
 
     setAnswerIndex(answerIdx: number[]): void {
-        this.gameService.answerIdx = answerIdx;
+        this.gameService.answerIndex = answerIdx;
     }
 
     handleGameLeave(): void {

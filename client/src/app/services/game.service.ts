@@ -12,25 +12,25 @@ const LAUNCH_TIMER_DURATION = 5;
     providedIn: 'root',
 })
 export class GameService {
-    playerName: string;
-    lobbyCode: string = '';
-    playerList: Player[] = [];
-    isHost: boolean = false;
-    roomLocked: boolean = false;
-    launchTimer: boolean = true;
-    currentQuestionIndex: number = 0;
-    nbrOfQuestions: number = 0;
-    totalQuestionDuration: number = 0;
-    currentQuestion: Question | null;
-    timerStopped: boolean = false;
-    answersClicked: [string, number[]][] = [];
-    answerIdx: number[] = [];
-    allQuestionsFromGame: Question[] = [];
-    allAnswersIndex: [string, number[]][] = [];
     apiUrl: string;
-    timerCountdown: number;
-    playerLeftList: Player[] = [];
-    gameTitle = '';
+    private playerName: string;
+    private lobbyCode: string = '';
+    private playerList: Player[] = [];
+    private isHost: boolean = false;
+    private roomLocked: boolean = false;
+    private launchTimer: boolean = true;
+    private currentQuestionIndex: number = 0;
+    private nbrOfQuestions: number = 0;
+    private totalQuestionDuration: number = 0;
+    private currentQuestion: Question | null;
+    private timerStopped: boolean = false;
+    private answersClicked: [string, number[]][] = [];
+    private answerIdx: number[] = [];
+    private allQuestionsFromGame: Question[] = [];
+    private allAnswersIndex: [string, number[]][] = [];
+    private timerCountdown: number;
+    private playerLeftList: Player[] = [];
+    private gameTitle = '';
 
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
@@ -110,6 +110,10 @@ export class GameService {
 
     get gameTitleValue(): string {
         return this.gameTitle;
+    }
+
+    get answersClickedValue(): [string, number[]][] {
+        return this.answersClicked;
     }
 
     set answerIndex(answerIdx: number[]) {

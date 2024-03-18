@@ -52,7 +52,7 @@ export class HostGamePageComponent {
     }
 
     get answersClicked() {
-        return this.gameService.answersClicked;
+        return this.gameService.answersClickedValue;
     }
 
     get isLaunchTimer(): boolean {
