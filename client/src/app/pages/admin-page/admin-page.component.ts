@@ -53,7 +53,6 @@ export class AdminPageComponent implements OnInit {
 
     async getValidGameTitle(originalGame: Game): Promise<string | null> {
         let gameTitle: string = originalGame.title;
-
         while (this.adminService.hasValidInput(gameTitle, originalGame.title, this.dataSource)) {
             const dialogRef = this.dialog.open(InputDialogComponent, {
                 width: '350px',
