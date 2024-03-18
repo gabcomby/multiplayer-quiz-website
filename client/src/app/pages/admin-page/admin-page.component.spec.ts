@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -71,13 +71,7 @@ describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
-
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
-    const dialogMock = {
-        open: () => {
-            return { afterClosed: () => of(true) };
-        },
-    };
 
     const adminServiceMock = jasmine.createSpyObj('AdminService', [
         'init',
@@ -98,7 +92,6 @@ describe('AdminPageComponent', () => {
             declarations: [AdminPageComponent],
             imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
             providers: [
-                { provide: MatDialogRef, useValue: dialogMock },
                 { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
                 { provide: AdminService, useValue: adminServiceMock },
@@ -134,20 +127,25 @@ describe('AdminPageComponent', () => {
     });
 
     it('should call getGameTitle when getValidGameTitle is called', async () => {
-        const spy = spyOn(component, 'getValidGameTitle');
-        await component.getValidGameTitle(mockData);
-        expect(spy).toHaveBeenCalled();
+        adminServiceMock.hasValidInput.and.returnValues(false);
+        const result = await component.getValidGameTitle(mockData);
+        expect(result).toBe(mockData.title);
     });
-
+    it('should call return new title', async () => {
+        adminServiceMock.hasValidInput.and.returnValues(true, false, false, false);
+        matDialogMock.open.and.returnValue({ afterClosed: () => of('test') });
+        const result = await component.getValidGameTitle(mockData);
+        expect(result).toBe('test');
+    });
+    it('should return null if new title is null', async () => {
+        adminServiceMock.hasValidInput.and.returnValues(true, false, false, false);
+        matDialogMock.open.and.returnValue({ afterClosed: () => of('') });
+        const result = await component.getValidGameTitle(mockData);
+        expect(result).toBe(null);
+    });
     it('should navigate to create-qgame when createGame is called', () => {
         component.createGame();
         expect(router.navigate).toHaveBeenCalledWith(['/create-qgame']);
-    });
-
-    it("should validate game's title", async () => {
-        const spy = spyOn(component, 'getValidGameTitle');
-        await component.getValidGameTitle(mockData);
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should toggleVisibility', () => {
@@ -168,16 +166,39 @@ describe('AdminPageComponent', () => {
     });
 
     it("should import game's data from file", async () => {
+        spyOn(component, 'getValidGameTitle').and.returnValue(Promise.resolve('hello'));
         adminServiceMock.readFileFromInput.and.returnValue(Promise.resolve(mockData));
-        adminServiceMock.addGame.and.returnValue([mockData]);
         await component.importGamesFromFile({} as File);
         expect(adminServiceMock.readFileFromInput).toHaveBeenCalled();
         expect(adminServiceMock.addGame).toHaveBeenCalled();
+    });
+    it('should return if no game title', async () => {
+        adminServiceMock.readFileFromInput.and.returnValue(Promise.resolve(mockData));
+        spyOn(component, 'getValidGameTitle').and.returnValue(Promise.resolve(null));
+        adminServiceMock.addGame.and.returnValue([mockData]);
+        const result = await component.importGamesFromFile({} as File);
+        expect(adminServiceMock.readFileFromInput).toHaveBeenCalled();
+        expect(result).toBe(undefined);
     });
 
     it('should format date last modification date', () => {
         adminServiceMock.formatLastModificationDate.and.returnValue('2024-02-12T14:48:55.329Z');
         const result = component.formatDate('2024-02-12T14:48:55.329Z');
         expect(result).toBeDefined();
+    });
+    it('should delete game with deleteGame', () => {
+        component.dataSource = [mockData];
+        matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
+        adminServiceMock.deleteGame.and.returnValue(Promise.resolve());
+        component.deleteGame('123');
+        expect(adminServiceMock.deleteGame).toHaveBeenCalled();
+    });
+    it('should not delete game when false', async () => {
+        component.dataSource = [mockData];
+        const copyData = [...component.dataSource];
+
+        matDialogMock.open.and.returnValue({ afterClosed: () => of(false) });
+        component.deleteGame(mockData.id);
+        expect(component.dataSource).toEqual(copyData);
     });
 });
