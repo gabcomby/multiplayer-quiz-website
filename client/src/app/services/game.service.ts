@@ -25,7 +25,7 @@ export class GameService {
     private currentQuestion: Question | null;
     private timerStopped: boolean = false;
     private answersClicked: [string, number[]][] = [];
-    private answerIdx: number[] = [];
+    private answerIndex: number[] = [];
     private allQuestionsFromGame: Question[] = [];
     private allAnswersIndex: [string, number[]][] = [];
     private timerCountdown: number;
@@ -116,9 +116,9 @@ export class GameService {
         return this.answersClicked;
     }
 
-    set answerIndex(answerIdx: number[]) {
-        this.answerIdx = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIdx);
+    set answerIndexSetter(answerIdx: number[]) {
+        this.answerIndex = answerIdx;
+        this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
     setPlayerName(playerName: string): void {
@@ -141,7 +141,7 @@ export class GameService {
         this.isHost = false;
         this.roomLocked = false;
         this.currentQuestion = null;
-        this.answerIdx = [];
+        this.answerIndex = [];
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
         this.answersClicked = [];
@@ -163,7 +163,7 @@ export class GameService {
     }
 
     submitAnswer(): void {
-        this.socketService.sendLockedAnswers(this.answerIdx);
+        this.socketService.sendLockedAnswers(this.answerIndex);
     }
 
     setupWebsocketEvents(): void {
@@ -238,7 +238,7 @@ export class GameService {
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
-            this.socketService.sendAnswers(this.answerIdx);
+            this.socketService.sendAnswers(this.answerIndex);
         });
 
         this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
