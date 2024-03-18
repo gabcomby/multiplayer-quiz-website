@@ -43,20 +43,6 @@ export class NewGamePageComponent implements OnInit {
     selected(game: Game) {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
-
-    /* deleteGameEvent(gameIdString: string) {
-        const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
-        const gameD = this.games[index];
-        if (gameD) {
-            this.deletedGamesId.push(gameD.id);
-            const goodID = gameD.id;
-            if (goodID !== undefined) {
-                if (this.gameSelected[goodID]) {
-                    this.snackbarService.openSnackBar('Game ' + goodID + ' has been deleted');
-                }
-            }
-        }
-    }*/
     suggestGame(game: Game): string {
         for (const gameSuggestion of this.games) {
             if (this.canItBeSuggested(gameSuggestion, game)) {
@@ -72,7 +58,6 @@ export class NewGamePageComponent implements OnInit {
             return false;
         }
     }
-
     snackbarHiddenGame(game: Game, indexGame: number) {
         let suggestion = '';
         if (this.games.length === 1) {
@@ -84,7 +69,6 @@ export class NewGamePageComponent implements OnInit {
         }
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' ' + suggestion);
     }
-
     snackbarDeletedGame(game: Game, indexGame: number) {
         let suggestion = '';
         if (this.games.length === 1) {
@@ -96,12 +80,10 @@ export class NewGamePageComponent implements OnInit {
         }
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' ' + suggestion);
     }
-
     async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
         const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((item) => item.id === game.id);
-        console.log(indexG);
         if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
             const indexGame = this.games.indexOf(game);
             this.snackbarDeletedGame(game, indexGame);
@@ -113,7 +95,6 @@ export class NewGamePageComponent implements OnInit {
         }
         return result;
     }
-
     async launchGameTest(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
@@ -135,11 +116,9 @@ export class NewGamePageComponent implements OnInit {
             }, GAME_CREATION_DELAY);
         }
     }
-
     backHome() {
         this.socketService.disconnect();
     }
-
     async launchGame(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
         if (!isModified) {
