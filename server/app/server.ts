@@ -65,6 +65,7 @@ export class Server {
             };
 
             socket.on('create-room', async (gameId: string) => {
+                // Move this into service
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
                 const room = new Room(game, false, this.io);
