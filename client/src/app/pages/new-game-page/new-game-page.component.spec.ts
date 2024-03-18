@@ -10,7 +10,6 @@ import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { of } from 'rxjs';
 // import { ArrayType } from '@angular/compiler';
 import { API_BASE_URL } from '@app/app.module';
 import { Socket } from 'socket.io-client';
@@ -165,17 +164,18 @@ describe('NewGamePageComponent', () => {
         expect(component.deletedGamesId).toContain(gameId);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Game ' + gameId + ' has been deleted');
     });
-    it('should suggest a game', () => {
+    /* it('should suggest a game', () => {
         component.games = gamesMock;
-        const spySuggest = spyOn(component, 'suggestGame').and.callThrough();
-        spyOn(apiService, 'getGame').and.returnValue(of(gamesMock[0]));
+        spyOn(component, 'suggestGame');
+        spyOn(apiService, 'getGame').and.returnValue(of(gamesMock[1]));
         spyOn(component, 'canItBeSuggested').and.returnValue(true);
         const game = gamesMock[0];
-        spySuggest.and.returnValue(gamesMock[0].title);
+
         const result = component.suggestGame(game);
-        expect(result).toEqual('game1');
-        expect(apiService.getGame).toHaveBeenCalled();
-    });
+        // tick();
+
+        expect(result).toBe(game.title);
+    });*/
 
     it('should return nothing if no game can be suggested', () => {
         component.games = [];

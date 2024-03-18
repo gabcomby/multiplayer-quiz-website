@@ -9,7 +9,7 @@ import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
-// const INDEX_NOT_FOUND = -1;
+const INDEX_NOT_FOUND = -1;
 const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
@@ -45,10 +45,14 @@ export class NewGamePageComponent implements OnInit {
     }
 
     deleteGameEvent(gameIdString: string) {
-        this.gamesUnderscoreId.push(gameIdString);
+        console.log('deletedGamesId', this.deletedGamesId);
+        // this.gamesUnderscoreId.push(gameIdString);
         const index = this.gamesUnderscoreId[0].indexOf(gameIdString);
+        console.log('index', index);
         const gameD = this.games[index];
+        console.log('gameD', gameD);
         if (gameD) {
+            console.log('gameD.id', gameD.id);
             this.deletedGamesId.push(gameD.id);
             const goodID = gameD.id;
             if (goodID !== undefined) {
@@ -58,7 +62,6 @@ export class NewGamePageComponent implements OnInit {
             }
         }
     }
-
     suggestGame(game: Game): string {
         for (const gameSuggestion of this.games) {
             let gameSugg: Game = {
@@ -80,7 +83,6 @@ export class NewGamePageComponent implements OnInit {
         }
         return '';
     }
-
     canItBeSuggested(newGame: Game, oldGame: Game): boolean {
         if (newGame.isVisible === true && newGame.id !== oldGame.id) {
             return true;
@@ -115,13 +117,16 @@ export class NewGamePageComponent implements OnInit {
 
     async isOriginalGame(game: Game): Promise<boolean> {
         let result = true;
-        const newGameArray = this.apiService.getGames();
-        const indexG = (await newGameArray).indexOf(game);
-        if (this.deletedGamesId.indexOf(game.id) !== undefined) {
+        const newGameArray = await this.apiService.getGames();
+        console.log('newGameArray', newGameArray);
+        const indexG = newGameArray.findIndex((item) => item.id === game.id);
+        console.log('indexG', indexG);
+        console.log('deletedGamesId', this.deletedGamesId);
+        if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
             const indexGame = this.games.indexOf(game);
             this.snackbarDeletedGame(game, indexGame);
             result = false;
-        } else if (!(await newGameArray)[indexG].isVisible) {
+        } else if (!newGameArray[indexG].isVisible || indexG) {
             const indexGame = this.games.indexOf(game);
             this.snackbarHiddenGame(game, indexGame);
             result = false;

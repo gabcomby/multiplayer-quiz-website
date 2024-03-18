@@ -119,7 +119,8 @@ describe('GameWaitComponent', () => {
     });
 
     it('should return the good lock status(false)', () => {
-        spyOnProperty(gameService, 'roomIsLockedValue').and.returnValue(mockLobby.isLocked);
+        gameService.roomLocked = mockLobby.isLocked;
+        spyOnProperty(gameService, 'roomIsLockedValue').and.returnValue(gameService.roomLocked);
         const lock = gameService.roomIsLockedValue;
         expect(lock).toEqual(mockLobby.isLocked);
     });
