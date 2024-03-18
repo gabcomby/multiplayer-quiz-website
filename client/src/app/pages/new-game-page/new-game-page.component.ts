@@ -46,6 +46,7 @@ export class NewGamePageComponent implements OnInit {
     suggestGame(game: Game): string {
         for (const gameSuggestion of this.games) {
             if (this.canItBeSuggested(gameSuggestion, game)) {
+                console.log('allo je suis dans le if', gameSuggestion.title);
                 return 'we suggest you to play' + ' ' + gameSuggestion.title;
             }
         }
