@@ -193,10 +193,12 @@ describe('AdminPageComponent', () => {
         component.deleteGame('123');
         expect(adminServiceMock.deleteGame).toHaveBeenCalled();
     });
-    it('should not delete game when flase', () => {
+    it('should not delete game when false', async () => {
         component.dataSource = [mockData];
+        const copyData = [...component.dataSource];
+
         matDialogMock.open.and.returnValue({ afterClosed: () => of(false) });
-        component.deleteGame('123');
-        expect(adminServiceMock.deleteGame).not.toHaveBeenCalled();
+        component.deleteGame(mockData.id);
+        expect(component.dataSource).toEqual(copyData);
     });
 });
