@@ -5,6 +5,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { GameService } from '@app/services/game.service';
 import { ResultsViewComponent } from './results-view.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 describe('ResultsViewComponent', () => {
     let component: ResultsViewComponent;
@@ -17,7 +19,8 @@ describe('ResultsViewComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ResultsViewComponent, HistogramComponent],
             providers: [{ provide: GameService, useValue: spy }],
-            imports: [MatToolbarModule, MatIconModule, MatTableModule],
+            imports: [MatToolbarModule, MatIconModule, MatTableModule, MatFormFieldModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
         gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
         fixture = TestBed.createComponent(ResultsViewComponent);
