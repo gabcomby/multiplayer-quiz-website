@@ -50,14 +50,15 @@ export class MainPageComponent {
             this.snackbarService.openSnackBar("Veuillez entrer un nom d'utilisateur et un code de salon");
             return;
         }
-
-        const newPlayer: Player = {
-            name: result.userName,
-            id: generateNewId(),
-            score: 0,
-            bonus: 0,
-        };
-        this.verifyPlayerCanJoin(result, newPlayer);
+        if (result) {
+            const newPlayer: Player = {
+                name: result.userName,
+                id: generateNewId(),
+                score: 0,
+                bonus: 0,
+            };
+            this.verifyPlayerCanJoin(result, newPlayer);
+        }
     }
 
     private verifyPlayerCanJoin(result: { userName: string; lobbyCode: string }, newPlayer: Player) {
@@ -81,7 +82,10 @@ export class MainPageComponent {
     }
 
     private isEmptyDialog(result: { userName: string; lobbyCode: string }): boolean {
-        return result.userName.trim() === '' || result.lobbyCode.trim() === '';
+        if (result) {
+            return result.userName.trim() === '' || result.lobbyCode.trim() === '';
+        }
+        return false;
     }
 
     private handleDialogClose = (password: string) => {

@@ -184,6 +184,35 @@ describe('MainPageComponent', () => {
         await component.handleGameJoin();
         expect(privateSpy).toHaveBeenCalled();
     });
+
+    it("should add player to lobby when verifyPlayerCanJoin return true'", async () => {
+        const result = { userName: 'string', lobbyCode: 'string' };
+        const newPlayer: Player = {
+            name: result.userName,
+            id: '123',
+            score: 0,
+            bonus: 0,
+        };
+        roomServiceSpy.verifyPlayerCanJoin.and.returnValue(of(true));
+
+        spyOn(router, 'navigate');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(component, 'verifyPlayerCanJoin').and.callThrough();
+        privateSpy.call(component, result, newPlayer);
+        expect(router.navigate).toHaveBeenCalled();
+        expect(socketServiceSpy.joinRoom).toHaveBeenCalled();
+        expect(gameServiceSpy.resetGameVariables).toHaveBeenCalled();
+        expect(gameServiceSpy.setupWebsocketEvents).toHaveBeenCalled();
+    });
+
+    it('should return false if userName or lobby code are not empty', async () => {
+        const result = undefined;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(component, 'isEmptyDialog').and.callThrough();
+        const resultDialog = privateSpy.call(component, result);
+        expect(resultDialog).toBeFalse();
+    });
+
     it("should add player to lobby when verifyPlayerCanJoin return true'", async () => {
         const result = { userName: 'string', lobbyCode: 'string' };
         const newPlayer: Player = {
