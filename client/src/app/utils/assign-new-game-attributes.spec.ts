@@ -1,5 +1,5 @@
 import { Game } from '@app/interfaces/game';
-import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
+import assignNewGameAttributes, { generateLobbyId } from '@app/utils/assign-new-game-attributes';
 
 const ID_LENGTH = 6;
 const YEAR = 2020;
@@ -26,5 +26,11 @@ describe('assignNewGameAttributes', () => {
         const newModificationDate = new Date(game.lastModification).getTime();
         const now = new Date().getTime();
         expect(newModificationDate).toBeLessThanOrEqual(now);
+    });
+
+    it('should generate a new lobby id', () => {
+        const lobbyId = generateLobbyId();
+
+        expect(lobbyId.length).toBe(ID_LENGTH);
     });
 });
