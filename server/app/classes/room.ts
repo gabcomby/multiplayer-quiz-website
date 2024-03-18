@@ -134,6 +134,10 @@ export class Room {
             isCorrect = question.choices[answerIdx[0]].isCorrect;
         } else {
             for (const index of answerIdx) {
+                if (answerIdx.length < totalCorrectChoices) {
+                    isCorrect = false;
+                    break;
+                }
                 if (!question.choices[index].isCorrect) {
                     isCorrect = false;
                     break;
