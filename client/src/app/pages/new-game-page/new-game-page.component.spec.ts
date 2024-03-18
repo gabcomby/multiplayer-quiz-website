@@ -19,6 +19,7 @@ describe('NewGamePageComponent', () => {
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let apiService: ApiService;
+    const TIME_TICK = 750;
     const gamesMock: Game[] = [
         {
             id: 'un',
@@ -224,8 +225,7 @@ describe('NewGamePageComponent', () => {
         spyOn(component, 'isOriginalGame').and.returnValue(Promise.resolve(true));
         spyOn(component, 'launchGame').and.callThrough();
         await component.launchGame(game);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        jasmine.clock().tick(750);
+        jasmine.clock().tick(TIME_TICK);
         expect(component.isOriginalGame).toHaveBeenCalled();
         expect(component.launchGame).toHaveBeenCalled();
     });

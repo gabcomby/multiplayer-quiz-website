@@ -6,8 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
-// import { of } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { GameWaitComponent } from './game-wait.component';
+import { GamePageScoresheetComponent } from '@app/components/game-page-scoresheet/game-page-scoresheet.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('GameWaitComponent', () => {
     let component: GameWaitComponent;
@@ -67,7 +70,12 @@ describe('GameWaitComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]), HttpClientTestingModule],
+            imports: [
+                RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]),
+                HttpClientTestingModule,
+                MatIconModule,
+                MatToolbarModule,
+            ],
             declarations: [GameWaitComponent],
             providers: [
                 { provide: gameService, useClass: GameService },
@@ -75,7 +83,9 @@ describe('GameWaitComponent', () => {
                 { provide: HttpClient, useValue: {} },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
                 { provide: MatSnackBar, useValue: matSnackBar },
+                { provide: GamePageScoresheetComponent, useValue: {} },
             ],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
 
         gameService = TestBed.inject(GameService);

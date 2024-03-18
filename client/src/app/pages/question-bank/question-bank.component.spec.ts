@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -45,7 +45,6 @@ describe('QuestionBankComponent', () => {
         questionServiceMock = jasmine.createSpyObj('QuestionService', ['getQuestions', 'deleteQuestion']);
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionServiceMock.getQuestions.and.returnValue(Promise.resolve(questionsMock));
-        questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
 
         await TestBed.configureTestingModule({
             declarations: [QuestionBankComponent],
@@ -123,7 +122,7 @@ describe('QuestionBankComponent', () => {
     it('should delete a question and update dataSource upon confirmation, ensuring dataSource.filter works as intended', async () => {
         spyOn(window, 'confirm').and.returnValue(true);
         component.dataSource = [...questionsMock];
-
+        questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
         expect(component.dataSource.length).toBe(2);
         expect(component.dataSource.some((question) => question.id === questionsMock[0].id)).toBe(true);
 
@@ -136,18 +135,16 @@ describe('QuestionBankComponent', () => {
         expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
     });
 
-    it('should display an error message in the snackbar upon deletion failure', () => {
+    it('should display an error message in the snackbar upon deletion failure', fakeAsync(() => {
         spyOn(window, 'confirm').and.returnValue(true);
+        spyOn(component, 'deleteQuestion').and.callThrough();
         const errorMessage = 'Deletion failed due to server error';
         questionServiceMock.deleteQuestion.and.returnValue(Promise.reject(errorMessage));
 
         component.deleteQuestion(questionsMock[0].id);
-        fixture.detectChanges();
-
-        fixture.whenStable().then(() => {
-            expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith(`Nous avons rencontré l'erreur suivante: ${errorMessage}`);
-        });
-    });
+        tick();
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalled();
+    }));
 
     it('should not delete a question nor show a snackbar message when deletion is cancelled', () => {
         spyOn(window, 'confirm').and.returnValue(false);

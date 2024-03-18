@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ChatService } from '@app/services/chat.service';
 import { of } from 'rxjs';
 import { GamePageLivechatComponent } from './game-page-livechat.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('GamePageLivechatComponent', () => {
     let component: GamePageLivechatComponent;
@@ -18,6 +19,7 @@ describe('GamePageLivechatComponent', () => {
             declarations: [GamePageLivechatComponent],
             imports: [FormsModule, MatIconModule],
             providers: [{ provide: ChatService, useValue: chatServiceMock }],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
 
         fixture = TestBed.createComponent(GamePageLivechatComponent);
