@@ -165,4 +165,11 @@ describe('HistogramComponent', () => {
         component.navigate(NAVIGATE_LEFT);
         expect(component.currentIndex).toBe(0);
     });
+
+    it('if theres no question it should not construct live histogram', () => {
+        component.questionsGame = [];
+        component.ngOnChanges({ answersPlayer: { currentValue: component.answersPlayer } as SimpleChange });
+
+        expect(component.histogramData.length).toBe(0);
+    });
 });

@@ -109,4 +109,19 @@ describe('ResultsViewComponent', () => {
         const result = component.allQuestionsFromGame;
         expect(result).toEqual(gameServiceSpy.allQuestionsFromGameValue);
     });
+
+    it('should return the player name', () => {
+        const result = component.playerName;
+        expect(result).toEqual(gameServiceSpy.playerNameValue);
+    });
+
+    it('should return the lobby code', () => {
+        const result = component.lobbyCode;
+        expect(result).toEqual(gameServiceSpy.lobbyCodeValue);
+    });
+
+    it('should return the host value', () => {
+        const result = component.isHostValue;
+        expect(result).toEqual(gameServiceSpy.isHostValue);
+    });
 });
