@@ -158,6 +158,7 @@ export class Room {
         }
     }
 
+
     handleEarlyAnswers(playerId: string, answerIdx: number[]): void {
         this.lockedAnswers += 1;
         this.verifyAnswers(playerId, answerIdx);
