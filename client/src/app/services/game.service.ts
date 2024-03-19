@@ -7,6 +7,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
+const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
 
 @Injectable({
     providedIn: 'root',
@@ -128,8 +129,10 @@ export class GameService {
 
     leaveRoom(): void {
         this.socketService.leaveRoom();
-        this.socketService.disconnect();
-        this.router.navigate(['/home']);
+        setTimeout(() => {
+            this.socketService.disconnect();
+            this.router.navigate(['/home']);
+        }, WAIT_UNTIL_FIRE_DISCONNECTS);
     }
 
     banPlayer(name: string): void {
