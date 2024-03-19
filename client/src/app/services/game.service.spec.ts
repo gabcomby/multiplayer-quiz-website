@@ -296,15 +296,16 @@ describe('GameService', () => {
         expect(socketServiceSpy.onPlayerLeftListChange).toHaveBeenCalled();
     });
 
-    it('should call disconnect and navigate to /home when onLobbyDeleted is called', () => {
+    it('should call leaveRoom and disconnect when onLobbyDeleted is called', fakeAsync(() => {
         socketServiceSpy.onLobbyDeleted.and.callFake((callback) => {
             callback();
         });
         service.setupWebsocketEvents();
         expect(socketServiceSpy.onLobbyDeleted).toHaveBeenCalled();
+        tick(TIME_BETWEEN_QUESTIONS);
         expect(socketServiceSpy.disconnect).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
-    });
+    }));
 
     it('should set lobbyCode and gameTitle when onRoomJoined is called', () => {
         socketServiceSpy.onRoomJoined.and.callFake((callback) => {
