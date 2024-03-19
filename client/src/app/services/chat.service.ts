@@ -4,7 +4,7 @@ import { SocketService } from '@app/services/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
-const DISAPPEAR_DELAY = 12000;
+const DISAPPEAR_DELAY = 60000;
 
 @Injectable({
     providedIn: 'root',
