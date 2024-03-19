@@ -40,7 +40,6 @@ export class Server {
         this.io.on('connect', (socket) => {
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
-                console.log('roomsArray', roomsArray[1]);
                 return rooms.get(roomsArray[1]);
             };
 

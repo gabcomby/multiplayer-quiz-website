@@ -118,9 +118,10 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIndex);
+        if (this.answerIndex.length !== 0) this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
+    // TODO: CHANGE TO SETTER FOR LIVE CHAT
     setPlayerName(playerName: string): void {
         this.playerName = playerName;
     }
