@@ -1,10 +1,10 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ChatService } from '@app/services/chat.service';
 import { of } from 'rxjs';
 import { GamePageLivechatComponent } from './game-page-livechat.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('GamePageLivechatComponent', () => {
     let component: GamePageLivechatComponent;
@@ -13,7 +13,7 @@ describe('GamePageLivechatComponent', () => {
     let chatServiceMock: jasmine.SpyObj<ChatService>;
 
     beforeEach(async () => {
-        chatServiceMock = jasmine.createSpyObj('ChatService', ['listenForMessages', 'sendMessage']);
+        chatServiceMock = jasmine.createSpyObj('ChatService', ['listenForMessages', 'sendMessage', 'stopListeningForMessages']);
         chatServiceMock.messages$ = of([]);
         await TestBed.configureTestingModule({
             declarations: [GamePageLivechatComponent],
