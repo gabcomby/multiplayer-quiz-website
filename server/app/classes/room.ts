@@ -121,36 +121,35 @@ export class Room {
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
-        if (answerIdx.length === 0) {
-            return;
-        }
-        answerIdx.forEach((index) => {
-            this.globalAnswerIndex.push(index);
-        });
-        const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-        const isMultipleAnswer = totalCorrectChoices > 1;
-        let isCorrect = false;
-        if (!isMultipleAnswer) {
-            isCorrect = question.choices[answerIdx[0]].isCorrect;
-        } else {
-            for (const index of answerIdx) {
-                if (answerIdx.length < totalCorrectChoices) {
-                    isCorrect = false;
-                    break;
+        if (answerIdx.length !== 0) {
+            answerIdx.forEach((index) => {
+                this.globalAnswerIndex.push(index);
+            });
+            const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+            const isMultipleAnswer = totalCorrectChoices > 1;
+            let isCorrect = false;
+            if (!isMultipleAnswer) {
+                isCorrect = question.choices[answerIdx[0]].isCorrect;
+            } else {
+                for (const index of answerIdx) {
+                    if (answerIdx.length < totalCorrectChoices) {
+                        isCorrect = false;
+                        break;
+                    }
+                    if (!question.choices[index].isCorrect) {
+                        isCorrect = false;
+                        break;
+                    }
+                    isCorrect = true;
                 }
-                if (!question.choices[index].isCorrect) {
-                    isCorrect = false;
-                    break;
-                }
-                isCorrect = true;
             }
-        }
-        if (isCorrect && this.firstAnswerForBonus) {
-            this.firstAnswerForBonus = false;
-            this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-            this.playerList.get(playerId).bonus += 1;
-        } else if (isCorrect) {
-            this.playerList.get(playerId).score += question.points;
+            if (isCorrect && this.firstAnswerForBonus) {
+                this.firstAnswerForBonus = false;
+                this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
+                this.playerList.get(playerId).bonus += 1;
+            } else if (isCorrect) {
+                this.playerList.get(playerId).score += question.points;
+            }
         }
         if (this.assertedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));

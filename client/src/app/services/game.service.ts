@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
+import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
@@ -33,10 +34,12 @@ export class GameService {
     private playerLeftList: Player[] = [];
     private gameTitle = '';
 
+    // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
         private socketService: SocketService,
         private router: Router,
+        private snackbar: SnackbarService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -119,7 +122,7 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        if (this.answerIndex.length !== 0) this.socketService.sendLiveAnswers(this.answerIndex);
+        this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
     // TODO: CHANGE TO SETTER FOR LIVE CHAT
@@ -200,7 +203,7 @@ export class GameService {
 
         this.socketService.onLobbyDeleted(() => {
             // TODO: PUT DIALOG instead of alert
-            alert('Administrateur a quitter la partie');
+            this.snackbar.openSnackBar('The host has left the game', 'Close');
             setTimeout(() => {
                 this.socketService.disconnect();
                 this.router.navigate(['/home']);
