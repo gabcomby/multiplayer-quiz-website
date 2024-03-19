@@ -52,40 +52,6 @@ export class Application {
         mongoose.connect(DB_URL);
     }
 
-    async getIdentification(): Promise<string[]> {
-        mongoose.connect(DB_URL);
-        const db = mongoose.connection.useDb('test');
-        const gameSchema = new mongoose.Schema({}, { strict: false });
-        const game = db.model('Game', gameSchema, 'games');
-        let mongoId: string[] = [];
-        await game.find({}, { _id: 1 }).then((games) => {
-            mongoId = games.map((gameIds) => {
-                return gameIds.id;
-            });
-        });
-        return mongoId;
-    }
-
-    async watchDelete(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            mongoose.connect(DB_URL);
-            const db = mongoose.connection.useDb('test');
-            const gameSchema = new mongoose.Schema({}, { strict: false });
-            const game = db.model('Game', gameSchema, 'games');
-            const changeStream = game.watch();
-            changeStream.on('change', (data) => {
-                if (data.operationType === 'delete') {
-                    // eslint-disable-next-line no-underscore-dangle -- underscore is used by MongoDB
-                    const deleteId = data.documentKey._id;
-                    resolve(deleteId.toString());
-                }
-            });
-            changeStream.on('error', (error) => {
-                reject(error);
-            });
-        });
-    }
-
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/games', this.gameController.router);

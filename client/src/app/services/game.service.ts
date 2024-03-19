@@ -7,6 +7,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
+const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
 
 @Injectable({
     providedIn: 'root',
@@ -118,17 +119,20 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIndex);
+        if (this.answerIndex.length !== 0) this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
+    // TODO: CHANGE TO SETTER FOR LIVE CHAT
     setPlayerName(playerName: string): void {
         this.playerName = playerName;
     }
 
     leaveRoom(): void {
         this.socketService.leaveRoom();
-        this.socketService.disconnect();
-        this.router.navigate(['/home']);
+        setTimeout(() => {
+            this.socketService.disconnect();
+            this.router.navigate(['/home']);
+        }, WAIT_UNTIL_FIRE_DISCONNECTS);
     }
 
     banPlayer(name: string): void {
@@ -195,6 +199,7 @@ export class GameService {
         });
 
         this.socketService.onLobbyDeleted(() => {
+            // TODO: PUT DIALOG instead of alert
             alert('Administrateur a quitter la partie');
             setTimeout(() => {
                 this.socketService.disconnect();

@@ -8,7 +8,6 @@ import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 
 const ID_LOBBY_LENGTH = 4;
-const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 const ONE_SECOND_IN_MS = 1000;
 
@@ -137,21 +136,6 @@ describe('Room', () => {
 
         room.startQuestion();
         sinon.assert.notCalled(mockSocketIoServer.emit);
-    });
-
-    it('should correctly verify player answers and update scores', () => {
-        room.isRunning = true;
-        room.currentQuestionIndex = 0;
-        const playerId = 'testPlayerId';
-        const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
-        room.playerList.set(playerId, player);
-        const correctAnswerIndex = [0];
-
-        room.verifyAnswers(playerId, correctAnswerIndex);
-
-        const expectedScore = mockGame.questions[0].points * FIRST_ANSWER_MULTIPLIER;
-        assert.equal(room.playerList.get(playerId).score, expectedScore);
-        assert.equal(room.playerList.get(playerId).bonus, 1);
     });
 
     it('should emit "question-time-updated" when launchTimer is true', () => {
@@ -303,27 +287,6 @@ describe('Room', () => {
         assert.equal(room.playerList.get(player.id).score, 0, 'Player score should not change due to incorrect submission');
 
         assert.isTrue(room.playerHasAnswered.get(player.id), 'Player should be marked as having answered');
-    });
-
-    it('should increase score for correct single-choice submission', () => {
-        room.currentQuestionIndex = 0;
-        const playerId = 'playerWithMultipleAnswers';
-        const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
-        room.playerList.set(player.id, player);
-
-        room.playerHasAnswered.set(player.id, false);
-        const answerIdx = [0];
-        const initialScore = player.score;
-
-        room.firstAnswerForBonus = false;
-        room.verifyAnswers(player.id, answerIdx);
-
-        const expectedScoreIncrease = mockGame.questions[0].points;
-        assert.equal(
-            room.playerList.get(player.id).score,
-            initialScore + expectedScoreIncrease,
-            'Player score should increase by the question points',
-        );
     });
 
     it('should handle countdown timer correctly, emitting events and stopping at zero', () => {

@@ -20,7 +20,7 @@ export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
-    gamesUnderscoreId: string[] = [];
+
     deletedGamesId: string[] = [];
     subscription: Subscription;
 
@@ -37,7 +37,6 @@ export class NewGamePageComponent implements OnInit {
         this.apiService.getGames().then((games) => {
             this.games = games;
         });
-        this.gamesUnderscoreId = this.socketService.connect();
     }
 
     selected(game: Game) {
@@ -117,7 +116,7 @@ export class NewGamePageComponent implements OnInit {
         }
     }
     backHome() {
-        this.socketService.disconnect();
+        this.router.navigate(['/home']);
     }
     async launchGame(game: Game): Promise<void> {
         const isModified = await this.isOriginalGame(game);
