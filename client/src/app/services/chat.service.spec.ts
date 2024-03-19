@@ -54,6 +54,18 @@ describe('ChatService', () => {
         expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalled();
     });
 
+    it('should send message with the name organisateur if host', () => {
+        snackbarServiceSpy.openSnackBar.and.returnValue();
+        service.sendMessage('test', 'test', 'test', true);
+        expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalledWith('test', 'Organisateur', 'test');
+    });
+
+    it('should send message with the player name if not host', () => {
+        snackbarServiceSpy.openSnackBar.and.returnValue();
+        service.sendMessage('test', 'test', 'test', false);
+        expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalledWith('test', 'test', 'test');
+    });
+
     it('should handle new message', () => {
         const initialTimestamp = new Date();
         const message = { text: 'test', sender: 'test', timestamp: initialTimestamp };
@@ -111,5 +123,11 @@ describe('ChatService', () => {
 
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
         expect(socketServiceSpy.sendMessageToServer).not.toHaveBeenCalled();
+    });
+
+    it('should stop listening for messages', () => {
+        service.listenForMessages();
+        service.stopListeningForMessages();
+        expect(service['listenToMessageSubscription']?.closed).toBeTrue();
     });
 });

@@ -56,6 +56,8 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     }
 
     private scrollToBottom(): void {
-        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        if (this.messagesContainer && this.messagesContainer.nativeElement) {
+            this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        }
     }
 }
