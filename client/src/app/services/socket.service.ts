@@ -12,13 +12,8 @@ export class SocketService {
     private socket: Socket;
     private readonly url: string = environment.socketUrl;
 
-    connect(): string[] {
+    connect(): void {
         this.socket = io(this.url, { autoConnect: true });
-        const arrayM: string[] = [];
-        this.socket.on('messageConnect', (mesage) => {
-            arrayM.push(mesage);
-        });
-        return arrayM;
     }
 
     disconnect(): void {

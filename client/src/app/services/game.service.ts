@@ -195,6 +195,7 @@ export class GameService {
         });
 
         this.socketService.onLobbyDeleted(() => {
+            // TODO: PUT DIALOG instead of alert
             alert('Administrateur a quitter la partie');
             setTimeout(() => {
                 this.socketService.disconnect();

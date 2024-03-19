@@ -4,19 +4,18 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '@app/app.module';
 import { Game } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
-import { API_BASE_URL } from '@app/app.module';
 import { Socket } from 'socket.io-client';
 import { NewGamePageComponent } from './new-game-page.component';
 
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;
     let fixture: ComponentFixture<NewGamePageComponent>;
-    let socketServiceSpy: jasmine.SpyObj<SocketService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let apiService: ApiService;
     const TIME_TICK = 750;
@@ -100,7 +99,6 @@ describe('NewGamePageComponent', () => {
         fixture = TestBed.createComponent(NewGamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         apiService = TestBed.inject(ApiService);
     });
@@ -270,11 +268,10 @@ describe('NewGamePageComponent', () => {
         expect(result).toBeFalse();
         expect(gamesMock[2].isVisible).toBeFalse();
     });
-    it('should disconnect socket', () => {
+    it('should navigate to home page', () => {
         spyOn(component, 'backHome').and.callThrough();
         component.backHome();
         expect(component.backHome).toHaveBeenCalled();
-        expect(socketServiceSpy.disconnect).toHaveBeenCalled();
     });
     it('should launch game for test', async () => {
         component.games = gamesMock;

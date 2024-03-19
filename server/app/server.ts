@@ -37,24 +37,7 @@ export class Server {
             },
         });
 
-        // TODO: Move this into the "connect" event
-        this.io.on('connection', (socket) => {
-            socket.on('message', (message) => {
-                this.io.emit('message', `Server: ${message}`);
-                console.log(`Server: ${message}`);
-            });
-        });
-
         this.io.on('connect', (socket) => {
-            this.application.getIdentification().then((pair) => {
-                this.io.emit('messageConnect', pair);
-                console.log('messageConnect', pair);
-            });
-            this.application.watchDelete().then((deletedId) => {
-                this.io.emit('deleteId', deletedId);
-                console.log('deleteId', deletedId);
-            });
-
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
                 console.log('roomsArray', roomsArray[1]);
