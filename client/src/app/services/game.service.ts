@@ -122,7 +122,7 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        if (this.answerIndex.length !== 0) this.socketService.sendLiveAnswers(this.answerIndex);
+        this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
     // TODO: CHANGE TO SETTER FOR LIVE CHAT
