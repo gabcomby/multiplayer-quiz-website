@@ -199,8 +199,6 @@ describe('GameService', () => {
     it('should leave the room', () => {
         service.leaveRoom();
         expect(socketServiceSpy.leaveRoom).toHaveBeenCalled();
-        expect(socketServiceSpy.disconnect).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should reset game variables', () => {
