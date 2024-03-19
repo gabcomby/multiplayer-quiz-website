@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
@@ -43,6 +45,7 @@ describe('GameService', () => {
             'onGoToResult',
             'sendAnswers',
         ]);
+        const snackbarServiceSpyObj = jasmine.createSpyObj('SnackbarService', ['openSnackbar']);
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
         TestBed.configureTestingModule({
@@ -52,10 +55,14 @@ describe('GameService', () => {
                 { provide: Router, useValue: routerSpyObj },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
+            imports: [MatSnackBarModule, BrowserAnimationsModule],
         });
 
         service = TestBed.inject(GameService);
         socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
+
+        snackbarServiceSpyObj.openSnackbar.and.returnValue();
+
         routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     });
 
