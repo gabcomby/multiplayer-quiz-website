@@ -8,7 +8,6 @@ import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 
 const ID_LOBBY_LENGTH = 4;
-const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 const ONE_SECOND_IN_MS = 1000;
 
