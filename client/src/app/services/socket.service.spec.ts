@@ -2,7 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import type { Question } from '@app/interfaces/game';
 import { SocketService } from './socket.service';
 // eslint-disable-next-line -- It is a package name and should not be altered, or removed, or changed, eslint is cringe
+import { Player } from '@app/interfaces/match';
+// eslint-disable-next-line @typescript-eslint/naming-convention
 import * as SocketIOClient from 'socket.io-client';
+// import { io } from 'socket.io-client';
+// import { connect } from 'http2';
 
 const TIMER_COUNTDOWN = 10;
 const QUESTION_TIME_UPDATE = 10;
@@ -31,6 +35,21 @@ class MockSocket {
         if (eventName === 'question') {
             callback('question', 0);
         }
+        if (eventName === 'room-created') {
+            callback('roomId');
+        }
+        if (eventName === 'playerlist-change') {
+            callback([
+                ['1234', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+                ['233', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+            ]);
+        }
+        if (eventName === 'playerleftlist-change') {
+            callback([
+                { id: '124', name: 'alex', score: 123, bonus: 0 },
+                { id: '123', name: 'alex', score: 123, bonus: 0 },
+            ]);
+        }
 
         if (eventName === 'livePlayerAnswers') {
             callback([
@@ -41,6 +60,24 @@ class MockSocket {
 
         if (eventName === 'game-started') {
             callback(GAME_DURATION);
+        }
+        if (eventName === 'room-test-created') {
+            callback('room');
+        }
+        if (eventName === 'lobby-deleted') {
+            callback('deleted');
+        }
+        if (eventName === 'room-joined') {
+            callback('123');
+        }
+        if (eventName === 'chat-message') {
+            callback({ text: '123', sender: '124', timestamp: '344' });
+        }
+        if (eventName === 'go-to-results') {
+            callback([
+                ['1234', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+                ['233', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+            ]);
         }
     });
 
@@ -76,6 +113,12 @@ describe('SocketService', () => {
             done();
         });
     });
+    it('should connect when connect is called', () => {
+        spyOn(SocketIOClient, 'io').and.returnValue(new MockSocket() as unknown as SocketIOClient.Socket); // S'assurer que `io` retourne MockSocket
+        service.connect();
+        // Vérifiez si le socket simulé a une méthode `connect` appelée, ce qui indiquerait que la connexion a été initiée
+        expect(SocketIOClient.io).toHaveBeenCalled();
+    });
 
     it('should emit "disconnect" when disconnect is called', () => {
         service.disconnect();
@@ -94,6 +137,7 @@ describe('SocketService', () => {
         });
 
         mockSocket.simulateEvent('banned-from-game');
+        expect(mockSocket.on).toHaveBeenCalledWith('banned-from-game', jasmine.any(Function));
     });
 
     it('should emit "toggle-room-lock" when toggleRoomLock is called', () => {
@@ -126,6 +170,7 @@ describe('SocketService', () => {
         });
 
         mockSocket.simulateEvent('timer-stopped');
+        expect(mockSocket.on).toHaveBeenCalledWith('timer-stopped', jasmine.any(Function));
     });
 
     it('should emit "next-question" events', () => {
@@ -176,6 +221,93 @@ describe('SocketService', () => {
 
         service.onGameLaunch((questionDuration: number) => {
             expect(questionDuration).toBe(fakeQuestionDuration);
+            done();
+        });
+    });
+    it('should handle playerList on change', (done) => {
+        const fakePlayer: Player = { id: '123', name: 'alex', score: 123, bonus: 0 };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const fakePlayerList: any = [
+            ['1234', fakePlayer],
+            ['233', fakePlayer],
+        ];
+        service.onPlayerListChange((playerList: [[string, Player]]) => {
+            expect(playerList).toEqual(fakePlayerList);
+            done();
+        });
+    });
+    it('should playerList when player leave', (done) => {
+        const fakeList = [
+            { id: '124', name: 'alex', score: 123, bonus: 0 },
+            { id: '123', name: 'alex', score: 123, bonus: 0 },
+        ];
+        service.onPlayerLeftListChange((playerList: Player[]) => {
+            expect(playerList).toEqual(fakeList);
+            done();
+        });
+    });
+    it('should handle room creation', (done) => {
+        const fakeRoom = 'roomId';
+        service.onRoomCreated((roomId: string) => {
+            expect(roomId).toEqual(fakeRoom);
+            done();
+        });
+    });
+    it('should emit "create-room" events', () => {
+        service.createRoom('123');
+        expect(mockSocket.emit).toHaveBeenCalledWith('create-room', '123');
+    });
+    it('should emit "create-room-test" events', () => {
+        service.createRoomTest('123', { id: '124', name: 'alex', score: 123, bonus: 0 });
+        expect(mockSocket.emit).toHaveBeenCalledWith('create-room-test', '123', { id: '124', name: 'alex', score: 123, bonus: 0 });
+    });
+    it('should handle room test creation', (done) => {
+        const fakeRoom = 'room';
+        service.onRoomTestCreated((gameTitle: string) => {
+            expect(gameTitle).toEqual(fakeRoom);
+            done();
+        });
+    });
+    it('should emit "join-room" events', () => {
+        service.joinRoom('123', { id: '124', name: 'alex', score: 123, bonus: 0 });
+        expect(mockSocket.emit).toHaveBeenCalledWith('join-room', '123', { id: '124', name: 'alex', score: 123, bonus: 0 });
+    });
+    it('should emit "leave-room" events', () => {
+        service.leaveRoom();
+        expect(mockSocket.emit).toHaveBeenCalledWith('leave-room');
+    });
+    it('should handle lobby delete', (done) => {
+        // const fakeRoom = 'room';
+        service.onLobbyDeleted(() => {
+            done();
+        });
+    });
+    it('should handle joining room', (done) => {
+        const fakeRoom = '123';
+        service.onRoomJoined((roomId: string) => {
+            expect(roomId).toEqual(fakeRoom);
+            done();
+        });
+    });
+    it('should emit "chat-message" events', () => {
+        service.sendMessageToServer('hello', 'john', '123');
+        expect(mockSocket.emit).toHaveBeenCalledWith('chat-message', { message: 'hello', playerName: 'john', roomId: '123' });
+    });
+    it('should handle joining room', (done) => {
+        const fakeData = { text: '123', sender: '124', timestamp: '344' };
+        service.onChatMessage().subscribe((data) => {
+            expect(data).toEqual(fakeData);
+            done();
+        });
+    });
+    it('should handle go to result', (done) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const fakeData: any = [
+            ['1234', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+            ['233', { id: '123', name: 'alex', score: 123, bonus: 0 }],
+        ];
+        service.onGoToResult((playerList: [[string, Player]]) => {
+            expect(playerList).toEqual(fakeData);
             done();
         });
     });
