@@ -6,7 +6,7 @@ import { ChatService } from './chat.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
-const DISAPPEAR_DELAY = 12000;
+const DISAPPEAR_DELAY = 60000;
 
 describe('ChatService', () => {
     let service: ChatService;
