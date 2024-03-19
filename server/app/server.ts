@@ -1,12 +1,11 @@
 import { Application } from '@app/app';
-import { Room } from '@app/classes/room';
-import { GameService } from '@app/services/game.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
 import { IPlayer } from './model/match.model';
 import { rooms } from './module';
+import { RoomService } from './services/room.service';
 
 const BASE_TEN = 10;
 
@@ -17,7 +16,10 @@ export class Server {
     private server: http.Server;
     private io: SocketIoServer;
 
-    constructor(private readonly application: Application) {}
+    constructor(
+        private readonly application: Application,
+        private roomService: RoomService,
+    ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, BASE_TEN) : val;
@@ -55,72 +57,28 @@ export class Server {
                 return rooms.get(roomsArray[1]);
             };
 
-            const setRoom = (room: Room) => {
-                const roomsArray = Array.from(socket.rooms);
-                rooms.set(roomsArray[1], room);
-            };
-
             const roomExists = (roomId: string) => {
                 return rooms.has(roomId);
             };
 
             socket.on('create-room', async (gameId: string) => {
-                const gameService = new GameService();
-                const game = await gameService.getGame(gameId);
-                const room = new Room(game, false, this.io);
-                socket.join(room.roomId);
-                setRoom(room);
-                getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
+                await this.roomService.handleRoomCreation(gameId, this.io, socket);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
-                const gameService = new GameService();
-                const game = await gameService.getGame(gameId);
-                const room = new Room(game, true, this.io);
-                socket.join(room.roomId);
-                setRoom(room);
-                getRoom().hostId = socket.id;
-                getRoom().playerList.set(socket.id, player);
-                getRoom().playerHasAnswered.set(socket.id, false);
-                getRoom().livePlayerAnswers.set(socket.id, []);
-                this.io.to(getRoom().roomId).emit('room-test-created', getRoom().game.title, Array.from(getRoom().playerList));
-                this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
+                await this.roomService.handleTestRoomCreation(gameId, player, this.io, socket);
                 getRoom().startQuestion();
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
                 if (roomExists(roomId)) {
-                    socket.join(roomId);
-                    // Move this to the room class
-                    getRoom().playerList.set(socket.id, player);
-                    getRoom().playerHasAnswered.set(socket.id, false);
-                    getRoom().livePlayerAnswers.set(socket.id, []);
-                    this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
-                    this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title);
+                    this.roomService.handleRoomJoin(roomId, player, this.io, socket);
                 }
             });
 
             socket.on('leave-room', () => {
                 if (roomExists(getRoom().roomId)) {
-                    if (getRoom().hostId === socket.id) {
-                        this.io.to(getRoom().roomId).emit('lobby-deleted');
-                        rooms.delete(getRoom().roomId);
-                    } else {
-                        // Move this to the room class
-                        const player = getRoom().playerList.get(socket.id);
-                        getRoom().playerList.delete(socket.id);
-                        if (getRoom().playerList.size === 0) {
-                            this.io.to(getRoom().roomId).emit('lobby-deleted');
-                        } else {
-                            if (!getRoom().bannedNames.includes(player.name.toLowerCase())) {
-                                getRoom().playerLeftList.push(player);
-                                this.io.to(getRoom().roomId).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                            }
-                            this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
-                        }
-                    }
+                    this.roomService.handleRoomLeave(this.io, socket);
                 }
             });
 
@@ -161,6 +119,14 @@ export class Server {
 
             socket.on('send-locked-answers', (answerIdx: number[]) => {
                 getRoom().handleEarlyAnswers(socket.id, answerIdx);
+            });
+
+            socket.on('chat-message', ({ message, playerName, roomId }) => {
+                socket.to(roomId).emit('chat-message', {
+                    text: message,
+                    sender: playerName,
+                    timestamp: new Date().toISOString(),
+                });
             });
 
             socket.on('disconnect', () => {

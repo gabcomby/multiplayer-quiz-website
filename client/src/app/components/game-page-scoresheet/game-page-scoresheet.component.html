@@ -4,6 +4,8 @@
             <mat-card-title>Scores de la partie</mat-card-title>
         </mat-card-header>
         <mat-card-content *ngFor="let player of playerList"> {{ player.name }} - {{ player.score }} </mat-card-content>
-        <mat-card-content style="text-decoration: line-through" *ngFor="let player of playerLeftList"> {{ player.name }} </mat-card-content>
+        <div *ngIf="isHost">
+            <mat-card-content style="text-decoration: line-through" *ngFor="let player of playerLeftList"> {{ player.name }} </mat-card-content>
+        </div>
     </mat-card>
 </div>

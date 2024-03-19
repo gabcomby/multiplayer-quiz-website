@@ -48,7 +48,7 @@ export class QuestionBankComponent implements OnInit {
                 this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
             })
             .catch((error) => {
-                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error.message || error}`);
+                this.snackbarService.openSnackBar(`Nous avons rencontré l'erreur suivante: ${error}`);
             });
     }
 

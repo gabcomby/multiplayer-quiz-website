@@ -6,13 +6,12 @@ import { ApiService } from './api.service';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
-
+const minDuration = 10;
+const maxDuration = 60;
 @Injectable({
     providedIn: 'root',
 })
 export class GameValidationService {
-    private minDuration: number;
-    private maxDuration: number;
     // eslint-disable-next-line max-params
     constructor(
         private questionService: QuestionService,
@@ -99,9 +98,10 @@ export class GameValidationService {
     validateBasicGameProperties(game: Game, errors: string[]): void {
         if (!game.title) errors.push('Le titre est requis');
         if (game.title.trim().length === 0) errors.push('Pas juste des espaces');
+        if (game.description.trim().length === 0) errors.push('Pas juste des espaces');
         if (!game.description) errors.push('La description est requise');
         if (!game.duration) errors.push('La durée est requise');
-        if (game.duration && (game.duration < this.minDuration || game.duration > this.maxDuration)) {
+        if (game.duration < minDuration || game.duration > maxDuration) {
             errors.push('La durée doit être entre 10 et 60 secondes');
         }
         if (!game.lastModification) errors.push('La date de mise à jour est requise');

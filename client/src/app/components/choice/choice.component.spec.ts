@@ -19,7 +19,7 @@ describe('ChoiceComponent', () => {
 
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        questionValidationSpy = jasmine.createSpyObj('QuestionValidationService', ['answerValid']);
+        questionValidationSpy = jasmine.createSpyObj('QuestionValidationService', ['answerValid', 'verifyOneGoodAndBadAnswer']);
         TestBed.configureTestingModule({
             declarations: [ChoiceComponent],
             providers: [
@@ -166,12 +166,15 @@ describe('ChoiceComponent', () => {
         expect(component.registerAnswer.emit).not.toHaveBeenCalledWith(component.answers);
     });
 
-    it('should return true if all text attributes are not empty', () => {
+    it('should emit registerAnswer if all text attributes are not empty', () => {
         component.answers = [
             { text: 'test1', isCorrect: true },
             { text: 'test2', isCorrect: false },
         ];
-        questionValidationSpy.answerValid.and.returnValue(true);
+        questionValidationSpy.verifyOneGoodAndBadAnswer.and.returnValue(true);
+        const registerSpy = spyOn(component.registerAnswer, 'emit');
+        component.addAnswer();
+        expect(registerSpy).toHaveBeenCalledWith(component.answers);
     });
 
     it('should return false if at least one text attributes is empty', () => {
@@ -180,5 +183,8 @@ describe('ChoiceComponent', () => {
             { text: 'test2', isCorrect: false },
         ];
         questionValidationSpy.answerValid.and.returnValue(true);
+        const registerSpy = spyOn(component.registerAnswer, 'emit');
+        component.addAnswer();
+        expect(registerSpy).not.toHaveBeenCalledWith(component.answers);
     });
 });

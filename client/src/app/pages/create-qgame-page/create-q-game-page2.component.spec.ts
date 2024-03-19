@@ -105,10 +105,9 @@ describe('CreateQGamePageComponent', () => {
     it('should throw error if submitting with the server down', async () => {
         gameServiceSpy.isValidGame.and.throwError('test error');
         spyOn(component, 'handleServerError');
-        try {
-            await component.onSubmit();
-        } catch (error) {
-            expect(component.handleServerError).toHaveBeenCalled();
-        }
+
+        await component.onSubmit();
+
+        expect(component.handleServerError).toHaveBeenCalled();
     });
 });

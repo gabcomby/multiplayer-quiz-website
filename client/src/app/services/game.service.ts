@@ -12,24 +12,25 @@ const LAUNCH_TIMER_DURATION = 5;
     providedIn: 'root',
 })
 export class GameService {
-    lobbyCode: string = '';
-    playerList: Player[] = [];
-    isHost: boolean = false;
-    roomLocked: boolean = false;
-    launchTimer: boolean = true;
-    currentQuestionIndex: number = 0;
-    nbrOfQuestions: number = 0;
-    totalQuestionDuration: number = 0;
-    currentQuestion: Question | null;
-    timerStopped: boolean = false;
-    answersClicked: [string, number[]][] = [];
-    answerIdx: number[] = [];
-    allQuestionsFromGame: Question[] = [];
-    allAnswersIndex: [string, number[]][] = [];
     apiUrl: string;
-    timerCountdown: number;
-    playerLeftList: Player[] = [];
-    gameTitle = '';
+    private playerName: string;
+    private lobbyCode: string = '';
+    private playerList: Player[] = [];
+    private isHost: boolean = false;
+    private roomLocked: boolean = false;
+    private launchTimer: boolean = true;
+    private currentQuestionIndex: number = 0;
+    private nbrOfQuestions: number = 0;
+    private totalQuestionDuration: number = 0;
+    private currentQuestion: Question | null;
+    private timerStopped: boolean = false;
+    private answersClicked: [string, number[]][] = [];
+    private answerIndex: number[] = [];
+    private allQuestionsFromGame: Question[] = [];
+    private allAnswersIndex: [string, number[]][] = [];
+    private timerCountdown: number;
+    private playerLeftList: Player[] = [];
+    private gameTitle = '';
 
     constructor(
         @Inject(API_BASE_URL) apiBaseURL: string,
@@ -37,6 +38,10 @@ export class GameService {
         private router: Router,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
+    }
+
+    get playerNameValue(): string {
+        return this.playerName;
     }
 
     get lobbyCodeValue(): string {
@@ -107,9 +112,17 @@ export class GameService {
         return this.gameTitle;
     }
 
-    set answerIndex(answerIdx: number[]) {
-        this.answerIdx = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIdx);
+    get answersClickedValue(): [string, number[]][] {
+        return this.answersClicked;
+    }
+
+    set answerIndexSetter(answerIdx: number[]) {
+        this.answerIndex = answerIdx;
+        this.socketService.sendLiveAnswers(this.answerIndex);
+    }
+
+    setPlayerName(playerName: string): void {
+        this.playerName = playerName;
     }
 
     leaveRoom(): void {
@@ -128,7 +141,7 @@ export class GameService {
         this.isHost = false;
         this.roomLocked = false;
         this.currentQuestion = null;
-        this.answerIdx = [];
+        this.answerIndex = [];
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
         this.answersClicked = [];
@@ -150,7 +163,7 @@ export class GameService {
     }
 
     submitAnswer(): void {
-        this.socketService.sendLockedAnswers(this.answerIdx);
+        this.socketService.sendLockedAnswers(this.answerIndex);
     }
 
     setupWebsocketEvents(): void {
@@ -182,8 +195,11 @@ export class GameService {
         });
 
         this.socketService.onLobbyDeleted(() => {
-            this.socketService.disconnect();
-            this.router.navigate(['/home']);
+            alert('Administrateur a quitter la partie');
+            setTimeout(() => {
+                this.socketService.disconnect();
+                this.router.navigate(['/home']);
+            }, TIME_BETWEEN_QUESTIONS);
         });
 
         this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
@@ -225,7 +241,7 @@ export class GameService {
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
-            this.socketService.sendAnswers(this.answerIdx);
+            this.socketService.sendAnswers(this.answerIndex);
         });
 
         this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {

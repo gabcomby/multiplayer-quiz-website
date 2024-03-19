@@ -14,7 +14,7 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
-    histogramData: { name: string; value: number }[];
+    histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
 
@@ -50,6 +50,9 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     private constructLiveHistogramData(): void {
+        if (!this.questionsGame[0]) {
+            return;
+        }
         const array = new Array(this.questionsGame[0].choices.length).fill(0);
         // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
         this.answersPlayer.forEach(([playerId, answerIdx]) => {
@@ -64,6 +67,7 @@ export class HistogramComponent implements OnInit, OnChanges {
                 : this.questionsGame[0].choices[i].text;
             histogramData.push({ name: choiceText, value: array[i] });
         }
+
         this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
     }
 

@@ -15,6 +15,10 @@ export class HostGamePageComponent {
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
 
+    get lobbyCode(): string {
+        return this.gameService.lobbyCodeValue;
+    }
+
     get currentQuestionIndexValue(): number {
         return this.gameService.currentQuestionIndexValue;
     }
@@ -48,7 +52,7 @@ export class HostGamePageComponent {
     }
 
     get answersClicked() {
-        return this.gameService.answersClicked;
+        return this.gameService.answersClickedValue;
     }
 
     get isLaunchTimer(): boolean {
