@@ -42,7 +42,6 @@ export class GameWaitComponent {
     }
 
     banPlayer(name: string) {
-        console.log('Banning player:', name);
         this.gameService.banPlayer(name);
     }
 
