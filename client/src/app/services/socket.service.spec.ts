@@ -94,6 +94,7 @@ describe('SocketService', () => {
         });
 
         mockSocket.simulateEvent('banned-from-game');
+        expect(mockSocket.on).toHaveBeenCalledWith('banned-from-game', jasmine.any(Function));
     });
 
     it('should emit "toggle-room-lock" when toggleRoomLock is called', () => {
@@ -126,6 +127,7 @@ describe('SocketService', () => {
         });
 
         mockSocket.simulateEvent('timer-stopped');
+        expect(mockSocket.on).toHaveBeenCalledWith('timer-stopped', jasmine.any(Function));
     });
 
     it('should emit "next-question" events', () => {
