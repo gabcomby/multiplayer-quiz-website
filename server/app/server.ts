@@ -99,6 +99,7 @@ export class Server {
                         getRoom().playerList.delete(socket.id);
                         if (getRoom().playerList.size === 0) {
                             this.io.to(getRoom().roomId).emit('lobby-deleted');
+                            rooms.delete(getRoom().roomId);
                         } else {
                             if (!getRoom().bannedNames.includes(player.name.toLowerCase())) {
                                 getRoom().playerLeftList.push(player);

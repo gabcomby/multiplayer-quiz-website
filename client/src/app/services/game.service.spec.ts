@@ -12,6 +12,7 @@ import { SocketService } from './socket.service';
 
 const LAUNCH_TIMER_DURATION = 5;
 const TIME_BETWEEN_QUESTIONS = 3000;
+const WAIT_UNTIL_FIRE_DISCONNECT = 2000;
 
 describe('GameService', () => {
     let service: GameService;
@@ -203,10 +204,13 @@ describe('GameService', () => {
         expect(socketServiceSpy.banPlayer).toHaveBeenCalledWith(playerName);
     });
 
-    it('should leave the room', () => {
+    it('should leave the room', fakeAsync(() => {
         service.leaveRoom();
         expect(socketServiceSpy.leaveRoom).toHaveBeenCalled();
-    });
+        tick(WAIT_UNTIL_FIRE_DISCONNECT);
+        expect(socketServiceSpy.disconnect).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalled();
+    }));
 
     it('should reset game variables', () => {
         service.resetGameVariables();

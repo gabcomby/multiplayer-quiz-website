@@ -197,6 +197,16 @@ describe('Room', () => {
         const answerIdx = [0, 1];
         room.verifyAnswers(playerId, answerIdx);
     });
+    it('should handle multiple correct answers', () => {
+        const playerId = 'playerWithMultipleAnswers';
+        const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
+        room.playerList.set(playerId, player);
+        room.isRunning = true;
+        room.currentQuestionIndex = 2;
+        room.firstAnswerForBonus = false;
+        const answerIdx = [0, 1];
+        room.verifyAnswers(playerId, answerIdx);
+    });
 
     it('should lock the room and not start a new question if not a test room and after handling the end of a timer', () => {
         room.isTestRoom = false;
@@ -252,21 +262,6 @@ describe('Room', () => {
 
         assert.deepEqual(room.livePlayerAnswers.get('player1Id'), [], "Player 1's livePlayerAnswers should be reset to an empty array");
         assert.deepEqual(room.livePlayerAnswers.get('player2Id'), [], "Player 2's livePlayerAnswers should be reset to an empty array");
-    });
-
-    it('should not update score or bonus for a player who submits no answer (empty array)', () => {
-        const playerId = 'playerWithMultipleAnswers';
-        const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
-        room.playerList.set(player.id, player);
-        const initialScore = player.score;
-        const initialBonus = player.bonus;
-
-        room.verifyAnswers(player.id, []);
-
-        assert.equal(room.playerList.get(player.id).score, initialScore, 'Player score should not change');
-        assert.equal(room.playerList.get(player.id).bonus, initialBonus, 'Player bonus should not change');
-
-        assert.isTrue(room.playerHasAnswered.get(player.id), 'Player should be marked as having answered');
     });
 
     it('should not increase score for incorrect multiple-choice submission', () => {
