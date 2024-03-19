@@ -41,36 +41,44 @@ export class Server {
         this.io.on('connection', (socket) => {
             socket.on('message', (message) => {
                 this.io.emit('message', `Server: ${message}`);
+                console.log(`Server: ${message}`);
             });
         });
 
         this.io.on('connect', (socket) => {
             this.application.getIdentification().then((pair) => {
                 this.io.emit('messageConnect', pair);
+                console.log('messageConnect', pair);
             });
             this.application.watchDelete().then((deletedId) => {
                 this.io.emit('deleteId', deletedId);
+                console.log('deleteId', deletedId);
             });
 
             const getRoom = () => {
                 const roomsArray = Array.from(socket.rooms);
+                console.log('roomsArray', roomsArray[1]);
                 return rooms.get(roomsArray[1]);
             };
 
             const roomExists = (roomId: string) => {
+                console.log('roomExists', rooms.has(roomId));
                 return rooms.has(roomId);
             };
 
             socket.on('create-room', async (gameId: string) => {
+                console.log('create-room', gameId);
                 await this.roomService.handleRoomCreation(gameId, this.io, socket);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
+                console.log('create-room-test', gameId, player);
                 await this.roomService.handleTestRoomCreation(gameId, player, this.io, socket);
                 getRoom().startQuestion();
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
+                console.log('join-room', roomId, player);
                 if (roomExists(roomId)) {
                     this.roomService.handleRoomJoin(roomId, player, this.io, socket);
                 }
@@ -78,6 +86,7 @@ export class Server {
 
             socket.on('leave-room', () => {
                 if (roomExists(getRoom().roomId)) {
+                    console.log('leave-room', getRoom().roomId);
                     this.roomService.handleRoomLeave(this.io, socket);
                 }
             });
@@ -87,6 +96,7 @@ export class Server {
                     getRoom().bannedNames.push(name.toLowerCase());
                     // eslint-disable-next-line
                     const playerToBan = [...getRoom().playerList.entries()].find(([key, value]) => value.name === name)?.[0];
+                    console.log('playerToBan', playerToBan);
                     this.io.to(playerToBan).emit('banned-from-game');
                 }
             });
@@ -94,12 +104,14 @@ export class Server {
             socket.on('toggle-room-lock', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().roomLocked = !getRoom().roomLocked;
+                    console.log('roomLocked', getRoom().roomLocked);
                     this.io.to(getRoom().hostId).emit('room-lock-status', getRoom().roomLocked);
                 }
             });
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    console.log('start-game', getRoom().roomId);
                     this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
                     getRoom().startQuestion();
                 }
@@ -107,21 +119,25 @@ export class Server {
 
             socket.on('next-question', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    console.log('next-question', getRoom().roomId);
                     getRoom().startQuestion();
                 }
             });
 
             socket.on('send-answers', (answerIdx: number[]) => {
                 if (socket.id !== getRoom().hostId) {
+                    console.log('send-answers', answerIdx);
                     getRoom().verifyAnswers(socket.id, answerIdx);
                 }
             });
 
             socket.on('send-locked-answers', (answerIdx: number[]) => {
+                console.log('send-locked-answers', answerIdx);
                 getRoom().handleEarlyAnswers(socket.id, answerIdx);
             });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
+                console.log('chat-message', message, playerName, roomId);
                 socket.to(roomId).emit('chat-message', {
                     text: message,
                     sender: playerName,
@@ -136,6 +152,7 @@ export class Server {
 
             socket.on('send-live-answers', (answerIdx: number[]) => {
                 if (roomExists(getRoom().roomId)) {
+                    console.log('send-live-answers', answerIdx);
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
                 }
