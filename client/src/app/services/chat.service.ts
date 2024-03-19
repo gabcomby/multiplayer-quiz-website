@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
 import { SocketService } from '@app/services/socket.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
 const DISAPPEAR_DELAY = 12000;
@@ -14,6 +14,7 @@ export class ChatService {
     messages$ = this.messagesSubject.asObservable();
 
     private messages: Message[] = [];
+    private listenToMessageSubscription: Subscription | undefined;
 
     constructor(
         private snackbar: SnackbarService,
@@ -21,10 +22,14 @@ export class ChatService {
     ) {}
 
     listenForMessages(): void {
-        this.socket.onChatMessage().subscribe({
+        this.listenToMessageSubscription = this.socket.onChatMessage().subscribe({
             next: (message) => this.handleNewMessage(message),
             error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
         });
+    }
+
+    stopListeningForMessages(): void {
+        this.listenToMessageSubscription?.unsubscribe();
     }
 
     // eslint-disable-next-line -- needed to send message

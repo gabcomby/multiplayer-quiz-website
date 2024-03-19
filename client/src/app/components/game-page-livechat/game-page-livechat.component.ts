@@ -2,7 +2,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
 import { ChatService } from '@app/services/chat.service';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-game-page-livechat',
@@ -21,22 +21,24 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     @Input() roomId: string;
     @ViewChild('messagesContainer') private messagesContainer: ElementRef;
 
+    onDestroy$: Subject<boolean> = new Subject();
     messages: Message[] = [];
     text: string = '';
-    private messagesSubscription: Subscription;
 
     constructor(private chatService: ChatService) {}
 
     ngOnInit(): void {
         this.chatService.listenForMessages();
-        this.messagesSubscription = this.chatService.messages$.subscribe((messages) => {
+        this.chatService.messages$.pipe(takeUntil(this.onDestroy$)).subscribe((messages: Message[]) => {
             this.messages = messages;
             this.scrollToBottom();
         });
     }
 
     ngOnDestroy() {
-        this.messagesSubscription.unsubscribe();
+        this.chatService.stopListeningForMessages();
+        this.onDestroy$.next(true);
+        this.onDestroy$.unsubscribe();
     }
 
     ngAfterViewChecked() {
