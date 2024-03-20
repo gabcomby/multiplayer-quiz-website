@@ -31,6 +31,11 @@ export class ChatService {
     stopListeningForMessages(): void {
         this.listenToMessageSubscription?.unsubscribe();
     }
+    resetMessages(): void {
+        this.messagesSubject = new BehaviorSubject<Message[]>([]);
+        this.messages$ = this.messagesSubject.asObservable();
+        this.messages = [];
+    }
 
     // eslint-disable-next-line -- needed to send message
     sendMessage(text: string, playerName: string, roomId: string, isHost: boolean): void {

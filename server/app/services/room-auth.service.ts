@@ -10,6 +10,9 @@ export class RoomAuthService {
         }
         const room = rooms.get(roomId);
         if (room) {
+            if (room.gameHasStarted) {
+                return false;
+            }
             const bannedNames = room.bannedNames;
             const currentPlayerNames = [...room.playerList.values()].map((p) => p.name.toLowerCase());
 
