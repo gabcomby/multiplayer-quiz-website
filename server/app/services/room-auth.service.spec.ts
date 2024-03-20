@@ -64,6 +64,13 @@ describe('RoomAuthService', () => {
         expect(result).to.equal(true);
     });
 
+    it('should return false if game is already launched', async () => {
+        room.gameHasStarted = true;
+        rooms.set(roomId, room as Room);
+        const result = await service.verifyPlayerCanJoinRoom(roomId, player);
+        expect(result).to.equal(false);
+    });
+
     it('should deny access if room does not exist', async () => {
         const roomIdFake = 'fakeRoomId';
         const result = await service.verifyPlayerCanJoinRoom(roomIdFake, player);
