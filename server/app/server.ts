@@ -97,7 +97,7 @@ export class Server {
                         // Move this to the room class
                         const player = getRoom().playerList.get(socket.id);
                         getRoom().playerList.delete(socket.id);
-                        if (getRoom().playerList.size === 0) {
+                        if (getRoom().playerList.size === 0 && getRoom().gameHasStarted) {
                             this.io.to(getRoom().roomId).emit('lobby-deleted');
                             rooms.delete(getRoom().roomId);
                         } else {
@@ -129,6 +129,7 @@ export class Server {
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().gameHasStarted = true;
                     this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
                     getRoom().startQuestion();
                 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
+import { ChatService } from './chat.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
@@ -40,6 +41,7 @@ export class GameService {
         private socketService: SocketService,
         private router: Router,
         private snackbar: SnackbarService,
+        private chatService: ChatService, // private chatService: ChatService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -125,7 +127,6 @@ export class GameService {
         this.socketService.sendLiveAnswers(this.answerIndex);
     }
 
-    // TODO: CHANGE TO SETTER FOR LIVE CHAT
     setPlayerName(playerName: string): void {
         this.playerName = playerName;
     }
@@ -153,6 +154,7 @@ export class GameService {
         this.allAnswersIndex = [];
         this.answersClicked = [];
         this.playerLeftList = [];
+        this.chatService.resetMessages();
     }
 
     startGame(): void {
@@ -202,7 +204,6 @@ export class GameService {
         });
 
         this.socketService.onLobbyDeleted(() => {
-            // TODO: PUT DIALOG instead of alert
             this.snackbar.openSnackBar('The host has left the game', 'Close');
             setTimeout(() => {
                 this.socketService.disconnect();

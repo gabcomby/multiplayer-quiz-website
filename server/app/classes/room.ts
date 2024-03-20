@@ -19,6 +19,7 @@ export class Room {
     roomLocked = false;
     hostId = '';
     isTestRoom: boolean;
+    gameHasStarted = false;
 
     // Variables for the timer
     launchTimer = true;
