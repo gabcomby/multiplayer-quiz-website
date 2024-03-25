@@ -5,8 +5,6 @@ import { SocketService } from './socket.service';
 import { Player } from '@app/interfaces/match';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import * as SocketIOClient from 'socket.io-client';
-// import { io } from 'socket.io-client';
-// import { connect } from 'http2';
 
 const TIMER_COUNTDOWN = 10;
 const QUESTION_TIME_UPDATE = 10;
@@ -114,9 +112,8 @@ describe('SocketService', () => {
         });
     });
     it('should connect when connect is called', () => {
-        spyOn(SocketIOClient, 'io').and.returnValue(new MockSocket() as unknown as SocketIOClient.Socket); // S'assurer que `io` retourne MockSocket
+        spyOn(SocketIOClient, 'io').and.returnValue(new MockSocket() as unknown as SocketIOClient.Socket);
         service.connect();
-        // Vérifiez si le socket simulé a une méthode `connect` appelée, ce qui indiquerait que la connexion a été initiée
         expect(SocketIOClient.io).toHaveBeenCalled();
     });
 
@@ -277,10 +274,10 @@ describe('SocketService', () => {
         expect(mockSocket.emit).toHaveBeenCalledWith('leave-room');
     });
     it('should handle lobby delete', (done) => {
-        // const fakeRoom = 'room';
         service.onLobbyDeleted(() => {
             done();
         });
+        expect(mockSocket.on).toHaveBeenCalledWith('lobby-deleted', jasmine.any(Function));
     });
     it('should handle joining room', (done) => {
         const fakeRoom = '123';
