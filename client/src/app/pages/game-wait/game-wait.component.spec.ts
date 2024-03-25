@@ -1,16 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
+import { GamePageScoresheetComponent } from '@app/components/game-page-scoresheet/game-page-scoresheet.component';
 import { GameService } from '@app/services/game.service';
 import { SocketService } from '@app/services/socket.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { GameWaitComponent } from './game-wait.component';
-import { GamePageScoresheetComponent } from '@app/components/game-page-scoresheet/game-page-scoresheet.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('GameWaitComponent', () => {
     let component: GameWaitComponent;
@@ -18,6 +19,7 @@ describe('GameWaitComponent', () => {
     let gameService: GameService;
     let socketService: SocketService;
     let matSnackBar: MatSnackBar;
+    let routerSpy: jasmine.SpyObj<Router>;
     const playerLeftValueMock = [
         {
             id: '1',
@@ -69,6 +71,7 @@ describe('GameWaitComponent', () => {
     };
 
     beforeEach(async () => {
+        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
         await TestBed.configureTestingModule({
             imports: [
                 RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]),
@@ -83,11 +86,13 @@ describe('GameWaitComponent', () => {
                 { provide: HttpClient, useValue: {} },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
                 { provide: MatSnackBar, useValue: matSnackBar },
+                { provide: Router, useValue: routerSpyObj },
                 { provide: GamePageScoresheetComponent, useValue: {} },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
 
+        routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
         gameService = TestBed.inject(GameService);
         socketService = TestBed.inject(SocketService);
     });
@@ -157,6 +162,7 @@ describe('GameWaitComponent', () => {
         spyOn(gameService, 'leaveRoom');
         component.handleGameLeave();
         expect(gameService.leaveRoom).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should call the socketService.toggleRoomLock method', () => {

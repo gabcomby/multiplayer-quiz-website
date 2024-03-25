@@ -9,7 +9,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
-const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
+const WAIT_UNTIL_FIRE_DISCONNECTS = 500;
 const AUDIO_CLIP_PATH = '../../assets/chipi-chipi-chapa-chapa.mp3';
 
 @Injectable({
@@ -142,7 +142,7 @@ export class GameService {
         this.socketService.leaveRoom();
         setTimeout(() => {
             this.socketService.disconnect();
-            this.router.navigate(['/home']);
+            // this.router.navigate(['/home']);
         }, WAIT_UNTIL_FIRE_DISCONNECTS);
     }
 
@@ -226,8 +226,8 @@ export class GameService {
             this.snackbar.openSnackBar('The host has left the game', 'Close');
             setTimeout(() => {
                 this.socketService.disconnect();
-                this.router.navigate(['/home']);
             }, TIME_BETWEEN_QUESTIONS);
+            this.router.navigate(['/home']);
         });
 
         this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
@@ -237,6 +237,7 @@ export class GameService {
 
         this.socketService.onBannedFromGame(() => {
             this.leaveRoom();
+            this.router.navigate(['/home']);
         });
 
         this.socketService.onRoomLockStatus((isLocked: boolean) => {

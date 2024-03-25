@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
@@ -47,6 +47,7 @@ describe('HostGamePageComponent', () => {
     let component: HostGamePageComponent;
     let fixture: ComponentFixture<HostGamePageComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -67,6 +68,7 @@ describe('HostGamePageComponent', () => {
             currentQuestionValue: null,
             totalGameDurationValue: 5,
         });
+        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -80,10 +82,12 @@ describe('HostGamePageComponent', () => {
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
+                { provide: Router, useValue: routerSpyObj },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
         }).compileComponents();
 
+        routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
         fixture = TestBed.createComponent(HostGamePageComponent);
         component = fixture.componentInstance;
         jasmine.getEnv().allowRespy(true);
@@ -187,5 +191,6 @@ describe('HostGamePageComponent', () => {
     it('should call leaveRoom from gameService when handleGameLeave is called', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
     });
 });
