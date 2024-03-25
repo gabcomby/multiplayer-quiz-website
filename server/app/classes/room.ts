@@ -35,6 +35,7 @@ export class Room {
     timerId = 0;
     currentTime = 0;
     timerState: TimerState = TimerState.STOPPED;
+    panicModeEnabled = false;
 
     // Variables for the questions & answers
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
@@ -108,6 +109,10 @@ export class Room {
 
     handleTimerEnd(): void {
         clearInterval(this.timerId);
+        if (this.panicModeEnabled) {
+            this.io.to(this.roomId).emit('panic-mode-disabled');
+            this.panicModeEnabled = false;
+        }
         this.timerState = TimerState.STOPPED;
         this.currentTime = this.duration;
         this.lockedAnswers = 0;
@@ -136,6 +141,7 @@ export class Room {
     handlePanicMode(): void {
         // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
         if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
+            this.panicModeEnabled = true;
             clearInterval(this.timerId);
             const timerId = setInterval(
                 () => {
@@ -146,7 +152,6 @@ export class Room {
                             this.firstAnswerForBonus = false;
                             if (!this.launchTimer) {
                                 this.io.to(this.roomId).emit('timer-stopped');
-                                this.io.to(this.roomId).emit('panic-mode-disabled');
                             }
                             this.handleTimerEnd();
                         }

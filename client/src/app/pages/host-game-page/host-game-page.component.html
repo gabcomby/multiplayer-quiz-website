@@ -50,10 +50,15 @@
         >
             Prochaine question
         </button>
-        <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && currentTimerCountdown">
+        <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && currentTimerCountdown !== 0">
             Mettre en pause le timer
         </button>
-        <button mat-raised-button color="primary" (click)="handlePanicMode()" *ngIf="!isLaunchTimer && currentTimerCountdown <= 10">
+        <button
+            mat-raised-button
+            color="primary"
+            (click)="handlePanicMode()"
+            *ngIf="!isLaunchTimer && currentTimerCountdown <= 10 && currentTimerCountdown !== 0"
+        >
             Mode panique
         </button>
     </div>
