@@ -35,6 +35,7 @@ export class GameService {
     private timerCountdown: number;
     private playerLeftList: Player[] = [];
     private gameTitle = '';
+    private gameTimerPaused = false;
     private audio = new Audio();
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
@@ -124,6 +125,10 @@ export class GameService {
         return this.answersClicked;
     }
 
+    get gameTimerPausedValue(): boolean {
+        return this.gameTimerPaused;
+    }
+
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIndex);
@@ -157,6 +162,7 @@ export class GameService {
         this.answersClicked = [];
         this.playerLeftList = [];
         this.chatService.resetMessages();
+        this.gameTimerPaused = false;
         this.audio.src = AUDIO_CLIP_PATH;
         this.audio.load();
     }
@@ -166,6 +172,7 @@ export class GameService {
     }
 
     pauseTimer(): void {
+        this.gameTimerPaused = !this.gameTimerPaused;
         this.socketService.pauseTimer();
     }
 

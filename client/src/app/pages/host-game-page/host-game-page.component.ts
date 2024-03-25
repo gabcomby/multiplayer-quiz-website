@@ -71,6 +71,10 @@ export class HostGamePageComponent {
         return this.gameService.gameTitleValue;
     }
 
+    get gameTimerPaused(): boolean {
+        return this.gameService.gameTimerPausedValue;
+    }
+
     nextQuestion(): void {
         this.gameService.nextQuestion();
     }

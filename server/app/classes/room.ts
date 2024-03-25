@@ -142,6 +142,7 @@ export class Room {
         // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
         if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
             this.panicModeEnabled = true;
+            this.io.to(this.roomId).emit('panic-mode-enabled');
             clearInterval(this.timerId);
             const timerId = setInterval(
                 () => {
