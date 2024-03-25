@@ -4,6 +4,7 @@ import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
 const ONE_SECOND_IN_MS = 1000;
+const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
@@ -33,6 +34,7 @@ export class Room {
     timerId = 0;
     currentTime = 0;
     timerState: TimerState = TimerState.STOPPED;
+    isPanicMode = false;
 
     // Variables for the questions & answers
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
@@ -128,6 +130,30 @@ export class Room {
             this.timerState = TimerState.PAUSED;
         } else if (this.timerState === TimerState.PAUSED) {
             this.timerState = TimerState.RUNNING;
+        }
+    }
+
+    handlePanicMode(): void {
+        if (this.timerState === TimerState.RUNNING) {
+            clearInterval(this.timerId);
+            const timerId = setInterval(
+                () => {
+                    if (this.timerState !== TimerState.PAUSED) {
+                        this.currentTime -= 1;
+                        this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+                        if (this.currentTime === 0) {
+                            this.firstAnswerForBonus = false;
+                            if (!this.launchTimer) {
+                                this.io.to(this.roomId).emit('timer-stopped');
+                            }
+                            this.handleTimerEnd();
+                        }
+                    }
+                },
+                QUARTER_SECOND_IN_MS,
+                this.currentTime,
+            );
+            this.timerId = timerId;
         }
     }
 
