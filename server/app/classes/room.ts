@@ -8,6 +8,7 @@ const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
+const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 
 const enum TimerState {
     RUNNING,
@@ -34,7 +35,6 @@ export class Room {
     timerId = 0;
     currentTime = 0;
     timerState: TimerState = TimerState.STOPPED;
-    isPanicMode = false;
 
     // Variables for the questions & answers
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
@@ -134,7 +134,8 @@ export class Room {
     }
 
     handlePanicMode(): void {
-        if (this.timerState === TimerState.RUNNING) {
+        // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
+        if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
             clearInterval(this.timerId);
             const timerId = setInterval(
                 () => {
