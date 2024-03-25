@@ -150,6 +150,7 @@ export class Server {
             socket.on('enable-panic-mode', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().handlePanicMode();
+                    this.io.to(getRoom().roomId).emit('panic-mode-enabled');
                 }
             });
 

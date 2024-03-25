@@ -10,6 +10,7 @@ import { SocketService } from './socket.service';
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
 const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
+const AUDIO_CLIP_PATH = '../../assets/chipi-chipi-chapa-chapa.mp3';
 
 @Injectable({
     providedIn: 'root',
@@ -34,6 +35,7 @@ export class GameService {
     private timerCountdown: number;
     private playerLeftList: Player[] = [];
     private gameTitle = '';
+    private audio = new Audio();
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -41,7 +43,7 @@ export class GameService {
         private socketService: SocketService,
         private router: Router,
         private snackbar: SnackbarService,
-        private chatService: ChatService, // private chatService: ChatService,
+        private chatService: ChatService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -155,6 +157,8 @@ export class GameService {
         this.answersClicked = [];
         this.playerLeftList = [];
         this.chatService.resetMessages();
+        this.audio.src = AUDIO_CLIP_PATH;
+        this.audio.load();
     }
 
     startGame(): void {
@@ -272,6 +276,15 @@ export class GameService {
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
             this.router.navigate(['/resultsView']);
+        });
+
+        this.socketService.onPanicModeEnabled(() => {
+            this.audio.play();
+        });
+
+        this.socketService.onPanicModeDisabled(() => {
+            this.audio.pause();
+            this.audio.currentTime = 0;
         });
     }
 }

@@ -146,6 +146,7 @@ export class Room {
                             this.firstAnswerForBonus = false;
                             if (!this.launchTimer) {
                                 this.io.to(this.roomId).emit('timer-stopped');
+                                this.io.to(this.roomId).emit('panic-mode-disabled');
                             }
                             this.handleTimerEnd();
                         }
