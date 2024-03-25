@@ -82,4 +82,8 @@ export class HostGamePageComponent {
     handlePauseTimer(): void {
         this.gameService.pauseTimer();
     }
+
+    handlePanicMode(): void {
+        this.gameService.enablePanicMode();
+    }
 }
