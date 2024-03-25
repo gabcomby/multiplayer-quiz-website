@@ -165,6 +165,10 @@ export class GameService {
         this.socketService.pauseTimer();
     }
 
+    enablePanicMode(): void {
+        this.socketService.enablePanicMode();
+    }
+
     nextQuestion(): void {
         if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
             this.socketService.nextQuestion();

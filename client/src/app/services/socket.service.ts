@@ -171,4 +171,8 @@ export class SocketService {
     pauseTimer(): void {
         this.socket.emit('pause-timer');
     }
+
+    enablePanicMode(): void {
+        this.socket.emit('enable-panic-mode');
+    }
 }
