@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
@@ -9,11 +10,14 @@ import { Subscription } from 'rxjs';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService,
+        private router: Router,
+    ) {}
 
     get playerName(): string {
         return this.gameService.playerNameValue;
@@ -67,11 +71,28 @@ export class GamePageComponent {
         return this.gameService.gameTitleValue;
     }
 
+    @HostListener('window:beforeunload', ['$event'])
+    // eslint-disable-next-line no-unused-vars
+    beforeUnloadHander(event: Event) {
+        event.preventDefault();
+        this.gameService.leaveRoom();
+        localStorage.setItem('refreshedPage', '/home');
+    }
+
+    ngOnInit(): void {
+        const refreshedPage = localStorage.getItem('refreshedPage');
+        if (refreshedPage) {
+            localStorage.removeItem('refreshedPage');
+            this.router.navigate([refreshedPage]);
+        }
+    }
+
     setAnswerIndex(answerIdx: number[]): void {
         this.gameService.answerIndexSetter = answerIdx;
     }
 
     handleGameLeave(): void {
         this.gameService.leaveRoom();
+        this.router.navigate(['/home']);
     }
 }
