@@ -2,7 +2,7 @@ import gamePlayedModel, { IGamePlayed } from '@app/model/gameplayed.model';
 import { Service } from 'typedi';
 
 @Service()
-export class GameService {
+export class GamePlayedService {
     async getGamesPlayed(): Promise<IGamePlayed[]> {
         return gamePlayedModel.find({}, { _id: 0 });
     }
