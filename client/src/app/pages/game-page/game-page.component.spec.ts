@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
@@ -47,7 +47,7 @@ describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
-    // let router: Router;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -67,6 +67,8 @@ describe('GamePageComponent', () => {
             },
         });
 
+        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+
         await TestBed.configureTestingModule({
             declarations: [
                 GamePageComponent,
@@ -79,10 +81,13 @@ describe('GamePageComponent', () => {
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
+                { provide: Router, useValue: routerSpyObj },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
+
+        routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
@@ -151,6 +156,7 @@ describe('GamePageComponent', () => {
     it('should call handleGameLeave from gameService with handleGameLeave', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
     });
     it('should call setAnswerIndex from gameService with setAnswerIndex', () => {
         const newAnswerIdx = [1];

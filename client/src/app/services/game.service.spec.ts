@@ -211,7 +211,6 @@ describe('GameService', () => {
         expect(socketServiceSpy.leaveRoom).toHaveBeenCalled();
         tick(WAIT_UNTIL_FIRE_DISCONNECT);
         expect(socketServiceSpy.disconnect).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalled();
     }));
 
     it('should reset game variables', () => {
