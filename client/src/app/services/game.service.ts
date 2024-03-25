@@ -161,6 +161,10 @@ export class GameService {
         this.socketService.startGame();
     }
 
+    pauseTimer(): void {
+        this.socketService.pauseTimer();
+    }
+
     nextQuestion(): void {
         if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
             this.socketService.nextQuestion();

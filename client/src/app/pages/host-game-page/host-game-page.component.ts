@@ -78,4 +78,8 @@ export class HostGamePageComponent {
     handleGameLeave(): void {
         this.gameService.leaveRoom();
     }
+
+    handlePauseTimer(): void {
+        this.gameService.pauseTimer();
+    }
 }

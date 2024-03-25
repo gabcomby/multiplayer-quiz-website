@@ -167,4 +167,8 @@ export class SocketService {
             callback(playerList, questionList, allAnswersIndex);
         });
     }
+
+    pauseTimer(): void {
+        this.socket.emit('pause-timer');
+    }
 }
