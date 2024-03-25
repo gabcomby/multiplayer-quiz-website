@@ -45,6 +45,8 @@ describe('GameService', () => {
             'onLivePlayerAnswers',
             'onGoToResult',
             'sendAnswers',
+            'onPanicModeEnabled',
+            'onPanicModeDisabled',
         ]);
         const snackbarServiceSpyObj = jasmine.createSpyObj('SnackbarService', ['openSnackbar']);
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
