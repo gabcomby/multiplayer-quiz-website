@@ -122,16 +122,16 @@ describe('Room', () => {
     });
 
     it('should start the countdown timer for the first question if not already running', () => {
-        room.isRunning = false;
+        room.timerState = 1;
         room.launchTimer = true;
 
         room.startQuestion();
-        assert.isTrue(room.isRunning);
+        assert.equal(room.timerState, 0);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', sinon.match.any);
     });
 
     it('should not start the countdown timer for the first question if already running', () => {
-        room.isRunning = true;
+        room.timerState = 0;
         room.launchTimer = true;
 
         room.startQuestion();
@@ -139,7 +139,7 @@ describe('Room', () => {
     });
 
     it('should emit "question-time-updated" when launchTimer is true', () => {
-        room.isRunning = true;
+        room.timerState = 0;
         room.launchTimer = true;
 
         room.handleTimerEnd();
@@ -167,7 +167,7 @@ describe('Room', () => {
 
     it('should handle countdown and stop correctly in a test room', () => {
         room.isTestRoom = true;
-        room.isRunning = false;
+        room.timerState = 1;
         room.launchTimer = false;
         room.currentQuestionIndex = 0;
 
@@ -191,7 +191,7 @@ describe('Room', () => {
         const playerId = 'playerWithMultipleAnswers';
         const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
         room.playerList.set(playerId, player);
-        room.isRunning = true;
+        room.timerState = 0;
         room.currentQuestionIndex = 2;
 
         const answerIdx = [0, 1];
@@ -201,7 +201,7 @@ describe('Room', () => {
         const playerId = 'playerWithMultipleAnswers';
         const player: IPlayer = { id: playerId, score: 0, bonus: 0, name: 'testPlayer' } as IPlayer;
         room.playerList.set(playerId, player);
-        room.isRunning = true;
+        room.timerState = 0;
         room.currentQuestionIndex = 2;
         room.firstAnswerForBonus = false;
         const answerIdx = [0, 1];
@@ -210,16 +210,16 @@ describe('Room', () => {
 
     it('should lock the room and not start a new question if not a test room and after handling the end of a timer', () => {
         room.isTestRoom = false;
-        room.isRunning = true;
+        room.timerState = 0;
         room.launchTimer = false;
 
         room.handleTimerEnd();
 
-        assert.isFalse(room.isRunning);
+        assert.equal(room.timerState, 1);
     });
 
     it('should emit "go-to-results" when the last question is answered', () => {
-        room.isRunning = false;
+        room.timerState = 1;
         room.launchTimer = false;
         room.currentQuestionIndex = room.game.questions.length - 1;
 
@@ -235,7 +235,7 @@ describe('Room', () => {
         room.playerList.set('player2Id', player2);
         room.playerHasAnswered.set('player1', true);
         room.playerHasAnswered.set('player2', true);
-        room.isRunning = false;
+        room.timerState = 1;
         room.launchTimer = false;
         room.currentQuestionIndex = 0;
 
@@ -254,7 +254,7 @@ describe('Room', () => {
         room.livePlayerAnswers.set('player1Id', [1, 2]);
         room.livePlayerAnswers.set('player2Id', [2, 3]);
 
-        room.isRunning = false;
+        room.timerState = 1;
         room.launchTimer = false;
         room.currentQuestionIndex = 0;
 
@@ -313,7 +313,7 @@ describe('Room', () => {
         room.playerList.set(player2Id, player2);
         room.playerList.set('player3Id', player3);
         room.roomId = 'testRoomId';
-        room.isRunning = true;
+        room.timerState = 0;
 
         const verifyAnswersStub = sinon.stub(room, 'verifyAnswers');
 
@@ -341,7 +341,7 @@ describe('Room', () => {
     it('should not emit "timer-stopped" immediately if countdown is active, despite launchTimer being false', () => {
         room.duration = 5;
         room.launchTimer = false;
-        room.isRunning = true;
+        room.timerState = 0;
 
         room.startCountdownTimer();
 

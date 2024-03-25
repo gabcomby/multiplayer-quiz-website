@@ -4,9 +4,17 @@ import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
 const ONE_SECOND_IN_MS = 1000;
+const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
+const MINIMAL_TIME_FOR_PANIC_MODE = 10;
+
+const enum TimerState {
+    RUNNING,
+    STOPPED,
+    PAUSED,
+}
 
 export class Room {
     // Variables for the lobby
@@ -26,7 +34,8 @@ export class Room {
     duration = 0;
     timerId = 0;
     currentTime = 0;
-    isRunning = false;
+    timerState: TimerState = TimerState.STOPPED;
+    panicModeEnabled = false;
 
     // Variables for the questions & answers
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
@@ -47,10 +56,10 @@ export class Room {
     }
 
     startQuestion(): void {
-        if (!this.isRunning) {
+        if (this.timerState === TimerState.STOPPED) {
             if (this.launchTimer) {
                 this.duration = 5;
-                this.isRunning = true;
+                this.timerState = TimerState.RUNNING;
                 this.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
@@ -62,7 +71,7 @@ export class Room {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
                     this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
-                    this.isRunning = true;
+                    this.timerState = TimerState.RUNNING;
                     this.playerHasAnswered.forEach((value, key) => {
                         this.playerHasAnswered.set(key, false);
                     });
@@ -80,14 +89,16 @@ export class Room {
         this.io.to(this.roomId).emit('timer-countdown', this.duration);
         const timerId = setInterval(
             () => {
-                this.currentTime -= 1;
-                this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-                if (this.currentTime === 0) {
-                    this.firstAnswerForBonus = false;
-                    if (!this.launchTimer) {
-                        this.io.to(this.roomId).emit('timer-stopped');
+                if (this.timerState !== TimerState.PAUSED) {
+                    this.currentTime -= 1;
+                    this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+                    if (this.currentTime === 0) {
+                        this.firstAnswerForBonus = false;
+                        if (!this.launchTimer) {
+                            this.io.to(this.roomId).emit('timer-stopped');
+                        }
+                        this.handleTimerEnd();
                     }
-                    this.handleTimerEnd();
                 }
             },
             ONE_SECOND_IN_MS,
@@ -98,7 +109,11 @@ export class Room {
 
     handleTimerEnd(): void {
         clearInterval(this.timerId);
-        this.isRunning = false;
+        if (this.panicModeEnabled) {
+            this.io.to(this.roomId).emit('panic-mode-disabled');
+            this.panicModeEnabled = false;
+        }
+        this.timerState = TimerState.STOPPED;
         this.currentTime = this.duration;
         this.lockedAnswers = 0;
         if (this.launchTimer) {
@@ -112,6 +127,41 @@ export class Room {
             setInterval(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
+        }
+    }
+
+    handleTimerPause(): void {
+        if (this.timerState === TimerState.RUNNING) {
+            this.timerState = TimerState.PAUSED;
+        } else if (this.timerState === TimerState.PAUSED) {
+            this.timerState = TimerState.RUNNING;
+        }
+    }
+
+    handlePanicMode(): void {
+        // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
+        if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
+            this.panicModeEnabled = true;
+            this.io.to(this.roomId).emit('panic-mode-enabled');
+            clearInterval(this.timerId);
+            const timerId = setInterval(
+                () => {
+                    if (this.timerState !== TimerState.PAUSED) {
+                        this.currentTime -= 1;
+                        this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+                        if (this.currentTime === 0) {
+                            this.firstAnswerForBonus = false;
+                            if (!this.launchTimer) {
+                                this.io.to(this.roomId).emit('timer-stopped');
+                            }
+                            this.handleTimerEnd();
+                        }
+                    }
+                },
+                QUARTER_SECOND_IN_MS,
+                this.currentTime,
+            );
+            this.timerId = timerId;
         }
     }
 
