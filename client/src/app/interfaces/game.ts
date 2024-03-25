@@ -13,6 +13,13 @@ export interface Choice {
     isCorrect: boolean;
 }
 
+export interface GamePlayed {
+    title: string;
+    creationDate: Date;
+    numberPlayers: number;
+    bestScore: number;
+}
+
 export interface AnswersPlayer extends Map<string, number[]> {}
 
 export interface Question {
