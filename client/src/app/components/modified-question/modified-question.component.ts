@@ -11,6 +11,7 @@ export class ModifiedQuestionComponent implements OnInit {
     @Input() gameQuestions: Question[];
     @Input() modifiedShown: boolean;
     @Input() listQuestionBank: boolean;
+    @Input() fromBank: boolean;
 
     questionList: Question[] = [];
     disabled: boolean[] = [];

@@ -15,8 +15,8 @@ export class HandlerNewQuestionService {
         private questionService: QuestionService,
     ) {}
     // eslint-disable-next-line max-params -- Single responsibility principle
-    async addQuestion(choices: Choice[], question: Question, onlyAddQuestionBank: boolean, addToBank: boolean): Promise<boolean> {
-        const newQuestion = this.createNewQuestion(choices, question);
+    async addQuestion(question: Question, onlyAddQuestionBank: boolean, addToBank: boolean, choices?: Choice[]): Promise<boolean> {
+        const newQuestion = this.createNewQuestion(question, choices);
 
         if (this.questionValidationService.validateQuestion(newQuestion)) {
             if (!onlyAddQuestionBank) {
@@ -47,13 +47,13 @@ export class HandlerNewQuestionService {
         }
         return true;
     }
-    createNewQuestion(choices: Choice[], question: Question) {
+    createNewQuestion(question: Question, choices?: Choice[]) {
         return {
             type: question.type,
             text: question.text,
             points: question.points,
             id: generateNewId(),
-            choices: choices.map((item: Choice) => ({ ...item })),
+            choices: choices ? choices.map((item: Choice) => ({ ...item })) : undefined,
             lastModification: new Date(),
         };
     }

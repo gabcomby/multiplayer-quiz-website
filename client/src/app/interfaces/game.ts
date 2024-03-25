@@ -1,3 +1,7 @@
+export enum QuestionType {
+    QCM = 'QCM',
+    QRL = 'QRL',
+}
 export interface Game {
     id: string;
     title: string;
@@ -16,10 +20,10 @@ export interface Choice {
 export interface AnswersPlayer extends Map<string, number[]> {}
 
 export interface Question {
-    type: string;
+    type: QuestionType;
     text: string;
     points: number;
-    choices: Choice[];
+    choices?: Choice[];
     lastModification: Date;
     id: string;
 }

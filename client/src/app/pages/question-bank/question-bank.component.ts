@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Question } from '@app/interfaces/game';
+import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 
@@ -14,7 +14,8 @@ export class QuestionBankComponent implements OnInit {
     questionToAdd: Question[] = [];
     displayedColumns: string[];
     dataSource: Question[] = [];
-    defaultDisplayedColumns: string[] = ['question', 'date', 'delete'];
+    filteredQuestions: Question[] = [];
+    defaultDisplayedColumns: string[] = ['question', 'type', 'date', 'delete'];
     selectedRowIds: string[] = [];
 
     constructor(
@@ -34,13 +35,13 @@ export class QuestionBankComponent implements OnInit {
                 const dateB = new Date(b.lastModification).getTime();
                 return dateB - dateA;
             });
+            this.filteredQuestions = this.dataSource;
         });
     }
 
     deleteQuestion(questionId: string): void {
         const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer cette question?');
         if (!confirmDelete) return;
-
         this.questionService
             .deleteQuestion(questionId)
             .then(() => {
@@ -61,6 +62,16 @@ export class QuestionBankComponent implements OnInit {
             this.questionToAdd = this.questionToAdd.filter((element) => element.id !== question.id);
         } else {
             this.questionToAdd.push(question);
+        }
+    }
+
+    filter(type?: string) {
+        if (!type) {
+            this.filteredQuestions = this.dataSource;
+        } else if (type === 'QCM') {
+            this.filteredQuestions = this.dataSource.filter((question) => question.type === QuestionType.QCM);
+        } else if (type === 'QRL') {
+            this.filteredQuestions = this.dataSource.filter((question) => question.type === QuestionType.QRL);
         }
     }
 }

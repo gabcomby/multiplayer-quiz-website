@@ -53,22 +53,24 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
-        const array = new Array(this.questionsGame[0].choices.length).fill(0);
-        // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
-        this.answersPlayer.forEach(([playerId, answerIdx]) => {
-            answerIdx.forEach((idx) => {
-                array[idx]++;
+        if (this.questionsGame[0].choices) {
+            const array = new Array(this.questionsGame[0].choices.length).fill(0);
+            // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
+            this.answersPlayer.forEach(([playerId, answerIdx]) => {
+                answerIdx.forEach((idx) => {
+                    array[idx]++;
+                });
             });
-        });
-        const histogramData: { name: string; value: number }[] = [];
-        for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
-            const choiceText = this.questionsGame[0].choices[i].isCorrect
-                ? `${this.questionsGame[0].choices[i].text} (correct)`
-                : this.questionsGame[0].choices[i].text;
-            histogramData.push({ name: choiceText, value: array[i] });
-        }
+            const histogramData: { name: string; value: number }[] = [];
+            for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
+                const choiceText = this.questionsGame[0].choices[i].isCorrect
+                    ? `${this.questionsGame[0].choices[i].text} (correct)`
+                    : this.questionsGame[0].choices[i].text;
+                histogramData.push({ name: choiceText, value: array[i] });
+            }
 
-        this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
+            this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
+        }
     }
 
     private constructHistogramsData(): void {
@@ -82,21 +84,25 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     private calculateAnswerCounts(question: Question): Map<Choice, number> {
         const answerCountsMap: Map<Choice, number> = new Map();
-        question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
-
-        this.answersPlayer.forEach(([questionText, choices]) => {
-            if (questionText === question.text) {
-                choices.forEach((choiceIndex) => {
-                    const choice = question.choices[choiceIndex];
-                    if (choice) {
-                        const count = answerCountsMap.get(choice);
-                        if (count !== undefined) {
-                            answerCountsMap.set(choice, count + 1);
+        if (question.choices) {
+            question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
+            this.answersPlayer.forEach(([questionText, choices]) => {
+                if (questionText === question.text) {
+                    choices.forEach((choiceIndex) => {
+                        // Add a check here to ensure question.choices is defined
+                        if (question.choices) {
+                            const choice = question.choices[choiceIndex];
+                            if (choice) {
+                                const count = answerCountsMap.get(choice);
+                                if (count !== undefined) {
+                                    answerCountsMap.set(choice, count + 1);
+                                }
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
 
         return answerCountsMap;
     }

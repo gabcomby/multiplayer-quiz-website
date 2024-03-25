@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Game } from '@app/interfaces/game';
+import { Game, QuestionType } from '@app/interfaces/game';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { ApiService } from './api.service';
 import { QuestionValidationService } from './question-validation.service';
@@ -69,6 +69,7 @@ export class GameValidationService {
         };
     }
     async isValidGame(game: Game) {
+        console.log('game ', game);
         const errors: string[] = [];
         try {
             this.validateBasicGameProperties(game, errors);
@@ -76,11 +77,13 @@ export class GameValidationService {
                 if (!this.questionValidationService.validateQuestion(question)) {
                     return false;
                 }
-                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                    return false;
-                }
-                if (!this.questionValidationService.answerValid(question.choices)) {
-                    return false;
+                if (question.choices && question.type === QuestionType.QCM) {
+                    if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                        return false;
+                    }
+                    if (!this.questionValidationService.answerValid(question.choices)) {
+                        return false;
+                    }
                 }
             }
         } catch (error) {
