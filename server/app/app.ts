@@ -9,6 +9,7 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
+import { GamePlayedController } from './controllers/game-played.controller';
 import { GameController } from './controllers/game.controller';
 import { QuestionsController } from './controllers/questions.controller';
 import { RoomController } from './controllers/room.controller';
@@ -29,6 +30,7 @@ export class Application {
         private readonly questionsController: QuestionsController,
         private readonly matchController: MatchController,
         private readonly roomController: RoomController,
+        private readonly gamePlayedController: GamePlayedController,
     ) {
         this.app = express();
 
@@ -59,6 +61,7 @@ export class Application {
         this.app.use('/api/authenticate', this.authController.router);
         this.app.use('/api/matches', this.matchController.router);
         this.app.use('/api/rooms', this.roomController.router);
+        this.app.use('/api/games-played', this.gamePlayedController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

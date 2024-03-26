@@ -14,12 +14,13 @@ export class GamePlayedService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/game-played`;
+        this.apiUrl = `${apiBaseURL}/games-played`;
     }
 
     async getGamesPlayed(): Promise<GamePlayed[]> {
         const gamesPLayed$ = this.http.get<GamePlayed[]>(this.apiUrl);
         const gamesPLayed = await firstValueFrom(gamesPLayed$);
+        // console.log('getGamesPlayed3');
         return gamesPLayed;
     }
 
@@ -28,10 +29,6 @@ export class GamePlayedService {
         const newGame = await firstValueFrom(gamesPLayed$);
         return newGame;
     }
-
-    // getQuestionById(questionId: string): Observable<GamePlayed> {
-    //     return this.http.get<GamePlayed>(`${this.apiUrl}/${questionId}`);
-    // }
 
     async deleteGamesPLayed(): Promise<void> {
         await firstValueFrom(this.http.delete(`${this.apiUrl}/deleteAllGamesPlayed`));
