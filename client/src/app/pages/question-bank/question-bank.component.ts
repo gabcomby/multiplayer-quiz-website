@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
+import { AdminService } from '@app/services/admin.service';
 
 @Component({
     selector: 'app-question-bank',
@@ -21,6 +22,7 @@ export class QuestionBankComponent implements OnInit {
     constructor(
         private questionService: QuestionService,
         private snackbarService: SnackbarService,
+        private adminService: AdminService,
     ) {}
 
     ngOnInit() {
@@ -74,5 +76,9 @@ export class QuestionBankComponent implements OnInit {
         } else if (type === 'QRL') {
             this.filteredQuestions = this.dataSource.filter((question) => question.type === QuestionType.QRL);
         }
+    }
+
+    formatDate(date: string): string {
+        return this.adminService.formatLastModificationDate(date);
     }
 }

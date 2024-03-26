@@ -45,7 +45,7 @@
     <!-- Date Column -->
     <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef>Dernière Modification</th>
-        <td mat-cell *matCellDef="let element">{{ element.lastModification }}</td>
+        <td mat-cell *matCellDef="let element">{{ formatDate(element.lastModification)}}</td>
     </ng-container>
 
     <!-- Delete Column -->
