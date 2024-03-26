@@ -23,12 +23,6 @@ export class GamePlayedService {
         return gamesPLayed;
     }
 
-    async addGamePLayed(gamesPLayed: GamePlayed): Promise<GamePlayed> {
-        const gamesPLayed$ = this.http.post<GamePlayed>(this.apiUrl, gamesPLayed);
-        const newGame = await firstValueFrom(gamesPLayed$);
-        return newGame;
-    }
-
     async deleteGamesPLayed(): Promise<void> {
         await firstValueFrom(this.http.delete(`${this.apiUrl}/deleteAllGamesPlayed`));
     }
