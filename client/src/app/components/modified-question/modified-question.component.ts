@@ -12,6 +12,7 @@ export class ModifiedQuestionComponent implements OnInit {
     @Input() modifiedShown: boolean;
     @Input() listQuestionBank: boolean;
     @Input() fromBank: boolean;
+    @Input() idQuestionBank: string;
 
     questionList: Question[] = [];
     disabled: boolean[] = [];
@@ -43,8 +44,9 @@ export class ModifiedQuestionComponent implements OnInit {
     }
 
     async loadQuestionsFromBank() {
-        this.questionList = await this.questionService.getQuestions();
+        const questionsBank = await this.questionService.getQuestions();
         this.disabled = this.questionList.map(() => true);
+        this.questionList = questionsBank.filter((question) => question.id === this.idQuestionBank);
     }
 
     toggleModify(index: number) {
