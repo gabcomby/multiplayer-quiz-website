@@ -15,6 +15,7 @@ class MockSocket {
     emit = jasmine.createSpy('emit');
     disconnect = jasmine.createSpy('disconnect');
 
+    // eslint-disable-next-line complexity
     on = jasmine.createSpy('on').and.callFake((eventName: string, callback) => {
         this.callbacks[eventName] = callback;
 
@@ -76,6 +77,12 @@ class MockSocket {
                 ['1234', { id: '123', name: 'alex', score: 123, bonus: 0 }],
                 ['233', { id: '123', name: 'alex', score: 123, bonus: 0 }],
             ]);
+        }
+        if (eventName === 'panic-mode-enabled') {
+            callback('enabled');
+        }
+        if (eventName === 'panic-mode-disabled') {
+            callback('disabled');
         }
     });
 
@@ -307,5 +314,25 @@ describe('SocketService', () => {
             expect(playerList).toEqual(fakeData);
             done();
         });
+    });
+    it('should emit "pause-timer" when pauseTimer is called', () => {
+        service.pauseTimer();
+        expect(mockSocket.emit).toHaveBeenCalledWith('pause-timer');
+    });
+    it('should emit "enable-panic-mode" when enablePanicMode is called', () => {
+        service.enablePanicMode();
+        expect(mockSocket.emit).toHaveBeenCalledWith('enable-panic-mode');
+    });
+    it('should handle panic mode enabled', (done) => {
+        service.onPanicModeEnabled(() => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-enabled', jasmine.any(Function));
+    });
+    it('should handle panic mode disabled', (done) => {
+        service.onPanicModeDisabled(() => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-disabled', jasmine.any(Function));
     });
 });
