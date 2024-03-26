@@ -7,19 +7,19 @@ export class GamePlayedService {
         return gamePlayedModel.find({}, { _id: 0 });
     }
 
-    async getGamePlayed(gameId: string): Promise<IGamePlayed> {
-        return gamePlayedModel.findOne({ id: gameId }, { _id: 0 });
+    async getGamePlayed(gamePlayedId: string): Promise<IGamePlayed> {
+        return gamePlayedModel.findOne({ id: gamePlayedId }, { _id: 0 });
     }
 
-    async createGamePlayed(gameData: IGamePlayed): Promise<IGamePlayed> {
-        return await gamePlayedModel.create(gameData);
+    async createGamePlayed(gamePlayedData: IGamePlayed): Promise<IGamePlayed> {
+        return await gamePlayedModel.create(gamePlayedData);
     }
 
-    async deleteGame(gameId: string): Promise<IGamePlayed> {
-        return await gamePlayedModel.findOneAndDelete({ id: gameId });
+    async deleteGame(gamePlayedId: string): Promise<IGamePlayed> {
+        return await gamePlayedModel.findOneAndDelete({ id: gamePlayedId });
     }
 
-    async updateGame(gameData: IGamePlayed): Promise<IGamePlayed> {
-        return await gamePlayedModel.findOneAndUpdate({ id: gameData.id }, { $set: gameData }, { new: true });
+    async updateGame(gamePlayedData: IGamePlayed): Promise<IGamePlayed> {
+        return await gamePlayedModel.findOneAndUpdate({ id: gamePlayedData.id }, { $set: gamePlayedData }, { new: true });
     }
 }
