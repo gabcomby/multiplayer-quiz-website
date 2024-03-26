@@ -167,4 +167,24 @@ export class SocketService {
             callback(playerList, questionList, allAnswersIndex);
         });
     }
+
+    pauseTimer(): void {
+        this.socket.emit('pause-timer');
+    }
+
+    enablePanicMode(): void {
+        this.socket.emit('enable-panic-mode');
+    }
+
+    onPanicModeEnabled(callback: () => void): void {
+        this.socket.on('panic-mode-enabled', () => {
+            callback();
+        });
+    }
+
+    onPanicModeDisabled(callback: () => void): void {
+        this.socket.on('panic-mode-disabled', () => {
+            callback();
+        });
+    }
 }

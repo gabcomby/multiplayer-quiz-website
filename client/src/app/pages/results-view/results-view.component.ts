@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game.service';
@@ -8,12 +9,15 @@ import { GameService } from '@app/services/game.service';
     templateUrl: './results-view.component.html',
     styleUrls: ['./results-view.component.scss'],
 })
-export class ResultsViewComponent {
+export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
     playerDataSource: Player[] = [];
 
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService,
+        private router: Router,
+    ) {}
 
     get playerName(): string {
         return this.gameService.playerNameValue;
@@ -41,8 +45,25 @@ export class ResultsViewComponent {
         return this.gameService.allQuestionsFromGameValue;
     }
 
+    @HostListener('window:beforeunload', ['$event'])
+    // eslint-disable-next-line no-unused-vars
+    beforeUnloadHandler(event: Event) {
+        event.preventDefault();
+        this.gameService.leaveRoom();
+        localStorage.setItem('refreshedPage', '/home');
+    }
+
+    ngOnInit(): void {
+        const refreshedPage = localStorage.getItem('refreshedPage');
+        if (refreshedPage) {
+            localStorage.removeItem('refreshedPage');
+            this.router.navigate([refreshedPage]);
+        }
+    }
+
     handleGameLeave(): void {
         this.gameService.leaveRoom();
+        this.router.navigate(['/home']);
     }
 
     private sortDataSource() {

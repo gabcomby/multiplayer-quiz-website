@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
@@ -9,11 +10,14 @@ import { Subscription } from 'rxjs';
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
+export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService,
+        private router: Router,
+    ) {}
 
     get lobbyCode(): string {
         return this.gameService.lobbyCodeValue;
@@ -71,11 +75,40 @@ export class HostGamePageComponent {
         return this.gameService.gameTitleValue;
     }
 
+    get gameTimerPaused(): boolean {
+        return this.gameService.gameTimerPausedValue;
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
+    // eslint-disable-next-line no-unused-vars
+    beforeUnloadHandler(event: Event) {
+        event.preventDefault();
+        this.gameService.leaveRoom();
+        localStorage.setItem('refreshedPage', '/home');
+    }
+
+    ngOnInit(): void {
+        const refreshedPage = localStorage.getItem('refreshedPage');
+        if (refreshedPage) {
+            localStorage.removeItem('refreshedPage');
+            this.router.navigate([refreshedPage]);
+        }
+    }
+
     nextQuestion(): void {
         this.gameService.nextQuestion();
     }
 
     handleGameLeave(): void {
         this.gameService.leaveRoom();
+        this.router.navigate(['/home']);
+    }
+
+    handlePauseTimer(): void {
+        this.gameService.pauseTimer();
+    }
+
+    handlePanicMode(): void {
+        this.gameService.enablePanicMode();
     }
 }

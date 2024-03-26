@@ -141,6 +141,18 @@ export class Server {
                 }
             });
 
+            socket.on('pause-timer', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().handleTimerPause();
+                }
+            });
+
+            socket.on('enable-panic-mode', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().handlePanicMode();
+                }
+            });
+
             socket.on('send-answers', (answerIdx: number[]) => {
                 if (socket.id !== getRoom().hostId) {
                     getRoom().verifyAnswers(socket.id, answerIdx);
