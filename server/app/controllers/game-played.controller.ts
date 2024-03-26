@@ -45,62 +45,6 @@ export class GamePlayedController {
         /**
          * @swagger
          * /api/games/{id}:
-         *   get:
-         *     description: get game by ID
-         *     tags: [Games]
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           type: string
-         *     responses:
-         *       200:
-         *         description: got the game by ID
-         *       500:
-         *         description: Error fetching game
-         */
-
-        // this.router.get('/:id', async (req: Request, res: Response) => {
-        //     try {
-        //         const game = await this.gamePlayedService.getGamePlayed(req.params.id);
-        //         res.json(game);
-        //     } catch (error) {
-        //         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching game' });
-        //     }
-        // });
-
-        /**
-         * @swagger
-         * /api/games:
-         *   post:
-         *     description: create a new game
-         *     tags: [Games]
-         *     requestBody:
-         *       required: true
-         *       content:
-         *         application/json:
-         *           schema:
-         *             $ref: '#/definitions/Game'
-         *     responses:
-         *       200:
-         *         description: created a new game
-         *       500:
-         *         description: Error creating game
-         */
-
-        this.router.post('/', async (req: Request, res: Response) => {
-            try {
-                const game = await this.gamePlayedService.createGamePlayed(req.body);
-                res.json(game);
-            } catch (error) {
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error creating game' });
-            }
-        });
-
-        /**
-         * @swagger
-         * /api/games/{id}:
          *   delete:
          *     summary: Delete a game by ID
          *     tags: [Games]
