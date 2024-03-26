@@ -77,7 +77,7 @@ describe('HostGamePageComponent', () => {
         spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
         spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
 
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion'], {
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
             matchLobby: {
                 id: 'match123',
                 playerList: [
@@ -236,5 +236,20 @@ describe('HostGamePageComponent', () => {
 
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
         expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
+    });
+
+    it('should return gameTimerPaused from gameService with gameTimerPausedValue', () => {
+        const result = component.gameTimerPaused;
+        expect(result).toBe(gameServiceSpy.gameTimerPausedValue);
+    });
+
+    it('should call pauseTimer from gameService when handlePauseTimer is called', () => {
+        component.handlePauseTimer();
+        expect(gameServiceSpy.pauseTimer).toHaveBeenCalled();
+    });
+
+    it('should call enablePanicMode from gameService when handlePanicMode is called', () => {
+        component.handlePanicMode();
+        expect(gameServiceSpy.enablePanicMode).toHaveBeenCalled();
     });
 });
