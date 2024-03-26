@@ -14,7 +14,7 @@ export class GamePlayedService {
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
-        this.apiUrl = `${apiBaseURL}/games-played`;
+        this.apiUrl = `${apiBaseURL}/game-played`;
     }
 
     async getGamesPlayed(): Promise<GamePlayed[]> {

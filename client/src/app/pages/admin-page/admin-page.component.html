@@ -78,33 +78,29 @@
     </div>
     <div class="historic">
         <h1>Historique des parties</h1>
-        <!--
-        <mat-table [dataSource]="dataSource"> 
+        <mat-table [dataSource]="historicDataSource">
             <ng-container matColumnDef="title">
                 <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
             </ng-container>
 
-
-            <ng-container matColumnDef="date">
+            <ng-container matColumnDef="creationDate">
                 <mat-header-cell *matHeaderCellDef> Date du début de partie</mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ formatDate(element.lastModification) }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ formatDate(element.creationDate) }} </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="players">
+            <ng-container matColumnDef="numberPlayers">
                 <mat-header-cell *matHeaderCellDef> Nombre de joueurs </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.numberPlayers }} </mat-cell>
             </ng-container>
 
-
-            <ng-container matColumnDef="best-score">
+            <ng-container matColumnDef="bestScore">
                 <mat-header-cell *matHeaderCellDef> Meilleur Score </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.bestScore }} </mat-cell>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-                    </mat-table>
-            -->
+            <mat-header-row *matHeaderRowDef="displayedHistoricColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedHistoricColumns"></mat-row>
+        </mat-table>
     </div>
 </main>

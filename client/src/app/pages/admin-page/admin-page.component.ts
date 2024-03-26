@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import type { Game } from '@app/interfaces/game';
-
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
+import type { Game, GamePlayed } from '@app/interfaces/game';
 import { AdminService } from '@app/services/admin.service';
-
+import { GamePlayedService } from '@app/services/game-played.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -16,16 +15,22 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AdminPageComponent implements OnInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
+    displayedHistoricColumns: string[] = ['title', 'creationDate', 'numberPlayers', 'bestScore'];
     dataSource: Game[] = [];
+    historicDataSource: GamePlayed[] = [];
 
+    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private dialog: MatDialog,
         private adminService: AdminService,
+        private gamePlayedService: GamePlayedService,
     ) {}
 
     async ngOnInit() {
         this.dataSource = await this.adminService.init();
+        this.historicDataSource = await this.gamePlayedService.getGamesPlayed();
+        console.log(this.historicDataSource);
     }
 
     toggleVisibility(game: Game, isVisible: boolean) {
