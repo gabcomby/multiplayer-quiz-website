@@ -99,17 +99,6 @@ export class AdminPageComponent implements OnInit {
         return this.adminService.formatLastModificationDate(date);
     }
 
-    addFakeGame(): void {
-        const fakeGamePlayed: GamePlayed = {
-            id: 'fakeId',
-            title: 'fakeTitle',
-            creationDate: new Date(),
-            numberPlayers: 2,
-            bestScore: 12,
-        };
-        this.gamePlayedService.addGamePLayed(fakeGamePlayed);
-    }
-
     deleteGameHistoric(): void {
         this.gamePlayedService.deleteGamesPLayed();
     }
