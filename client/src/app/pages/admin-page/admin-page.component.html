@@ -77,6 +77,7 @@
         </div>
     </div>
     <button mat-raised-button (click)="addFakeGame()">Add fake game</button>
+    <button mat-raised-button (click)="deleteGameHistoric()">Delete historic</button>
     <div class="historic">
         <h1>Historique des parties</h1>
         <mat-table [dataSource]="historicDataSource">
@@ -87,7 +88,7 @@
 
             <ng-container matColumnDef="creationDate">
                 <mat-header-cell *matHeaderCellDef> Date du début de partie</mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ formatDate(element.creationDate) }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ formatDateHistoric(element.creationDate) }} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="numberPlayers">

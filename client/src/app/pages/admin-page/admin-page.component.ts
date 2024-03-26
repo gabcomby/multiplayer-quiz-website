@@ -30,7 +30,6 @@ export class AdminPageComponent implements OnInit {
     async ngOnInit() {
         this.dataSource = await this.adminService.init();
         this.historicDataSource = await this.gamePlayedService.getGamesPlayed();
-        console.log(this.historicDataSource);
     }
 
     toggleVisibility(game: Game, isVisible: boolean) {
@@ -109,5 +108,13 @@ export class AdminPageComponent implements OnInit {
             bestScore: 12,
         };
         this.gamePlayedService.addGamePLayed(fakeGamePlayed);
+    }
+
+    deleteGameHistoric(): void {
+        this.gamePlayedService.deleteGamesPLayed();
+    }
+
+    formatDateHistoric(date: string): string {
+        return this.gamePlayedService.formatDate(date);
     }
 }
