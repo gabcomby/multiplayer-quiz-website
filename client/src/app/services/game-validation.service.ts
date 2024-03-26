@@ -20,16 +20,17 @@ export class GameValidationService {
         private snackbarService: SnackbarService,
     ) {}
 
+    // TODO: verifier si les jeux peuvent avoir la meme description
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
+        // const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
         if (titleExisting) {
             error.push('Il y a déjà un jeu avec ce nom');
         }
-        if (descriptionExisting) {
-            error.push('Il y a déjà un jeu avec cet description');
-        }
+        // if (descriptionExisting) {
+        //     error.push('Il y a déjà un jeu avec cet description');
+        // }
     }
     async validateDeletedGame(game: Game) {
         const gameList = await this.apiService.getGames();
@@ -69,7 +70,6 @@ export class GameValidationService {
         };
     }
     async isValidGame(game: Game) {
-        console.log('game ', game);
         const errors: string[] = [];
         try {
             this.validateBasicGameProperties(game, errors);

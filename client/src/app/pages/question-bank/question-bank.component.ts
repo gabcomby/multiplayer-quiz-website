@@ -42,10 +42,11 @@ export class QuestionBankComponent implements OnInit {
     deleteQuestion(questionId: string): void {
         const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer cette question?');
         if (!confirmDelete) return;
+
         this.questionService
             .deleteQuestion(questionId)
             .then(() => {
-                this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+                this.filteredQuestions = this.dataSource.filter((question) => question.id !== questionId);
                 this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
             })
             .catch((error) => {

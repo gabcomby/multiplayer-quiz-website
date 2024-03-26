@@ -3,9 +3,7 @@
     <button mat-icon-button color="white" aria-label="Example icon button with an add icon" routerLink="/new-question-qbank">
         <mat-icon>add</mat-icon>
     </button>
-    <button mat-icon-button color="white" aria-label="Example icon button with an edit icon" routerLink="/modify-question-qbank">
-        <mat-icon>edit</mat-icon>
-    </button>
+
     <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
         <mat-icon>home</mat-icon>
     </button>
@@ -13,9 +11,9 @@
 
 <button mat-button [matMenuTriggerFor]="menu">Filtre</button>
 <mat-menu #menu="matMenu">
-  <button mat-menu-item (click)= "filter('QCM')">QCM </button>
-  <button mat-menu-item (click)="filter('QRL')">QRL </button>
-  <button mat-menu-item (click)="filter()">Toutes les questions </button>
+    <button mat-menu-item (click)="filter('QCM')">QCM</button>
+    <button mat-menu-item (click)="filter('QRL')">QRL</button>
+    <button mat-menu-item (click)="filter()">Toutes les questions</button>
 </mat-menu>
 
 <table mat-table [dataSource]="filteredQuestions" class="questions">
@@ -24,17 +22,17 @@
         <th mat-header-cell *matHeaderCellDef>Question</th>
         <td mat-cell *matCellDef="let element">{{ element.text }}</td>
     </ng-container>
-    
+
     <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef>Type</th>
         <td mat-cell *matCellDef="let element">{{ element.type }}</td>
     </ng-container>
 
     <ng-container matColumnDef="modify">
-        <th mat-header-cell *matHeaderCellDef> Modifier 
-        </th>
+        <th mat-header-cell *matHeaderCellDef>Modifier</th>
         <td mat-cell *matCellDef="let element">
-         <button mat-icon-button [routerLink]="['/modify-question-qbank', element.id]"> <mat-icon>settings</mat-icon></button></td>
+            <button mat-icon-button [routerLink]="['/modify-question-qbank', element.id]"><mat-icon>settings</mat-icon></button>
+        </td>
     </ng-container>
 
     <!-- <ng-container matColumnDef="modify">

@@ -1,6 +1,5 @@
 <div id="newQuestion">
-    <div id="buttonAdd" *ngIf="fromBank">
-        <!-- <button type="button" mat-raised-button color="accent" (click)="toggleQuestionShown()">Créer Question</button> -->
+    <div id="buttonAdd" >
         <div>
             <button  type="button" mat-raised-button color="accent" (click)="createQcm()">QCM</button>
             <button type="button" mat-raised-button color="accent" (click)="createQrl()">QRL</button>
@@ -18,7 +17,7 @@
             <mat-label>Nombre de points</mat-label>
             <input matInput type="number" value="10" min="10" max="100" step="10" [(ngModel)]="question.points" />
         </mat-form-field>
-        <div>
+        <div *ngIf="!fromBank">
             <label>Ajouter à la banque de question</label>
             <input type="checkbox" [(ngModel)]="addBankQuestion" />
         </div>
