@@ -81,7 +81,7 @@ export class HostGamePageComponent implements OnInit {
 
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
-    beforeUnloadHander(event: Event) {
+    beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();
         localStorage.setItem('refreshedPage', '/home');

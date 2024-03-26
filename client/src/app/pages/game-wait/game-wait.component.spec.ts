@@ -72,6 +72,27 @@ describe('GameWaitComponent', () => {
 
     beforeEach(async () => {
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let store: any = {};
+        const mockLocalStorage = {
+            getItem: (key: string): string => {
+                return key in store ? store[key] : null;
+            },
+            setItem: (key: string, value: string) => {
+                store[key] = `${value}`;
+            },
+            removeItem: (key: string) => {
+                delete store[key];
+            },
+            clear: () => {
+                store = {};
+            },
+        };
+
+        spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+        spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.setItem);
+        spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
+        spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
         await TestBed.configureTestingModule({
             imports: [
                 RouterTestingModule.withRoutes([{ path: 'lobbies', component: GameWaitComponent }]),
@@ -175,5 +196,29 @@ describe('GameWaitComponent', () => {
         spyOn(gameService, 'startGame');
         component.handleGameLaunch();
         expect(gameService.startGame).toHaveBeenCalled();
+    });
+
+    it('should not navigate on ngOnInit if refreshedPage is not present', () => {
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to a page held in localStorage on ngOnInit if refreshedPage is present', () => {
+        localStorage.setItem('refreshedPage', '/home');
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).toHaveBeenCalledWith('refreshedPage');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call leaveRoom and set refreshedPage on beforeUnloadHandler', () => {
+        spyOn(gameService, 'leaveRoom');
+        const event = new Event('beforeunload');
+        component.beforeUnloadHandler(event);
+
+        expect(gameService.leaveRoom).toHaveBeenCalled();
+        expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
     });
 });

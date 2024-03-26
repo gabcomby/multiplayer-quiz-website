@@ -56,7 +56,28 @@ describe('HostGamePageComponent', () => {
             },
         };
 
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion'], {
+        let store: any = {};
+        const mockLocalStorage = {
+            getItem: (key: string): string => {
+                return key in store ? store[key] : null;
+            },
+            setItem: (key: string, value: string) => {
+                store[key] = `${value}`;
+            },
+            removeItem: (key: string) => {
+                delete store[key];
+            },
+            clear: () => {
+                store = {};
+            },
+        };
+
+        spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+        spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.setItem);
+        spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
+        spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
+
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
             matchLobby: {
                 id: 'match123',
                 playerList: [
@@ -192,5 +213,43 @@ describe('HostGamePageComponent', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should not navigate on ngOnInit if refreshedPage is not present', () => {
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to a page held in localStorage on ngOnInit if refreshedPage is present', () => {
+        localStorage.setItem('refreshedPage', '/home');
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).toHaveBeenCalledWith('refreshedPage');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call leaveRoom and set refreshedPage on beforeUnloadHandler', () => {
+        const event = new Event('beforeunload');
+        component.beforeUnloadHandler(event);
+
+        expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
+    });
+
+    it('should return gameTimerPaused from gameService with gameTimerPausedValue', () => {
+        const result = component.gameTimerPaused;
+        expect(result).toBe(gameServiceSpy.gameTimerPausedValue);
+    });
+
+    it('should call pauseTimer from gameService when handlePauseTimer is called', () => {
+        component.handlePauseTimer();
+        expect(gameServiceSpy.pauseTimer).toHaveBeenCalled();
+    });
+
+    it('should call enablePanicMode from gameService when handlePanicMode is called', () => {
+        component.handlePanicMode();
+        expect(gameServiceSpy.enablePanicMode).toHaveBeenCalled();
     });
 });

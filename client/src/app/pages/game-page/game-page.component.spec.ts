@@ -48,6 +48,7 @@ describe('GamePageComponent', () => {
     let fixture: ComponentFixture<GamePageComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    // let localStorageSpy: jasmine.SpyObj<Storage>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -67,7 +68,29 @@ describe('GamePageComponent', () => {
             },
         });
 
+        let store: any = {};
+        const mockLocalStorage = {
+            getItem: (key: string): string => {
+                return key in store ? store[key] : null;
+            },
+            setItem: (key: string, value: string) => {
+                store[key] = `${value}`;
+            },
+            removeItem: (key: string) => {
+                delete store[key];
+            },
+            clear: () => {
+                store = {};
+            },
+        };
+
+        spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+        spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.setItem);
+        spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
+        spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
+
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+        // localStorageSpy = jasmine.createSpyObj('LocalStorage', ['getItem', 'removeItem', 'setItem']);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -82,6 +105,7 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: Router, useValue: routerSpyObj },
+                //{ provide: Storage, useValue: localStorageSpy },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
@@ -163,5 +187,28 @@ describe('GamePageComponent', () => {
         gameServiceSpy['answerIndex'] = [];
         component.setAnswerIndex(newAnswerIdx);
         expect(gameServiceSpy['answerIndexSetter']).toEqual(newAnswerIdx);
+    });
+
+    it('should not navigate on ngOnInit if refreshedPage is not present', () => {
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to a page held in localStorage on ngOnInit if refreshedPage is present', () => {
+        localStorage.setItem('refreshedPage', '/home');
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).toHaveBeenCalledWith('refreshedPage');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call leaveRoom and set refreshedPage on beforeUnloadHandler', () => {
+        const event = new Event('beforeunload');
+        component.beforeUnloadHandler(event);
+
+        expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
     });
 });

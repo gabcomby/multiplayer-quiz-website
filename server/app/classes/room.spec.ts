@@ -10,6 +10,7 @@ import * as SocketIO from 'socket.io';
 const ID_LOBBY_LENGTH = 4;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 const ONE_SECOND_IN_MS = 1000;
+const QUARTER_SECOND_IN_MS = 250;
 
 const mockGame = new gameModel({
     id: '1a2b3c',
@@ -354,6 +355,58 @@ describe('Room', () => {
 
         clock.tick(ONE_SECOND_IN_MS);
 
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
+    });
+
+    it('should emit "panic-mode-disabled" when the timer ends and panic mode is enabled', () => {
+        room.panicModeEnabled = true;
+
+        room.handleTimerEnd();
+
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'panic-mode-disabled');
+    });
+
+    it('should set the timer state to PAUSED when calling handleTimerPause and the timer is RUNNING', () => {
+        room.timerState = 0;
+
+        room.handleTimerPause();
+
+        assert.equal(room.timerState, 2);
+    });
+
+    it('should set the timer state to RUNNING when calling handleTimerPause and the timer is PAUSED', () => {
+        room.timerState = 2;
+        room.handleTimerPause();
+
+        assert.equal(room.timerState, 0);
+    });
+
+    it('should set panicMode to enabled and emit "panic-mode-enabled"', () => {
+        room.panicModeEnabled = false;
+        room.duration = 15;
+        room.currentTime = 8;
+        room.timerState = 0;
+
+        room.handlePanicMode();
+
+        assert.isTrue(room.panicModeEnabled);
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'panic-mode-enabled');
+    });
+
+    it('should emit a timer countdown event when panic mode is enabled', () => {
+        room.panicModeEnabled = true;
+        room.duration = 15;
+        room.currentTime = 8;
+        room.timerState = 0;
+        room.launchTimer = false;
+
+        room.handlePanicMode();
+
+        for (let currentTime = room.currentTime - 1; currentTime >= 0; currentTime--) {
+            // eslint-disable-next-line -- This is a test
+            clock.tick(QUARTER_SECOND_IN_MS);
+            sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', currentTime);
+        }
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
     });
 });
