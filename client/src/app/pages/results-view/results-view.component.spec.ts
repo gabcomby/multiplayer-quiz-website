@@ -1,28 +1,56 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { GameService } from '@app/services/game.service';
 import { ResultsViewComponent } from './results-view.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
 describe('ResultsViewComponent', () => {
     let component: ResultsViewComponent;
     let fixture: ComponentFixture<ResultsViewComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         const spy = jasmine.createSpyObj('GameService', ['leaveRoom'], ['playerListValue']);
+        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let store: any = {};
+        const mockLocalStorage = {
+            getItem: (key: string): string => {
+                return key in store ? store[key] : null;
+            },
+            setItem: (key: string, value: string) => {
+                store[key] = `${value}`;
+            },
+            removeItem: (key: string) => {
+                delete store[key];
+            },
+            clear: () => {
+                store = {};
+            },
+        };
+
+        spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+        spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.setItem);
+        spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
+        spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
 
         await TestBed.configureTestingModule({
             declarations: [ResultsViewComponent, HistogramComponent],
-            providers: [{ provide: GameService, useValue: spy }],
+            providers: [
+                { provide: GameService, useValue: spy },
+                { provide: Router, useValue: routerSpyObj },
+            ],
             imports: [MatToolbarModule, MatIconModule, MatTableModule, MatFormFieldModule],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
         gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+        routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
         fixture = TestBed.createComponent(ResultsViewComponent);
         component = fixture.componentInstance;
     });
@@ -34,6 +62,7 @@ describe('ResultsViewComponent', () => {
     it('should call leaveRoom method of GameService', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should sort players by score and name based on score if not the same', () => {
@@ -123,5 +152,28 @@ describe('ResultsViewComponent', () => {
     it('should return the host value', () => {
         const result = component.isHostValue;
         expect(result).toEqual(gameServiceSpy.isHostValue);
+    });
+
+    it('should not navigate on ngOnInit if refreshedPage is not present', () => {
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to a page held in localStorage on ngOnInit if refreshedPage is present', () => {
+        localStorage.setItem('refreshedPage', '/home');
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).toHaveBeenCalledWith('refreshedPage');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call leaveRoom and set refreshedPage on beforeUnloadHandler', () => {
+        const event = new Event('beforeunload');
+        component.beforeUnloadHandler(event);
+
+        expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
     });
 });

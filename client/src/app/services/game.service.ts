@@ -9,7 +9,8 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
-const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
+const WAIT_UNTIL_FIRE_DISCONNECTS = 500;
+const AUDIO_CLIP_PATH = '../../assets/chipi-chipi-chapa-chapa.mp3';
 
 @Injectable({
     providedIn: 'root',
@@ -34,6 +35,8 @@ export class GameService {
     private timerCountdown: number;
     private playerLeftList: Player[] = [];
     private gameTitle = '';
+    private gameTimerPaused = false;
+    private audio = new Audio();
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -41,7 +44,7 @@ export class GameService {
         private socketService: SocketService,
         private router: Router,
         private snackbar: SnackbarService,
-        private chatService: ChatService, // private chatService: ChatService,
+        private chatService: ChatService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -122,6 +125,10 @@ export class GameService {
         return this.answersClicked;
     }
 
+    get gameTimerPausedValue(): boolean {
+        return this.gameTimerPaused;
+    }
+
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIndex);
@@ -135,7 +142,7 @@ export class GameService {
         this.socketService.leaveRoom();
         setTimeout(() => {
             this.socketService.disconnect();
-            this.router.navigate(['/home']);
+            // this.router.navigate(['/home']);
         }, WAIT_UNTIL_FIRE_DISCONNECTS);
     }
 
@@ -155,10 +162,22 @@ export class GameService {
         this.answersClicked = [];
         this.playerLeftList = [];
         this.chatService.resetMessages();
+        this.gameTimerPaused = false;
+        this.audio.src = AUDIO_CLIP_PATH;
+        this.audio.load();
     }
 
     startGame(): void {
         this.socketService.startGame();
+    }
+
+    pauseTimer(): void {
+        this.gameTimerPaused = !this.gameTimerPaused;
+        this.socketService.pauseTimer();
+    }
+
+    enablePanicMode(): void {
+        this.socketService.enablePanicMode();
     }
 
     nextQuestion(): void {
@@ -207,8 +226,8 @@ export class GameService {
             this.snackbar.openSnackBar('The host has left the game', 'Close');
             setTimeout(() => {
                 this.socketService.disconnect();
-                this.router.navigate(['/home']);
             }, TIME_BETWEEN_QUESTIONS);
+            this.router.navigate(['/home']);
         });
 
         this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
@@ -218,6 +237,7 @@ export class GameService {
 
         this.socketService.onBannedFromGame(() => {
             this.leaveRoom();
+            this.router.navigate(['/home']);
         });
 
         this.socketService.onRoomLockStatus((isLocked: boolean) => {
@@ -264,6 +284,15 @@ export class GameService {
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
             this.router.navigate(['/resultsView']);
+        });
+
+        this.socketService.onPanicModeEnabled(() => {
+            this.audio.play();
+        });
+
+        this.socketService.onPanicModeDisabled(() => {
+            this.audio.pause();
+            this.audio.currentTime = 0;
         });
     }
 }
