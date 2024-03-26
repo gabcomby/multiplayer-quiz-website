@@ -14,6 +14,7 @@ export interface Choice {
 }
 
 export interface GamePlayed {
+    id: string;
     title: string;
     creationDate: Date;
     numberPlayers: number;

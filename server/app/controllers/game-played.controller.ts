@@ -61,14 +61,14 @@ export class GamePlayedController {
          *         description: Error fetching game
          */
 
-        this.router.get('/:id', async (req: Request, res: Response) => {
-            try {
-                const game = await this.gamePlayedService.getGamePlayed(req.params.id);
-                res.json(game);
-            } catch (error) {
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching game' });
-            }
-        });
+        // this.router.get('/:id', async (req: Request, res: Response) => {
+        //     try {
+        //         const game = await this.gamePlayedService.getGamePlayed(req.params.id);
+        //         res.json(game);
+        //     } catch (error) {
+        //         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching game' });
+        //     }
+        // });
 
         /**
          * @swagger
