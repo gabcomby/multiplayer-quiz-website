@@ -1,13 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Game } from '@app/interfaces/game';
+import { API_BASE_URL } from '@app/app.module';
+import { Game, GamePlayed } from '@app/interfaces/game';
 import { AdminService } from '@app/services/admin.service';
+import { GamePlayedService } from '@app/services/game-played.service';
 import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
@@ -72,6 +74,7 @@ describe('AdminPageComponent', () => {
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
+    const gamePlayedServiceMock = jasmine.createSpyObj('GamePlayedService', ['getGamesPlayed', 'formatDate', 'deleteGamesPLayed']);
 
     const adminServiceMock = jasmine.createSpyObj('AdminService', [
         'init',
@@ -88,6 +91,7 @@ describe('AdminPageComponent', () => {
     ]);
 
     beforeEach(async () => {
+        adminServiceMock.init.and.returnValue(Promise.resolve(mockData));
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
             imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
@@ -95,6 +99,8 @@ describe('AdminPageComponent', () => {
                 { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },
                 { provide: AdminService, useValue: adminServiceMock },
+                { provide: API_BASE_URL, useValue: 'http://localhost:3000/api' },
+                { provide: GamePlayedService, useValue: gamePlayedServiceMock },
             ],
         }).compileComponents();
 
@@ -110,10 +116,11 @@ describe('AdminPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call init when ngOnInit is called', async () => {
-        await component.ngOnInit();
+    it('should call init when ngOnInit is called', fakeAsync(() => {
+        component.ngOnInit();
+        tick();
         expect(adminServiceMock.init).toHaveBeenCalled();
-    });
+    }));
 
     it('should call importGamesFromFile when onFileSelected is called', () => {
         const event = {
@@ -124,6 +131,16 @@ describe('AdminPageComponent', () => {
         const spy = spyOn(component, 'importGamesFromFile');
         component.onFileSelected(event);
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('should correctly initialize historicDataSource data', async () => {
+        const mockGamePlayed = { id: 'abc123', title: 'Game 1', creationDate: new Date(), numberPlayers: 4, bestScore: 100 } as GamePlayed;
+        const mockHistoricData = [mockGamePlayed];
+        gamePlayedServiceMock.getGamesPlayed.and.returnValue(Promise.resolve(mockHistoricData));
+
+        await component.ngOnInit();
+
+        expect(component.historicDataSource.data).toEqual(mockHistoricData);
     });
 
     it('should call getGameTitle when getValidGameTitle is called', async () => {
@@ -200,5 +217,21 @@ describe('AdminPageComponent', () => {
         matDialogMock.open.and.returnValue({ afterClosed: () => of(false) });
         component.deleteGame(mockData.id);
         expect(component.dataSource).toEqual(copyData);
+    });
+
+    it('should call deleteGamesPlayed on GamePlayedService when deleteGameHistoric is called', () => {
+        component.deleteGameHistoric();
+        expect(gamePlayedServiceMock.deleteGamesPLayed).toHaveBeenCalled();
+    });
+
+    it('should call formatDate on GamePlayedService and return its result', () => {
+        const testDate = '2024-03-29';
+        const expectedFormattedDate = '29 March 2024';
+        gamePlayedServiceMock.formatDate.and.returnValue(expectedFormattedDate);
+
+        const result = component.formatDateHistoric(testDate);
+
+        expect(gamePlayedServiceMock.formatDate).toHaveBeenCalledWith(testDate);
+        expect(result).toEqual(expectedFormattedDate);
     });
 });

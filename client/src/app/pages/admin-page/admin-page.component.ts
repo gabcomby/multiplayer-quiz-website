@@ -20,7 +20,6 @@ export class AdminPageComponent implements OnInit, AfterViewInit {
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     displayedHistoricColumns: string[] = ['title', 'creationDate', 'numberPlayers', 'bestScore'];
     dataSource: Game[] = [];
-    // historicDataSource: GamePlayed[] = [];
     historicDataSource = new MatTableDataSource<GamePlayed>([]);
 
     // eslint-disable-next-line max-params
