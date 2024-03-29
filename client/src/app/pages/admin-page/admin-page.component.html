@@ -79,14 +79,14 @@
     <button mat-raised-button (click)="deleteGameHistoric()">Delete historic</button>
     <div class="historic">
         <h1>Historique des parties</h1>
-        <mat-table [dataSource]="historicDataSource">
+        <mat-table [dataSource]="historicDataSource" matSort>
             <ng-container matColumnDef="title">
-                <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Titre </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="creationDate">
-                <mat-header-cell *matHeaderCellDef> Date du début de partie</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Date de création de la partie </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{ formatDateHistoric(element.creationDate) }} </mat-cell>
             </ng-container>
 

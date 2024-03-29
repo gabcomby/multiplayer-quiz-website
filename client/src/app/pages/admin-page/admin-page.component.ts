@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
@@ -13,11 +15,13 @@ import { firstValueFrom } from 'rxjs';
     templateUrl: './admin-page.component.html',
     styleUrls: ['./admin-page.component.scss'],
 })
-export class AdminPageComponent implements OnInit {
+export class AdminPageComponent implements OnInit, AfterViewInit {
+    @ViewChild(MatSort) sort: MatSort;
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
     displayedHistoricColumns: string[] = ['title', 'creationDate', 'numberPlayers', 'bestScore'];
     dataSource: Game[] = [];
-    historicDataSource: GamePlayed[] = [];
+    // historicDataSource: GamePlayed[] = [];
+    historicDataSource = new MatTableDataSource<GamePlayed>([]);
 
     // eslint-disable-next-line max-params
     constructor(
@@ -29,7 +33,12 @@ export class AdminPageComponent implements OnInit {
 
     async ngOnInit() {
         this.dataSource = await this.adminService.init();
-        this.historicDataSource = await this.gamePlayedService.getGamesPlayed();
+        const historicData = await this.gamePlayedService.getGamesPlayed();
+        this.historicDataSource.data = historicData;
+    }
+
+    ngAfterViewInit(): void {
+        this.historicDataSource.sort = this.sort;
     }
 
     toggleVisibility(game: Game, isVisible: boolean) {
