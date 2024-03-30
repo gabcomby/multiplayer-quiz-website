@@ -147,7 +147,7 @@ export class Server {
                 }
             });
 
-            socket.on('send-locked-answers', (answerIdx: number[]) => {
+            socket.on('send-locked-answers', (answerIdx: number[] | string) => {
                 getRoom().handleEarlyAnswers(socket.id, answerIdx);
             });
 

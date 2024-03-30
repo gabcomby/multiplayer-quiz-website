@@ -180,7 +180,11 @@ export class GameService {
     }
 
     submitAnswer(): void {
-        this.socketService.sendLockedAnswers(this.answerIndex);
+        if (this.currentQuestion?.type === QuestionType.QRL) {
+            this.socketService.sendLockedAnswers(this.answerText);
+        } else {
+            this.socketService.sendLockedAnswers(this.answerIndex);
+        }
     }
 
     setupWebsocketEvents(): void {

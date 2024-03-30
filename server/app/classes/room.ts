@@ -129,7 +129,7 @@ export class Room {
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
-        if (!this.isTestRoom && typeof answerIdx === 'string') {
+        if (typeof answerIdx === 'string') {
             this.handleQrlAnswers(answerIdx);
         }
         if (this.isTestRoom && question.type === 'QRL') {

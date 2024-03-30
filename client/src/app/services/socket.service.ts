@@ -136,7 +136,7 @@ export class SocketService {
         this.socket.emit('send-answers', answer);
     }
 
-    sendLockedAnswers(answerIdx: number[]): void {
+    sendLockedAnswers(answerIdx: number[] | string): void {
         this.socket.emit('send-locked-answers', answerIdx);
     }
 

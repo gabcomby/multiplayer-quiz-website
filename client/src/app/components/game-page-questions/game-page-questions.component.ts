@@ -49,9 +49,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (changes.question || changes.choices) {
             this.resetAnswerState();
         }
-        if (changes.answerQrl) {
-            this.answerText.emit(this.answerQrl);
-        }
     }
 
     ngOnInit(): void {
@@ -85,7 +82,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
-        // this.answerText.emit(this.answerQrl);
         this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);
@@ -97,7 +93,9 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.answerIsLocked = false;
         this.answerStateService.lockAnswer(this.answerIsLocked);
     }
-
+    onInputChange() {
+        this.answerText.emit(this.answerQrl);
+    }
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
     }
