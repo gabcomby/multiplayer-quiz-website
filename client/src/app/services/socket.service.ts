@@ -132,16 +132,16 @@ export class SocketService {
         this.socket.emit('next-question');
     }
 
-    sendAnswers(answerIdx: number[]): void {
-        this.socket.emit('send-answers', answerIdx);
+    sendAnswers(answer: number[] | string): void {
+        this.socket.emit('send-answers', answer);
     }
 
     sendLockedAnswers(answerIdx: number[]): void {
         this.socket.emit('send-locked-answers', answerIdx);
     }
 
-    sendLiveAnswers(answerIdx: number[]) {
-        this.socket.emit('send-live-answers', answerIdx);
+    sendLiveAnswers(answer: number[] | string) {
+        this.socket.emit('send-live-answers', answer);
     }
 
     sendMessageToServer(message: string, playerName: string, roomId: string): void {

@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Choice } from '@app/interfaces/game';
+import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 
@@ -16,11 +16,14 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() timerExpired: boolean;
     @Input() answerIsCorrect: boolean;
     @Input() isHost: boolean;
+    @Input() type: QuestionType;
     @Output() answerIdx = new EventEmitter<number[]>();
+    @Output() answerText = new EventEmitter<string>();
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
+    answerQrl: string = '';
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -45,6 +48,9 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.question || changes.choices) {
             this.resetAnswerState();
+        }
+        if (changes.answerQrl) {
+            this.answerText.emit(this.answerQrl);
         }
     }
 
@@ -79,6 +85,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
+        // this.answerText.emit(this.answerQrl);
         this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);

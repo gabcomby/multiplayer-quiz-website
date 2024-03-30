@@ -141,9 +141,9 @@ export class Server {
                 }
             });
 
-            socket.on('send-answers', (answerIdx: number[]) => {
+            socket.on('send-answers', (answer: number[] | string) => {
                 if (socket.id !== getRoom().hostId) {
-                    getRoom().verifyAnswers(socket.id, answerIdx);
+                    getRoom().verifyAnswers(socket.id, answer);
                 }
             });
 
@@ -164,7 +164,7 @@ export class Server {
                 console.log('user disconnected');
             });
 
-            socket.on('send-live-answers', (answerIdx: number[]) => {
+            socket.on('send-live-answers', (answerIdx: number[] | string) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));

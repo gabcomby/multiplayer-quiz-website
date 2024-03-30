@@ -9,7 +9,7 @@ const SIZE2 = 400;
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent implements OnInit, OnChanges {
-    @Input() answersPlayer: [string, number[]][];
+    @Input() answersPlayer: [string, number[] | string][];
     @Input() questionsGame: Question[];
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
@@ -57,9 +57,11 @@ export class HistogramComponent implements OnInit, OnChanges {
             const array = new Array(this.questionsGame[0].choices.length).fill(0);
             // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
             this.answersPlayer.forEach(([playerId, answerIdx]) => {
-                answerIdx.forEach((idx) => {
-                    array[idx]++;
-                });
+                if (typeof answerIdx !== 'string') {
+                    answerIdx.forEach((idx) => {
+                        array[idx]++;
+                    });
+                }
             });
             const histogramData: { name: string; value: number }[] = [];
             for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
@@ -84,22 +86,27 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     private calculateAnswerCounts(question: Question): Map<Choice, number> {
         const answerCountsMap: Map<Choice, number> = new Map();
+        // if(typeof this.answersPlayer === 'string'){
+        //     return answerCountsMap
+        // }
         if (question.choices) {
             question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
             this.answersPlayer.forEach(([questionText, choices]) => {
                 if (questionText === question.text) {
-                    choices.forEach((choiceIndex) => {
-                        // Add a check here to ensure question.choices is defined
-                        if (question.choices) {
-                            const choice = question.choices[choiceIndex];
-                            if (choice) {
-                                const count = answerCountsMap.get(choice);
-                                if (count !== undefined) {
-                                    answerCountsMap.set(choice, count + 1);
+                    if (typeof choices !== 'string') {
+                        choices.forEach((choiceIndex) => {
+                            // Add a check here to ensure question.choices is defined
+                            if (question.choices) {
+                                const choice = question.choices[choiceIndex];
+                                if (choice) {
+                                    const count = answerCountsMap.get(choice);
+                                    if (count !== undefined) {
+                                        answerCountsMap.set(choice, count + 1);
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             });
         }

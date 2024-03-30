@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
-import type { Question } from '@app/interfaces/game';
+import { QuestionType, type Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { ChatService } from './chat.service';
 import { SnackbarService } from './snackbar.service';
@@ -9,6 +9,7 @@ import { SocketService } from './socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
+const QRL_TIMER_DURATION = 60;
 const WAIT_UNTIL_FIRE_DISCONNECTS = 2000;
 
 @Injectable({
@@ -27,13 +28,14 @@ export class GameService {
     private totalQuestionDuration: number = 0;
     private currentQuestion: Question | null;
     private timerStopped: boolean = false;
-    private answersClicked: [string, number[]][] = [];
+    private answersClicked: [string, number[] | string][] = [];
     private answerIndex: number[] = [];
     private allQuestionsFromGame: Question[] = [];
     private allAnswersIndex: [string, number[]][] = [];
     private timerCountdown: number;
     private playerLeftList: Player[] = [];
     private gameTitle = '';
+    private answerText: string = '';
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -89,6 +91,8 @@ export class GameService {
     get totalQuestionDurationValue(): number {
         if (this.launchTimer) {
             return LAUNCH_TIMER_DURATION;
+        } else if (this.currentQuestion?.type === QuestionType.QRL) {
+            return QRL_TIMER_DURATION;
         } else {
             return this.totalQuestionDuration;
         }
@@ -102,7 +106,7 @@ export class GameService {
         return this.timerStopped;
     }
 
-    get liveAnswersClickedValue(): [string, number[]][] {
+    get liveAnswersClickedValue(): [string, number[] | string][] {
         return this.answersClicked;
     }
 
@@ -118,13 +122,17 @@ export class GameService {
         return this.gameTitle;
     }
 
-    get answersClickedValue(): [string, number[]][] {
+    get answersClickedValue(): [string, number[] | string][] {
         return this.answersClicked;
     }
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIndex);
+    }
+    set answerTextSetter(answerText: string) {
+        this.answerText = answerText;
+        this.socketService.sendLiveAnswers(this.answerText);
     }
 
     setPlayerName(playerName: string): void {
@@ -250,10 +258,14 @@ export class GameService {
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
-            this.socketService.sendAnswers(this.answerIndex);
+            if (this.currentQuestion?.type === QuestionType.QRL) {
+                this.socketService.sendAnswers(this.answerText);
+            } else {
+                this.socketService.sendAnswers(this.answerIndex);
+            }
         });
 
-        this.socketService.onLivePlayerAnswers((answers: [string, number[]][]) => {
+        this.socketService.onLivePlayerAnswers((answers: [string, number[] | string][]) => {
             this.answersClicked = answers;
         });
 
