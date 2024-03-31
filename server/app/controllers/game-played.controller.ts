@@ -17,16 +17,16 @@ export class GamePlayedController {
         /**
          * @swagger
          * tags:
-         *   - name: Games
-         *     description: Game endpoints
+         *   - name: Games Played
+         *     description: Game played information
          */
 
         /**
          * @swagger
-         * /api/games:
+         * /api/games-played:
          *   get:
-         *     description: get all games
-         *     tags: [Games]
+         *     description: get all games played
+         *     tags: [GamesPlayed]
          *     responses:
          *       200:
          *         description: got all the games
@@ -44,21 +44,17 @@ export class GamePlayedController {
 
         /**
          * @swagger
-         * /api/games/{id}:
+         * /api/games-played/deleteAllGamesPlayed:
          *   delete:
-         *     summary: Delete a game by ID
-         *     tags: [Games]
+         *     summary: Delete all the games played
+         *     tags: [GamesPlayed]
          *     parameters:
          *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           type: string
          *     responses:
          *       200:
-         *         description: deleted game by ID
+         *         description: deleted all games
          *       500:
-         *         description: Error deleting game
+         *         description: Error deleting games
          */
         this.router.delete('/deleteAllGamesPlayed', async (req, res) => {
             try {
