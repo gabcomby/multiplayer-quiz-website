@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/d
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
@@ -94,7 +95,15 @@ describe('AdminPageComponent', () => {
         adminServiceMock.init.and.returnValue(Promise.resolve(mockData));
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule],
+            imports: [
+                HttpClientTestingModule,
+                MatSnackBarModule,
+                RouterTestingModule,
+                MatDialogModule,
+                MatTableModule,
+                MatIconModule,
+                MatToolbarModule,
+            ],
             providers: [
                 { provide: MatDialog, useValue: matDialogMock },
                 { provide: MAT_DIALOG_DATA, useValue: {} },

@@ -1,16 +1,14 @@
-import { TestBed, fakeAsync, flush } from '@angular/core/testing';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { API_BASE_URL } from '@app/app.module';
-import { AdminService } from './admin.service';
-import { ApiService } from './api.service';
-import { SnackbarService } from './snackbar.service';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { API_BASE_URL } from '@app/app.module';
 import { Game } from '@app/interfaces/game';
 import { of, throwError } from 'rxjs';
+import { AdminService } from './admin.service';
+import { ApiService } from './api.service';
 import { GameValidationService } from './game-validation.service';
+import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
 
 describe('AdminService', () => {
