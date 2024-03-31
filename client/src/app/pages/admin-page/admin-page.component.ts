@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import type { Game } from '@app/interfaces/game';
-
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
+import type { Game, GamePlayed } from '@app/interfaces/game';
 import { AdminService } from '@app/services/admin.service';
-
+import { GamePlayedService } from '@app/services/game-played.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -14,18 +15,29 @@ import { firstValueFrom } from 'rxjs';
     templateUrl: './admin-page.component.html',
     styleUrls: ['./admin-page.component.scss'],
 })
-export class AdminPageComponent implements OnInit {
+export class AdminPageComponent implements OnInit, AfterViewInit {
+    @ViewChild(MatSort) sort: MatSort;
     displayedColumns: string[] = ['id', 'title', 'isVisible', 'lastUpdate', 'export', 'modify', 'delete'];
+    displayedHistoricColumns: string[] = ['title', 'creationDate', 'numberPlayers', 'bestScore'];
     dataSource: Game[] = [];
+    historicDataSource = new MatTableDataSource<GamePlayed>([]);
 
+    // eslint-disable-next-line max-params
     constructor(
         private router: Router,
         private dialog: MatDialog,
         private adminService: AdminService,
+        private gamePlayedService: GamePlayedService,
     ) {}
 
     async ngOnInit() {
         this.dataSource = await this.adminService.init();
+        const historicData = await this.gamePlayedService.getGamesPlayed();
+        this.historicDataSource.data = historicData;
+    }
+
+    ngAfterViewInit(): void {
+        this.historicDataSource.sort = this.sort;
     }
 
     toggleVisibility(game: Game, isVisible: boolean) {
@@ -93,5 +105,13 @@ export class AdminPageComponent implements OnInit {
 
     formatDate(date: string): string {
         return this.adminService.formatLastModificationDate(date);
+    }
+
+    deleteGameHistoric(): void {
+        this.gamePlayedService.deleteGamesPLayed();
+    }
+
+    formatDateHistoric(date: string): string {
+        return this.gamePlayedService.formatDate(date);
     }
 }
