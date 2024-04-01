@@ -68,9 +68,9 @@ export class SocketService {
         });
     }
 
-    onRoomJoined(callback: (roomId: string, gameTitle: string) => void) {
-        this.socket.on('room-joined', (roomId: string, gameTitle: string) => {
-            callback(roomId, gameTitle);
+    onRoomJoined(callback: (roomId: string, gameTitle: string, playerJoined: Player) => void) {
+        this.socket.on('room-joined', (roomId: string, gameTitle: string, playerJoined: Player) => {
+            callback(roomId, gameTitle, playerJoined);
         });
     }
 
@@ -128,20 +128,24 @@ export class SocketService {
         });
     }
 
+    updatePointsQRL(points: [Player, number][]): void {
+        this.socket.emit('update-points-QRL', points);
+    }
+
     nextQuestion(): void {
         this.socket.emit('next-question');
     }
 
-    sendAnswers(answer: number[] | string): void {
-        this.socket.emit('send-answers', answer);
+    sendAnswers(answer: number[] | string, player: Player): void {
+        this.socket.emit('send-answers', answer, player);
     }
 
-    sendLockedAnswers(answerIdx: number[] | string): void {
-        this.socket.emit('send-locked-answers', answerIdx);
+    sendLockedAnswers(answerIdx: number[] | string, player: Player): void {
+        this.socket.emit('send-locked-answers', answerIdx, player);
     }
 
-    sendLiveAnswers(answer: number[] | string) {
-        this.socket.emit('send-live-answers', answer);
+    sendLiveAnswers(answer: number[] | string, player: Player) {
+        this.socket.emit('send-live-answers', answer, player);
     }
 
     sendMessageToServer(message: string, playerName: string, roomId: string): void {
@@ -156,9 +160,15 @@ export class SocketService {
         });
     }
 
-    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
-        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+    onLockedAnswersQRL(callback: (answers: [string, [Player, string][]][]) => void): void {
+        this.socket.on('locked-answers-QRL', (answersArray: [string, [Player, string][]][]) => {
             callback(answersArray);
+        });
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[] | string][], player: Player) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, string | number[]][], player: Player) => {
+            callback(answersArray, player);
         });
     }
 

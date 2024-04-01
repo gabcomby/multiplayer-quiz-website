@@ -28,7 +28,7 @@ export class GameService {
     private totalQuestionDuration: number = 0;
     private currentQuestion: Question | null;
     private timerStopped: boolean = false;
-    private answersClicked: [string, number[] | string][] = [];
+    private answersClicked: [string, number[]][] = [];
     private answerIndex: number[] = [];
     private allQuestionsFromGame: Question[] = [];
     private allAnswersIndex: [string, number[]][] = [];
@@ -36,6 +36,9 @@ export class GameService {
     private playerLeftList: Player[] = [];
     private gameTitle = '';
     private answerText: string = '';
+    private answersTextQRL: [string, [Player, string][]][];
+    private currentPlayer: Player;
+    private pointsQRL: [Player, number][];
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -88,6 +91,10 @@ export class GameService {
         return this.nbrOfQuestions;
     }
 
+    get currentPlayerValue(): Player {
+        return this.currentPlayer;
+    }
+
     get totalQuestionDurationValue(): number {
         if (this.launchTimer) {
             return LAUNCH_TIMER_DURATION;
@@ -122,17 +129,30 @@ export class GameService {
         return this.gameTitle;
     }
 
-    get answersClickedValue(): [string, number[] | string][] {
+    get answersTextQRLValue(): [string, [Player, string][]][] {
+        return this.answersTextQRL;
+    }
+
+    get answersClickedValue(): [string, number[]][] {
         return this.answersClicked;
     }
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIndex);
+        this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer);
     }
     set answerTextSetter(answerText: string) {
         this.answerText = answerText;
-        this.socketService.sendLiveAnswers(this.answerText);
+        this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer);
+    }
+
+    set playerQRLPoints(points: [Player, number][]) {
+        this.pointsQRL = points;
+        this.updatePointsQRL();
+    }
+
+    updatePointsQRL(): void {
+        this.socketService.updatePointsQRL(this.pointsQRL);
     }
 
     setPlayerName(playerName: string): void {
@@ -158,6 +178,7 @@ export class GameService {
         this.roomLocked = false;
         this.currentQuestion = null;
         this.answerIndex = [];
+        this.answerText = '';
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
         this.answersClicked = [];
@@ -181,9 +202,9 @@ export class GameService {
 
     submitAnswer(): void {
         if (this.currentQuestion?.type === QuestionType.QRL) {
-            this.socketService.sendLockedAnswers(this.answerText);
+            this.socketService.sendLockedAnswers(this.answerText, this.currentPlayer);
         } else {
-            this.socketService.sendLockedAnswers(this.answerIndex);
+            this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
         }
     }
 
@@ -223,9 +244,10 @@ export class GameService {
             }, TIME_BETWEEN_QUESTIONS);
         });
 
-        this.socketService.onRoomJoined((roomId: string, gameTitle: string) => {
+        this.socketService.onRoomJoined((roomId: string, gameTitle: string, currentPlayer: Player) => {
             this.lobbyCode = roomId;
             this.gameTitle = gameTitle;
+            this.currentPlayer = currentPlayer;
         });
 
         this.socketService.onBannedFromGame(() => {
@@ -263,14 +285,19 @@ export class GameService {
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
             if (this.currentQuestion?.type === QuestionType.QRL) {
-                this.socketService.sendAnswers(this.answerText);
+                this.socketService.sendAnswers(this.answerText, this.currentPlayer);
             } else {
-                this.socketService.sendAnswers(this.answerIndex);
+                this.socketService.sendAnswers(this.answerIndex, this.currentPlayer);
             }
         });
 
         this.socketService.onLivePlayerAnswers((answers: [string, number[] | string][]) => {
-            this.answersClicked = answers;
+            const answersClicked: [[string, number[]]] = [[answers[0][0], answers[0][1] as number[]]];
+            this.answersClicked = answersClicked;
+        });
+
+        this.socketService.onLockedAnswersQRL((answers: [string, [Player, string][]][]) => {
+            this.answersTextQRL = answers;
         });
 
         this.socketService.onGoToResult((playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {

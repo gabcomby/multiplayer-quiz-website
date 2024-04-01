@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 
 const SIZE1 = 400;
 const SIZE2 = 400;
@@ -9,7 +10,7 @@ const SIZE2 = 400;
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent implements OnInit, OnChanges {
-    @Input() answersPlayer: [string, number[] | string][];
+    @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();

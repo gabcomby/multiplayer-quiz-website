@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Question } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
 import { Subscription } from 'rxjs';
@@ -10,6 +11,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./host-game-page.component.scss'],
 })
 export class HostGamePageComponent {
+    // answersQRL: [Player, string][];
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
@@ -51,6 +53,13 @@ export class HostGamePageComponent {
         return this.gameService.playerLeftListValue;
     }
 
+    get answersQRL() {
+        const answersQRL = this.gameService.answersTextQRLValue;
+        if (!answersQRL[0][1]) {
+            return [];
+        }
+        return this.gameService.answersTextQRLValue;
+    }
     get answersClicked() {
         return this.gameService.answersClickedValue;
     }
@@ -69,6 +78,10 @@ export class HostGamePageComponent {
 
     get currentGameTitle(): string {
         return this.gameService.gameTitleValue;
+    }
+
+    setplayerPointsQRL(points: [Player, number][]) {
+        this.gameService.playerQRLPoints = points;
     }
 
     nextQuestion(): void {

@@ -37,7 +37,9 @@ export class Room {
     lockedAnswers = 0;
     livePlayerAnswers = new Map<string, number[] | string>();
     globalAnswerIndex: number[] = [];
-    allAnswersForQuestion = new Map<string, number[]>();
+    allAnswersForQCM = new Map<string, number[]>();
+    allAnswersForQRL = new Map<string, [IPlayer, string][]>();
+    globalAnswersText: [IPlayer, string][] = [];
     // gameTest = false;
 
     constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
@@ -58,7 +60,8 @@ export class Room {
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
+                        // TODO : Add the answers for QRL
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQCM));
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
@@ -122,7 +125,7 @@ export class Room {
     }
 
     // eslint-disable-next-line complexity
-    verifyAnswers(playerId: string, answerIdx: number[] | string): void {
+    verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
@@ -130,6 +133,7 @@ export class Room {
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
         if (typeof answerIdx === 'string') {
+            this.globalAnswersText.push([player, answerIdx]);
             this.handleQrlAnswers(answerIdx);
         }
         if (this.isTestRoom && question.type === 'QRL') {
@@ -169,18 +173,37 @@ export class Room {
 
         if (this.assertedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
-            this.allAnswersForQuestion.set(question.text, this.globalAnswerIndex);
-            this.globalAnswerIndex = [];
+            if (question.type === 'QCM') {
+                this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
+                this.globalAnswerIndex = [];
+            } else if (question.type === 'QRL') {
+                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+                this.globalAnswersText = [];
+            }
         }
+    }
+
+    calculatePointsQRL(points: [IPlayer, number][]): void {
+        const question = this.game.questions[this.currentQuestionIndex];
+        const playerArray = Array.from(this.playerList.entries());
+        points.forEach(([player, point]: [IPlayer, number]) => {
+            const playerIndex = playerArray.findIndex(([, p]) => p.id === player.id);
+            if (question && playerIndex >= 0) {
+                playerArray[playerIndex][1].score += point * question.points;
+            }
+        });
+        this.io.to(this.roomId).emit('playerlist-change', playerArray);
     }
     handleQrlAnswers(answer: string) {
         console.log('qrl' + answer);
     }
 
-    handleEarlyAnswers(playerId: string, answer: number[] | string): void {
+    handleEarlyAnswers(playerId: string, answer: number[] | string, player: IPlayer): void {
         this.lockedAnswers += 1;
-        this.verifyAnswers(playerId, answer);
+        this.verifyAnswers(playerId, answer, player);
         if (this.lockedAnswers === this.playerList.size) {
+            console.log('TIMER VA STOP');
+            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
             this.handleTimerEnd();
         }
