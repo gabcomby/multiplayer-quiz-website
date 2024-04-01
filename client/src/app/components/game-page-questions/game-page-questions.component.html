@@ -28,7 +28,7 @@
             <mat-label>Réponse</mat-label>
             <input [maxlength]="200" [(ngModel)]="answerQrl" id="answer" matInput placeholder="Entrer votre réponse" (input)="onInputChange()" />
         </mat-form-field>
-        <p>{{ answerQrl.length }}</p>
+        <p>{{ 200 - answerQrl.length }}</p>
     </div>
     <div *ngIf="!answerIsLocked && !isHost">
         <button mat-raised-button color="primary" (click)="submitAnswer()">Submit</button>
