@@ -53,6 +53,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     ngOnInit(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.document.addEventListener('keydown', this.buttonDetect.bind(this));
     }
@@ -89,6 +91,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     resetAnswerState(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
         this.answerStateService.lockAnswer(this.answerIsLocked);

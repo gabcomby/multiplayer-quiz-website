@@ -132,6 +132,9 @@ export class GameService {
     get answersTextQRLValue(): [string, [Player, string][]][] {
         return this.answersTextQRL;
     }
+    get answersTextQRLVal() {
+        return this.answerText;
+    }
 
     get answersClickedValue(): [string, number[]][] {
         return this.answersClicked;
@@ -202,6 +205,7 @@ export class GameService {
 
     submitAnswer(): void {
         if (this.currentQuestion?.type === QuestionType.QRL) {
+            console.log("allo");
             this.socketService.sendLockedAnswers(this.answerText, this.currentPlayer);
         } else {
             this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
