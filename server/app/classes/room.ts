@@ -1,11 +1,14 @@
 import { IGame } from '@app/model/game.model';
+import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
+import { GamePlayedService } from '@app/services/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
 const ONE_SECOND_IN_MS = 1000;
 const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
+const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
@@ -17,6 +20,7 @@ const enum TimerState {
 }
 
 export class Room {
+    gamePlayedService: GamePlayedService;
     // Variables for the lobby
     io: SocketIoServer;
     roomId = '';
@@ -28,6 +32,8 @@ export class Room {
     hostId = '';
     isTestRoom: boolean;
     gameHasStarted = false;
+    gameStartDateTime: Date;
+    nbrPlayersAtStart: number;
 
     // Variables for the timer
     launchTimer = true;
@@ -53,6 +59,7 @@ export class Room {
         this.game = game;
         this.isTestRoom = isTestRoom;
         this.io = io;
+        this.gamePlayedService = new GamePlayedService();
     }
 
     startQuestion(): void {
@@ -67,6 +74,15 @@ export class Room {
                     this.io
                         .to(this.roomId)
                         .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
+                    // TODO: Write game in DB
+                    const gamePlayedData: IGamePlayed = {
+                        id: this.generateGamePlayedId(),
+                        title: this.game.title,
+                        creationDate: this.gameStartDateTime,
+                        numberPlayers: this.nbrPlayersAtStart,
+                        bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
+                    } as IGamePlayed;
+                    this.gamePlayedService.createGamePlayed(gamePlayedData);
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
@@ -220,6 +236,11 @@ export class Room {
 
     generateLobbyId = (): string => {
         const nanoid = customAlphabet('1234567890', ID_LOBBY_LENGTH);
+        return nanoid();
+    };
+
+    generateGamePlayedId = (): string => {
+        const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRTSUVWXYZ', ID_GAME_PLAYED_LENGTH);
         return nanoid();
     };
 }

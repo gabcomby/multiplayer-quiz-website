@@ -33,6 +33,7 @@ import { NewGamePageComponent } from './pages/new-game-page/new-game-page.compon
 import { NewQuestionQbankComponent } from './pages/new-question-qbank/new-question-qbank.component';
 import { QuestionBankComponent } from './pages/question-bank/question-bank.component';
 
+import { MatSortModule } from '@angular/material/sort';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { HistogramComponent } from './components/histogram/histogram.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
@@ -89,6 +90,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         MatListModule,
         RouterModule,
         NgxChartsModule,
+        MatSortModule,
     ],
     providers: [{ provide: API_BASE_URL, useValue: environment.serverUrl }],
     bootstrap: [AppComponent],
