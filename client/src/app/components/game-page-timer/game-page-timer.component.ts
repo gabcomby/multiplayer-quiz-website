@@ -9,6 +9,7 @@ import { AnswerStateService } from '@app/services/answer-state.service';
 export class GamePageTimerComponent {
     @Input() timerCountdown: number;
     @Input() totalTimer: number;
+    @Input() timerExpired: boolean;
     answerLocked: boolean = false;
 
     constructor(private answerStateService: AnswerStateService) {

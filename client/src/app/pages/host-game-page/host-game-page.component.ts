@@ -14,6 +14,7 @@ export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
+    nextQuestionButtonText: string = 'Prochaine question';
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -96,7 +97,19 @@ export class HostGamePageComponent implements OnInit {
     }
 
     nextQuestion(): void {
+        const timerLength = 1000;
         this.gameService.nextQuestion();
+        let timer = 3;
+        this.nextQuestionButtonText = String(timer);
+        const intervalId = setInterval(() => {
+            timer--;
+            if (timer > 0) {
+                this.nextQuestionButtonText = String(timer);
+            } else {
+                clearInterval(intervalId);
+                this.nextQuestionButtonText = 'Prochaine question';
+            }
+        }, timerLength);
     }
 
     handleGameLeave(): void {
