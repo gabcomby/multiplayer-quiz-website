@@ -45,7 +45,7 @@
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
     </div> -->
 
-    <div class="buttonGame" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM'">
+    <div class="gameControl" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM' || timerStopped">
         <button
             mat-raised-button
             color="primary"
@@ -64,6 +64,9 @@
         >
             {{ nextQuestionButtonText }}
         </button>
+        
+    </div>
+    <div class="buttonGame "> 
         <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
             {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
@@ -72,4 +75,5 @@
             Mode panique
         </button>
     </div>
+    
 </div>
