@@ -106,7 +106,7 @@ export class HostGamePageComponent implements OnInit {
             if (timer > 0) {
                 this.nextQuestionButtonText = String(timer);
             } else {
-                clearInterval(intervalId); // Clear the interval when timer reaches 0
+                clearInterval(intervalId);
                 this.nextQuestionButtonText = 'Prochaine question';
             }
         }, timerLength);
