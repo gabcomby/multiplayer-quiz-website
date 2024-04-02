@@ -55,11 +55,19 @@ export class HostGamePageComponent {
     }
 
     get answersQRL() {
-        const answersQRL = this.gameService.answersTextQRLValue;
-        if (!answersQRL[this.currentQuestionIndexValue][1]) {
-            return [];
-        }
         return this.gameService.answersTextQRLValue;
+        // if (!answersQRL) {
+        //     return [];
+        // }
+        // if (this.currentQuestionIndexValue >= 0 && this.currentQuestionIndexValue < answersQRL.length) {
+            // Utilisation de currentQuestionIndexValue ici
+        // return answersQRL;
+
+        // } else {
+        //     return [];
+        //     // Gestion de l'erreur ou initialisation de currentQuestionIndexValue
+        // }
+        // return this.gameService.answersTextQRLValue;
     }
     get answersClicked() {
         return this.gameService.answersClickedValue;
