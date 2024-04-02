@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
@@ -47,6 +47,7 @@ describe('HostGamePageComponent', () => {
     let component: HostGamePageComponent;
     let fixture: ComponentFixture<HostGamePageComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -55,7 +56,28 @@ describe('HostGamePageComponent', () => {
             },
         };
 
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion'], {
+        let store: any = {};
+        const mockLocalStorage = {
+            getItem: (key: string): string => {
+                return key in store ? store[key] : null;
+            },
+            setItem: (key: string, value: string) => {
+                store[key] = `${value}`;
+            },
+            removeItem: (key: string) => {
+                delete store[key];
+            },
+            clear: () => {
+                store = {};
+            },
+        };
+
+        spyOn(localStorage, 'getItem').and.callFake(mockLocalStorage.getItem);
+        spyOn(localStorage, 'setItem').and.callFake(mockLocalStorage.setItem);
+        spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
+        spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
+
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
             matchLobby: {
                 id: 'match123',
                 playerList: [
@@ -67,6 +89,7 @@ describe('HostGamePageComponent', () => {
             currentQuestionValue: null,
             totalGameDurationValue: 5,
         });
+        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -80,10 +103,12 @@ describe('HostGamePageComponent', () => {
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
+                { provide: Router, useValue: routerSpyObj },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
         }).compileComponents();
 
+        routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
         fixture = TestBed.createComponent(HostGamePageComponent);
         component = fixture.componentInstance;
         jasmine.getEnv().allowRespy(true);
@@ -187,5 +212,44 @@ describe('HostGamePageComponent', () => {
     it('should call leaveRoom from gameService when handleGameLeave is called', () => {
         component.handleGameLeave();
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should not navigate on ngOnInit if refreshedPage is not present', () => {
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to a page held in localStorage on ngOnInit if refreshedPage is present', () => {
+        localStorage.setItem('refreshedPage', '/home');
+        component.ngOnInit();
+
+        expect(localStorage.removeItem).toHaveBeenCalledWith('refreshedPage');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call leaveRoom and set refreshedPage on beforeUnloadHandler', () => {
+        const event = new Event('beforeunload');
+        component.beforeUnloadHandler(event);
+
+        expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
+        expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
+    });
+
+    it('should return gameTimerPaused from gameService with gameTimerPausedValue', () => {
+        const result = component.gameTimerPaused;
+        expect(result).toBe(gameServiceSpy.gameTimerPausedValue);
+    });
+
+    it('should call pauseTimer from gameService when handlePauseTimer is called', () => {
+        component.handlePauseTimer();
+        expect(gameServiceSpy.pauseTimer).toHaveBeenCalled();
+    });
+
+    it('should call enablePanicMode from gameService when handlePanicMode is called', () => {
+        component.handlePanicMode();
+        expect(gameServiceSpy.enablePanicMode).toHaveBeenCalled();
     });
 });

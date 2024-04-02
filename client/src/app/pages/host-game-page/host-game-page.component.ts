@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
@@ -10,15 +11,20 @@ import { Subscription } from 'rxjs';
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
-    // answersQRL: [Player, string][];
+export class HostGamePageComponent implements OnInit {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
     currentQuestionQRLIndex: number = 0;
     unsubscribeSubject: Subscription[];
-    constructor(private gameService: GameService) {}
-
+    nextQuestionButtonText: string = 'Prochaine question';
+    constructor(
+        private gameService: GameService,
+        private router: Router,
+    ) {}
+    get gameTimerPaused(): boolean {
+        return this.gameService.gameTimerPausedValue;
+    }
     get lobbyCode(): string {
         return this.gameService.lobbyCodeValue;
     }
@@ -77,6 +83,21 @@ export class HostGamePageComponent {
     get currentGameTitle(): string {
         return this.gameService.gameTitleValue;
     }
+    @HostListener('window:beforeunload', ['$event'])
+    // eslint-disable-next-line no-unused-vars
+    beforeUnloadHandler(event: Event) {
+        event.preventDefault();
+        this.gameService.leaveRoom();
+        localStorage.setItem('refreshedPage', '/home');
+    }
+
+    ngOnInit(): void {
+        const refreshedPage = localStorage.getItem('refreshedPage');
+        if (refreshedPage) {
+            localStorage.removeItem('refreshedPage');
+            this.router.navigate([refreshedPage]);
+        }
+    }
 
     setplayerPointsQRL(points: [Player, number][]) {
         this.gameService.playerQRLPoints = points;
@@ -87,12 +108,33 @@ export class HostGamePageComponent {
     }
 
     nextQuestion(): void {
+        const timerLength = 1000;
         this.isNoted = false;
         this.gameService.nextQuestion();
         if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
+        let timer = 3;
+        this.nextQuestionButtonText = String(timer);
+        const intervalId = setInterval(() => {
+            timer--;
+            if (timer > 0) {
+                this.nextQuestionButtonText = String(timer);
+            } else {
+                clearInterval(intervalId);
+                this.nextQuestionButtonText = 'Prochaine question';
+            }
+        }, timerLength);
     }
 
     handleGameLeave(): void {
         this.gameService.leaveRoom();
+        this.router.navigate(['/home']);
+    }
+
+    handlePauseTimer(): void {
+        this.gameService.pauseTimer();
+    }
+
+    handlePanicMode(): void {
+        this.gameService.enablePanicMode();
     }
 }

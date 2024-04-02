@@ -129,6 +129,8 @@ export class Server {
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().gameStartDateTime = new Date();
+                    getRoom().nbrPlayersAtStart = getRoom().playerList.size;
                     getRoom().gameHasStarted = true;
                     this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
                     getRoom().startQuestion();
@@ -144,6 +146,19 @@ export class Server {
             socket.on('update-points-QRL', (points: [IPlayer, number][]) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().calculatePointsQRL(points);
+                }
+            });
+
+
+            socket.on('pause-timer', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().handleTimerPause();
+                }
+            });
+
+            socket.on('enable-panic-mode', () => {
+                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    getRoom().handlePanicMode();
                 }
             });
 

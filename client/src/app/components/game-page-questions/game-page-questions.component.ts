@@ -95,7 +95,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
-        this.answerStateService.lockAnswer(this.answerIsLocked);
+        this.answerStateService.resetAnswerState();
     }
     onInputChange() {
         this.answerText.emit(this.answerQrl);

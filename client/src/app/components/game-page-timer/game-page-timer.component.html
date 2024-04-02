@@ -5,7 +5,7 @@
 
     <div class="spinner-container">
         <mat-progress-spinner
-            *ngIf="timerCountdown !== 0; else showIdleWheel"
+            *ngIf="!timerExpired; else showIdleWheel"
             [color]="answerLocked ? 'warn' : 'primary'"
             mode="determinate"
             [value]="(timerCountdown / totalTimer) * 100"
@@ -13,7 +13,7 @@
         <ng-template #showIdleWheel>
             <mat-progress-spinner color="warn" mode="determinate" value="100"></mat-progress-spinner>
         </ng-template>
-        <p *ngIf="timerCountdown !== 0; else showIdleTime" class="centered-text">{{ timerCountdown }} SEC</p>
+        <p *ngIf="!timerExpired; else showIdleTime" class="centered-text">{{ timerCountdown }} SEC</p>
         <ng-template #showIdleTime>
             <p class="centered-text">TIME'S UP!</p>
         </ng-template>

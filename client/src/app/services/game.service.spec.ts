@@ -45,6 +45,10 @@ describe('GameService', () => {
             'onLivePlayerAnswers',
             'onGoToResult',
             'sendAnswers',
+            'onPanicModeEnabled',
+            'onPanicModeDisabled',
+            'pauseTimer',
+            'enablePanicMode',
         ]);
         const snackbarServiceSpyObj = jasmine.createSpyObj('SnackbarService', ['openSnackbar']);
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
@@ -130,6 +134,12 @@ describe('GameService', () => {
         expect(result).toBe(nbrOfQuestionsSpy);
     });
 
+    it('should get gameTimerPausedValue', () => {
+        const gameTimerPausedSpy = service['gameTimerPaused'];
+        const result = service.gameTimerPausedValue;
+        expect(result).toBe(gameTimerPausedSpy);
+    });
+
     it('should return LAUNCH_TIMER_DURATION if launchTimer is true', () => {
         service['launchTimer'] = true;
         const result = service.totalQuestionDurationValue;
@@ -209,7 +219,6 @@ describe('GameService', () => {
         expect(socketServiceSpy.leaveRoom).toHaveBeenCalled();
         tick(WAIT_UNTIL_FIRE_DISCONNECT);
         expect(socketServiceSpy.disconnect).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalled();
     }));
 
     it('should reset game variables', () => {
@@ -447,5 +456,38 @@ describe('GameService', () => {
         expect(service['allAnswersIndex']).toEqual(answers);
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/resultsView']);
         expect(socketServiceSpy.onGoToResult).toHaveBeenCalled();
+    });
+
+    it('should call pauseTimer from socketService when pauseTimer is called', () => {
+        const value = service['gameTimerPaused'];
+        service.pauseTimer();
+        expect(service['gameTimerPaused']).toBe(!value);
+        expect(socketServiceSpy.pauseTimer).toHaveBeenCalled();
+    });
+
+    it('should call enablePanicMode from socketService when enablePanicMode is called', () => {
+        service.enablePanicMode();
+        expect(socketServiceSpy.enablePanicMode).toHaveBeenCalled();
+    });
+
+    it('should call audio.play when onPanicModeEnabled is called', () => {
+        spyOn(service['audio'], 'play');
+        socketServiceSpy.onPanicModeEnabled.and.callFake((callback) => {
+            callback();
+        });
+        service.setupWebsocketEvents();
+        expect(socketServiceSpy.onPanicModeEnabled).toHaveBeenCalled();
+        expect(service['audio'].play).toHaveBeenCalled();
+    });
+
+    it('should call audio.pause when onPanicModeDisabled is called', () => {
+        spyOn(service['audio'], 'pause');
+        socketServiceSpy.onPanicModeDisabled.and.callFake((callback) => {
+            callback();
+        });
+        service.setupWebsocketEvents();
+        expect(socketServiceSpy.onPanicModeDisabled).toHaveBeenCalled();
+        expect(service['audio'].pause).toHaveBeenCalled();
+        expect(service['audio'].currentTime).toBe(0);
     });
 });

@@ -16,7 +16,11 @@
         <app-game-page-livechat [playerName]="'Organisateur'" id="sidebar" [isHost]="isHost" [roomId]="lobbyCode"></app-game-page-livechat>
     </div>
     <div class="timer">
-        <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
+        <app-game-page-timer
+            [timerExpired]="timerStopped"
+            [timerCountdown]="currentTimerCountdown"
+            [totalTimer]="totalGameDuration"
+        ></app-game-page-timer>
     </div>
     <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
@@ -58,7 +62,14 @@
             *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
             (click)="nextQuestion()"
         >
-            Prochaine question
+            {{ nextQuestionButtonText }}
+        </button>
+        <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
+            <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
+            {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
+        </button>
+        <button mat-raised-button color="primary" (click)="handlePanicMode()" *ngIf="!isLaunchTimer && currentTimerCountdown <= 10 && !timerStopped">
+            Mode panique
         </button>
     </div>
 </div>

@@ -1,5 +1,4 @@
 import { HttpException } from '@app/classes/http.exception';
-import { MatchController } from '@app/controllers/match.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -9,6 +8,7 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
+import { GamePlayedController } from './controllers/game-played.controller';
 import { GameController } from './controllers/game.controller';
 import { QuestionsController } from './controllers/questions.controller';
 import { RoomController } from './controllers/room.controller';
@@ -27,8 +27,8 @@ export class Application {
         private readonly gameController: GameController,
         private readonly authController: AuthController,
         private readonly questionsController: QuestionsController,
-        private readonly matchController: MatchController,
         private readonly roomController: RoomController,
+        private readonly gamePlayedController: GamePlayedController,
     ) {
         this.app = express();
 
@@ -57,8 +57,8 @@ export class Application {
         this.app.use('/api/games', this.gameController.router);
         this.app.use('/api/questions', this.questionsController.router);
         this.app.use('/api/authenticate', this.authController.router);
-        this.app.use('/api/matches', this.matchController.router);
         this.app.use('/api/rooms', this.roomController.router);
+        this.app.use('/api/games-played', this.gamePlayedController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
