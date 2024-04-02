@@ -28,36 +28,35 @@
     <div class="score" *ngIf="!isLaunchTimer">
         <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
     </div>
-        <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
-            <app-game-qrl-answer
-                *ngIf="answersQRL && answersQRL.length > currentQuestionIndexValue && answersQRL[currentQuestionIndexValue][1]"
-                [answersQRL]="answersQRL[currentQuestionIndexValue][1]"
-                (selectedValuesEmitter)="setplayerPointsQRL($event)"
-                (isNotedEmitter)="setIsNoted($event)"
-            ></app-game-qrl-answer>
-        </div>
-        <!-- <div class="histogram" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QCM'">
+    <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
+        <app-game-qrl-answer
+            *ngIf="answersQRL && answersQRL.length > currentQuestionIndexValue && answersQRL[currentQuestionIndexValue][1]"
+            [answersQRL]="answersQRL[currentQuestionIndexValue][1]"
+            (selectedValuesEmitter)="setplayerPointsQRL($event)"
+            (isNotedEmitter)="setIsNoted($event)"
+        ></app-game-qrl-answer>
+    </div>
+    <!-- <div class="histogram" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QCM'">
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
     </div> -->
-        <div class="buttonGame" *ngIf="isNoted">
-            <button
-                mat-raised-button
-                color="primary"
-                class="nextQuestion"
-                *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
-                (click)="nextQuestion()"
-            >
-                Voir les résultats
-            </button>
-            <button
-                mat-raised-button
-                color="primary"
-                class="nextQuestion"
-                *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
-                (click)="nextQuestion()"
-            >
-                Prochaine question
-            </button>
-        </div>
+    <div class="buttonGame" *ngIf="isNoted">
+        <button
+            mat-raised-button
+            color="primary"
+            class="nextQuestion"
+            *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
+            (click)="nextQuestion()"
+        >
+            Voir les résultats
+        </button>
+        <button
+            mat-raised-button
+            color="primary"
+            class="nextQuestion"
+            *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
+            (click)="nextQuestion()"
+        >
+            Prochaine question
+        </button>
     </div>
 </div>
