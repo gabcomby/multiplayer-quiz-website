@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Player } from '@app/interfaces/match';
 // import { GameService } from '@app/services/game.service';
 
@@ -7,7 +7,7 @@ import { Player } from '@app/interfaces/match';
     templateUrl: './game-qrl-answer.component.html',
     styleUrls: ['./game-qrl-answer.component.scss'],
 })
-export class GameQrlAnswerComponent {
+export class GameQrlAnswerComponent implements OnChanges {
     @Output() selectedValuesEmitter = new EventEmitter<[Player, number][]>();
     answersQRLSorted: [Player, string][] = [];
     answersQRLInput: [Player, string][] = [];
@@ -22,6 +22,13 @@ export class GameQrlAnswerComponent {
         this.filterAnswers();
     }
 
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.answersQRL) {
+            this.filterAnswers();
+            this.isNoted = false;
+        }
+    }
 
     filterAnswers() {
         this.answersQRLInput.sort((a, b) => a[0].name.localeCompare(b[0].name));
