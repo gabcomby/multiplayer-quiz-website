@@ -55,7 +55,7 @@ export class HostGamePageComponent {
 
     get answersQRL() {
         const answersQRL = this.gameService.answersTextQRLValue;
-        if (!answersQRL[0][1]) {
+        if (!answersQRL[this.currentQuestionIndexValue][1]) {
             return [];
         }
         return this.gameService.answersTextQRLValue;
