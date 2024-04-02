@@ -90,7 +90,6 @@ export class HostGamePageComponent {
         this.isNoted = false;
         this.gameService.nextQuestion();
         if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
-        console.log(this.currentQuestionQRLIndex);
     }
 
     handleGameLeave(): void {
