@@ -13,8 +13,9 @@ import { Subscription } from 'rxjs';
 export class HostGamePageComponent {
     // answersQRL: [Player, string][];
     isHost: boolean;
-    isNoted: boolean = this.currentQuestion?.type === 'QCM' ? true : false;
+    isNoted: boolean = false;
     lobby: MatchLobby;
+    currentQuestionQRLIndex: number = 0;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
 
@@ -56,18 +57,6 @@ export class HostGamePageComponent {
 
     get answersQRL() {
         return this.gameService.answersTextQRLValue;
-        // if (!answersQRL) {
-        //     return [];
-        // }
-        // if (this.currentQuestionIndexValue >= 0 && this.currentQuestionIndexValue < answersQRL.length) {
-            // Utilisation de currentQuestionIndexValue ici
-        // return answersQRL;
-
-        // } else {
-        //     return [];
-        //     // Gestion de l'erreur ou initialisation de currentQuestionIndexValue
-        // }
-        // return this.gameService.answersTextQRLValue;
     }
     get answersClicked() {
         return this.gameService.answersClickedValue;
@@ -98,8 +87,10 @@ export class HostGamePageComponent {
     }
 
     nextQuestion(): void {
+        this.isNoted = false;
         this.gameService.nextQuestion();
-        this.isNoted = this.currentQuestion?.type === 'QCM' ? true : false;
+        if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
+        console.log(this.currentQuestionQRLIndex);
     }
 
     handleGameLeave(): void {

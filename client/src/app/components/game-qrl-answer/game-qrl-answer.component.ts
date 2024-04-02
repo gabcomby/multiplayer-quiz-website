@@ -23,7 +23,6 @@ export class GameQrlAnswerComponent implements OnChanges {
         this.filterAnswers();
     }
 
-
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.answersQRL) {
             this.filterAnswers();
