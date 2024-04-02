@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import type { Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
+import { AnswerStateService } from './answer-state.service';
 import { ChatService } from './chat.service';
 import { SnackbarService } from './snackbar.service';
 import { SocketService } from './socket.service';
@@ -45,6 +46,7 @@ export class GameService {
         private router: Router,
         private snackbar: SnackbarService,
         private chatService: ChatService,
+        private answerStateService: AnswerStateService,
     ) {
         this.apiUrl = `${apiBaseURL}/games`;
     }
@@ -162,6 +164,7 @@ export class GameService {
         this.answersClicked = [];
         this.playerLeftList = [];
         this.chatService.resetMessages();
+        this.answerStateService.resetAnswerState();
         this.gameTimerPaused = false;
         this.audio.src = AUDIO_CLIP_PATH;
         this.audio.load();
