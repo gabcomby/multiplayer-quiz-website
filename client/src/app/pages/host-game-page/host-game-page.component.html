@@ -48,7 +48,7 @@
             *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
             (click)="nextQuestion()"
         >
-            Prochaine question
+            {{ nextQuestionButtonText }}
         </button>
         <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
