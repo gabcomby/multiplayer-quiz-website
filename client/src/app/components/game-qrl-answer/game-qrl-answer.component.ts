@@ -9,6 +9,7 @@ import { Player } from '@app/interfaces/match';
 })
 export class GameQrlAnswerComponent implements OnChanges {
     @Output() selectedValuesEmitter = new EventEmitter<[Player, number][]>();
+    @Output() isNotedEmitter = new EventEmitter<boolean>();
     answersQRLSorted: [Player, string][] = [];
     answersQRLInput: [Player, string][] = [];
     selectedValues: [Player, number][] = [];
@@ -36,6 +37,7 @@ export class GameQrlAnswerComponent implements OnChanges {
 
     onSubmit() {
         this.isNoted = true;
+        this.isNotedEmitter.emit(this.isNoted);
         this.selectedValuesEmitter.emit(this.selectedValues);
     }
 }
