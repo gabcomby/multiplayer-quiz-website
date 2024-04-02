@@ -84,7 +84,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     submitAnswer(): void {
-        console.log('submitAnswer');
         this.gameService.submitAnswer();
         this.answerIsLocked = true;
         this.answerStateService.lockAnswer(this.answerIsLocked);

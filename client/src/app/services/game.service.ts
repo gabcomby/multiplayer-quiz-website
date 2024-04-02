@@ -205,10 +205,8 @@ export class GameService {
 
     submitAnswer(): void {
         if (this.currentQuestion?.type === QuestionType.QRL) {
-            console.log("allo");
             this.socketService.sendLockedAnswers(this.answerText, this.currentPlayer);
         } else {
-            console.log('allo');
             this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
         }
     }
