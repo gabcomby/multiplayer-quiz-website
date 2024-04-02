@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 export class HostGamePageComponent {
     // answersQRL: [Player, string][];
     isHost: boolean;
+    isNoted: boolean = this.currentQuestion?.type === 'QCM' ? true : false;
     lobby: MatchLobby;
     unsubscribeSubject: Subscription[];
     constructor(private gameService: GameService) {}
@@ -92,8 +93,13 @@ export class HostGamePageComponent {
         this.gameService.playerQRLPoints = points;
     }
 
+    setIsNoted(isNoted: boolean) {
+        this.isNoted = isNoted;
+    }
+
     nextQuestion(): void {
         this.gameService.nextQuestion();
+        this.isNoted = this.currentQuestion?.type === 'QCM' ? true : false;
     }
 
     handleGameLeave(): void {

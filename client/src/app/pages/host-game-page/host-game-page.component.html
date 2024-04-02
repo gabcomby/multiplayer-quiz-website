@@ -30,13 +30,18 @@
     </div>
     <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
         <div *ngIf="answersQRL && answersQRL.length > currentQuestionIndexValue && answersQRL[currentQuestionIndexValue][1]">
-            <app-game-qrl-answer [answersQRL]="answersQRL[currentQuestionIndexValue][1]" (selectedValuesEmitter)="setplayerPointsQRL($event)"></app-game-qrl-answer>
+            <app-game-qrl-answer
+                *ngIf="answersQRL && answersQRL.length > currentQuestionIndexValue && answersQRL[currentQuestionIndexValue][1]"
+                [answersQRL]="answersQRL[currentQuestionIndexValue][1]"
+                (selectedValuesEmitter)="setplayerPointsQRL($event)"
+                (isNotedEmitter)="setIsNoted($event)"
+            ></app-game-qrl-answer>
         </div>
     </div>
     <!-- <div class="histogram" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QCM'">
         <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
     </div> -->
-    <div class="buttonGame">
+    <div class="buttonGame" *ngIf="isNoted">
         <button
             mat-raised-button
             color="primary"
