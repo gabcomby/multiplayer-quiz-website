@@ -10,6 +10,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
 import { HostGamePageComponent } from './host-game-page.component';
+import { QuestionType } from '@app/interfaces/game';
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -182,7 +183,7 @@ describe('HostGamePageComponent', () => {
 
     it('should return an array containing the current question when currentQuestionValue is not null', () => {
         const mockQuestion = {
-            type: 'multiple-choice',
+            type: QuestionType.QCM,
             text: 'Mock Question?',
             points: 10,
             choices: [

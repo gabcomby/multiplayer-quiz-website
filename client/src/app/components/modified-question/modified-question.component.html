@@ -3,10 +3,11 @@
     <div *ngFor="let question of questionList; index as i">
         <div class="container">
             <div *ngIf="disabled[i]">
+                <p>{{ question.type }}</p>
                 {{ i + 1 }}
                 <p>Question : {{ question.text }}</p>
                 <p>Nombre de point : {{ question.points }}</p>
-                <div *ngIf="question.choices">
+                <div *ngIf="question.type === 'QCM'">
                     Choix de réponse :
                     <div *ngFor="let element of question.choices; index as j">{{ j + 1 }}. {{ element.text }}</div>
                 </div>
@@ -21,18 +22,25 @@
                     <input matInput class="input_edit" type="text" [(ngModel)]="question.points" />
                 </mat-form-field>
 
-                Choix de réponse :
+                <p *ngIf="question.type === 'QCM'">Choix de réponse :</p>
 
-                <app-choice [question]="question.choices"></app-choice>
+                <app-choice *ngIf="question.choices && question.type === 'QCM' "[question]="question.choices"></app-choice>
             </div>
 
-            <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">
+            <button *ngIf="!fromBank" mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">
                 <mat-icon>delete</mat-icon>
             </button>
             <button mat-mini-fab class="buttonIcon" color="primary" aria-label="Edit" (click)="disabled[i] ? toggleModify(i) : saveQuestion(i)">
                 <mat-icon>{{ disabled[i] ? 'edit' : 'save' }}</mat-icon>
             </button>
-            <button mat-icon-button class="buttonIcon" color="primary" aria-label="Move Up" (click)="questionService.moveQuestionUp(i, questionList)" *ngIf="i > 0">
+            <button
+                mat-icon-button
+                class="buttonIcon"
+                color="primary"
+                aria-label="Move Up"
+                (click)="questionService.moveQuestionUp(i, questionList)"
+                *ngIf="i > 0"
+            >
                 <mat-icon>arrow_upward_alt</mat-icon>
             </button>
 

@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { HistogramComponent } from './histogram.component';
+import { QuestionType } from '@app/interfaces/game';
 
 const LENGTH_CHOICES_TEST = 4;
 const NAVIGATE_LEFT = -1;
@@ -24,7 +25,7 @@ describe('HistogramComponent', () => {
 
         component.questionsGame = [
             {
-                type: 'QCM',
+                type: QuestionType.QCM,
                 text: 'What is the capital of France?',
                 points: 10,
                 choices: [
@@ -37,7 +38,7 @@ describe('HistogramComponent', () => {
                 id: 'abc',
             },
             {
-                type: 'QCM',
+                type: QuestionType.QCM,
                 text: 'The Earth is flat.',
                 points: 20,
                 choices: [

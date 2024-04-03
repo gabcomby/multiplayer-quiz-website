@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
-import { Game, Question } from '@app/interfaces/game';
+import { Game, Question, QuestionType } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api.service';
 import { GameValidationService } from '@app/services/game-validation.service';
 import { QuestionService } from '@app/services/question.service';
@@ -52,7 +52,7 @@ describe('CreateQGamePageComponent', () => {
             lastModification: defaultDate,
             questions: [
                 {
-                    type: 'QCM',
+                    type: QuestionType.QCM,
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
@@ -73,7 +73,7 @@ describe('CreateQGamePageComponent', () => {
             lastModification: defaultDate,
             questions: [
                 {
-                    type: 'QCM',
+                    type: QuestionType.QCM,
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
@@ -94,7 +94,7 @@ describe('CreateQGamePageComponent', () => {
             updateList: {},
             getQuestion: [
                 {
-                    type: 'QCM',
+                    type: QuestionType.QCM,
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',
@@ -105,7 +105,7 @@ describe('CreateQGamePageComponent', () => {
                     lastModification: new Date(),
                 },
                 {
-                    type: 'QCM',
+                    type: QuestionType.QCM,
                     text: 'Ceci est une question de test 2',
                     points: 20,
                     id: '45',
@@ -128,7 +128,9 @@ describe('CreateQGamePageComponent', () => {
                 isVisible: false,
                 duration: 10,
                 lastModification: defaultDate,
-                questions: [{ type: 'QCM', text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate }],
+                questions: [
+                    { type: QuestionType.QCM, text: 'Ceci est une question de test', points: 10, id: 'dsdsd', lastModification: defaultDate },
+                ],
             } as Game),
             validateDeletedGame: Promise.resolve({}),
             validateDuplicationGame: {},
@@ -205,7 +207,7 @@ describe('CreateQGamePageComponent', () => {
             lastModification: defaultDate,
             questions: [
                 {
-                    type: 'QCM',
+                    type: QuestionType.QCM,
                     text: 'Ceci est une question de test',
                     points: 10,
                     id: 'dsdsd',

@@ -26,6 +26,7 @@ const routes: Routes = [
     { path: 'gameWait', component: GameWaitComponent },
     { path: 'new-question-qbank', component: NewQuestionQbankComponent },
     { path: 'modify-question-qbank', component: ModifyQuestionQbankComponent },
+    { path: 'modify-question-qbank/:id', component: ModifyQuestionQbankComponent },
     { path: 'host-game-page', component: HostGamePageComponent },
     { path: 'resultsView', component: ResultsViewComponent },
 

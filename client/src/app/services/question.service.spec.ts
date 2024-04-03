@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
-import { Question } from '@app/interfaces/game';
+import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionValidationService } from './question-validation.service';
 import { QuestionService } from './question.service';
 import { SnackbarService } from './snackbar.service';
@@ -14,7 +14,7 @@ describe('QuestionService', () => {
     const defaultDate = new Date();
 
     const question: Question = {
-        type: 'QCM',
+        type: QuestionType.QCM,
         id: 'abc123',
         lastModification: new Date('2018-11-13T20:20:39+00:00'),
         text: 'Parmi les mots suivants, lesquels sont des mots clés réservés en JS?',
@@ -41,7 +41,7 @@ describe('QuestionService', () => {
 
     const mockQuestionList: Question[] = [
         {
-            type: 'QCM',
+            type: QuestionType.QCM,
             id: 'abc',
             lastModification: new Date('2018-11-13T20:20:39+00:00'),
             text: 'Test1',
@@ -58,7 +58,7 @@ describe('QuestionService', () => {
             ],
         },
         {
-            type: 'QCM',
+            type: QuestionType.QCM,
             id: 'bcd',
             lastModification: new Date('2018-11-13T20:20:39+00:00'),
             text: 'Test2',
@@ -95,7 +95,7 @@ describe('QuestionService', () => {
         service.questions = [
             {
                 id: 'string',
-                type: 'string',
+                type: QuestionType.QCM,
                 text: 'string',
                 points: 40,
                 lastModification: defaultDate,
@@ -174,7 +174,7 @@ describe('QuestionService', () => {
     it('should add question', () => {
         service.addQuestion({
             id: 'string',
-            type: 'string',
+            type: QuestionType.QCM,
             text: 'string',
             points: 40,
             lastModification: defaultDate,
@@ -191,7 +191,7 @@ describe('QuestionService', () => {
         spyOn(service.onQuestionAdded, 'emit');
         const questionInstance = {
             id: 'string',
-            type: 'string',
+            type: QuestionType.QCM,
             text: 'string',
             points: 40,
             lastModification: defaultDate,
@@ -215,7 +215,7 @@ describe('QuestionService', () => {
         const questions = [
             {
                 id: 'string',
-                type: 'string',
+                type: QuestionType.QCM,
                 text: 'string',
                 points: 40,
                 lastModification: new Date(),
@@ -227,7 +227,7 @@ describe('QuestionService', () => {
 
             {
                 id: 'string1',
-                type: 'string',
+                type: QuestionType.QCM,
                 text: 'string',
                 points: 50,
                 lastModification: new Date(),
