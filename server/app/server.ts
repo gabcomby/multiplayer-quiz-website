@@ -104,6 +104,12 @@ export class Server {
                             if (!getRoom().bannedNames.includes(player.name.toLowerCase())) {
                                 getRoom().playerLeftList.push(player);
                                 this.io.to(getRoom().roomId).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                                this.io.to(getRoom().roomId).emit('system-message', {
+                                    text: `${player.name} a quitté la partie`,
+                                    sender: 'Système',
+                                    timestamp: new Date(),
+                                    visible: true,
+                                });
                             }
                             this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                         }

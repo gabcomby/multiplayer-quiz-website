@@ -187,4 +187,12 @@ export class SocketService {
             callback();
         });
     }
+
+    onSystemMessage(): Observable<{ text: string; sender: string; timestamp: Date }> {
+        return new Observable((observer) => {
+            this.socket.on('system-message', (data) => {
+                observer.next(data);
+            });
+        });
+    }
 }

@@ -26,11 +26,14 @@ export class ChatService {
             next: (message) => this.handleNewMessage(message),
             error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
         });
+
+        this.listenForSystemMessages();
     }
 
     stopListeningForMessages(): void {
         this.listenToMessageSubscription?.unsubscribe();
     }
+
     resetMessages(): void {
         this.messagesSubject = new BehaviorSubject<Message[]>([]);
         this.messages$ = this.messagesSubject.asObservable();
@@ -71,5 +74,12 @@ export class ChatService {
             this.messages[index].visible = false;
             this.messagesSubject.next([...this.messages]);
         }
+    }
+
+    private listenForSystemMessages(): void {
+        this.socket.onSystemMessage().subscribe({
+            next: (message) => this.handleNewMessage(message),
+            error: () => this.snackbar.openSnackBar('Erreur lors de la réception des messages système'),
+        });
     }
 }
