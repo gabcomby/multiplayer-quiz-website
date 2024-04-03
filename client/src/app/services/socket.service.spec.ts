@@ -156,19 +156,16 @@ describe('SocketService', () => {
         service.toggleRoomLock();
         expect(mockSocket.emit).toHaveBeenCalledWith('toggle-room-lock');
     });
-
     it('should handle "room-lock-status" events', (done) => {
         service.onRoomLockStatus((isLocked: boolean) => {
             expect(isLocked).toBe(true);
             done();
         });
     });
-
     it('should emit "start-game" when startGame is called', () => {
         service.startGame();
         expect(mockSocket.emit).toHaveBeenCalledWith('start-game');
     });
-
     it('should handle "question-time-event" events', (done) => {
         service.onQuestionTimeUpdated((data: number) => {
             expect(data).toBe(QUESTION_TIME_UPDATE);
