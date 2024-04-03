@@ -19,6 +19,12 @@ const enum TimerState {
     PAUSED,
 }
 
+const enum GameType {
+    NORMAL,
+    TEST,
+    RANDOM,
+}
+
 export class Room {
     gamePlayedService: GamePlayedService;
     // Variables for the lobby
@@ -30,7 +36,7 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
-    isTestRoom: boolean;
+    roomType: GameType;
     gameHasStarted = false;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
@@ -54,10 +60,22 @@ export class Room {
     globalAnswerIndex: number[] = [];
     allAnswersForQuestion = new Map<string, number[]>();
 
-    constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
+    constructor(game: IGame, gameMode: number, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
         this.game = game;
-        this.isTestRoom = isTestRoom;
+        switch (gameMode) {
+            case 0:
+                this.roomType = GameType.NORMAL;
+                break;
+            case 1:
+                this.roomType = GameType.TEST;
+                break;
+            case 2:
+                this.roomType = GameType.RANDOM;
+                break;
+            default:
+                this.roomType = GameType.NORMAL;
+        }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
     }
@@ -74,7 +92,6 @@ export class Room {
                     this.io
                         .to(this.roomId)
                         .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
-                    // TODO: Write game in DB
                     const gamePlayedData: IGamePlayed = {
                         id: this.generateGamePlayedId(),
                         title: this.game.title,
@@ -139,7 +156,7 @@ export class Room {
             this.startQuestion();
             return;
         }
-        if (this.isTestRoom) {
+        if (this.roomType === GameType.TEST || this.roomType === GameType.RANDOM) {
             setInterval(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);

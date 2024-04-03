@@ -25,4 +25,13 @@ export class QuestionsService {
         const updatedQuestion = await questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
         return updatedQuestion;
     }
+
+    async getFiveRandomQuestions(): Promise<IQuestion[]> {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if ((await questionsModel.countDocuments()) >= 5) {
+            return await questionsModel.aggregate([{ $sample: { size: 5 } }]);
+        } else {
+            return [];
+        }
+    }
 }

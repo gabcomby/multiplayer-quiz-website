@@ -133,4 +133,14 @@ export class NewGamePageComponent implements OnInit {
             }, GAME_CREATION_DELAY);
         }
     }
+
+    launchRandomGame() {
+        this.socketService.connect();
+        this.socketService.createRoom('randomModeGame');
+        this.gameService.resetGameVariables();
+        this.gameService.setupWebsocketEvents();
+        setTimeout(() => {
+            this.router.navigate(['/gameWait']);
+        }, GAME_CREATION_DELAY);
+    }
 }

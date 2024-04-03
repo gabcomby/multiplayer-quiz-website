@@ -4,9 +4,11 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
+import { IGame } from './model/game.model';
 import { IPlayer } from './model/match.model';
 import { rooms } from './module';
 import { GameService } from './services/game.service';
+import { QuestionsService } from './services/questions.service';
 
 const BASE_TEN = 10;
 
@@ -52,8 +54,28 @@ export class Server {
 
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
-                const game = await gameService.getGame(gameId);
-                const room = new Room(game, false, this.io);
+                const questionService = new QuestionsService();
+                let room: Room;
+                if (gameId === 'randomModeGame') {
+                    const randomQuestions = await questionService.getFiveRandomQuestions();
+                    if (randomQuestions.length === 0) {
+                        // TODO: Handle error and no navigation to game page
+                        return;
+                    }
+                    const game = {
+                        id: 'randomModeGame',
+                        title: 'Mode aléatoire',
+                        isVisible: true,
+                        description: 'Mode aléatoire',
+                        duration: 20,
+                        lastModification: new Date(),
+                        questions: randomQuestions,
+                    } as IGame;
+                    room = new Room(game, 2, this.io);
+                } else {
+                    const game = await gameService.getGame(gameId);
+                    room = new Room(game, 0, this.io);
+                }
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
@@ -63,7 +85,7 @@ export class Server {
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, true, this.io);
+                const room = new Room(game, 1, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
