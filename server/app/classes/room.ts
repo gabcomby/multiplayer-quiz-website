@@ -203,7 +203,6 @@ export class Room {
         this.assertedAnswers += 1;
         if (typeof answerIdx === 'string') {
             this.globalAnswersText.push([player, answerIdx]);
-            this.handleQrlAnswers(answerIdx);
         }
         if (this.isTestRoom && question.type === 'QRL') {
             this.playerList.get(playerId).score += question.points;
@@ -262,9 +261,6 @@ export class Room {
             }
         });
         this.io.to(this.roomId).emit('playerlist-change', playerArray);
-    }
-    handleQrlAnswers(answer: string) {
-        console.log('qrl' + answer);
     }
 
     handleEarlyAnswers(playerId: string, answer: number[] | string, player: IPlayer): void {

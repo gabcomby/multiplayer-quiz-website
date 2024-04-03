@@ -47,7 +47,7 @@ export class HandlerNewQuestionService {
         }
         return true;
     }
-    createNewQuestion(question: Question, choices?: Choice[]) {
+    createNewQuestion(question: Question, choices?: Choice[]): Question {
         return {
             type: question.type,
             text: question.text,

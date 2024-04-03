@@ -55,7 +55,6 @@ export class CreateQGamePageComponent implements OnInit {
                 this.getGame(this.gameId);
                 this.insertIfExist();
                 this.dataReady = true;
-                console.log(this.gameModified);
             } catch (error) {
                 this.handleServerError();
             }
@@ -73,7 +72,6 @@ export class CreateQGamePageComponent implements OnInit {
 
     async onSubmit() {
         const newGame: Game = this.gameValidationService.createNewGame(true, this.gameForm, this.gameModified);
-        console.log(newGame);
         try {
             if (this.gameId) {
                 if (await this.gameValidationService.gameValidationWhenModified(this.gameForm, this.gameModified)) {

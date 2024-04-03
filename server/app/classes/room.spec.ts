@@ -318,12 +318,12 @@ describe('Room', () => {
 
         const verifyAnswersStub = sinon.stub(room, 'verifyAnswers');
 
-        room.handleEarlyAnswers('player1Id', [0]);
-        room.handleEarlyAnswers('player2Id', [1]);
+        room.handleEarlyAnswers('player1Id', [0], player1);
+        room.handleEarlyAnswers('player2Id', [1], player1);
 
         assert.equal(room.lockedAnswers, 2, 'All players have locked in answers');
 
-        room.handleEarlyAnswers('player3Id', [1]);
+        room.handleEarlyAnswers('player3Id', [1], player1);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
 
         verifyAnswersStub.restore();

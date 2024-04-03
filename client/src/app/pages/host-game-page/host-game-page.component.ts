@@ -88,7 +88,6 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.gameTitleValue;
     }
     get nbModified(): number {
-        console.log(this.gameService.numberInputModifidedValue);
         return this.gameService.numberInputModifidedValue;
     }
     get nbNotModified(): number {
@@ -111,8 +110,14 @@ export class HostGamePageComponent implements OnInit {
         interval(HISTOGRAMM_UPDATE).subscribe(() => {
             this.socketService.updateHistogram();
         });
+        // this.intervalUpdate();
     }
-
+    // intervalUpdate(){
+    //     this.socketService.updateHistogram();
+    //     setTimeout(() => {
+    //         this.intervalUpdate();
+    //     }, HISTOGRAMM_UPDATE);
+    // }
     setplayerPointsQRL(points: [Player, number][]) {
         this.gameService.playerQRLPoints = points;
     }

@@ -20,7 +20,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
-    dataQrl: { modified: 'modified'; value: number }[] = [];
+    dataQrl: { question: string; data: { modified: string; value: number }[] }[] = [];
 
     view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
@@ -41,10 +41,9 @@ export class HistogramComponent implements OnInit, OnChanges {
     ngOnInit(): void {
         if (this.answersPlayer) {
             this.constructHistogramsData();
+        } else {
+            // this.constructLiveHistogramQrl();
         }
-        // } else {
-        //     this.constructLiveHistogramQrl();
-        // }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -52,7 +51,7 @@ export class HistogramComponent implements OnInit, OnChanges {
             this.constructLiveHistogramData();
         }
         if (changes.nbModified) {
-            console.log('modifier' + this.nbModified);
+            // console.log('modifier' + this.nbModified);
             // this.constructLiveHistogramQrl();
         }
     }
@@ -63,9 +62,13 @@ export class HistogramComponent implements OnInit, OnChanges {
             this.currentIndex = newIndex;
         }
     }
-    private constructLiveHistogramQrl(): void {
-        this.dataQrl.push({ modified: 'modified', value: this.nbModified });
-    }
+    // private constructLiveHistogramQrl(): void {
+    //     const data = [
+    //         { modified: 'modified', value: this.nbModified },
+    //         { modified: 'not modified', value: 0 },
+    //     ];
+    //     this.dataQrl.push({ question: 'hein', data: Array.from(data) });
+    // }
 
     private constructLiveHistogramData(): void {
         if (!this.questionsGame[0]) {

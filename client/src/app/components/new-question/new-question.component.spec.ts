@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
 import { QuestionService } from '@app/services/question.service';
 import { SnackbarService } from '@app/services/snackbar.service';
@@ -79,7 +79,7 @@ describe('NewQuestionComponent', () => {
             { text: '1', isCorrect: false },
             { text: '2', isCorrect: true },
         ];
-        component.addQuestion(newChoices, false);
+        component.addQuestion(false, newChoices);
         expect(questionValidationSpy.addQuestion).toHaveBeenCalled();
     });
     it('should call reset component if question is valid and not from question bank', async () => {
@@ -90,7 +90,7 @@ describe('NewQuestionComponent', () => {
         ];
         questionValidationSpy.addQuestion.and.returnValue(Promise.resolve(true));
 
-        await component.addQuestion(newChoices, false);
+        await component.addQuestion(false, newChoices);
         expect(component.resetComponent).toHaveBeenCalled();
     });
     it('should call router navigate if question is valid and from question bank', async () => {
@@ -100,7 +100,7 @@ describe('NewQuestionComponent', () => {
         ];
         questionValidationSpy.addQuestion.and.returnValue(Promise.resolve(true));
 
-        await component.addQuestion(newChoices, true);
+        await component.addQuestion(true, newChoices);
         expect(routerSpy.navigate).toHaveBeenCalled();
     });
     it('should call nothing if question is not valid', () => {
@@ -110,7 +110,7 @@ describe('NewQuestionComponent', () => {
             { text: '1', isCorrect: false },
             { text: '2', isCorrect: true },
         ];
-        component.addQuestion(newChoices, true);
+        component.addQuestion(true, newChoices);
         expect(component.resetComponent).not.toHaveBeenCalled();
         expect(routerSpy.navigate).not.toHaveBeenCalled();
     });
@@ -118,7 +118,7 @@ describe('NewQuestionComponent', () => {
     it('should call addQuestion from service on every question selected of the bank', () => {
         const questionFromBank = [
             {
-                type: 'QCM',
+                type: QuestionType.QCM,
                 text: 'Ceci est une question de test',
                 points: 10,
                 id: 'dsdsd',
@@ -126,7 +126,7 @@ describe('NewQuestionComponent', () => {
                 choices: [],
             },
             {
-                type: 'QCM',
+                type: QuestionType.QCM,
                 text: 'question 2',
                 points: 10,
                 id: 'alala',
@@ -145,13 +145,13 @@ describe('NewQuestionComponent', () => {
             { text: '2', isCorrect: true },
         ];
 
-        component.question = { type: 'QCM', text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
+        component.question = { type: QuestionType.QCM, text: 'allo', points: 10, id: '12312312', choices: newChoices, lastModification: defaultDate };
         component.resetComponent(newChoices);
         expect(component.question).toEqual({
             text: '',
             points: 10,
             choices: [],
-            type: 'QCM',
+            type: QuestionType.QCM,
             id: '12312312',
             lastModification: defaultDate,
         });
