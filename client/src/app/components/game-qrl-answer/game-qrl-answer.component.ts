@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Player } from '@app/interfaces/match';
-// import { GameService } from '@app/services/game.service';
 
 @Component({
     selector: 'app-game-qrl-answer',
@@ -14,7 +13,6 @@ export class GameQrlAnswerComponent implements OnChanges {
     answersQRLInput: [Player, string][] = [];
     selectedValues: [Player, number][] = [];
     isNoted: boolean = false;
-    // constructor(private gameService: GameService) {}
 
     @Input()
     set answersQRL(value: [Player, string][]) {

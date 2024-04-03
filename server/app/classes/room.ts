@@ -12,6 +12,7 @@ const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
+const TIME_HISTOGRAM_UPDATE = 5000;
 
 const enum TimerState {
     RUNNING,
@@ -56,6 +57,7 @@ export class Room {
     allAnswersForQRL = new Map<string, [IPlayer, string][]>();
     globalAnswersText: [IPlayer, string][] = [];
     // gameTest = false;
+    inputModifications: { player: string; time: number }[] = [];
 
     constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
@@ -195,6 +197,7 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
+        this.inputModifications = [];
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
@@ -268,11 +271,22 @@ export class Room {
         this.lockedAnswers += 1;
         this.verifyAnswers(playerId, answer, player);
         if (this.lockedAnswers === this.playerList.size) {
-            console.log('TIMER VA STOP');
             this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
             this.handleTimerEnd();
         }
+    }
+
+    handleInputModification() {
+        const now = new Date().getTime();
+        const fiveSecondsAgo = now - TIME_HISTOGRAM_UPDATE;
+
+        this.inputModifications = this.inputModifications.filter((modification) => modification.time > fiveSecondsAgo);
+
+        // Comptez ici le nombre unique de playerId dans `this.modifications`
+        const uniquePlayerIds = new Set(this.inputModifications.map((mod) => mod.player));
+        const numberModifications = uniquePlayerIds.size;
+        this.io.to(this.hostId).emit('number-modifications', numberModifications);
     }
 
     generateLobbyId = (): string => {

@@ -197,4 +197,12 @@ export class SocketService {
             callback();
         });
     }
+    updateHistogram(): void {
+        this.socket.emit('update-histogram');
+    }
+    onUpdateNbModified(callback: (nbModification: number) => void): void {
+        this.socket.on('number-modifications', (nbModification: number) => {
+            callback(nbModification);
+        });
+    }
 }

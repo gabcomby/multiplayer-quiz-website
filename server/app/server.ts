@@ -149,7 +149,6 @@ export class Server {
                 }
             });
 
-
             socket.on('pause-timer', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().handleTimerPause();
@@ -189,6 +188,12 @@ export class Server {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
+                    getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
+                }
+            });
+            socket.on('update-histogram', () => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().handleInputModification();
                 }
             });
         });

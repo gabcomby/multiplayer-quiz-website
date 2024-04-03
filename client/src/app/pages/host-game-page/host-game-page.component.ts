@@ -4,7 +4,9 @@ import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
-import { Subscription } from 'rxjs';
+import { SocketService } from '@app/services/socket.service';
+import { Subscription, interval } from 'rxjs';
+const HISTOGRAMM_UPDATE = 5000;
 
 @Component({
     selector: 'app-host-game-page',
@@ -21,7 +23,9 @@ export class HostGamePageComponent implements OnInit {
     constructor(
         private gameService: GameService,
         private router: Router,
+        private socketService: SocketService,
     ) {}
+
     get gameTimerPaused(): boolean {
         return this.gameService.gameTimerPausedValue;
     }
@@ -83,6 +87,13 @@ export class HostGamePageComponent implements OnInit {
     get currentGameTitle(): string {
         return this.gameService.gameTitleValue;
     }
+    get nbModified(): number {
+        console.log(this.gameService.numberInputModifidedValue);
+        return this.gameService.numberInputModifidedValue;
+    }
+    get nbNotModified(): number {
+        return this.gameService.numberInputNotModifidedValue;
+    }
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
@@ -97,6 +108,9 @@ export class HostGamePageComponent implements OnInit {
             localStorage.removeItem('refreshedPage');
             this.router.navigate([refreshedPage]);
         }
+        interval(HISTOGRAMM_UPDATE).subscribe(() => {
+            this.socketService.updateHistogram();
+        });
     }
 
     setplayerPointsQRL(points: [Player, number][]) {

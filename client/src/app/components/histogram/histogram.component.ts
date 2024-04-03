@@ -12,12 +12,15 @@ const SIZE2 = 400;
 export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
+    @Input() nbModified: number;
+    @Input() nbNotModified: number;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
     histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
+    dataQrl: { modified: 'modified'; value: number }[] = [];
 
     view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
@@ -26,20 +29,31 @@ export class HistogramComponent implements OnInit, OnChanges {
     showLegend: boolean = true;
     showXAxisLabel: boolean = true;
     yAxisLabel: string = 'Nombre de votes';
+    yAxisLabelQrl: string = 'Nombre de modification';
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
+    xAxisLabelQrl: string = 'Modification';
 
     colorScheme = {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
     };
 
     ngOnInit(): void {
-        this.constructHistogramsData();
+        if (this.answersPlayer) {
+            this.constructHistogramsData();
+        }
+        // } else {
+        //     this.constructLiveHistogramQrl();
+        // }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.answersPlayer) {
             this.constructLiveHistogramData();
+        }
+        if (changes.nbModified) {
+            console.log('modifier' + this.nbModified);
+            // this.constructLiveHistogramQrl();
         }
     }
 
@@ -48,6 +62,9 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (newIndex >= 0 && newIndex < this.histogramsData.length) {
             this.currentIndex = newIndex;
         }
+    }
+    private constructLiveHistogramQrl(): void {
+        this.dataQrl.push({ modified: 'modified', value: this.nbModified });
     }
 
     private constructLiveHistogramData(): void {
