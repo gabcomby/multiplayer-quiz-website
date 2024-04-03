@@ -156,6 +156,14 @@ export class SocketService {
         });
     }
 
+    onSystemMessage(): Observable<{ text: string; sender: string; timestamp: Date }> {
+        return new Observable((observer) => {
+            this.socket.on('system-message', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+
     onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
         this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
             callback(answersArray);
@@ -185,14 +193,6 @@ export class SocketService {
     onPanicModeDisabled(callback: () => void): void {
         this.socket.on('panic-mode-disabled', () => {
             callback();
-        });
-    }
-
-    onSystemMessage(): Observable<{ text: string; sender: string; timestamp: Date }> {
-        return new Observable((observer) => {
-            this.socket.on('system-message', (data) => {
-                observer.next(data);
-            });
         });
     }
 }

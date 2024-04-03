@@ -15,7 +15,7 @@ describe('ChatService', () => {
 
     beforeEach(() => {
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
-        const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['onChatMessage', 'sendMessageToServer']);
+        const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['onChatMessage', 'onSystemMessage', 'sendMessageToServer']);
 
         SPY_SOCKET_SERVICE.onChatMessage.and.returnValue(of({ text: 'test', sender: 'test', timestamp: new Date() }));
 
@@ -44,6 +44,7 @@ describe('ChatService', () => {
 
     it('should listen for messages', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
+        service['listenForSystemMessages'] = jasmine.createSpy();
         service.listenForMessages();
         expect(socketServiceSpy.onChatMessage).toHaveBeenCalled();
     });
@@ -64,6 +65,14 @@ describe('ChatService', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
         service.sendMessage('test', 'test', 'test', false);
         expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalledWith('test', 'test', 'test');
+    });
+
+    it('should handle system messages correctly', () => {
+        const systemMessage = { text: 'System message', sender: 'System', timestamp: new Date(), visible: true };
+        socketServiceSpy.onSystemMessage.and.returnValue(of(systemMessage));
+
+        service.listenForMessages();
+        expect(service.messagesSubject.value).toContain(systemMessage);
     });
 
     it('should handle new message', () => {
@@ -98,6 +107,7 @@ describe('ChatService', () => {
 
     it('should handle error when listening for messages fails', () => {
         socketServiceSpy.onChatMessage.and.returnValue(throwError(() => new Error('Error')));
+        socketServiceSpy.onSystemMessage.and.returnValue(throwError(() => new Error('Error')));
 
         service.listenForMessages();
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Pas de salle, vos messages ne seront pas envoyés');
@@ -126,6 +136,9 @@ describe('ChatService', () => {
     });
 
     it('should stop listening for messages', () => {
+        socketServiceSpy.onChatMessage.and.returnValue(of({ text: 'test', sender: 'Système', timestamp: '24:11:34' }));
+
+        service['listenForSystemMessages'] = jasmine.createSpy();
         service.listenForMessages();
         service.stopListeningForMessages();
         expect(service['listenToMessageSubscription']?.closed).toBeTrue();

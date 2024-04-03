@@ -84,6 +84,14 @@ class MockSocket {
         if (eventName === 'panic-mode-disabled') {
             callback('disabled');
         }
+
+        if (eventName === 'system-message') {
+            callback({
+                text: 'System alert',
+                sender: 'System',
+                timestamp: new Date(),
+            });
+        }
     });
 
     simulateEvent(eventName: string, ...args: unknown[]) {
@@ -198,19 +206,16 @@ describe('SocketService', () => {
         service.sendLiveAnswers([0]);
         expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [0]);
     });
-
     it('should handle "livePlayerAnswers" events', (done) => {
         const fakeData: [string, number[]][] = [
             ['player1', [1, 2, 3]],
             ['player2', [3, 2, 1]],
         ];
-
         service.onLivePlayerAnswers((data: [string, number[]][]) => {
             expect(data).toEqual(fakeData);
             done();
         });
     });
-
     it('should handle "question" events', (done) => {
         const fakeQuestionIndex = 0;
 
@@ -219,7 +224,6 @@ describe('SocketService', () => {
             done();
         });
     });
-
     it('should handle "game-started" events', (done) => {
         const fakeQuestionDuration = 10;
 
@@ -334,5 +338,16 @@ describe('SocketService', () => {
             done();
         });
         expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-disabled', jasmine.any(Function));
+    });
+    it('should handle "system-message" events', (done) => {
+        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: new Date() };
+        mockSocket.simulateEvent('system-message', expectedSystemMessage);
+        service.onSystemMessage().subscribe({
+            next: (message) => {
+                expect(message).toEqual(expectedSystemMessage);
+                done();
+            },
+            error: done.fail,
+        });
     });
 });
