@@ -14,7 +14,7 @@
     </div>
     <div *ngIf="isHost" class="start-game">
         <h2>Bonjour host!</h2>
-        <div *ngIf="this.playerList.length !== 0 && roomIsLocked">
+        <div *ngIf="(this.playerList.length !== 0 || this.gameType === 2) && roomIsLocked">
             <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>
         </div>
         <h2>Verrouiller la partie?</h2>
