@@ -33,6 +33,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
     xAxisLabelQrl: string = 'Modification';
+    maxYAxis: number = 1;
 
     colorScheme = {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
@@ -73,6 +74,7 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
+        this.maxYAxis = this.playerListValue.length;
         const nbNotModified = this.playerListValue.length - this.nbModified;
         const data = [
             { name: 'modified', value: this.nbModified },

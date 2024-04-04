@@ -47,7 +47,7 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
-    // private countAnswerQrl: number = 0;
+    private countAnswerQrl: number = 0;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -162,14 +162,17 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer);
+        this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer, true);
     }
     set answerTextSetter(answerText: string) {
-        // this.countAnswerQrl += 1;
+        this.countAnswerQrl += 1;
         this.answerText = answerText;
-        // if (this.countAnswerQrl > 1) {
-        this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer);
-        // }
+        if (this.countAnswerQrl > 2) {
+            console.log('hello');
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
+        } else {
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, true);
+        }
     }
 
     set playerQRLPoints(points: [Player, number][]) {
@@ -324,6 +327,7 @@ export class GameService {
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
+            this.countAnswerQrl = 0;
             if (this.currentQuestion?.type === QuestionType.QRL) {
                 this.socketService.sendAnswers(this.answerText, this.currentPlayer);
             } else {

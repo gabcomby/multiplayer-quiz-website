@@ -274,12 +274,14 @@ export class Room {
     }
 
     handleInputModification() {
+        if (this.game.questions[this.currentQuestionIndex]?.type === 'QCM') {
+            return;
+        }
         const now = new Date().getTime();
         const fiveSecondsAgo = now - TIME_HISTOGRAM_UPDATE;
 
         this.inputModifications = this.inputModifications.filter((modification) => modification.time > fiveSecondsAgo);
 
-        // Comptez ici le nombre unique de playerId dans `this.modifications`
         const uniquePlayerIds = new Set(this.inputModifications.map((mod) => mod.player));
         const numberModifications = uniquePlayerIds.size;
         this.io.to(this.hostId).emit('number-modifications', numberModifications);

@@ -184,23 +184,19 @@ export class Server {
                 console.log('user disconnected');
             });
             // WTF SOCKET ID
-            socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer) => {
+            socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer, reset: boolean) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
 
-                    // const currentQuestionIndex = getRoom().currentQuestionIndex;
-                    // if (getRoom().game.questions[currentQuestionIndex].type === 'QRL') {
-                    getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
-                    // }
+                    if (!reset) {
+                        getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
+                    }
                 }
             });
             socket.on('update-histogram', () => {
                 if (roomExists(getRoom().roomId)) {
-                    const currentQuestionIndex = getRoom().currentQuestionIndex;
-                    if (getRoom().game.questions[currentQuestionIndex].type === 'QRL') {
-                        getRoom().handleInputModification();
-                    }
+                    getRoom().handleInputModification();
                 }
             });
         });

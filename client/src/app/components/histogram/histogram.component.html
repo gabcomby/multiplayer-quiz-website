@@ -27,7 +27,7 @@
         </div>
     </div>
 </div>
-<div *ngIf="currentQuestionValue?.type === 'QRL'">
+[<div *ngIf="currentQuestionValue?.type === 'QRL'">
     <div *ngFor="let histogram of dataQrl">
         <ngx-charts-bar-vertical
             class="graphic"
@@ -41,7 +41,8 @@
             [showYAxisLabel]="showYAxisLabel"
             [xAxisLabel]="xAxisLabel"
             [yAxisLabel]="yAxisLabel"
+            [maxYAxisTickLength]="maxYAxis"
         >
         </ngx-charts-bar-vertical>
-    </div>
+    </div>]
 </div>

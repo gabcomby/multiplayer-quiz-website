@@ -144,8 +144,8 @@ export class SocketService {
         this.socket.emit('send-locked-answers', answerIdx, player);
     }
 
-    sendLiveAnswers(answer: number[] | string, player: Player) {
-        this.socket.emit('send-live-answers', answer, player);
+    sendLiveAnswers(answer: number[] | string, player: Player, reset: boolean) {
+        this.socket.emit('send-live-answers', answer, player, reset);
     }
 
     sendMessageToServer(message: string, playerName: string, roomId: string): void {
