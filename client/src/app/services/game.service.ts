@@ -200,6 +200,7 @@ export class GameService {
         this.roomLocked = false;
         this.currentQuestion = null;
         this.answerIndex = [];
+        this.answersTextQRL = [];
         this.answerText = '';
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
@@ -237,6 +238,7 @@ export class GameService {
 
     submitAnswer(): void {
         if (this.currentQuestion?.type === QuestionType.QRL) {
+            console.log('answerText', this.answerText);
             this.socketService.sendLockedAnswers(this.answerText, this.currentPlayer);
         } else {
             this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
@@ -333,6 +335,7 @@ export class GameService {
         });
 
         this.socketService.onLockedAnswersQRL((answers: [string, [Player, string][]][]) => {
+            console.log('answers', answers);
             this.answersTextQRL = answers;
         });
 

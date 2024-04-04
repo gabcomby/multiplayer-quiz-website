@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
@@ -13,7 +13,7 @@ const HISTOGRAMM_UPDATE = 5000;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnInit {
+export class HostGamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
@@ -111,6 +111,10 @@ export class HostGamePageComponent implements OnInit {
             this.socketService.updateHistogram();
         });
         // this.intervalUpdate();
+    }
+
+    ngOnDestroy(): void {
+        interval(HISTOGRAMM_UPDATE).subscribe().unsubscribe();
     }
     // intervalUpdate(){
     //     this.socketService.updateHistogram();
