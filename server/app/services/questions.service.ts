@@ -29,10 +29,10 @@ export class QuestionsService {
     }
 
     async getFiveRandomQuestions(): Promise<IQuestion[]> {
-        return await questionsModel.aggregate([{ $sample: { size: 5 } }]);
+        return await questionsModel.aggregate([{ $match: { type: 'QCM' } }, { $sample: { size: 5 } }]);
     }
 
     async verifyNumberOfQuestions(): Promise<boolean> {
-        return (await questionsModel.countDocuments()) >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE;
+        return (await questionsModel.countDocuments({ type: 'QCM' })) >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE;
     }
 }
