@@ -4,6 +4,7 @@ import { Game } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api.service';
 import { GameService } from '@app/services/game.service';
+import { RoomService } from '@app/services/room.service';
 import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription } from 'rxjs';
@@ -31,6 +32,7 @@ export class NewGamePageComponent implements OnInit {
         private snackbarService: SnackbarService,
         private apiService: ApiService,
         private gameService: GameService,
+        private roomService: RoomService,
     ) {}
 
     async ngOnInit() {
@@ -134,13 +136,21 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    launchRandomGame() {
-        this.socketService.connect();
-        this.socketService.createRoom('randomModeGame');
-        this.gameService.resetGameVariables();
-        this.gameService.setupWebsocketEvents();
-        setTimeout(() => {
-            this.router.navigate(['/gameWait']);
-        }, GAME_CREATION_DELAY);
+    async launchRandomGame() {
+        this.roomService.verifyEnoughQuestions().subscribe({
+            next: (hasEnoughQuestions) => {
+                if (!hasEnoughQuestions) {
+                    this.snackbarService.openSnackBar('Not enough questions to start a game');
+                } else {
+                    this.socketService.connect();
+                    this.socketService.createRoom('randomModeGame');
+                    this.gameService.resetGameVariables();
+                    this.gameService.setupWebsocketEvents();
+                    setTimeout(() => {
+                        this.router.navigate(['/gameWait']);
+                    }, GAME_CREATION_DELAY);
+                }
+            },
+        });
     }
 }

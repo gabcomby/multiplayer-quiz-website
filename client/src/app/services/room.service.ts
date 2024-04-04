@@ -19,4 +19,8 @@ export class RoomService {
     verifyPlayerCanJoin(gameId: string, player: Player): Observable<boolean> {
         return this.http.post<boolean>(`${this.apiUrl}/${gameId}/auth`, player);
     }
+
+    verifyEnoughQuestions(): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/questions`);
+    }
 }

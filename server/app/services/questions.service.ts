@@ -2,6 +2,8 @@ import { IQuestion } from '@app/model/game.model';
 import questionsModel from '@app/model/questions.model';
 import { Service } from 'typedi';
 
+const MINIMUM_QUESTIONS_FOR_RANDOM_MODE = 5;
+
 @Service()
 export class QuestionsService {
     async getQuestions(): Promise<(typeof questionsModel)[]> {
@@ -27,11 +29,10 @@ export class QuestionsService {
     }
 
     async getFiveRandomQuestions(): Promise<IQuestion[]> {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        if ((await questionsModel.countDocuments()) >= 5) {
-            return await questionsModel.aggregate([{ $sample: { size: 5 } }]);
-        } else {
-            return [];
-        }
+        return await questionsModel.aggregate([{ $sample: { size: 5 } }]);
+    }
+
+    async verifyNumberOfQuestions(): Promise<boolean> {
+        return (await questionsModel.countDocuments()) >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE;
     }
 }
