@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
+import { GameService } from '@app/services/game.service';
 
 const SIZE1 = 400;
 const SIZE2 = 400;
@@ -12,8 +13,8 @@ const SIZE2 = 400;
 export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
-    @Input() nbModified: number;
-    @Input() nbNotModified: number;
+    // @Input() nbModified: number;
+    // @Input() nbNotModified: number;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
@@ -37,12 +38,23 @@ export class HistogramComponent implements OnInit, OnChanges {
     colorScheme = {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
     };
+    constructor(private gameService: GameService) {}
+    get nbModified(): number {
+        return this.gameService.numberInputModifidedValue;
+    }
+    get nbNotModified(): number {
+        return this.gameService.numberInputNotModifidedValue;
+    }
+    get currentQuestionValue(): Question {
+        return this.currentQuestionValue;
+    }
+
 
     ngOnInit(): void {
-        if (this.answersPlayer) {
+        if (this.currentQuestionValue.type === QuestionType.QCM) {
             this.constructHistogramsData();
         } else {
-            // this.constructLiveHistogramQrl();
+            this.constructLiveHistogramQrl();
         }
     }
 
@@ -50,10 +62,10 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (changes.answersPlayer) {
             this.constructLiveHistogramData();
         }
-        if (changes.nbModified) {
-            // console.log('modifier' + this.nbModified);
-            // this.constructLiveHistogramQrl();
-        }
+        // if (changes.nbModified) {
+        //     console.log('modifier' + this.nbModified);
+        //     this.constructLiveHistogramQrl();
+        // }
     }
 
     navigate(offset: number): void {
@@ -62,13 +74,18 @@ export class HistogramComponent implements OnInit, OnChanges {
             this.currentIndex = newIndex;
         }
     }
-    // private constructLiveHistogramQrl(): void {
-    //     const data = [
-    //         { modified: 'modified', value: this.nbModified },
-    //         { modified: 'not modified', value: 0 },
-    //     ];
-    //     this.dataQrl.push({ question: 'hein', data: Array.from(data) });
-    // }
+    private constructLiveHistogramQrl(): void {
+        if (!this.questionsGame[0]) {
+            return;
+        }
+        const data = [
+            { modified: 'modified', value: this.nbModified },
+            { modified: 'not modified', value: 0 },
+        ];
+        // this.dataQrl.push({ question: 'hein', data: Array.from(data) });
+
+        this.dataQrl = [{ question: this.questionsGame[0].text, data: Array.from(data) }];
+    }
 
     private constructLiveHistogramData(): void {
         if (!this.questionsGame[0]) {

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
@@ -13,13 +13,14 @@ const HISTOGRAMM_UPDATE = 5000;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnInit {
+export class HostGamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
     currentQuestionQRLIndex: number = 0;
     unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
+    subscription: Subscription;
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -88,11 +89,10 @@ export class HostGamePageComponent implements OnInit {
         return this.gameService.gameTitleValue;
     }
     get nbModified(): number {
+        console.log(this.gameService.numberInputModifidedValue);
         return this.gameService.numberInputModifidedValue;
     }
-    get nbNotModified(): number {
-        return this.gameService.numberInputNotModifidedValue;
-    }
+
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
@@ -107,10 +107,23 @@ export class HostGamePageComponent implements OnInit {
             localStorage.removeItem('refreshedPage');
             this.router.navigate([refreshedPage]);
         }
-        interval(HISTOGRAMM_UPDATE).subscribe(() => {
+        this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
             this.socketService.updateHistogram();
         });
-        // this.intervalUpdate();
+    }
+    // ngOnChanges(changes: SimpleChanges): void {
+    //     if (changes.timerStopped) {
+    //         if (!this.timerStopped && this.currentQuestion?.type === 'QRL') {
+    //             this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
+    //                 this.socketService.updateHistogram();
+    //             });
+    //         } else if (this.timerStopped && this.currentQuestion?.type === 'QRL') {
+    //             this.subscription.unsubscribe();
+    //         }
+    //     }
+    // }
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
     // intervalUpdate(){
     //     this.socketService.updateHistogram();
