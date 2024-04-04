@@ -79,7 +79,7 @@ export class Server {
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title, getRoom().gameType);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
@@ -151,6 +151,19 @@ export class Server {
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    if (getRoom().gameType === 2) {
+                        const player: IPlayer = {
+                            id: 'organisateur',
+                            name: 'Organisateur',
+                            score: 0,
+                            bonus: 0,
+                        } as IPlayer;
+                        getRoom().playerList.set(socket.id, player);
+                        getRoom().playerHasAnswered.set(socket.id, false);
+                        getRoom().livePlayerAnswers.set(socket.id, []);
+                        this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
+                        this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                    }
                     getRoom().gameStartDateTime = new Date();
                     getRoom().nbrPlayersAtStart = getRoom().playerList.size;
                     getRoom().gameHasStarted = true;

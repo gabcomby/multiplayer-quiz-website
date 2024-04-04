@@ -36,7 +36,7 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
-    roomType: GameType;
+    gameType: GameType;
     gameHasStarted = false;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
@@ -65,16 +65,16 @@ export class Room {
         this.game = game;
         switch (gameMode) {
             case 0:
-                this.roomType = GameType.NORMAL;
+                this.gameType = GameType.NORMAL;
                 break;
             case 1:
-                this.roomType = GameType.TEST;
+                this.gameType = GameType.TEST;
                 break;
             case 2:
-                this.roomType = GameType.RANDOM;
+                this.gameType = GameType.RANDOM;
                 break;
             default:
-                this.roomType = GameType.NORMAL;
+                this.gameType = GameType.NORMAL;
         }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
@@ -156,7 +156,7 @@ export class Room {
             this.startQuestion();
             return;
         }
-        if (this.roomType === GameType.TEST || this.roomType === GameType.RANDOM) {
+        if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
             setInterval(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);

@@ -38,6 +38,7 @@ export class GameService {
     private gameTitle = '';
     private gameTimerPaused = false;
     private audio = new Audio();
+    private gameType: number;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -131,6 +132,10 @@ export class GameService {
         return this.gameTimerPaused;
     }
 
+    get gameTypeValue(): number {
+        return this.gameType;
+    }
+
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIndex);
@@ -198,10 +203,11 @@ export class GameService {
     }
 
     setupWebsocketEvents(): void {
-        this.socketService.onRoomCreated((roomId, gameTitle: string) => {
+        this.socketService.onRoomCreated((roomId: string, gameTitle: string, gameType: number) => {
             this.lobbyCode = roomId;
             this.isHost = true;
             this.gameTitle = gameTitle;
+            this.gameType = gameType;
         });
 
         this.socketService.onRoomTestCreated((gameTitle: string, playerList: [[string, Player]]) => {
@@ -253,7 +259,7 @@ export class GameService {
             this.nbrOfQuestions = nbrOfQuestions;
             this.totalQuestionDuration = questionDuration;
             this.currentQuestionIndex = 0;
-            if (this.isHost) {
+            if (this.isHost && this.gameType === 0) {
                 this.router.navigate(['/host-game-page']);
             } else {
                 this.router.navigate(['/game']);
