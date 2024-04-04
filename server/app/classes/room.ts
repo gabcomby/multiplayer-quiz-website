@@ -10,7 +10,7 @@ const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
-const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
+const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 
 const enum TimerState {
@@ -92,14 +92,16 @@ export class Room {
                     this.io
                         .to(this.roomId)
                         .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
-                    const gamePlayedData: IGamePlayed = {
-                        id: this.generateGamePlayedId(),
-                        title: this.game.title,
-                        creationDate: this.gameStartDateTime,
-                        numberPlayers: this.nbrPlayersAtStart,
-                        bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
-                    } as IGamePlayed;
-                    this.gamePlayedService.createGamePlayed(gamePlayedData);
+                    if (this.gameType !== GameType.TEST) {
+                        const gamePlayedData: IGamePlayed = {
+                            id: this.generateGamePlayedId(),
+                            title: this.game.title,
+                            creationDate: this.gameStartDateTime,
+                            numberPlayers: this.nbrPlayersAtStart,
+                            bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
+                        } as IGamePlayed;
+                        this.gamePlayedService.createGamePlayed(gamePlayedData);
+                    }
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
@@ -157,7 +159,7 @@ export class Room {
             return;
         }
         if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
-            setInterval(() => {
+            setTimeout(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
         }
