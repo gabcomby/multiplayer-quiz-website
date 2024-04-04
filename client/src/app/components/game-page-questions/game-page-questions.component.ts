@@ -94,13 +94,13 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         console.log('premier');
         this.selectedChoices = [];
         this.answerQrl = '';
-        this.answerText.emit(this.answerQrl);
+        this.answerText.emit( this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
         this.answerStateService.resetAnswerState();
     }
     onInputChange() {
-        this.answerText.emit(this.answerQrl);
+        this.answerText.emit( this.answerQrl);
     }
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;

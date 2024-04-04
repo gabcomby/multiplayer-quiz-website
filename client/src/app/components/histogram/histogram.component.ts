@@ -45,6 +45,9 @@ export class HistogramComponent implements OnInit, OnChanges {
     get playerListValue(): Player[] {
         return this.gameService.playerListValue;
     }
+    get timerStoppedValue(): boolean{
+        return this.gameService.timerStoppedValue;
+    }
 
     ngOnInit(): void {
         if (this.currentQuestionValue?.type === QuestionType.QCM) {
@@ -55,7 +58,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.answersPlayer && this.currentQuestionValue?.type === QuestionType.QCM) {
             this.constructLiveHistogramData();
-        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL) {
+        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL && this.timerStoppedValue) {
             this.constructLiveHistogramQrl();
         }
     }

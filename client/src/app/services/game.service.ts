@@ -47,6 +47,7 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
+    // private countAnswerQrl: number = 0;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -164,8 +165,11 @@ export class GameService {
         this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer);
     }
     set answerTextSetter(answerText: string) {
+        // this.countAnswerQrl += 1;
         this.answerText = answerText;
+        // if (this.countAnswerQrl > 1) {
         this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer);
+        // }
     }
 
     set playerQRLPoints(points: [Player, number][]) {
