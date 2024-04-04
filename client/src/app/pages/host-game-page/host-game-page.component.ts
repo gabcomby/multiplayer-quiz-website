@@ -89,7 +89,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.gameService.gameTitleValue;
     }
     get nbModified(): number {
-        console.log(this.gameService.numberInputModifidedValue);
         return this.gameService.numberInputModifidedValue;
     }
 

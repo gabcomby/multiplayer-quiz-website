@@ -13,15 +13,14 @@ const SIZE2 = 400;
 export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
-    // @Input() nbModified: number;
-    // @Input() nbNotModified: number;
+    @Input() nbModified: number;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
     histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
-    dataQrl: { question: string; data: { modified: string; value: number }[] }[] = [];
+    dataQrl: { question: string; data: { name: string; value: number }[] }[] = [];
 
     view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
@@ -39,33 +38,26 @@ export class HistogramComponent implements OnInit, OnChanges {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
     };
     constructor(private gameService: GameService) {}
-    get nbModified(): number {
-        return this.gameService.numberInputModifidedValue;
-    }
-    get nbNotModified(): number {
-        return this.gameService.numberInputNotModifidedValue;
-    }
-    get currentQuestionValue(): Question {
-        return this.currentQuestionValue;
-    }
 
+    get currentQuestionValue(): Question | null {
+        return this.gameService.currentQuestionValue;
+    }
+    get playerListValue(): Player[] {
+        return this.gameService.playerListValue;
+    }
 
     ngOnInit(): void {
-        if (this.currentQuestionValue.type === QuestionType.QCM) {
+        if (this.currentQuestionValue?.type === QuestionType.QCM) {
             this.constructHistogramsData();
-        } else {
-            this.constructLiveHistogramQrl();
         }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.answersPlayer) {
+        if (changes.answersPlayer && this.currentQuestionValue?.type === QuestionType.QCM) {
             this.constructLiveHistogramData();
+        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL) {
+            this.constructLiveHistogramQrl();
         }
-        // if (changes.nbModified) {
-        //     console.log('modifier' + this.nbModified);
-        //     this.constructLiveHistogramQrl();
-        // }
     }
 
     navigate(offset: number): void {
@@ -78,11 +70,11 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
+        const nbNotModified = this.playerListValue.length - this.nbModified;
         const data = [
-            { modified: 'modified', value: this.nbModified },
-            { modified: 'not modified', value: 0 },
+            { name: 'modified', value: this.nbModified },
+            { name: 'not modified', value: nbNotModified },
         ];
-        // this.dataQrl.push({ question: 'hein', data: Array.from(data) });
 
         this.dataQrl = [{ question: this.questionsGame[0].text, data: Array.from(data) }];
     }
