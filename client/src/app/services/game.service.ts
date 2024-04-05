@@ -47,6 +47,7 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
+    private onResultsView = false;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -198,6 +199,7 @@ export class GameService {
         this.playerList = [];
         this.isHost = false;
         this.roomLocked = false;
+        this.onResultsView = false;
         this.currentQuestion = null;
         this.answerIndex = [];
         this.answersTextQRL = [];
@@ -238,7 +240,6 @@ export class GameService {
 
     submitAnswer(): void {
         if (this.currentQuestion?.type === QuestionType.QRL) {
-            console.log('answerText', this.answerText);
             this.socketService.sendLockedAnswers(this.answerText, this.currentPlayer);
         } else {
             this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
@@ -264,9 +265,12 @@ export class GameService {
         });
 
         this.socketService.onPlayerListChange((playerList: [[string, Player]]) => {
-            const playerListOriginal = new Map(playerList);
-            const newPlayerList = [...playerListOriginal.values()];
-            this.playerList = [...newPlayerList];
+            if (!this.onResultsView) {
+                console.log('a');
+                const playerListOriginal = new Map(playerList);
+                const newPlayerList = [...playerListOriginal.values()];
+                this.playerList = [...newPlayerList];
+            }
         });
 
         this.socketService.onPlayerLeftListChange((playerList: Player[]) => {
@@ -335,16 +339,17 @@ export class GameService {
         });
 
         this.socketService.onLockedAnswersQRL((answers: [string, [Player, string][]][]) => {
-            console.log('answers', answers);
             this.answersTextQRL = answers;
         });
 
         this.socketService.onGoToResult((playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {
+            this.onResultsView = true;
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
+            console.log(this.playerList);
             this.router.navigate(['/resultsView']);
         });
 

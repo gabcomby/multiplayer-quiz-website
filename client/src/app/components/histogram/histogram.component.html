@@ -12,8 +12,8 @@
             [legend]="showLegend"
             [showXAxisLabel]="showXAxisLabel"
             [showYAxisLabel]="showYAxisLabel"
-            [xAxisLabel]="xAxisLabel"
-            [yAxisLabel]="yAxisLabel"
+            [xAxisLabel]="questionsGame[i].type === 'QRL' ? 'Facteurs multiplicatifs' : 'Choix de réponses'"
+            [yAxisLabel]="questionsGame[i].type === 'QRL' ? 'Nombre de joueur' : 'Nombre de votes'"
         >
         </ngx-charts-bar-vertical>
         <div class="navigation">

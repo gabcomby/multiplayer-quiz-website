@@ -137,6 +137,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
         let timer = 3;
         this.nextQuestionButtonText = String(timer);
+        console.log(this.nextQuestionButtonText);
         const intervalId = setInterval(() => {
             timer--;
             if (timer > 0) {
