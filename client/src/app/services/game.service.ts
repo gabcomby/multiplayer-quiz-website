@@ -47,6 +47,7 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
+    private playersListResult: Player[] = [];
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -70,6 +71,10 @@ export class GameService {
 
     get playerListValue(): Player[] {
         return this.playerList;
+    }
+
+    get playersListResultValue(): Player[] {
+        return this.playersListResult;
     }
 
     get playerLeftListValue(): Player[] {
@@ -341,7 +346,7 @@ export class GameService {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
-            console.log('Game service', this.playerList);
+            this.playersListResult = [...newPlayerList];
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
             this.router.navigate(['/resultsView']);

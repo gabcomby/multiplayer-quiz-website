@@ -33,8 +33,7 @@ export class ResultsViewComponent implements OnInit {
     }
 
     get playerList(): Player[] {
-        console.log(this.gameService.playerListValue);
-        this.playerDataSource = this.gameService.playerListValue;
+        this.playerDataSource = this.gameService.playersListResultValue;
         this.sortDataSource();
         return this.playerDataSource;
     }
