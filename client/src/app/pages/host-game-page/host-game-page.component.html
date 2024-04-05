@@ -49,7 +49,7 @@
         <app-histogram [nbModified]="nbModified" [nbNotModified]="nbNotModified" ></app-histogram>
     </div> -->
 
-    <div class="gameControl" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM'">
+    <div class="gameControl" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM' || (timerStopped)" >
         <button
             mat-raised-button
             color="primary"
@@ -59,7 +59,6 @@
         >
             Voir les résultats
         </button>
-        {{ nextQuestionButtonText}}
         <button
             mat-raised-button
             color="primary"

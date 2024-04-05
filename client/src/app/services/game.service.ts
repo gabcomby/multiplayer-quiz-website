@@ -47,7 +47,6 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
-    private onResultsView = false;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -199,7 +198,6 @@ export class GameService {
         this.playerList = [];
         this.isHost = false;
         this.roomLocked = false;
-        this.onResultsView = false;
         this.currentQuestion = null;
         this.answerIndex = [];
         this.answersTextQRL = [];
@@ -265,12 +263,9 @@ export class GameService {
         });
 
         this.socketService.onPlayerListChange((playerList: [[string, Player]]) => {
-            if (!this.onResultsView) {
-                console.log('a');
-                const playerListOriginal = new Map(playerList);
-                const newPlayerList = [...playerListOriginal.values()];
-                this.playerList = [...newPlayerList];
-            }
+            const playerListOriginal = new Map(playerList);
+            const newPlayerList = [...playerListOriginal.values()];
+            this.playerList = [...newPlayerList];
         });
 
         this.socketService.onPlayerLeftListChange((playerList: Player[]) => {
@@ -343,13 +338,12 @@ export class GameService {
         });
 
         this.socketService.onGoToResult((playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) => {
-            this.onResultsView = true;
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
+            console.log('Game service', this.playerList);
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
-            console.log(this.playerList);
             this.router.navigate(['/resultsView']);
         });
 

@@ -33,7 +33,9 @@ export class ResultsViewComponent implements OnInit {
     }
 
     get playerList(): Player[] {
+        console.log(this.gameService.playerListValue);
         this.playerDataSource = this.gameService.playerListValue;
+        this.sortDataSource();
         return this.playerDataSource;
     }
 
@@ -59,7 +61,6 @@ export class ResultsViewComponent implements OnInit {
             localStorage.removeItem('refreshedPage');
             this.router.navigate([refreshedPage]);
         }
-        this.sortDataSource();
     }
 
     handleGameLeave(): void {
@@ -68,8 +69,7 @@ export class ResultsViewComponent implements OnInit {
     }
 
     private sortDataSource() {
-        this.playerDataSorted = this.playerDataSource;
-        this.playerDataSorted.sort((a, b) => {
+        this.playerDataSource.sort((a, b) => {
             if (b.score !== a.score) {
                 return b.score - a.score;
             } else {
