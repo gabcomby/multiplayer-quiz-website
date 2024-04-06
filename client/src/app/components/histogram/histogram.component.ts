@@ -113,17 +113,21 @@ export class HistogramComponent implements OnInit, OnChanges {
     private constructHistogramsData(): void {
         this.histogramsData = [];
         this.questionsGame.forEach((question) => {
-            const answerCountsMap = this.calculateAnswerCounts(question);
-            const histogramData = this.mapToHistogramData(answerCountsMap);
-            this.histogramsData.push({ question: question.text, data: histogramData });
+            if (question.type === 'QRL') {
+                const answerCountsMap = this.calculateAnswerCountsQRL(question);
+                const histogramData = this.mapToHistogramDataQrl(answerCountsMap);
+                this.histogramsData.push({ question: question.text, data: histogramData });
+            } else {
+                const answerCountsMap = this.calculateAnswerCounts(question);
+                const histogramData = question.type === 'QCM' ? this.mapToHistogramData(answerCountsMap) : [];
+                this.histogramsData.push({ question: question.text, data: histogramData });
+            }
         });
     }
 
     private calculateAnswerCounts(question: Question): Map<Choice, number> {
         const answerCountsMap: Map<Choice, number> = new Map();
-        // if(typeof this.answersPlayer === 'string'){
-        //     return answerCountsMap
-        // }
+
         if (question.choices) {
             question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
             this.answersPlayer.forEach(([questionText, choices]) => {
@@ -149,9 +153,29 @@ export class HistogramComponent implements OnInit, OnChanges {
         return answerCountsMap;
     }
 
+    private calculateAnswerCountsQRL(question: Question): Map<string, number> {
+        const answerCountsMap: Map<string, number> = new Map();
+        this.answersPlayer.forEach(([questionText, answer]) => {
+            if (questionText === question.text) {
+                if (typeof answer[0] === 'number' && typeof answer[1] === 'number') {
+                    answerCountsMap.set('0.5', answer[0]);
+                    answerCountsMap.set('1', answer[1]);
+                }
+            }
+        });
+
+        return answerCountsMap;
+    }
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {
         return Array.from(answerCountsMap.entries()).map(([choice, count]) => ({
             name: choice.isCorrect ? `${choice.text} (correct)` : choice.text,
+            value: count,
+        }));
+    }
+
+    private mapToHistogramDataQrl(answerCountsMap: Map<string, number>): { name: string; value: number }[] {
+        return Array.from(answerCountsMap.entries()).map(([point, count]) => ({
+            name: point,
             value: count,
         }));
     }

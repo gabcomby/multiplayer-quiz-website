@@ -9,7 +9,7 @@
             <mat-radio-button [value]="[answer[0], 1]">100%</mat-radio-button>
         </mat-radio-group>
     </div>
-    <button id="registerButton" type="button" (click)="onSubmit()" mat-raised-button color="accent" [hidden]="isNoted">
+    <button id="registerButton" type="button" (click)="onSubmit()" mat-raised-button color="accent" [hidden]="!timerStopped || answersQRLInput === []">
         Envoyer les évaluations
     </button>
 </div>

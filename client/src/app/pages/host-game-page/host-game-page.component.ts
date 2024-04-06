@@ -4,6 +4,7 @@ import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription, interval } from 'rxjs';
 const HISTOGRAMM_UPDATE = 5000;
@@ -25,6 +26,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         private gameService: GameService,
         private router: Router,
         private socketService: SocketService,
+        private snackbarService: SnackbarService,
     ) {}
 
     get gameTimerPaused(): boolean {
@@ -139,6 +141,10 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     nextQuestion(): void {
+        if (this.currentQuestion?.type === 'QRL' && this.answersQRL.length !== 0 && !this.isNoted) {
+            this.snackbarService.openSnackBar('Veuillez noter les joueurs', 'Fermer');
+            return;
+        }
         const timerLength = 1000;
         this.isNoted = false;
         this.gameService.nextQuestion();
