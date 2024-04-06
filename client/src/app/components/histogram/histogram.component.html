@@ -1,4 +1,4 @@
-<div *ngIf="!nbModified">
+<div *ngIf="currentQuestionValue?.type === 'QCM'">
     <div *ngFor="let histogram of histogramsData; let i = index" [hidden]="i !== currentIndex">
         <h3 div="question">{{ histogram.question }}</h3>
 
@@ -27,7 +27,7 @@
         </div>
     </div>
 </div>
-<!-- <div *ngIf="nbModified">
+[<div *ngIf="currentQuestionValue?.type === 'QRL'">
     <div *ngFor="let histogram of dataQrl">
         <ngx-charts-bar-vertical
             class="graphic"
@@ -41,7 +41,8 @@
             [showYAxisLabel]="showYAxisLabel"
             [xAxisLabel]="xAxisLabel"
             [yAxisLabel]="yAxisLabel"
+            [maxYAxisTickLength]="maxYAxis"
         >
         </ngx-charts-bar-vertical>
-    </div>
-</div> -->
+    </div>]
+</div>

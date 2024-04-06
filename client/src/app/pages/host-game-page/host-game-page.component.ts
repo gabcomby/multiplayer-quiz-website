@@ -21,6 +21,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     currentQuestionQRLIndex: number = 0;
     unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
+    subscription: Subscription;
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -92,9 +93,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     get nbModified(): number {
         return this.gameService.numberInputModifidedValue;
     }
-    get nbNotModified(): number {
-        return this.gameService.numberInputNotModifidedValue;
-    }
+
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
@@ -109,10 +108,23 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
             localStorage.removeItem('refreshedPage');
             this.router.navigate([refreshedPage]);
         }
-        interval(HISTOGRAMM_UPDATE).subscribe(() => {
+        this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
             this.socketService.updateHistogram();
         });
-        // this.intervalUpdate();
+    }
+    // ngOnChanges(changes: SimpleChanges): void {
+    //     if (changes.timerStopped) {
+    //         if (!this.timerStopped && this.currentQuestion?.type === 'QRL') {
+    //             this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
+    //                 this.socketService.updateHistogram();
+    //             });
+    //         } else if (this.timerStopped && this.currentQuestion?.type === 'QRL') {
+    //             this.subscription.unsubscribe();
+    //         }
+    //     }
+    // }
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
     ngOnDestroy(): void {
