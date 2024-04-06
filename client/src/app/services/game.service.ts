@@ -168,7 +168,6 @@ export class GameService {
         this.countAnswerQrl += 1;
         this.answerText = answerText;
         if (this.countAnswerQrl > 2) {
-            console.log('hello');
             this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
         } else {
             this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, true);
@@ -217,6 +216,7 @@ export class GameService {
         this.gameTimerPaused = false;
         this.audio.src = AUDIO_CLIP_PATH;
         this.audio.load();
+        this.countAnswerQrl = 0;
     }
 
     startGame(): void {
@@ -327,7 +327,6 @@ export class GameService {
 
         this.socketService.onTimerStopped(() => {
             this.timerStopped = true;
-            this.countAnswerQrl = 0;
             if (this.currentQuestion?.type === QuestionType.QRL) {
                 this.socketService.sendAnswers(this.answerText, this.currentPlayer);
             } else {

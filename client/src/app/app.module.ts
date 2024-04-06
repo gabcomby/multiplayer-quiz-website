@@ -35,11 +35,10 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
 
 import { MatSortModule } from '@angular/material/sort';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { GameQrlAnswerComponent } from './components/game-qrl-answer/game-qrl-answer.component';
 import { HistogramComponent } from './components/histogram/histogram.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
 import { ResultsViewComponent } from './pages/results-view/results-view.component';
-import { GameQrlAnswerComponent } from './components/game-qrl-answer/game-qrl-answer.component';
-import { HistogramQrlComponent } from './components/histogram-qrl/histogram-qrl.component';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -79,7 +78,6 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         HistogramComponent,
         HostGamePageComponent,
         GameQrlAnswerComponent,
-        HistogramQrlComponent,
     ],
     imports: [
         AppMaterialModule,
