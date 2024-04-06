@@ -136,7 +136,7 @@ export class NewGamePageComponent implements OnInit {
         }
     }
 
-    async launchRandomGame() {
+    async launchRandomGame(): Promise<void> {
         this.roomService.verifyEnoughQuestions().subscribe({
             next: (hasEnoughQuestions) => {
                 if (!hasEnoughQuestions) {
