@@ -10,6 +10,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GameService } from '@app/services/game.service';
 import { HostGamePageComponent } from './host-game-page.component';
+import { fakeAsync } from '@angular/core/testing';
 
 @Component({
     selector: 'app-game-page-scoresheet',
@@ -77,7 +78,7 @@ describe('HostGamePageComponent', () => {
         spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
         spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
 
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer', 'timerCountdownValue'], {
             matchLobby: {
                 id: 'match123',
                 playerList: [
@@ -208,6 +209,16 @@ describe('HostGamePageComponent', () => {
         component.nextQuestion();
         expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
     });
+    it('should countdown and transition to "Prochaine question"', fakeAsync(() => {
+        component.nextQuestionButtonText = '3';
+        component.nextQuestion();
+        jasmine.clock().tick(1000);
+        expect(component.nextQuestionButtonText).toBe('2');
+        jasmine.clock().tick(1000);
+        expect(component.nextQuestionButtonText).toBe('1');
+        jasmine.clock().tick(1000);
+        expect(component.nextQuestionButtonText).toBe('Prochaine question');
+    }));
 
     it('should call leaveRoom from gameService when handleGameLeave is called', () => {
         component.handleGameLeave();
