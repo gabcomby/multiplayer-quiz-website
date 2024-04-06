@@ -11,6 +11,7 @@ describe('Game service', () => {
     let createStub: SinonStub;
     let findOneAndDeleteStub: SinonStub;
     let findOneAndUpdateStub: SinonStub;
+    let aggregateStub: SinonStub;
 
     const questionInstance = new questionsModel({
         type: 'QCM',
@@ -45,6 +46,7 @@ describe('Game service', () => {
         createStub = sandbox.stub(questionsModel, 'create');
         findOneAndDeleteStub = sandbox.stub(questionsModel, 'findOneAndDelete');
         findOneAndUpdateStub = sandbox.stub(questionsModel, 'findOneAndUpdate');
+        aggregateStub = sandbox.stub(questionsModel, 'aggregate');
     });
 
     afterEach(() => {
@@ -88,5 +90,19 @@ describe('Game service', () => {
         const result = await questionsService.updateQuestion(questionId, questionInstance);
         expect(result).to.eql(questionInstance);
         expect(findOneAndUpdateStub.calledWith({ id: questionId }, questionInstance, { new: true }));
+    });
+
+    it('should get 5 random questions', async () => {
+        aggregateStub.returns([questionInstance]);
+        const result = await questionsService.getFiveRandomQuestions();
+        expect(result).to.eql([questionInstance]);
+        expect(findStub.calledOnce);
+    });
+    it('should verify the number of questions', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        findStub.returns(5);
+        const result = await questionsService.verifyNumberOfQuestions();
+        expect(result).to.eql(true);
+        expect(findStub.calledOnce);
     });
 });
