@@ -126,10 +126,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
-
-    ngOnDestroy(): void {
-        interval(HISTOGRAMM_UPDATE).subscribe().unsubscribe();
-    }
     // intervalUpdate(){
     //     this.socketService.updateHistogram();
     //     setTimeout(() => {
