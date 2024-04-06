@@ -262,7 +262,7 @@ describe('GameService', () => {
 
     it('should set lobbyCode, isHost, and gameTitle when onRoomCreated is called', () => {
         socketServiceSpy.onRoomCreated.and.callFake((callback) => {
-            callback('1234', 'Test Game');
+            callback('1234', 'Test Game', 1);
         });
         service.setupWebsocketEvents();
         expect(service['lobbyCode']).toBe('1234');
