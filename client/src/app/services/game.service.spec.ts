@@ -365,8 +365,9 @@ describe('GameService', () => {
         expect(socketServiceSpy.onGameLaunch).toHaveBeenCalled();
     });
 
-    it('should redirect to /host-game-page if isHost is true when onGameLaunch is called', () => {
+    it('should redirect to /host-game-page if isHost is true and if gameType is equal to 0 when onGameLaunch is called', () => {
         service['isHost'] = true;
+        service['gameType'] = 0;
         socketServiceSpy.onGameLaunch.and.callFake((callback) => {
             const questionDuration = 10;
             const nbrOfQuestions = 5;
@@ -489,5 +490,11 @@ describe('GameService', () => {
         expect(socketServiceSpy.onPanicModeDisabled).toHaveBeenCalled();
         expect(service['audio'].pause).toHaveBeenCalled();
         expect(service['audio'].currentTime).toBe(0);
+    });
+
+    it('should return game type', () => {
+        const gameTypeValueSpy = service['gameTypeValue'];
+        const result = service.gameTypeValue;
+        expect(result).toBe(gameTypeValueSpy);
     });
 });
