@@ -170,7 +170,6 @@ export class GameService {
         this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer, true);
     }
     set answerTextSetter(answerText: string) {
-        console.log('enter' + ' ' + this.currentQuestionIndex + 'count' + this.countAnswerQrl);
         this.countAnswerQrl += 1;
         this.answerText = answerText;
         if (this.currentQuestionIndex === 0 && this.countAnswerQrl > 2) {

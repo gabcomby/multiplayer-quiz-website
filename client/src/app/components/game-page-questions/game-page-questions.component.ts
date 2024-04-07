@@ -52,7 +52,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnInit(): void {
-        console.log('onit');
         this.selectedChoices = [];
         this.answerQrl = '';
         this.answerText.emit(this.answerQrl);
@@ -91,7 +90,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     resetAnswerState(): void {
-        console.log('reset');
         this.selectedChoices = [];
         this.answerQrl = '';
         this.answerText.emit(this.answerQrl);

@@ -59,7 +59,6 @@ export class Room {
     counterCorrectAnswerQRL = 0;
     counterHalfCorrectAnswerQRL = 0;
     allAnswersGameResults = new Map<string, number[]>();
-    // gameTest = false;
     inputModifications: { player: string; time: number }[] = [];
 
     constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {

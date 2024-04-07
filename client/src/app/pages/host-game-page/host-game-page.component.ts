@@ -22,6 +22,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
     subscription: Subscription;
+    // eslint-disable-next-line max-params
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -112,26 +113,11 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
             this.socketService.updateHistogram();
         });
     }
-    // ngOnChanges(changes: SimpleChanges): void {
-    //     if (changes.timerStopped) {
-    //         if (!this.timerStopped && this.currentQuestion?.type === 'QRL') {
-    //             this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
-    //                 this.socketService.updateHistogram();
-    //             });
-    //         } else if (this.timerStopped && this.currentQuestion?.type === 'QRL') {
-    //             this.subscription.unsubscribe();
-    //         }
-    //     }
-    // }
+
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
-    // intervalUpdate(){
-    //     this.socketService.updateHistogram();
-    //     setTimeout(() => {
-    //         this.intervalUpdate();
-    //     }, HISTOGRAMM_UPDATE);
-    // }
+
     setplayerPointsQRL(points: [Player, number][]) {
         this.gameService.playerQRLPoints = points;
     }
