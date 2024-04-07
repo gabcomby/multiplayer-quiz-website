@@ -170,9 +170,12 @@ export class GameService {
         this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer, true);
     }
     set answerTextSetter(answerText: string) {
+        console.log('enter' + ' ' + this.currentQuestionIndex + 'count' + this.countAnswerQrl);
         this.countAnswerQrl += 1;
         this.answerText = answerText;
-        if (this.countAnswerQrl > 2) {
+        if (this.currentQuestionIndex === 0 && this.countAnswerQrl > 2) {
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
+        } else if (this.currentQuestionIndex > 0 && this.countAnswerQrl > 1) {
             this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
         } else {
             this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, true);
@@ -326,6 +329,8 @@ export class GameService {
         });
 
         this.socketService.onQuestion((question: Question, questionIndex: number) => {
+            this.countAnswerQrl = 0;
+
             this.timerStopped = false;
             this.currentQuestionIndex = questionIndex;
             this.currentQuestion = question;

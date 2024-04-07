@@ -42,12 +42,12 @@
         >
         </app-game-qrl-answer>
     </div>
-    <div class="histogram" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QCM' ">
-        <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
+    <div class="histogram" *ngIf="!isLaunchTimer ">
+        <app-histogram *ngIf="currentQuestion?.type === 'QCM'"[answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
+        <app-histogram *ngIf="currentQuestion?.type === 'QRL'" [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray" [nbModified]="nbModified"></app-histogram>
+
     </div>
-    <div class="histogram" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL'">
-        <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray" [nbModified]="nbModified"></app-histogram>
-    </div>
+  
     
     <div class="gameControl" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM' || timerStopped">
         <button

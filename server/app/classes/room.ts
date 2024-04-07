@@ -71,6 +71,7 @@ export class Room {
     }
 
     startQuestion(): void {
+        this.inputModifications = [];
         if (this.timerState === TimerState.STOPPED) {
             if (this.launchTimer) {
                 this.duration = 5;
@@ -200,7 +201,6 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
-        this.inputModifications = [];
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;

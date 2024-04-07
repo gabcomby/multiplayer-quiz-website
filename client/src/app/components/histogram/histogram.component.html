@@ -1,4 +1,4 @@
-<div *ngIf="currentQuestionValue?.type === 'QCM'">
+<div *ngIf="currentQuestionValue?.type === 'QCM' || resultView">
     <div *ngFor="let histogram of histogramsData; let i = index" [hidden]="i !== currentIndex">
         <h3 div="question">{{ histogram.question }}</h3>
 
@@ -27,9 +27,10 @@
         </div>
     </div>
 </div>
-[<div *ngIf="currentQuestionValue?.type === 'QRL'">
-    <div *ngFor="let histogram of dataQrl">
-        <ngx-charts-bar-vertical
+[<div class= "histogram-container"*ngIf="currentQuestionValue?.type === 'QRL' && !resultView">
+    <div *ngFor="let histogram of dataQrl , let i = index">
+        <ng-container >
+            <ngx-charts-bar-vertical
             class="graphic"
             [view]="view"
             [results]="histogram.data"
@@ -44,5 +45,9 @@
             [maxYAxisTickLength]="maxYAxis"
         >
         </ngx-charts-bar-vertical>
+        </ng-container> 
+            
+       
+        
     </div>]
 </div>

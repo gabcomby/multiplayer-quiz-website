@@ -14,6 +14,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
     @Input() nbModified: number;
+    @Input() resultView: boolean;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
@@ -51,9 +52,9 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        if (this.currentQuestionValue?.type === QuestionType.QCM) {
-            this.constructHistogramsData();
-        }
+        // if (this.currentQuestionValue?.type === QuestionType.QCM) {
+        this.constructHistogramsData();
+        // }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
