@@ -70,7 +70,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         if (!this.checkIfMultipleChoice()) this.selectedChoices = [];
 
         const answerIdx = this.selectedChoices.indexOf(index);
-        if (answerIdx > NOT_FOUND) this.selectedChoices.splice(answerIdx, 1);
+        if (answerIdx > NOT_FOUND_INDEX) this.selectedChoices.splice(answerIdx, 1);
         else this.selectedChoices.push(index);
 
         this.answerIdx.emit(this.selectedChoices);
