@@ -20,7 +20,6 @@ describe('RoomController', () => {
         questionService = createStubInstance(QuestionsService);
         Object.defineProperty(app['roomController'], 'questionService', { value: questionService, writable: true });
         expressApp = app.app;
-
     });
 
     it('should return room lock status on POST request', async () => {

@@ -17,7 +17,6 @@ export class RoomController {
 
     private configureRouter(): void {
         this.router = Router();
-
         this.router.post('/:roomId/auth', async (req: Request, res: Response) => {
             try {
                 const isLocked = await this.roomAuthService.verifyPlayerCanJoinRoom(req.params.roomId, req.body);
