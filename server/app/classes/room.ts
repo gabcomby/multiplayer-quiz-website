@@ -99,8 +99,8 @@ export class Room {
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
-                    if (this.gameType !== GameType.TEST) {
+                        // .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
+                        /* if (this.gameType !== GameType.TEST) {
                         const gamePlayedData: IGamePlayed = {
                             id: this.generateGamePlayedId(),
                             title: this.game.title,
@@ -109,7 +109,7 @@ export class Room {
                             bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
                         } as IGamePlayed;
                         this.gamePlayedService.createGamePlayed(gamePlayedData);
-                    }
+                    }*/
 
                         .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
                     // TODO: Write game in DB
@@ -235,7 +235,7 @@ export class Room {
         if (typeof answerIdx === 'string') {
             this.globalAnswersText.push([player, answerIdx]);
         }
-        if (this.isTestRoom && question.type === 'QRL') {
+        if (this.gameType === 1 && question.type === 'QRL') {
             this.playerList.get(playerId).score += question.points;
         } else if (typeof answerIdx !== 'string') {
             if (answerIdx.length !== 0) {
