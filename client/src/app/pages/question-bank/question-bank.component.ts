@@ -12,12 +12,11 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 export class QuestionBankComponent implements OnInit {
     @Input() fromCreateNewGame: boolean;
     @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
-    questionToAdd: Question[] = [];
     displayedColumns: string[];
     dataSource: Question[] = [];
     filteredQuestions: Question[] = [];
-    defaultDisplayedColumns: string[] = ['question', 'type', 'modify', 'date', 'delete'];
-    selectedRowIds: string[] = [];
+    private questionToAdd: Question[] = [];
+    private defaultDisplayedColumns: string[] = ['question', 'type', 'modify', 'date', 'delete'];
 
     constructor(
         private questionService: QuestionService,
