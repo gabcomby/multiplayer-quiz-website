@@ -66,16 +66,6 @@ describe('HistogramComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('ngOnInit should call constructHistogramsData', () => {
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     const privateSpy = spyOn<any>(component, 'constructHistogramsData').and.callThrough();
-    //     component.ngOnInit();
-    //     expect(privateSpy).toHaveBeenCalled();
-    //     expect(component.histogramsData.length).toBe(2);
-    //     expect(component.histogramsData[0].question).toBe('What is the capital of France?');
-    //     expect(component.histogramsData[1].question).toBe('The Earth is flat.');
-    // });
-
     it('constructHistogramsData should call calculateAnswerCounts and mapToHistogramData', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const calculateAnswerCountsSpy = spyOn<any>(component, 'calculateAnswerCounts').and.callThrough();

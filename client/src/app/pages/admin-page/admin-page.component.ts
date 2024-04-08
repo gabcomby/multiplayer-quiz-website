@@ -22,7 +22,7 @@ export class AdminPageComponent implements OnInit, AfterViewInit {
     dataSource: Game[] = [];
     historicDataSource = new MatTableDataSource<GamePlayed>([]);
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
         private dialog: MatDialog,

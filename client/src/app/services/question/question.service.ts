@@ -70,8 +70,6 @@ export class QuestionService {
             let validated = this.questionValidationService.validateQuestion(questionList[index]);
 
             if (questionList[index].choices && questionList[index].type === QuestionType.QCM) {
-                // TODO: Remove the eslint-disable-line comment when the following issue is fixed:
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 validated = this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices!);
             }
 
