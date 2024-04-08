@@ -51,7 +51,12 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     }
 
     private sendMessage(): void {
-        this.chatService.sendMessage(this.text, this.playerName, this.roomId, this.isHost);
+        this.chatService.sendMessage({
+            text: this.text,
+            playerName: this.playerName,
+            roomId: this.roomId,
+            isHost: this.isHost,
+        });
         this.text = '';
     }
 
