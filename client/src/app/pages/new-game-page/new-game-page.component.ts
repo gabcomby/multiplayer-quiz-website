@@ -53,11 +53,7 @@ export class NewGamePageComponent implements OnInit {
         return 'there is no more games to suggest';
     }
     canItBeSuggested(newGame: Game, oldGame: Game): boolean {
-        if (newGame.isVisible === true && newGame.id !== oldGame.id) {
-            return true;
-        } else {
-            return false;
-        }
+        return newGame.isVisible === true && newGame.id !== oldGame.id;
     }
     suggestionChoice(game: Game): string {
         let suggestion = '';
