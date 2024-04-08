@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GameService } from '@app/services/game/game.service';
@@ -9,7 +9,7 @@ import { GameService } from '@app/services/game/game.service';
     templateUrl: './game-page-questions.component.html',
     styleUrls: ['./game-page-questions.component.scss'],
 })
-export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges {
+export class GamePageQuestionsComponent implements OnInit, OnChanges {
     @Input() question: string;
     @Input() mark: number;
     @Input() choices: Choice[] = [];
@@ -31,7 +31,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         private gameService: GameService,
     ) {}
 
-    @HostListener('keydown', ['$event'])
+    @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         if (this.verifyActiveElement()) {
             const buttonPressed = event.key;
@@ -56,11 +56,6 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         this.answerQrl = '';
         this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
-        this.document.addEventListener('keydown', this.buttonDetect.bind(this));
-    }
-
-    ngOnDestroy(): void {
-        this.document.removeEventListener('keydown', this.buttonDetect.bind(this));
     }
 
     toggleAnswer(index: number) {
