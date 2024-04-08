@@ -43,7 +43,12 @@ describe('GamePageLivechatComponent', () => {
         component.onChatInput(event);
 
         expect(event.preventDefault).toHaveBeenCalled();
-        expect(chatServiceMock.sendMessage).toHaveBeenCalledWith(component.text, component.playerName, component.roomId, component.isHost);
+        expect(chatServiceMock.sendMessage).toHaveBeenCalledWith({
+            text: '',
+            playerName: 'John Doe',
+            roomId: 'room123',
+            isHost: true,
+        });
         expect(component.text).toBe('');
     });
 });
