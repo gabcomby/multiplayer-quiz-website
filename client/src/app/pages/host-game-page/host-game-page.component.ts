@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-import { GameService } from '@app/services/game.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
-const HISTOGRAMM_UPDATE = 5000;
+const HISTOGRAMM_UPDATE = 1000;
 
 @Component({
     selector: 'app-host-game-page',
@@ -21,7 +21,8 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     currentQuestionQRLIndex: number = 0;
     nextQuestionButtonText: string = 'Prochaine question';
     subscription: Subscription;
-    // eslint-disable-next-line max-params
+
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -91,7 +92,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();

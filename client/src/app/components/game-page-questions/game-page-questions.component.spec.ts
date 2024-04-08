@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
-import { AnswerStateService } from '@app/services/answer-state.service';
-import { GameService } from '@app/services/game.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
+import { GameService } from '@app/services/game/game.service';
 import { GamePageQuestionsComponent } from './game-page-questions.component';
 
 @Component({

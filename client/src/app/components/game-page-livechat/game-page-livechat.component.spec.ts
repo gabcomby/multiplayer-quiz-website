@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { ChatService } from '@app/services/chat.service';
+import { ChatService } from '@app/services/chat/chat.service';
 import { of } from 'rxjs';
 import { GamePageLivechatComponent } from './game-page-livechat.component';
 
@@ -43,7 +43,12 @@ describe('GamePageLivechatComponent', () => {
         component.onChatInput(event);
 
         expect(event.preventDefault).toHaveBeenCalled();
-        expect(chatServiceMock.sendMessage).toHaveBeenCalledWith(component.text, component.playerName, component.roomId, component.isHost);
+        expect(chatServiceMock.sendMessage).toHaveBeenCalledWith({
+            text: '',
+            playerName: 'John Doe',
+            roomId: 'room123',
+            isHost: true,
+        });
         expect(component.text).toBe('');
     });
 });

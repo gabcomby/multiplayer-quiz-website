@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.component';
 import type { Game, GamePlayed } from '@app/interfaces/game';
-import { AdminService } from '@app/services/admin.service';
-import { GamePlayedService } from '@app/services/game-played.service';
+import { AdminService } from '@app/services/admin/admin.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -22,7 +22,7 @@ export class AdminPageComponent implements OnInit, AfterViewInit {
     dataSource: Game[] = [];
     historicDataSource = new MatTableDataSource<GamePlayed>([]);
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private router: Router,
         private dialog: MatDialog,

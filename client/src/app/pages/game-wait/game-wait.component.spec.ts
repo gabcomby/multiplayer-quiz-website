@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GamePageScoresheetComponent } from '@app/components/game-page-scoresheet/game-page-scoresheet.component';
-import { GameService } from '@app/services/game.service';
-import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { GameWaitComponent } from './game-wait.component';
 
 describe('GameWaitComponent', () => {

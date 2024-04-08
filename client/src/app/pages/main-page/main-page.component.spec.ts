@@ -12,11 +12,11 @@ import { API_BASE_URL } from '@app/app.module';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Player } from '@app/interfaces/match';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { AuthService } from '@app/services/auth.service';
-import { GameService } from '@app/services/game.service';
-import { RoomService } from '@app/services/room.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { AuthService } from '@app/services/auth/auth.service';
+import { GameService } from '@app/services/game/game.service';
+import { RoomService } from '@app/services/room/room.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 
 class MatDialogMock {

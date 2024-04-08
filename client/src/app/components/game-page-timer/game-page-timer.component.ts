@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AnswerStateService } from '@app/services/answer-state.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 
 @Component({
     selector: 'app-game-page-timer',

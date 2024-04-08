@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
+import { NewQuestion } from '@app/interfaces/newquestion';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,26 +15,28 @@ export class HandlerNewQuestionService {
         private questionValidationService: QuestionValidationService,
         private questionService: QuestionService,
     ) {}
-    // eslint-disable-next-line max-params -- Single responsibility principle
-    async addQuestion(question: Question, onlyAddQuestionBank: boolean, addToBank: boolean, choices?: Choice[]): Promise<boolean> {
-        const newQuestion = this.createNewQuestion(question, choices);
 
-        if (this.questionValidationService.validateQuestion(newQuestion)) {
-            if (!onlyAddQuestionBank) {
-                if (addToBank && (await this.validateQuestionExisting(newQuestion))) {
-                    this.questionService.addQuestionBank(newQuestion);
-                    this.questionService.addQuestion(newQuestion);
-                    return true;
-                } else if (!addToBank) {
-                    this.questionService.addQuestion(newQuestion);
-                    return true;
-                }
-                return false;
-            } else if (await this.validateQuestionExisting(newQuestion)) {
-                this.questionService.addQuestionBank(newQuestion);
+    async addQuestion(newQuestion: NewQuestion): Promise<boolean> {
+        const question = this.createNewQuestion(newQuestion.question, newQuestion.choices);
+
+        if (this.questionValidationService.validateQuestion(question)) {
+            if (!newQuestion.onlyAddQuestionBank) {
+                return this.addQuestionToQuiz(newQuestion, question);
+            } else if (await this.validateQuestionExisting(question)) {
+                this.questionService.addQuestionBank(question);
                 return true;
             }
-            return false;
+        }
+        return false;
+    }
+    async addQuestionToQuiz(newQuestion: NewQuestion, question: Question) {
+        if (newQuestion.addToBank && (await this.validateQuestionExisting(question))) {
+            this.questionService.addQuestionBank(question);
+            this.questionService.addQuestion(question);
+            return true;
+        } else if (!newQuestion.addToBank) {
+            this.questionService.addQuestion(question);
+            return true;
         }
         return false;
     }
