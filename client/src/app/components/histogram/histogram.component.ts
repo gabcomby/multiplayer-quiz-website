@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 
 const SIZE1 = 400;
 const SIZE2 = 400;

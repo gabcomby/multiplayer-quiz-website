@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { HandlerNewQuestionService } from '@app/services/handler-new-question/handler-new-question.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { NewQuestionComponent } from './new-question.component';
 import SpyObj = jasmine.SpyObj;
 

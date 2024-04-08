@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AnswerStateService } from '@app/services/answer-state.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GamePageTimerComponent } from './game-page-timer.component';
 
 describe('GamePageTimerComponent', () => {

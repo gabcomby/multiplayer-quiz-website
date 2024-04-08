@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
-import { SocketService } from '@app/services/socket.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { SnackbarService } from 'src/app/services/snackbar.service';
 
 const DISAPPEAR_DELAY = 60000;
 

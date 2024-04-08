@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Choice, QuestionType } from '@app/interfaces/game';
-import { AnswerStateService } from '@app/services/answer-state.service';
-import { GameService } from '@app/services/game.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
+import { GameService } from '@app/services/game/game.service';
 
 @Component({
     selector: 'app-game-page-questions',

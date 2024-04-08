@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { Observable, firstValueFrom } from 'rxjs';
-import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',

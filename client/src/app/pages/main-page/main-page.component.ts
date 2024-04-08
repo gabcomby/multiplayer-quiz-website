@@ -6,11 +6,11 @@ import { PasswordDialogComponent } from '@app/components/password-dialog/passwor
 import { PlayerNameDialogComponent } from '@app/components/player-name-dialog/player-name-dialog.component';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Player } from '@app/interfaces/match';
-import { AuthService } from '@app/services/auth.service';
-import { GameService } from '@app/services/game.service';
-import { RoomService } from '@app/services/room.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { AuthService } from '@app/services/auth/auth.service';
+import { GameService } from '@app/services/game/game.service';
+import { RoomService } from '@app/services/room/room.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 

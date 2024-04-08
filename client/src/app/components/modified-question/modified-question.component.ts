@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
-import { QuestionService } from '@app/services/question.service';
+import { QuestionService } from '@app/services/question/question.service';
 
 const MAX_LENGTH = 200;
 
