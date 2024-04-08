@@ -59,26 +59,21 @@ export class NewGamePageComponent implements OnInit {
             return false;
         }
     }
-    snackbarHiddenGame(game: Game, indexGame: number) {
+    suggestionChoice(game: Game): string {
         let suggestion = '';
         if (this.games.length === 1) {
             suggestion = ' we have no other games to suggest';
-        } else if (indexGame === this.games.length - 1) {
-            suggestion = this.suggestGame(game);
         } else {
             suggestion = this.suggestGame(game);
         }
+        return suggestion;
+    }
+    snackbarHiddenGame(game: Game): void {
+        const suggestion = this.suggestionChoice(game);
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been hidden' + ' ' + suggestion);
     }
-    snackbarDeletedGame(game: Game, indexGame: number) {
-        let suggestion = '';
-        if (this.games.length === 1) {
-            suggestion = ' we have no other games to suggest';
-        } else if (indexGame === this.games.length - 1) {
-            suggestion = this.suggestGame(game);
-        } else {
-            suggestion = this.suggestGame(game);
-        }
+    snackbarDeletedGame(game: Game): void {
+        const suggestion = this.suggestionChoice(game);
         this.snackbarService.openSnackBar('Game ' + game.title + ' has been deleted' + ' ' + suggestion);
     }
     async isOriginalGame(game: Game): Promise<boolean> {
@@ -86,12 +81,10 @@ export class NewGamePageComponent implements OnInit {
         const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((item) => item.id === game.id);
         if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
-            const indexGame = this.games.indexOf(game);
-            this.snackbarDeletedGame(game, indexGame);
+            this.snackbarDeletedGame(game);
             result = false;
         } else if (!newGameArray[indexG].isVisible) {
-            const indexGame = this.games.indexOf(game);
-            this.snackbarHiddenGame(game, indexGame);
+            this.snackbarHiddenGame(game);
             result = false;
         }
         return result;
