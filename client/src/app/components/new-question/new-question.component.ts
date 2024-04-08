@@ -40,7 +40,7 @@ export class NewQuestionComponent {
         this.addFromQuestionBank = false;
     }
 
-    resetComponent(event: Choice[] | undefined) {
+    resetComponent(event: Choice[] | undefined): void {
         this.question.text = '';
         this.question.points = 10;
         this.question.choices = [];
@@ -53,12 +53,12 @@ export class NewQuestionComponent {
 
         this.addBankQuestion = false;
     }
-    createQcm() {
+    createQcm(): void {
         this.createQuestionShown = true;
         this.question.type = QuestionType.QCM;
         this.isQCM = true;
     }
-    createQrl() {
+    createQrl(): void {
         this.createQuestionShown = true;
         this.question.type = QuestionType.QRL;
         this.isQCM = false;
