@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 import { ChatService } from './chat.service';
-import { SnackbarService } from './snackbar.service';
-import { SocketService } from './socket.service';
 
 const DISAPPEAR_DELAY = 60000;
 

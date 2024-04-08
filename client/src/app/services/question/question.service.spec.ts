@@ -2,9 +2,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Question, QuestionType } from '@app/interfaces/game';
-import { QuestionValidationService } from './question-validation.service';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
 
 describe('QuestionService', () => {
     let service: QuestionService;

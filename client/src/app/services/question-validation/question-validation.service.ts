@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { SnackbarService } from './snackbar.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
 @Injectable({
     providedIn: 'root',

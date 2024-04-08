@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameService } from '@app/services/game.service';
-import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SocketService } from '@app/services/socket/socket.service';
 
 @Component({
     selector: 'app-game-wait',

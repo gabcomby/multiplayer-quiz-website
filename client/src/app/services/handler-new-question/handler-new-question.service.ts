@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
 
 @Injectable({
     providedIn: 'root',

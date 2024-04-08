@@ -1,8 +1,8 @@
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { HandlerNewQuestionService } from './handler-new-question.service';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
 
 describe('HandlerNewQuestionService', () => {
     let handlerService: HandlerNewQuestionService;

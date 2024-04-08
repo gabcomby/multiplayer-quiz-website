@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
-import { QuestionService } from '@app/services/question.service';
+import { HandlerNewQuestionService } from '@app/services/handler-new-question/handler-new-question.service';
+import { QuestionService } from '@app/services/question/question.service';
 
 @Component({
     selector: 'app-new-question',
