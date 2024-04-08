@@ -1,4 +1,3 @@
-
 /* eslint-disable -- Remove rules due to stub class + max lines */
 /* import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, Input } from '@angular/core';
