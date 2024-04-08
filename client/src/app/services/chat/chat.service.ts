@@ -5,6 +5,7 @@ import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 const DISAPPEAR_DELAY = 60000;
+const NOT_FOUND_INDEX = -1;
 
 @Injectable({
     providedIn: 'root',
@@ -66,8 +67,7 @@ export class ChatService {
 
     private hideMessage(message: Message): void {
         const index = this.messages.indexOf(message);
-        // eslint-disable-next-line -- Used to hide message
-        if (index !== -1) {
+        if (index !== NOT_FOUND_INDEX) {
             this.messages[index].visible = false;
             this.messagesSubject.next([...this.messages]);
         }

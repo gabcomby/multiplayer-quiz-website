@@ -22,7 +22,7 @@ import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private authService: AuthService,
         private router: Router,

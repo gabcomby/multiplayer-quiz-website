@@ -31,7 +31,7 @@ export class CreateQGamePageComponent implements OnInit {
     gameForm: FormGroup;
     dataReady: boolean = false;
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private questionService: QuestionService,
         private gameValidationService: GameValidationService,

@@ -52,9 +52,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        // if (this.currentQuestionValue?.type === QuestionType.QCM) {
         this.constructHistogramsData();
-        // }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -71,6 +69,7 @@ export class HistogramComponent implements OnInit, OnChanges {
             this.currentIndex = newIndex;
         }
     }
+
     private constructLiveHistogramQrl(): void {
         if (!this.questionsGame[0]) {
             return;

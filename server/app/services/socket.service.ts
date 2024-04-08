@@ -208,11 +208,10 @@ export class SocketManager {
                 });
             });
 
-            socket.on('disconnect', () => {
-                // eslint-disable-next-line no-console
-                console.log('user disconnected');
+            socket.on('disconnect', (reason) => {
+                return reason;
             });
-            // WTF SOCKET ID
+
             socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer, reset: boolean) => {
                 const room = getRoom();
                 if (roomExists(room.roomId)) {
