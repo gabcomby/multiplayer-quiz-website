@@ -10,6 +10,8 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
 
+const MAX_LENGTH = 200;
+
 @Component({
     selector: 'app-choice',
     template: '',
@@ -110,11 +112,6 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.setQuestionList).toHaveBeenCalled();
     });
 
-    // it('should initiliaze questionList with getQuestion from service and disabled modification', async () => {
-    //     await component.loadQuestionsFromBank();
-    //     expect(component.questionList).toEqual(await questionServiceSpy.getQuestions());
-    //     expect(component.disabled).toEqual([true, true]);
-    // });
     it('should add question to list and add true to disabled when eventEmitter from service', async () => {
         spyOn(questionServiceSpy.onQuestionAdded, 'emit');
         const mockQuestion = {
@@ -206,5 +203,24 @@ describe('ModifiedQuestionComponent', () => {
         expect(component.questionList).not.toContain(questionToRemove);
         expect(questionServiceSpy.updateList).toHaveBeenCalledWith(component.questionList);
         expect(component.disabled[index]).toBeTrue();
+    });
+    it('should load questions from bank', () => {
+        component.loadQuestionsFromBank();
+        expect(questionServiceSpy.getQuestions).toHaveBeenCalled();
+    });
+    it('should truncate text if it exceeds MAX_LENGTH', () => {
+        spyOn(component, 'cutText').and.callThrough();
+        const questionMock = {
+            type: QuestionType.QCM,
+            // eslint-disable-next-line max-len -- it needs to be disable to test the function
+            text: 'Ceci est une question de test qui est très longue et qui dépasse la limite de caractères autorisée. Nous sommes léquipe 102. Voici des caracteres pour augmenter la taille du texte pour quil soit a 200. A',
+            points: 10,
+            id: 'dsdsd',
+            lastModification: defaultDate,
+            choices: [],
+        };
+        component.cutText(questionMock);
+        expect(questionMock.text.length).toBe(MAX_LENGTH + 3);
+        expect(questionMock.text.endsWith('...')).toBe(true);
     });
 });

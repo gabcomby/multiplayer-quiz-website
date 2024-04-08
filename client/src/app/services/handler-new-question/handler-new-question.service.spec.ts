@@ -87,7 +87,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).toHaveBeenCalled();
@@ -101,7 +106,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
@@ -115,8 +125,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(false);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
-
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
         expect(result).toBeFalse();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
         expect(questionService.addQuestion).not.toHaveBeenCalled();
@@ -129,21 +143,30 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
-
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).toHaveBeenCalled();
         expect(questionService.addQuestion).not.toHaveBeenCalled();
     });
 
     it('should return false if onlyAddQuestionBank is true and question already exist', async () => {
-        const onlyAddQuestionBank = true;
-        const addToBank = true;
+        const onlyQuestionBank = true;
+        const addBank = true;
         questionValidationService.validateQuestion.and.returnValue(true);
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(false);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank: onlyQuestionBank,
+            addToBank: addBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeFalse();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
@@ -155,7 +178,12 @@ describe('HandlerNewQuestionService', () => {
         const addToBank = true;
         questionValidationService.validateQuestion.and.returnValue(false);
 
-        const result = await handlerService.addQuestion(mockQuestion, onlyAddQuestionBank, addToBank, mockChoices);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeFalse();
     });

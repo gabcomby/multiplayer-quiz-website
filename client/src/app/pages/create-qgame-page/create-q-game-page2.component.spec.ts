@@ -104,10 +104,11 @@ describe('CreateQGamePageComponent', () => {
     });
     it('should throw error if submitting with the server down', async () => {
         gameServiceSpy.isValidGame.and.throwError('test error');
-        spyOn(component, 'handleServerError');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(component, 'handleServerError');
 
         await component.onSubmit();
 
-        expect(component.handleServerError).toHaveBeenCalled();
+        expect(privateSpy).toHaveBeenCalled();
     });
 });

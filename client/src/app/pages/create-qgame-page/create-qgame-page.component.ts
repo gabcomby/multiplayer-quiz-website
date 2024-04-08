@@ -60,16 +60,6 @@ export class CreateQGamePageComponent implements OnInit {
             }
         }
     }
-
-    getGame(gameId: string): void {
-        const findGame = this.games.find((gameSelected) => gameSelected.id === gameId);
-        if (findGame) {
-            this.gameModified = findGame;
-        } else {
-            throw new Error(`Game with id ${gameId} not found`);
-        }
-    }
-
     async onSubmit() {
         const newGame: Game = this.gameValidationService.createNewGame(true, this.gameForm, this.gameModified);
         try {
@@ -88,8 +78,16 @@ export class CreateQGamePageComponent implements OnInit {
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
+    private getGame(gameId: string): void {
+        const findGame = this.games.find((gameSelected) => gameSelected.id === gameId);
+        if (findGame) {
+            this.gameModified = findGame;
+        } else {
+            throw new Error(`Game with id ${gameId} not found`);
+        }
+    }
 
-    insertIfExist() {
+    private insertIfExist() {
         this.gameForm.patchValue({
             name: this.gameModified.title,
             description: this.gameModified.description,
@@ -98,7 +96,7 @@ export class CreateQGamePageComponent implements OnInit {
         });
     }
 
-    handleServerError = () => {
+    private handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
         });

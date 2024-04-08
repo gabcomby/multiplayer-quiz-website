@@ -160,4 +160,18 @@ describe('NewQuestionComponent', () => {
 
         expect(component.addBankQuestion).toBeFalse();
     });
+    it('should create a qcm', () => {
+        spyOn(component, 'createQcm').and.callThrough();
+        component.createQcm();
+        expect(component.createQuestionShown).toBeTrue();
+        expect(component.question.type).toEqual(QuestionType.QCM);
+        expect(component.isQCM).toBeTrue();
+    });
+    it('should create a qrl', () => {
+        spyOn(component, 'createQrl').and.callThrough();
+        component.createQrl();
+        expect(component.createQuestionShown).toBeTrue();
+        expect(component.question.type).toEqual(QuestionType.QRL);
+        expect(component.isQCM).toBeFalse();
+    });
 });

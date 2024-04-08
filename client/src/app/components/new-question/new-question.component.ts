@@ -25,10 +25,15 @@ export class NewQuestionComponent {
         private handlerQuestionService: HandlerNewQuestionService,
     ) {}
 
-    async addQuestion(onlyAddQuestionBank: boolean, event?: Choice[]): Promise<void> {
-        const questionValidated = await this.handlerQuestionService.addQuestion(this.question, onlyAddQuestionBank, this.addBankQuestion, event);
+    async addQuestion(onlyQuestionBank: boolean, event?: Choice[]): Promise<void> {
+        const questionValidated = await this.handlerQuestionService.addQuestion({
+            question: this.question,
+            onlyAddQuestionBank: onlyQuestionBank,
+            addToBank: this.addBankQuestion,
+            choices: event,
+        });
         if (questionValidated) {
-            if (!onlyAddQuestionBank) {
+            if (!onlyQuestionBank) {
                 this.resetComponent(event);
             } else {
                 this.router.navigate(['/question-bank']);
@@ -40,7 +45,7 @@ export class NewQuestionComponent {
         this.addFromQuestionBank = false;
     }
 
-    resetComponent(event: Choice[] | undefined) {
+    resetComponent(event: Choice[] | undefined): void {
         this.question.text = '';
         this.question.points = 10;
         this.question.choices = [];
@@ -53,12 +58,12 @@ export class NewQuestionComponent {
 
         this.addBankQuestion = false;
     }
-    createQcm() {
+    createQcm(): void {
         this.createQuestionShown = true;
         this.question.type = QuestionType.QCM;
         this.isQCM = true;
     }
-    createQrl() {
+    createQrl(): void {
         this.createQuestionShown = true;
         this.question.type = QuestionType.QRL;
         this.isQCM = false;

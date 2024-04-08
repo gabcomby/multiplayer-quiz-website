@@ -7,7 +7,7 @@ import { GameService } from '@app/services/game/game.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
-const HISTOGRAMM_UPDATE = 5000;
+const HISTOGRAMM_UPDATE = 1000;
 
 @Component({
     selector: 'app-host-game-page',
