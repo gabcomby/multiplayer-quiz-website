@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Question, QuestionType } from '@app/interfaces/game';
-import { AdminService } from '@app/services/admin.service';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { AdminService } from '@app/services/admin/admin.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
 @Component({
     selector: 'app-question-bank',
