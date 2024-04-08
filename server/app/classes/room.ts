@@ -99,8 +99,8 @@ export class Room {
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
-                        // .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
-                        /* if (this.gameType !== GameType.TEST) {
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
+                    if (this.gameType !== GameType.TEST) {
                         const gamePlayedData: IGamePlayed = {
                             id: this.generateGamePlayedId(),
                             title: this.game.title,
@@ -109,18 +109,7 @@ export class Room {
                             bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
                         } as IGamePlayed;
                         this.gamePlayedService.createGamePlayed(gamePlayedData);
-                    }*/
-
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
-                    // TODO: Write game in DB
-                    const gamePlayedData: IGamePlayed = {
-                        id: this.generateGamePlayedId(),
-                        title: this.game.title,
-                        creationDate: this.gameStartDateTime,
-                        numberPlayers: this.nbrPlayersAtStart,
-                        bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
-                    } as IGamePlayed;
-                    this.gamePlayedService.createGamePlayed(gamePlayedData);
+                    }
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
