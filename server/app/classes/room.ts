@@ -51,7 +51,7 @@ export class Room {
     panicModeEnabled = false;
 
     // Variables for the questions & answers
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array
     currentQuestionIndex = -1;
     firstAnswerForBonus = true;
     assertedAnswers: number = 0;
