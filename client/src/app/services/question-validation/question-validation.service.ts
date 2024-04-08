@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
+const MAX_POINTS = 100;
+const MIN_POINTS = 10;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -34,8 +37,6 @@ export class QuestionValidationService {
     }
 
     validatePoints(newQuestion: Question) {
-        const MAX_POINTS = 100;
-        const MIN_POINTS = 10;
         const points = newQuestion.points;
         return points % MIN_POINTS === 0 && points >= MIN_POINTS && points <= MAX_POINTS;
     }
