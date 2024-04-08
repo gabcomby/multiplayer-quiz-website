@@ -4,6 +4,8 @@ import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GameService } from '@app/services/game/game.service';
 
+const NOT_FOUND = -1;
+
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
@@ -65,16 +67,12 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     toggleAnswer(index: number) {
         if (this.timerExpired || this.answerIsLocked) return;
-        if (!this.checkIfMultipleChoice()) {
-            this.selectedChoices = [];
-        }
+        if (!this.checkIfMultipleChoice()) this.selectedChoices = [];
+
         const answerIdx = this.selectedChoices.indexOf(index);
-        // eslint-disable-next-line
-        if (answerIdx > -1) {
-            this.selectedChoices.splice(answerIdx, 1);
-        } else {
-            this.selectedChoices.push(index);
-        }
+        if (answerIdx > NOT_FOUND) this.selectedChoices.splice(answerIdx, 1);
+        else this.selectedChoices.push(index);
+
         this.answerIdx.emit(this.selectedChoices);
         this.document.body.focus();
     }
