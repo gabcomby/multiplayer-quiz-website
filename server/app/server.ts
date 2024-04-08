@@ -10,7 +10,7 @@ import { rooms } from './module';
 import { GameService } from './services/game.service';
 import { QuestionsService } from './services/questions.service';
 
-const BASE_TEN = 10;
+const PARSED_PORT = 10;
 
 @Service()
 export class Server {
@@ -22,7 +22,7 @@ export class Server {
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, BASE_TEN) : val;
+        const port: number = typeof val === 'string' ? parseInt(val, PARSED_PORT) : val;
         return isNaN(port) ? val : port >= 0 ? port : false;
     }
     init(): void {
@@ -59,7 +59,6 @@ export class Server {
                 if (gameId === 'randomModeGame') {
                     const randomQuestions = await questionService.getFiveRandomQuestions();
                     if (randomQuestions.length === 0) {
-                        // TODO: Handle error and no navigation to game page
                         return;
                     }
                     const game = {
