@@ -1,11 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { API_BASE_URL } from '@app/app.module';
-import { GamePageScoresheetComponent } from './game-page-scoresheet.component';
-import { HttpClient } from '@angular/common/http';
-import { GameService } from '@app/services/game.service';
 import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
+import { GameService } from '@app/services/game/game.service';
+import { GamePageScoresheetComponent } from './game-page-scoresheet.component';
 
 describe('GamePageScoresheetComponent', () => {
     let component: GamePageScoresheetComponent;

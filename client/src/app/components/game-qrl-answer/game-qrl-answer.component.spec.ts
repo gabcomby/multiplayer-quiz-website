@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { GameQrlAnswerComponent } from './game-qrl-answer.component';
 
 describe('GameQrlAnswerComponent', () => {

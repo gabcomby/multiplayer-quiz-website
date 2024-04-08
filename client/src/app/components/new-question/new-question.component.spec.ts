@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { HandlerNewQuestionService } from '@app/services/handler-new-question/handler-new-question.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { NewQuestionComponent } from './new-question.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -159,5 +159,19 @@ describe('NewQuestionComponent', () => {
         expect(newChoices[1]).toEqual({ isCorrect: false, text: '' });
 
         expect(component.addBankQuestion).toBeFalse();
+    });
+    it('should create a qcm', () => {
+        spyOn(component, 'createQcm').and.callThrough();
+        component.createQcm();
+        expect(component.createQuestionShown).toBeTrue();
+        expect(component.question.type).toEqual(QuestionType.QCM);
+        expect(component.isQCM).toBeTrue();
+    });
+    it('should create a qrl', () => {
+        spyOn(component, 'createQrl').and.callThrough();
+        component.createQrl();
+        expect(component.createQuestionShown).toBeTrue();
+        expect(component.question.type).toEqual(QuestionType.QRL);
+        expect(component.isQCM).toBeFalse();
     });
 });
