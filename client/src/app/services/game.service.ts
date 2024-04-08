@@ -47,6 +47,8 @@ export class GameService {
     private audio = new Audio();
     private numberInputModified: number = 0;
     private numberInputNotModified: number = 0;
+    private playersListResult: Player[] = [];
+    private countAnswerQrl: number = 0;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -70,6 +72,10 @@ export class GameService {
 
     get playerListValue(): Player[] {
         return this.playerList;
+    }
+
+    get playersListResultValue(): Player[] {
+        return this.playersListResult;
     }
 
     get playerLeftListValue(): Player[] {
@@ -161,11 +167,18 @@ export class GameService {
 
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
-        this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer);
+        this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer, true);
     }
     set answerTextSetter(answerText: string) {
+        this.countAnswerQrl += 1;
         this.answerText = answerText;
-        this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer);
+        if (this.currentQuestionIndex === 0 && this.countAnswerQrl > 2) {
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
+        } else if (this.currentQuestionIndex > 0 && this.countAnswerQrl > 1) {
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, false);
+        } else {
+            this.socketService.sendLiveAnswers(this.answerText, this.currentPlayer, true);
+        }
     }
 
     set playerQRLPoints(points: [Player, number][]) {
@@ -200,6 +213,7 @@ export class GameService {
         this.roomLocked = false;
         this.currentQuestion = null;
         this.answerIndex = [];
+        this.answersTextQRL = [];
         this.answerText = '';
         this.allQuestionsFromGame = [];
         this.allAnswersIndex = [];
@@ -210,6 +224,7 @@ export class GameService {
         this.gameTimerPaused = false;
         this.audio.src = AUDIO_CLIP_PATH;
         this.audio.load();
+        this.countAnswerQrl = 0;
     }
 
     startGame(): void {
@@ -313,6 +328,8 @@ export class GameService {
         });
 
         this.socketService.onQuestion((question: Question, questionIndex: number) => {
+            this.countAnswerQrl = 0;
+
             this.timerStopped = false;
             this.currentQuestionIndex = questionIndex;
             this.currentQuestion = question;
@@ -340,6 +357,7 @@ export class GameService {
             const playerListOriginal = new Map(playerList);
             const newPlayerList = [...playerListOriginal.values()];
             this.playerList = [...newPlayerList];
+            this.playersListResult = [...newPlayerList];
             this.allQuestionsFromGame = questionList;
             this.allAnswersIndex = allAnswersIndex;
             this.router.navigate(['/resultsView']);

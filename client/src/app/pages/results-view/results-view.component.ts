@@ -13,6 +13,7 @@ export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
     playerDataSource: Player[] = [];
+    playerDataSorted: Player[] = [];
 
     constructor(
         private gameService: GameService,
@@ -32,7 +33,7 @@ export class ResultsViewComponent implements OnInit {
     }
 
     get playerList(): Player[] {
-        this.playerDataSource = this.gameService.playerListValue;
+        this.playerDataSource = this.gameService.playersListResultValue;
         this.sortDataSource();
         return this.playerDataSource;
     }

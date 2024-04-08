@@ -1,9 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game.service';
+import { SnackbarService } from '@app/services/snackbar.service';
 import { SocketService } from '@app/services/socket.service';
 import { Subscription, interval } from 'rxjs';
 const HISTOGRAMM_UPDATE = 5000;
@@ -13,17 +14,20 @@ const HISTOGRAMM_UPDATE = 5000;
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnInit {
+export class HostGamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
     currentQuestionQRLIndex: number = 0;
     unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
+    subscription: Subscription;
+    // eslint-disable-next-line max-params
     constructor(
         private gameService: GameService,
         private router: Router,
         private socketService: SocketService,
+        private snackbarService: SnackbarService,
     ) {}
 
     get gameTimerPaused(): boolean {
@@ -90,9 +94,7 @@ export class HostGamePageComponent implements OnInit {
     get nbModified(): number {
         return this.gameService.numberInputModifidedValue;
     }
-    get nbNotModified(): number {
-        return this.gameService.numberInputNotModifidedValue;
-    }
+
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
@@ -107,17 +109,15 @@ export class HostGamePageComponent implements OnInit {
             localStorage.removeItem('refreshedPage');
             this.router.navigate([refreshedPage]);
         }
-        interval(HISTOGRAMM_UPDATE).subscribe(() => {
+        this.subscription = interval(HISTOGRAMM_UPDATE).subscribe(() => {
             this.socketService.updateHistogram();
         });
-        // this.intervalUpdate();
     }
-    // intervalUpdate(){
-    //     this.socketService.updateHistogram();
-    //     setTimeout(() => {
-    //         this.intervalUpdate();
-    //     }, HISTOGRAMM_UPDATE);
-    // }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
     setplayerPointsQRL(points: [Player, number][]) {
         this.gameService.playerQRLPoints = points;
     }
@@ -127,6 +127,10 @@ export class HostGamePageComponent implements OnInit {
     }
 
     nextQuestion(): void {
+        if (this.currentQuestion?.type === 'QRL' && this.answersQRL.length !== 0 && !this.isNoted) {
+            this.snackbarService.openSnackBar('Veuillez noter les joueurs', 'Fermer');
+            return;
+        }
         const timerLength = 1000;
         this.isNoted = false;
         this.gameService.nextQuestion();

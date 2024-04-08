@@ -56,7 +56,9 @@ export class Room {
     allAnswersForQCM = new Map<string, number[]>();
     allAnswersForQRL = new Map<string, [IPlayer, string][]>();
     globalAnswersText: [IPlayer, string][] = [];
-    // gameTest = false;
+    counterCorrectAnswerQRL = 0;
+    counterHalfCorrectAnswerQRL = 0;
+    allAnswersGameResults = new Map<string, number[]>();
     inputModifications: { player: string; time: number }[] = [];
 
     constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
@@ -68,6 +70,7 @@ export class Room {
     }
 
     startQuestion(): void {
+        this.inputModifications = [];
         if (this.timerState === TimerState.STOPPED) {
             if (this.launchTimer) {
                 this.duration = 5;
@@ -79,7 +82,7 @@ export class Room {
                     this.io
                         .to(this.roomId)
 
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQCM));
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
                     // TODO: Write game in DB
                     const gamePlayedData: IGamePlayed = {
                         id: this.generateGamePlayedId(),
@@ -197,7 +200,6 @@ export class Room {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
-        this.inputModifications = [];
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
@@ -243,10 +245,15 @@ export class Room {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
             if (question.type === 'QCM') {
                 this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
+                this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
                 this.globalAnswerIndex = [];
             } else if (question.type === 'QRL') {
                 this.allAnswersForQRL.set(question.text, this.globalAnswersText);
                 this.globalAnswersText = [];
+            }
+        } else {
+            if (question.type === 'QRL') {
+                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
             }
         }
     }
@@ -254,12 +261,21 @@ export class Room {
     calculatePointsQRL(points: [IPlayer, number][]): void {
         const question = this.game.questions[this.currentQuestionIndex];
         const playerArray = Array.from(this.playerList.entries());
+        if (!points) return;
         points.forEach(([player, point]: [IPlayer, number]) => {
             const playerIndex = playerArray.findIndex(([, p]) => p.id === player.id);
             if (question && playerIndex >= 0) {
                 playerArray[playerIndex][1].score += point * question.points;
+                if (point === 1) {
+                    this.counterCorrectAnswerQRL += 1;
+                } else {
+                    this.counterHalfCorrectAnswerQRL += 1;
+                }
             }
         });
+        this.allAnswersGameResults.set(question.text, [this.counterHalfCorrectAnswerQRL, this.counterCorrectAnswerQRL]);
+        this.counterCorrectAnswerQRL = 0;
+        this.counterHalfCorrectAnswerQRL = 0;
         this.io.to(this.roomId).emit('playerlist-change', playerArray);
     }
 
@@ -270,16 +286,20 @@ export class Room {
             this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
             this.handleTimerEnd();
+        } else {
+            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
     }
 
     handleInputModification() {
+        if (this.game.questions[this.currentQuestionIndex]?.type === 'QCM') {
+            return;
+        }
         const now = new Date().getTime();
         const fiveSecondsAgo = now - TIME_HISTOGRAM_UPDATE;
 
         this.inputModifications = this.inputModifications.filter((modification) => modification.time > fiveSecondsAgo);
 
-        // Comptez ici le nombre unique de playerId dans `this.modifications`
         const uniquePlayerIds = new Set(this.inputModifications.map((mod) => mod.player));
         const numberModifications = uniquePlayerIds.size;
         this.io.to(this.hostId).emit('number-modifications', numberModifications);
