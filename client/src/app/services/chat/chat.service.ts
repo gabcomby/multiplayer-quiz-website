@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { Message } from '@app/interfaces/message';
+import type { ChatMessageCommand, Message } from '@app/interfaces/message';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -38,10 +38,9 @@ export class ChatService {
         this.messages = [];
     }
 
-    // eslint-disable-next-line -- needed to send message
-    sendMessage(text: string, playerName: string, roomId: string, isHost: boolean): void {
-        const trimmedText = text.trim();
-        if (!isHost && !playerName) {
+    sendMessage(chatMessageCommand: ChatMessageCommand): void {
+        const trimmedText = chatMessageCommand.text.trim();
+        if (!chatMessageCommand.isHost && !chatMessageCommand.playerName) {
             this.snackbar.openSnackBar('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
             return;
         }
@@ -49,12 +48,12 @@ export class ChatService {
         if (trimmedText) {
             const message: Message = {
                 text: trimmedText,
-                sender: isHost ? 'Organisateur' : playerName,
+                sender: chatMessageCommand.isHost ? 'Organisateur' : chatMessageCommand.playerName,
                 timestamp: new Date(),
                 visible: true,
             };
             this.handleNewMessage(message);
-            this.socket.sendMessageToServer(trimmedText, message.sender, roomId);
+            this.socket.sendMessageToServer(trimmedText, message.sender, chatMessageCommand.roomId);
         }
     }
 
