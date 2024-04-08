@@ -27,7 +27,9 @@
             [choices]="currentQuestion.choices || []"
             [timerExpired]="timerStopped"
             (answerIdx)="setAnswerIndex($event)"
+            (answerText)="setAnswerText($event)"
             [answerIsCorrect]="true"
+            [type]="currentQuestion.type"
         ></app-game-page-questions>
     </div>
 

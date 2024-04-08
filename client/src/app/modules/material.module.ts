@@ -29,6 +29,7 @@ import { MatTableModule } from '@angular/material/table';
 // import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 
 const modules = [
     // MatAutocompleteModule,
@@ -62,6 +63,7 @@ const modules = [
     // MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatMenuModule,
 ];
 
 /**

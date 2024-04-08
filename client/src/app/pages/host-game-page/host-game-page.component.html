@@ -32,10 +32,24 @@
     <div class="score" *ngIf="!isLaunchTimer">
         <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
     </div>
-    <div class="histogram" *ngIf="!isLaunchTimer">
-        <app-histogram [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
+    <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL" [hidden]="isNoted">
+        <app-game-qrl-answer
+            *ngIf="answersQRL && answersQRL.length > currentQuestionQRLIndex && answersQRL[currentQuestionQRLIndex][1]"
+            [answersQRL]="answersQRL[currentQuestionQRLIndex][1]"
+            [timerStopped]="timerStopped"
+            (selectedValuesEmitter)="setplayerPointsQRL($event)"
+            (isNotedEmitter)="setIsNoted($event)"
+        >
+        </app-game-qrl-answer>
     </div>
-    <div class="buttonGame">
+    <div class="histogram" *ngIf="!isLaunchTimer ">
+        <app-histogram *ngIf="currentQuestion?.type === 'QCM'"[answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray"></app-histogram>
+        <app-histogram *ngIf="currentQuestion?.type === 'QRL'" [answersPlayer]="answersClicked" [questionsGame]="currentQuestionArray" [nbModified]="nbModified"></app-histogram>
+
+    </div>
+  
+    
+    <div class="gameControl" *ngIf="(isNoted && currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM' || timerStopped">
         <button
             mat-raised-button
             color="primary"
@@ -54,6 +68,9 @@
         >
             {{ nextQuestionButtonText }}
         </button>
+    </div>
+    
+    <div class="buttonGame">
         <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
             {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}

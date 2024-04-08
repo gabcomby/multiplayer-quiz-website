@@ -106,7 +106,7 @@ export class Server {
                     getRoom().livePlayerAnswers.set(socket.id, []);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title);
+                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title, player);
                 }
             });
 
@@ -178,6 +178,12 @@ export class Server {
                 }
             });
 
+            socket.on('update-points-QRL', (points: [IPlayer, number][]) => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().calculatePointsQRL(points);
+                }
+            });
+
             socket.on('pause-timer', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().handleTimerPause();
@@ -190,14 +196,14 @@ export class Server {
                 }
             });
 
-            socket.on('send-answers', (answerIdx: number[]) => {
+            socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
                 if (socket.id !== getRoom().hostId) {
-                    getRoom().verifyAnswers(socket.id, answerIdx);
+                    getRoom().verifyAnswers(socket.id, answer, player);
                 }
             });
 
-            socket.on('send-locked-answers', (answerIdx: number[]) => {
-                getRoom().handleEarlyAnswers(socket.id, answerIdx);
+            socket.on('send-locked-answers', (answerIdx: number[] | string, player: IPlayer) => {
+                getRoom().handleEarlyAnswers(socket.id, answerIdx, player);
             });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
@@ -212,11 +218,20 @@ export class Server {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');
             });
-
-            socket.on('send-live-answers', (answerIdx: number[]) => {
+            // WTF SOCKET ID
+            socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer, reset: boolean) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
-                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
+
+                    if (!reset) {
+                        getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
+                    }
+                }
+            });
+            socket.on('update-histogram', () => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().handleInputModification();
                 }
             });
         });

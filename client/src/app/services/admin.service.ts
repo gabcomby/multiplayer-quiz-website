@@ -82,9 +82,9 @@ export class AdminService {
         return !this.isGameNameUnique(input, dataSource) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
     };
 
-    prepareGameForImport(game: Game): void {
+    async prepareGameForImport(game: Game): Promise<void> {
         removeUnrecognizedAttributes(game);
-        if (!this.gameValidationService.isValidGame(game)) return;
+        if (!(await this.gameValidationService.isValidGame(game))) return;
         assignNewGameAttributes(game);
     }
 
