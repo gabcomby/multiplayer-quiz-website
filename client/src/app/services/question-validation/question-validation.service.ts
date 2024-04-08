@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { SnackbarService } from './snackbar.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+
 const MAX_POINTS = 100;
 const MIN_POINTS = 10;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -38,19 +40,15 @@ export class QuestionValidationService {
         const points = newQuestion.points;
         return points % MIN_POINTS === 0 && points >= MIN_POINTS && points <= MAX_POINTS;
     }
-
     validateQuestion(newQuestion: Question) {
-        if (!this.isQuestionCorrect(newQuestion)) {
-            this.snackbarService.openSnackBar('la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces');
-            return false;
+        if (newQuestion.text !== '' && this.validatePoints(newQuestion) && newQuestion.text.trim().length !== 0) {
+            if (newQuestion.type === QuestionType.QCM && newQuestion.choices) {
+                if (this.answerValid(newQuestion.choices)) return true;
+            } else {
+                return true;
+            }
         }
-        if (newQuestion.type === QuestionType.QCM && newQuestion.choices) {
-            if (this.answerValid(newQuestion.choices)) return true;
-        }
-        return true;
-    }
-
-    private isQuestionCorrect(question: Question): boolean {
-        return question.text !== '' && this.validatePoints(question) && question.text.trim().length !== 0;
+        this.snackbarService.openSnackBar('la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces');
+        return false;
     }
 }

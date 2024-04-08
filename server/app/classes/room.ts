@@ -13,6 +13,7 @@ const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
+const NOT_FOUND_INDEX = -1;
 
 const enum TimerState {
     RUNNING,
@@ -51,8 +52,7 @@ export class Room {
     panicModeEnabled = false;
 
     // Variables for the questions & answers
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array and keep minimal code recycling
-    currentQuestionIndex = -1;
+    currentQuestionIndex = NOT_FOUND_INDEX;
     firstAnswerForBonus = true;
     assertedAnswers: number = 0;
     playerHasAnswered = new Map<string, boolean>();
@@ -64,6 +64,7 @@ export class Room {
     globalAnswersText: [IPlayer, string][] = [];
     counterCorrectAnswerQRL = 0;
     counterHalfCorrectAnswerQRL = 0;
+    counterIncorrectAnswerQRL = 0;
     allAnswersGameResults = new Map<string, number[]>();
     inputModifications: { player: string; time: number }[] = [];
 
@@ -286,12 +287,19 @@ export class Room {
                 playerArray[playerIndex][1].score += point * question.points;
                 if (point === 1) {
                     this.counterCorrectAnswerQRL += 1;
+                } else if (point === 0) {
+                    this.counterIncorrectAnswerQRL += 1;
                 } else {
                     this.counterHalfCorrectAnswerQRL += 1;
                 }
             }
         });
-        this.allAnswersGameResults.set(question.text, [this.counterHalfCorrectAnswerQRL, this.counterCorrectAnswerQRL]);
+        this.allAnswersGameResults.set(question.text, [
+            this.counterIncorrectAnswerQRL,
+            this.counterHalfCorrectAnswerQRL,
+            this.counterCorrectAnswerQRL,
+        ]);
+        this.counterIncorrectAnswerQRL = 0;
         this.counterCorrectAnswerQRL = 0;
         this.counterHalfCorrectAnswerQRL = 0;
         this.io.to(this.roomId).emit('playerlist-change', playerArray);

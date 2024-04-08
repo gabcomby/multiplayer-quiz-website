@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { QuestionType, type Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
-import { AnswerStateService } from './answer-state.service';
-import { ChatService } from './chat.service';
-import { SnackbarService } from './snackbar.service';
-import { SocketService } from './socket.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
+import { ChatService } from '@app/services/chat/chat.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;

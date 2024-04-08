@@ -9,10 +9,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Game, Question, QuestionType } from '@app/interfaces/game';
-import { ApiService } from '@app/services/api.service';
-import { GameValidationService } from '@app/services/game-validation.service';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { ApiService } from '@app/services/api/api.service';
+import { GameValidationService } from '@app/services/game-validation/game-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 

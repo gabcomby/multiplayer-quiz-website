@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Question } from '@app/interfaces/game';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { QuestionValidationService } from './question-validation.service';
-import { SnackbarService } from './snackbar.service';
 
 describe('QuestionValidationService', () => {
     let service: QuestionValidationService;

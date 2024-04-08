@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Game, GamePlayed } from '@app/interfaces/game';
-import { AdminService } from '@app/services/admin.service';
-import { GamePlayedService } from '@app/services/game-played.service';
+import { AdminService } from '@app/services/admin/admin.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
