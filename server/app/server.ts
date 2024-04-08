@@ -224,7 +224,7 @@ export class Server {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
                     this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
 
-                    if (!reset) {
+                    if (!reset && getRoom().gameType !== 1) {
                         getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
                     }
                 }
