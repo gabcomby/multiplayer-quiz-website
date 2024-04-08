@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input } from '@angular/core';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,6 +33,7 @@ describe('ModifyQuestionQbankComponent', () => {
                 },
                 { provide: Router, useValue: routerSpy },
             ],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
         fixture = TestBed.createComponent(ModifyQuestionQbankComponent);
         component = fixture.componentInstance;
