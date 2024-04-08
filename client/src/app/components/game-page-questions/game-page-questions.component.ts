@@ -4,7 +4,7 @@ import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GameService } from '@app/services/game/game.service';
 
-const NOT_FOUND = -1;
+const NOT_FOUND_INDEX = -1;
 
 @Component({
     selector: 'app-game-page-questions',
