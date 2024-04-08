@@ -41,7 +41,7 @@ export class NewGamePageComponent implements OnInit {
         });
     }
 
-    selected(game: Game) {
+    selected(game: Game): void {
         this.gameSelected[game.id] = !this.gameSelected[game.id];
     }
     suggestGame(game: Game): string {
@@ -106,7 +106,7 @@ export class NewGamePageComponent implements OnInit {
             }, GAME_CREATION_DELAY);
         }
     }
-    backHome() {
+    backHome(): void {
         this.router.navigate(['/home']);
     }
     async launchGame(game: Game): Promise<void> {
