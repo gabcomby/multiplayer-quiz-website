@@ -19,7 +19,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     isNoted: boolean = false;
     lobby: MatchLobby;
     currentQuestionQRLIndex: number = 0;
-    unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
     subscription: Subscription;
     // eslint-disable-next-line max-params
@@ -81,11 +80,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     get currentQuestionArray(): Question[] {
-        if (this.gameService.currentQuestionValue === null) {
-            return [];
-        } else {
-            return [this.gameService.currentQuestionValue];
-        }
+        return this.gameService.currentQuestionValue ? [this.gameService.currentQuestionValue] : [];
     }
 
     get currentGameTitle(): string {

@@ -1,30 +1,16 @@
-
-/* eslint-disable -- Remove rules due to stub class + max lines */
-/* import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, Input } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { API_BASE_URL } from '@app/app.module';
-import { GameService } from '@app/services/game.service';
-import { HostGamePageComponent } from './host-game-page.component';
-import { fakeAsync } from '@angular/core/testing';*/
 // /* eslint-disable -- Remove rules due to stub class + max lines */
 // import { HttpClientTestingModule } from '@angular/common/http/testing';
 // import { Component, Input } from '@angular/core';
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 // import { MatIconModule } from '@angular/material/icon';
 // import { MatSnackBarModule } from '@angular/material/snack-bar';
 // import { MatToolbarModule } from '@angular/material/toolbar';
 // import { ActivatedRoute, Router } from '@angular/router';
 // import { RouterTestingModule } from '@angular/router/testing';
 // import { API_BASE_URL } from '@app/app.module';
+// import { QuestionType } from '@app/interfaces/game';
 // import { GameService } from '@app/services/game.service';
 // import { HostGamePageComponent } from './host-game-page.component';
-// import { QuestionType } from '@app/interfaces/game';
 
 // @Component({
 //     selector: 'app-game-page-scoresheet',
@@ -92,21 +78,7 @@ import { fakeAsync } from '@angular/core/testing';*/
 //         spyOn(localStorage, 'removeItem').and.callFake(mockLocalStorage.removeItem);
 //         spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
 
-/*        gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer', 'timerCountdownValue'], {
-            matchLobby: {
-                id: 'match123',
-                playerList: [
-                    { id: 'player1', name: 'Player 1', score: 0 },
-                    { id: 'player2', name: 'Player 2', score: 0 },
-                ],
-                hostId: '334',
-            },
-            currentQuestionValue: null,
-            totalGameDurationValue: 5,
-        });
-        const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
-*/
-//         gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
+//       gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer', 'timerCountdownValue'], {
 //             matchLobby: {
 //                 id: 'match123',
 //                 playerList: [
@@ -119,6 +91,20 @@ import { fakeAsync } from '@angular/core/testing';*/
 //             totalGameDurationValue: 5,
 //         });
 //         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+
+//         // gameServiceSpy = jasmine.createSpyObj('GameService', ['leaveRoom', 'nextQuestion', 'enablePanicMode', 'pauseTimer'], {
+//         //     matchLobby: {
+//         //         id: 'match123',
+//         //         playerList: [
+//         //             { id: 'player1', name: 'Player 1', score: 0 },
+//         //             { id: 'player2', name: 'Player 2', score: 0 },
+//         //         ],
+//         //         hostId: '334',
+//         //     },
+//         //     currentQuestionValue: null,
+//         //     totalGameDurationValue: 5,
+//         // });
+//         // const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
 //         await TestBed.configureTestingModule({
 //             declarations: [
@@ -233,22 +219,21 @@ import { fakeAsync } from '@angular/core/testing';*/
 //         expect(result).toBe(gameServiceSpy.gameTitleValue);
 //     });
 
-/*
-    it('should call nextQuestion from gameService when nextQuestion is called', () => {
-        component.nextQuestion();
-        expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
-    });
-    it('should countdown and transition to "Prochaine question"', fakeAsync(() => {
-        component.nextQuestionButtonText = '3';
-        component.nextQuestion();
-        jasmine.clock().tick(1000);
-        expect(component.nextQuestionButtonText).toBe('2');
-        jasmine.clock().tick(1000);
-        expect(component.nextQuestionButtonText).toBe('1');
-        jasmine.clock().tick(1000);
-        expect(component.nextQuestionButtonText).toBe('Prochaine question');
-    }));
-*/
+//     it('should call nextQuestion from gameService when nextQuestion is called', () => {
+//         component.nextQuestion();
+//         expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
+//     });
+//     it('should countdown and transition to "Prochaine question"', fakeAsync(() => {
+//         component.nextQuestionButtonText = '3';
+//         component.nextQuestion();
+//         jasmine.clock().tick(1000);
+//         expect(component.nextQuestionButtonText).toBe('2');
+//         jasmine.clock().tick(1000);
+//         expect(component.nextQuestionButtonText).toBe('1');
+//         jasmine.clock().tick(1000);
+//         expect(component.nextQuestionButtonText).toBe('Prochaine question');
+//     }));
+
 //     it('should call nextQuestion from gameService when nextQuestion is called', () => {
 //         component.nextQuestion();
 //         expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
