@@ -4,9 +4,11 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
+import { IGame } from './model/game.model';
 import { IPlayer } from './model/match.model';
 import { rooms } from './module';
 import { GameService } from './services/game.service';
+import { QuestionsService } from './services/questions.service';
 
 const BASE_TEN = 10;
 
@@ -52,18 +54,38 @@ export class Server {
 
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
-                const game = await gameService.getGame(gameId);
-                const room = new Room(game, false, this.io);
+                const questionService = new QuestionsService();
+                let room: Room;
+                if (gameId === 'randomModeGame') {
+                    const randomQuestions = await questionService.getFiveRandomQuestions();
+                    if (randomQuestions.length === 0) {
+                        // TODO: Handle error and no navigation to game page
+                        return;
+                    }
+                    const game = {
+                        id: 'randomModeGame',
+                        title: 'Mode aléatoire',
+                        isVisible: true,
+                        description: 'Mode aléatoire',
+                        duration: 20,
+                        lastModification: new Date(),
+                        questions: randomQuestions,
+                    } as IGame;
+                    room = new Room(game, 2, this.io);
+                } else {
+                    const game = await gameService.getGame(gameId);
+                    room = new Room(game, 0, this.io);
+                }
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title, getRoom().gameType);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, true, this.io);
+                const room = new Room(game, 1, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
@@ -129,6 +151,19 @@ export class Server {
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    if (getRoom().gameType === 2) {
+                        const player: IPlayer = {
+                            id: 'organisateur',
+                            name: 'Organisateur',
+                            score: 0,
+                            bonus: 0,
+                        } as IPlayer;
+                        getRoom().playerList.set(socket.id, player);
+                        getRoom().playerHasAnswered.set(socket.id, false);
+                        getRoom().livePlayerAnswers.set(socket.id, []);
+                        this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
+                        this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                    }
                     getRoom().gameStartDateTime = new Date();
                     getRoom().nbrPlayersAtStart = getRoom().playerList.size;
                     getRoom().gameHasStarted = true;

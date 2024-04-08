@@ -22,9 +22,9 @@ export class SocketService {
         }
     }
 
-    onRoomCreated(callback: (roomId: string, gameTitle: string) => void): void {
-        this.socket.on('room-created', (roomId: string, gameTitle: string) => {
-            callback(roomId, gameTitle);
+    onRoomCreated(callback: (roomId: string, gameTitle: string, gameType: number) => void): void {
+        this.socket.on('room-created', (roomId: string, gameTitle: string, gameType: number) => {
+            callback(roomId, gameTitle, gameType);
         });
     }
 

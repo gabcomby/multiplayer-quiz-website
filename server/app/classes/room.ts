@@ -10,7 +10,7 @@ const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
-const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
+const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
 
@@ -18,6 +18,12 @@ const enum TimerState {
     RUNNING,
     STOPPED,
     PAUSED,
+}
+
+const enum GameType {
+    NORMAL,
+    TEST,
+    RANDOM,
 }
 
 export class Room {
@@ -31,7 +37,7 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
-    isTestRoom: boolean;
+    gameType: GameType;
     gameHasStarted = false;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
@@ -61,10 +67,22 @@ export class Room {
     allAnswersGameResults = new Map<string, number[]>();
     inputModifications: { player: string; time: number }[] = [];
 
-    constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
+    constructor(game: IGame, gameMode: number, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
         this.game = game;
-        this.isTestRoom = isTestRoom;
+        switch (gameMode) {
+            case 0:
+                this.gameType = GameType.NORMAL;
+                break;
+            case 1:
+                this.gameType = GameType.TEST;
+                break;
+            case 2:
+                this.gameType = GameType.RANDOM;
+                break;
+            default:
+                this.gameType = GameType.NORMAL;
+        }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
     }
@@ -81,6 +99,17 @@ export class Room {
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
+                    if (this.gameType !== GameType.TEST) {
+                        const gamePlayedData: IGamePlayed = {
+                            id: this.generateGamePlayedId(),
+                            title: this.game.title,
+                            creationDate: this.gameStartDateTime,
+                            numberPlayers: this.nbrPlayersAtStart,
+                            bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
+                        } as IGamePlayed;
+                        this.gamePlayedService.createGamePlayed(gamePlayedData);
+                    }
 
                         .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
                     // TODO: Write game in DB
@@ -153,8 +182,8 @@ export class Room {
             this.startQuestion();
             return;
         }
-        if (this.isTestRoom) {
-            setInterval(() => {
+        if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
+            setTimeout(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
         }

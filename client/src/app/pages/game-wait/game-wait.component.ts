@@ -43,6 +43,10 @@ export class GameWaitComponent implements OnInit {
         return this.gameService.gameTitleValue;
     }
 
+    get gameType() {
+        return this.gameService.gameTypeValue;
+    }
+
     @HostListener('window:beforeunload', ['$event'])
     // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {

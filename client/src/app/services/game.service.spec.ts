@@ -267,6 +267,18 @@
 //         expect(socketServiceSpy.sendLockedAnswers).toHaveBeenCalled();
 //     });
 
+/*
+    it('should set lobbyCode, isHost, and gameTitle when onRoomCreated is called', () => {
+        socketServiceSpy.onRoomCreated.and.callFake((callback) => {
+            callback('1234', 'Test Game', 1);
+        });
+        service.setupWebsocketEvents();
+        expect(service['lobbyCode']).toBe('1234');
+        expect(service['isHost']).toBe(true);
+        expect(service['gameTitle']).toBe('Test Game');
+        expect(socketServiceSpy.onRoomCreated).toHaveBeenCalled();
+    });
+*/
 //     it('should set lobbyCode, isHost, and gameTitle when onRoomCreated is called', () => {
 //         socketServiceSpy.onRoomCreated.and.callFake((callback) => {
 //             callback('1234', 'Test Game');
@@ -378,6 +390,19 @@
 //         expect(socketServiceSpy.onGameLaunch).toHaveBeenCalled();
 //     });
 
+/*
+    it('should redirect to /host-game-page if isHost is true and if gameType is equal to 0 when onGameLaunch is called', () => {
+        service['isHost'] = true;
+        service['gameType'] = 0;
+        socketServiceSpy.onGameLaunch.and.callFake((callback) => {
+            const questionDuration = 10;
+            const nbrOfQuestions = 5;
+            callback(questionDuration, nbrOfQuestions);
+        });
+        service.setupWebsocketEvents();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/host-game-page']);
+    });
+*/
 //     it('should redirect to /host-game-page if isHost is true when onGameLaunch is called', () => {
 //         service['isHost'] = true;
 //         socketServiceSpy.onGameLaunch.and.callFake((callback) => {
@@ -499,6 +524,25 @@
 //         expect(service['audio'].play).toHaveBeenCalled();
 //     });
 
+/*
+    it('should call audio.pause when onPanicModeDisabled is called', () => {
+        spyOn(service['audio'], 'pause');
+        socketServiceSpy.onPanicModeDisabled.and.callFake((callback) => {
+            callback();
+        });
+        service.setupWebsocketEvents();
+        expect(socketServiceSpy.onPanicModeDisabled).toHaveBeenCalled();
+        expect(service['audio'].pause).toHaveBeenCalled();
+        expect(service['audio'].currentTime).toBe(0);
+    });
+
+    it('should return game type', () => {
+        const gameTypeValueSpy = service['gameTypeValue'];
+        const result = service.gameTypeValue;
+        expect(result).toBe(gameTypeValueSpy);
+    });
+});
+*/
 //     it('should call audio.pause when onPanicModeDisabled is called', () => {
 //         spyOn(service['audio'], 'pause');
 //         socketServiceSpy.onPanicModeDisabled.and.callFake((callback) => {
