@@ -64,6 +64,7 @@ export class Room {
     globalAnswersText: [IPlayer, string][] = [];
     counterCorrectAnswerQRL = 0;
     counterHalfCorrectAnswerQRL = 0;
+    counterIncorrectAnswerQRL = 0;
     allAnswersGameResults = new Map<string, number[]>();
     inputModifications: { player: string; time: number }[] = [];
 
@@ -286,12 +287,19 @@ export class Room {
                 playerArray[playerIndex][1].score += point * question.points;
                 if (point === 1) {
                     this.counterCorrectAnswerQRL += 1;
+                } else if (point === 0) {
+                    this.counterIncorrectAnswerQRL += 1;
                 } else {
                     this.counterHalfCorrectAnswerQRL += 1;
                 }
             }
         });
-        this.allAnswersGameResults.set(question.text, [this.counterHalfCorrectAnswerQRL, this.counterCorrectAnswerQRL]);
+        this.allAnswersGameResults.set(question.text, [
+            this.counterIncorrectAnswerQRL,
+            this.counterHalfCorrectAnswerQRL,
+            this.counterCorrectAnswerQRL,
+        ]);
+        this.counterIncorrectAnswerQRL = 0;
         this.counterCorrectAnswerQRL = 0;
         this.counterHalfCorrectAnswerQRL = 0;
         this.io.to(this.roomId).emit('playerlist-change', playerArray);
