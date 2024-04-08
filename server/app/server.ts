@@ -78,127 +78,139 @@ export class Server {
                 }
                 socket.join(room.roomId);
                 setRoom(room);
-                getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title, getRoom().gameType);
+                room = getRoom();
+                room.hostId = socket.id;
+                this.io.to(socket.id).emit('room-created', room.roomId, room.game.title, room.gameType);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, 1, this.io);
-                socket.join(room.roomId);
-                setRoom(room);
-                getRoom().hostId = socket.id;
-                getRoom().playerList.set(socket.id, player);
-                getRoom().playerHasAnswered.set(socket.id, false);
-                getRoom().livePlayerAnswers.set(socket.id, []);
-                this.io.to(getRoom().roomId).emit('room-test-created', getRoom().game.title, Array.from(getRoom().playerList));
-                this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
-                getRoom().startQuestion();
+                const baseRoom = new Room(game, 1, this.io);
+                socket.join(baseRoom.roomId);
+                setRoom(baseRoom);
+                const room = getRoom();
+                room.hostId = socket.id;
+                room.playerList.set(socket.id, player);
+                room.playerHasAnswered.set(socket.id, false);
+                room.livePlayerAnswers.set(socket.id, []);
+                this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList));
+                this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
+                room.startQuestion();
             });
 
             socket.on('join-room', (roomId: string, player: IPlayer) => {
                 if (roomExists(roomId)) {
                     socket.join(roomId);
                     // Move this to the room class
-                    getRoom().playerList.set(socket.id, player);
-                    getRoom().playerHasAnswered.set(socket.id, false);
-                    getRoom().livePlayerAnswers.set(socket.id, []);
-                    this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
-                    this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title, player);
+                    const room = getRoom();
+                    room.playerList.set(socket.id, player);
+                    room.playerHasAnswered.set(socket.id, false);
+                    room.livePlayerAnswers.set(socket.id, []);
+                    this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
+                    this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
+                    this.io.to(socket.id).emit('room-joined', room.roomId, room.game.title, player);
                 }
             });
 
             socket.on('leave-room', () => {
-                if (roomExists(getRoom().roomId)) {
-                    if (getRoom().hostId === socket.id) {
-                        this.io.to(getRoom().roomId).emit('lobby-deleted');
-                        rooms.delete(getRoom().roomId);
+                const room = getRoom();
+                if (roomExists(room.roomId)) {
+                    if (room.hostId === socket.id) {
+                        this.io.to(room.roomId).emit('lobby-deleted');
+                        rooms.delete(room.roomId);
                     } else {
                         // Move this to the room class
-                        const player = getRoom().playerList.get(socket.id);
-                        getRoom().playerList.delete(socket.id);
-                        if (getRoom().playerList.size === 0 && getRoom().gameHasStarted) {
-                            this.io.to(getRoom().roomId).emit('lobby-deleted');
-                            rooms.delete(getRoom().roomId);
+                        const player = room.playerList.get(socket.id);
+                        room.playerList.delete(socket.id);
+                        if (room.playerList.size === 0 && room.gameHasStarted) {
+                            this.io.to(room.roomId).emit('lobby-deleted');
+                            rooms.delete(room.roomId);
                         } else {
-                            if (!getRoom().bannedNames.includes(player.name.toLowerCase())) {
-                                getRoom().playerLeftList.push(player);
-                                this.io.to(getRoom().roomId).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                            if (!room.bannedNames.includes(player.name.toLowerCase())) {
+                                room.playerLeftList.push(player);
+                                this.io.to(room.roomId).emit('playerleftlist-change', Array.from(room.playerLeftList));
                             }
-                            this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
+                            this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                         }
                     }
                 }
             });
 
             socket.on('ban-player', (name: string) => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    getRoom().bannedNames.push(name.toLowerCase());
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.bannedNames.push(name.toLowerCase());
                     // eslint-disable-next-line -- we do not use key in the find function
-                    const playerToBan = [...getRoom().playerList.entries()].find(([key, value]) => value.name === name)?.[0];
+                    const playerToBan = [...room.playerList.entries()].find(([key, value]) => value.name === name)?.[0];
                     this.io.to(playerToBan).emit('banned-from-game');
                 }
             });
 
             socket.on('toggle-room-lock', () => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    getRoom().roomLocked = !getRoom().roomLocked;
-                    this.io.to(getRoom().hostId).emit('room-lock-status', getRoom().roomLocked);
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.roomLocked = !room.roomLocked;
+                    this.io.to(room.hostId).emit('room-lock-status', room.roomLocked);
                 }
             });
 
             socket.on('start-game', () => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    if (getRoom().gameType === 2) {
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    if (room.gameType === 2) {
                         const player: IPlayer = {
                             id: 'organisateur',
                             name: 'Organisateur',
                             score: 0,
                             bonus: 0,
                         } as IPlayer;
-                        getRoom().playerList.set(socket.id, player);
-                        getRoom().playerHasAnswered.set(socket.id, false);
-                        getRoom().livePlayerAnswers.set(socket.id, []);
-                        this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
-                        this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                        room.playerList.set(socket.id, player);
+                        room.playerHasAnswered.set(socket.id, false);
+                        room.livePlayerAnswers.set(socket.id, []);
+                        this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
+                        this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
                     }
-                    getRoom().gameStartDateTime = new Date();
-                    getRoom().nbrPlayersAtStart = getRoom().playerList.size;
-                    getRoom().gameHasStarted = true;
-                    this.io.to(getRoom().roomId).emit('game-started', getRoom().game.duration, getRoom().game.questions.length);
-                    getRoom().startQuestion();
+                    room.gameStartDateTime = new Date();
+                    room.nbrPlayersAtStart = room.playerList.size;
+                    room.gameHasStarted = true;
+                    this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
+                    room.startQuestion();
                 }
             });
 
             socket.on('next-question', () => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    getRoom().startQuestion();
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.startQuestion();
                 }
             });
 
             socket.on('update-points-QRL', (points: [IPlayer, number][]) => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().calculatePointsQRL(points);
+                const room = getRoom();
+                if (roomExists(room.roomId)) {
+                    room.calculatePointsQRL(points);
                 }
             });
 
             socket.on('pause-timer', () => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    getRoom().handleTimerPause();
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.handleTimerPause();
                 }
             });
 
             socket.on('enable-panic-mode', () => {
-                if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
-                    getRoom().handlePanicMode();
+                const room = getRoom();
+                if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.handlePanicMode();
                 }
             });
 
             socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
-                if (socket.id !== getRoom().hostId) {
-                    getRoom().verifyAnswers(socket.id, answer, player);
+                const room = getRoom();
+                if (socket.id !== room.hostId) {
+                    room.verifyAnswers(socket.id, answer, player);
                 }
             });
 
@@ -220,18 +232,20 @@ export class Server {
             });
             // WTF SOCKET ID
             socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer, reset: boolean) => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().livePlayerAnswers.set(socket.id, answerIdx);
-                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
+                const room = getRoom();
+                if (roomExists(room.roomId)) {
+                    room.livePlayerAnswers.set(socket.id, answerIdx);
+                    this.io.to(room.hostId).emit('livePlayerAnswers', Array.from(room.livePlayerAnswers), player);
 
                     if (!reset) {
-                        getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
+                        room.inputModifications.push({ player: player.id, time: new Date().getTime() });
                     }
                 }
             });
             socket.on('update-histogram', () => {
-                if (roomExists(getRoom().roomId)) {
-                    getRoom().handleInputModification();
+                const room = getRoom();
+                if (roomExists(room.roomId)) {
+                    room.handleInputModification();
                 }
             });
         });
