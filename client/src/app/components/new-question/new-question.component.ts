@@ -25,10 +25,15 @@ export class NewQuestionComponent {
         private handlerQuestionService: HandlerNewQuestionService,
     ) {}
 
-    async addQuestion(onlyAddQuestionBank: boolean, event?: Choice[]): Promise<void> {
-        const questionValidated = await this.handlerQuestionService.addQuestion(this.question, onlyAddQuestionBank, this.addBankQuestion, event);
+    async addQuestion(onlyQuestionBank: boolean, event?: Choice[]): Promise<void> {
+        const questionValidated = await this.handlerQuestionService.addQuestion({
+            question: this.question,
+            onlyAddQuestionBank: onlyQuestionBank,
+            addToBank: this.addBankQuestion,
+            choices: event,
+        });
         if (questionValidated) {
-            if (!onlyAddQuestionBank) {
+            if (!onlyQuestionBank) {
                 this.resetComponent(event);
             } else {
                 this.router.navigate(['/question-bank']);
