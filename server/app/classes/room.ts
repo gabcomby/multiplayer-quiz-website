@@ -13,6 +13,7 @@ const FIRST_ANSWER_MULTIPLIER = 1.2;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
+const INITIAL_QUESTION_INDEX = -1;
 
 const enum TimerState {
     RUNNING,
@@ -51,8 +52,7 @@ export class Room {
     panicModeEnabled = false;
 
     // Variables for the questions & answers
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Needed to not overflow the array
-    currentQuestionIndex = -1;
+    currentQuestionIndex = INITIAL_QUESTION_INDEX;
     firstAnswerForBonus = true;
     assertedAnswers: number = 0;
     playerHasAnswered = new Map<string, boolean>();
