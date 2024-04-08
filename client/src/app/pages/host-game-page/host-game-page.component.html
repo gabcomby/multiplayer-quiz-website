@@ -75,7 +75,7 @@
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
             {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
         </button>
-        <button mat-raised-button color="primary" (click)="handlePanicMode()" *ngIf="!isLaunchTimer && currentTimerCountdown <= 10 && !timerStopped">
+        <button mat-raised-button color="accent" (click)="handlePanicMode()" *ngIf="!isLaunchTimer && currentTimerCountdown <= 10 && !timerStopped">
             Mode panique
         </button>
     </div>
