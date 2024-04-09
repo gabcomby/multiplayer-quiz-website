@@ -28,6 +28,7 @@ export class GameService {
     private roomLocked: boolean = false;
     private launchTimer: boolean = true;
     private currentQuestionIndex: number = 0;
+    private currentQRLIndex: number = 0;
     private nbrOfQuestions: number = 0;
     private totalQuestionDuration: number = 0;
     private currentQuestion: Question | null;
@@ -101,6 +102,10 @@ export class GameService {
 
     get currentQuestionIndexValue(): number {
         return this.currentQuestionIndex;
+    }
+
+    get currentQRLIndexValue(): number {
+        return this.currentQRLIndex;
     }
 
     get nbrOfQuestionsValue(): number {
@@ -187,11 +192,13 @@ export class GameService {
     }
 
     set playerQRLPoints(points: [Player, number][]) {
-        this.pointsQRL = points;
-        this.updatePointsQRL();
+        if (points.length === this.answersTextQRL[this.currentQRLIndex][1].length) {
+            this.pointsQRL = points;
+        }
     }
 
     updatePointsQRL(): void {
+        this.currentQRLIndex++;
         this.socketService.updatePointsQRL(this.pointsQRL);
     }
 
@@ -218,6 +225,7 @@ export class GameService {
         this.roomLocked = false;
         this.currentQuestion = null;
         this.answerIndex = [];
+        this.currentQRLIndex = 0;
         this.answersTextQRL = [];
         this.answerText = '';
         this.allQuestionsFromGame = [];
@@ -246,6 +254,7 @@ export class GameService {
     }
 
     nextQuestion(): void {
+        if (this.currentQuestion?.type === QuestionType.QRL) this.updatePointsQRL();
         if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
             this.socketService.nextQuestion();
         } else {
@@ -369,10 +378,12 @@ export class GameService {
             this.gameLaunch(nbrOfQuestions, questionDuration);
         });
         this.socketService.onQuestionTimeUpdated((data: number) => {
-            this.launchTimer = false;
             this.totalQuestionDuration = data;
         });
         this.socketService.onQuestion((question: Question, questionIndex: number) => {
+            if (this.launchTimer) {
+                this.launchTimer = false;
+            }
             this.questionSwitch(question, questionIndex);
         });
         this.socketService.onTimerStopped(() => {
