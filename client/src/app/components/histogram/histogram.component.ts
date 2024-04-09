@@ -74,7 +74,6 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
-        console.log(this.nbModified);
         this.maxYAxis = this.playerListValue.length;
         const nbNotModified = this.playerListValue.length - this.nbModified;
         const data = [

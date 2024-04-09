@@ -48,14 +48,14 @@ export class AnswerVerifier {
 
     // eslint-disable-next-line complexity
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
-        if (!answerIdx || this.playerHasAnswered.get(playerId)) {
+        if ((!answerIdx && typeof answerIdx !== 'string') || this.playerHasAnswered.get(playerId)) {
             return;
         }
         this.playerHasAnswered.set(playerId, true);
         const question = this.room.currentQuestion;
         this.nbrOfAssertedAnswers += 1;
         if (typeof answerIdx === 'string') {
-            this.globalAnswersText.push([player, answerIdx]);
+            if (answerIdx.trim() !== '') this.globalAnswersText.push([player, answerIdx]);
         }
         if (this.room.gameTypeValue === GameType.TEST && question.type === 'QRL') {
             this.room.playerListValue.get(playerId).score += question.points;
