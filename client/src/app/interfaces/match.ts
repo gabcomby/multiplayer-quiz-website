@@ -8,4 +8,5 @@ export interface Player {
     name: string;
     score: number;
     bonus: number;
+    chatPermission?: boolean;
 }

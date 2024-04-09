@@ -56,6 +56,7 @@ export class MainPageComponent {
                 id: generateNewId(),
                 score: 0,
                 bonus: 0,
+                chatPermission: true,
             };
             this.verifyPlayerCanJoin(result, newPlayer);
         }
