@@ -178,13 +178,26 @@ describe('QuestionBankComponent', () => {
         expect(formattedDate).toBeDefined();
     });
 
-    it('should not delete a question nor show a snackbar message when deletion is cancelled', () => {
-        spyOn(window, 'confirm').and.returnValue(false);
-        const questionIdToDelete = questionsMock[0].id;
+    it('should update filteredQuestions after successful question deletion', async () => {
+        spyOn(window, 'confirm').and.returnValue(true);
+        spyOn(component, 'deleteQuestion').and.callThrough();
+        questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
 
-        component.deleteQuestion(questionIdToDelete);
+        component.deleteQuestion(questionsMock[0].id);
+        await fixture.whenStable();
 
-        expect(questionServiceMock.deleteQuestion).not.toHaveBeenCalled();
-        expect(snackbarServiceMock.openSnackBar).not.toHaveBeenCalled();
+        expect(component.filteredQuestions.length).toBe(questionsMock.length - 2);
+        expect(component.filteredQuestions).not.toContain(questionsMock[0]);
+    });
+
+    it('should display a success snackbar message after successful question deletion', async () => {
+        spyOn(window, 'confirm').and.returnValue(true);
+        spyOn(component, 'deleteQuestion').and.callThrough();
+        questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
+
+        component.deleteQuestion(questionsMock[0].id);
+        await fixture.whenStable();
+
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Le jeu a été supprimé avec succès.');
     });
 });
