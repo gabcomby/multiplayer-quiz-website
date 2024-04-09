@@ -4,7 +4,6 @@ import { Server as SocketIoServer } from 'socket.io';
 const ONE_SECOND_IN_MS = 1000;
 const QUARTER_SECOND_IN_MS = 250;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
-// const BEGINNING_TIMER_DURATION = 5;
 
 export const enum TimerState {
     RUNNING,

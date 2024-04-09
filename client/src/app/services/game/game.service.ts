@@ -369,10 +369,12 @@ export class GameService {
             this.gameLaunch(nbrOfQuestions, questionDuration);
         });
         this.socketService.onQuestionTimeUpdated((data: number) => {
-            this.launchTimer = false;
             this.totalQuestionDuration = data;
         });
         this.socketService.onQuestion((question: Question, questionIndex: number) => {
+            if (this.launchTimer) {
+                this.launchTimer = false;
+            }
             this.questionSwitch(question, questionIndex);
         });
         this.socketService.onTimerStopped(() => {

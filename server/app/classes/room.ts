@@ -11,6 +11,7 @@ const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
 const NOT_FOUND_INDEX = -1;
+const LAUNCH_TIMER_DURATION = 5;
 
 export const enum GameType {
     NORMAL,
@@ -89,7 +90,7 @@ export class Room {
                 // this.duration = 5;
                 // this.timerState = TimerState.RUNNING;
                 // this.startCountdownTimer();
-                this.countdownTimer.timerDurationValue = 5;
+                this.countdownTimer.timerDurationValue = LAUNCH_TIMER_DURATION;
                 this.countdownTimer.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
