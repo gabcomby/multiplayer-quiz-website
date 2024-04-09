@@ -51,6 +51,9 @@ export class Room {
     timerState: TimerState = TimerState.STOPPED;
     panicModeEnabled = false;
 
+    // Variables for the game
+    chatPermission = new Map<string, boolean>();
+
     // Variables for the questions & answers
     currentQuestionIndex = NOT_FOUND_INDEX;
     firstAnswerForBonus = true;
@@ -330,12 +333,16 @@ export class Room {
         const numberModifications = uniquePlayerIds.size;
         this.io.to(this.hostId).emit('number-modifications', numberModifications);
     }
-
+    enableChatPermission(playerId: string): void {
+        this.chatPermission.set(playerId, true);
+    }
+    disableChatPermission(playerId: string): void {
+        this.chatPermission.set(playerId, false);
+    }
     generateLobbyId = (): string => {
         const nanoid = customAlphabet('1234567890', ID_LOBBY_LENGTH);
         return nanoid();
     };
-
     generateGamePlayedId = (): string => {
         const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRTSUVWXYZ', ID_GAME_PLAYED_LENGTH);
         return nanoid();
