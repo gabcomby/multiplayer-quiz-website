@@ -4,13 +4,13 @@
             <div class="answer-player">Nom du joueur : {{ answer[0].name }}</div>
             <div class="answer-text">Réponse du joueur : {{ answer[1] }}</div>
         </div>
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedValues[i]">
+        <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedValues[i]" (change)="setSelectedValues($event.value, i)">
             <mat-radio-button [value]="[answer[0], 0]">0%</mat-radio-button>
             <mat-radio-button [value]="[answer[0], 0.5]">50%</mat-radio-button>
             <mat-radio-button [value]="[answer[0], 1]">100%</mat-radio-button>
         </mat-radio-group>
     </div>
-    <button id="registerButton" type="button" (click)="onSubmit()" mat-raised-button color="accent" [hidden]="!timerStopped || answersQRLInput === []">
+    <!-- <button id="registerButton" type="button" (click)="onSubmit()" mat-raised-button color="accent" [hidden]="!timerStopped || answersQRLInput === []">
         Envoyer les évaluations
-    </button>
+    </button> -->
 </div>

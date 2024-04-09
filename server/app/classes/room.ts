@@ -132,6 +132,7 @@ export class Room {
                     this.playerHasAnswered.forEach((value, key) => {
                         this.playerHasAnswered.set(key, false);
                     });
+                    this.answerVerifier.playerHasAnsweredSetter = this.playerHasAnswered;
                     this.livePlayerAnswers.forEach((value, key) => {
                         this.livePlayerAnswers.set(key, []);
                     });
@@ -145,11 +146,8 @@ export class Room {
         this.lockedAnswers += 1;
         this.answerVerifier.verifyAnswers(playerId, answer, player);
         if (this.lockedAnswers === this.playerList.size) {
-            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.answerVerifier.allAnswersForQRLValue));
             this.io.to(this.roomId).emit('timer-stopped');
             this.countdownTimer.handleTimerEnd();
-        } else {
-            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.answerVerifier.allAnswersForQRLValue));
         }
     }
 

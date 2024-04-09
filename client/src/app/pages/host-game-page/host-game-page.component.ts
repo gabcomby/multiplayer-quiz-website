@@ -117,11 +117,10 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     setplayerPointsQRL(points: [Player, number][]) {
-        this.gameService.playerQRLPoints = points;
-    }
-
-    setIsNoted(isNoted: boolean) {
-        this.isNoted = isNoted;
+        if (points.length === this.answersQRL[this.currentQuestionIndexValue][1].length) {
+            this.gameService.playerQRLPoints = points;
+            this.isNoted = true;
+        }
     }
 
     nextQuestion(): void {

@@ -42,6 +42,10 @@ export class AnswerVerifier {
         this.nbrOfAssertedAnswers = value;
     }
 
+    set playerHasAnsweredSetter(value: Map<string, boolean>) {
+        this.playerHasAnswered = value;
+    }
+
     // eslint-disable-next-line complexity
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
@@ -87,7 +91,6 @@ export class AnswerVerifier {
                 }
             }
         }
-
         if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
             if (question.type === 'QCM') {
@@ -97,12 +100,14 @@ export class AnswerVerifier {
             } else if (question.type === 'QRL') {
                 this.allAnswersForQRL.set(question.text, this.globalAnswersText);
                 this.globalAnswersText = [];
-            }
-        } else {
-            if (question.type === 'QRL') {
-                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+                this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             }
         }
+        // else {
+        //     if (question.type === 'QRL') {
+        //         this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+        //     }
+        // }
     }
 
     calculatePointsQRL(points: [IPlayer, number][]): void {

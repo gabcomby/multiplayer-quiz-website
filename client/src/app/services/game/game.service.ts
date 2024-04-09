@@ -187,8 +187,9 @@ export class GameService {
     }
 
     set playerQRLPoints(points: [Player, number][]) {
-        this.pointsQRL = points;
-        this.updatePointsQRL();
+        if (points.length === this.answersTextQRL[this.currentQuestionIndexValue][1].length) {
+            this.pointsQRL = points;
+        }
     }
 
     updatePointsQRL(): void {
@@ -246,6 +247,7 @@ export class GameService {
     }
 
     nextQuestion(): void {
+        if (this.currentQuestion?.type === QuestionType.QRL) this.updatePointsQRL();
         if (this.currentQuestionIndex + 1 === this.nbrOfQuestions) {
             this.socketService.nextQuestion();
         } else {

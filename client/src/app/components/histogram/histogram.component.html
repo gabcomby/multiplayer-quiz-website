@@ -27,7 +27,7 @@
         </div>
     </div>
 </div>
-[<div class= "histogram-container"*ngIf="currentQuestionValue?.type === 'QRL' && !resultView">
+<div class= "histogram-container"*ngIf="currentQuestionValue?.type === 'QRL' && !resultView">
     <div *ngFor="let histogram of dataQrl , let i = index">
         <ng-container >
             <ngx-charts-bar-vertical
@@ -49,5 +49,5 @@
             
        
         
-    </div>]
+    </div>
 </div>
