@@ -74,7 +74,6 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
-        console.log(this.nbModified);
         this.maxYAxis = this.playerListValue.length;
         const nbNotModified = this.playerListValue.length - this.nbModified;
         const data = [
@@ -90,12 +89,12 @@ export class HistogramComponent implements OnInit, OnChanges {
             return;
         }
         if (this.questionsGame[0].choices) {
-            const array = new Array(this.questionsGame[0].choices.length).fill(0);
+            const questionChoices = new Array(this.questionsGame[0].choices.length).fill(0);
             // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
             this.answersPlayer.forEach(([playerId, answerIdx]) => {
                 if (typeof answerIdx !== 'string') {
                     answerIdx.forEach((idx) => {
-                        array[idx]++;
+                        questionChoices[idx]++;
                     });
                 }
             });
@@ -104,7 +103,7 @@ export class HistogramComponent implements OnInit, OnChanges {
                 const choiceText = this.questionsGame[0].choices[i].isCorrect
                     ? `${this.questionsGame[0].choices[i].text} (correct)`
                     : this.questionsGame[0].choices[i].text;
-                histogramData.push({ name: choiceText, value: array[i] });
+                histogramData.push({ name: choiceText, value: questionChoices[i] });
             }
 
             this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
@@ -129,28 +128,21 @@ export class HistogramComponent implements OnInit, OnChanges {
     private calculateAnswerCounts(question: Question): Map<Choice, number> {
         const answerCountsMap: Map<Choice, number> = new Map();
 
-        if (question.choices) {
-            question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
-            this.answersPlayer.forEach(([questionText, choices]) => {
-                if (questionText === question.text) {
-                    if (typeof choices !== 'string') {
-                        choices.forEach((choiceIndex) => {
-                            // Add a check here to ensure question.choices is defined
-                            if (question.choices) {
-                                const choice = question.choices[choiceIndex];
-                                if (choice) {
-                                    const count = answerCountsMap.get(choice);
-                                    if (count !== undefined) {
-                                        answerCountsMap.set(choice, count + 1);
-                                    }
-                                }
-                            }
-                        });
-                    }
+        if (!question.choices) return answerCountsMap;
+
+        question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
+        this.answersPlayer.forEach(([questionText, choices]) => {
+            if (questionText !== question.text || typeof choices === 'string') return;
+            choices.forEach((choiceIndex) => {
+                if (!question.choices) return;
+                const choice = question.choices[choiceIndex];
+                if (!choice) return;
+                const count = answerCountsMap.get(choice);
+                if (count !== undefined) {
+                    answerCountsMap.set(choice, count + 1);
                 }
             });
-        }
-
+        });
         return answerCountsMap;
     }
 
