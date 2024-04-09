@@ -57,8 +57,7 @@ export class CountdownTimer {
                     this.currentCountdownTime -= 1;
                     this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
                     if (this.currentCountdownTime === 0) {
-                        // TODO: Check if I can move this elsewhere
-                        this.room.firstAnswerForBonus = false;
+                        this.room.disableFirstAnswerBonus();
                         if (!this.isLaunchTimer) {
                             this.io.to(this.roomId).emit('timer-stopped');
                         }
@@ -82,8 +81,6 @@ export class CountdownTimer {
         this.timerState = TimerState.STOPPED;
         if (this.isLaunchTimer) {
             this.isLaunchTimer = false;
-            // this.io.to(this.roomId).emit('question-time-updated', this.room.gameDurationValue);
-            // this.timerDuration = this.room.gameDurationValue;
             this.room.startQuestion();
             return;
         }
@@ -115,7 +112,7 @@ export class CountdownTimer {
                         this.currentCountdownTime -= 1;
                         this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
                         if (this.currentCountdownTime === 0) {
-                            this.room.firstAnswerForBonus = false;
+                            this.room.disableFirstAnswerBonus();
                             this.io.to(this.roomId).emit('timer-stopped');
                             this.handleTimerEnd();
                         }

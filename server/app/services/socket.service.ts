@@ -171,7 +171,7 @@ export class SocketManager {
             socket.on('update-points-QRL', (points: [IPlayer, number][]) => {
                 const room = getRoom();
                 if (roomExists(room.roomId)) {
-                    room.calculatePointsQRL(points);
+                    room.answerVerifier.calculatePointsQRL(points);
                 }
             });
 
@@ -192,7 +192,7 @@ export class SocketManager {
             socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
                 const room = getRoom();
                 if (socket.id !== room.hostId) {
-                    room.verifyAnswers(socket.id, answer, player);
+                    room.answerVerifier.verifyAnswers(socket.id, answer, player);
                 }
             });
 
