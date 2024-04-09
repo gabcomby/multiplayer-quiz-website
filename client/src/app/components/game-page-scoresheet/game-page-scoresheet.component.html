@@ -3,7 +3,19 @@
         <mat-card-header>
             <mat-card-title>Scores de la partie</mat-card-title>
         </mat-card-header>
-        <mat-card-content *ngFor="let player of playerList"> {{ player.name }} - {{ player.score }} </mat-card-content>
+        <mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Nom</mat-header-cell>
+                <mat-cell *matCellDef="let player">{{ player.name }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="score">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Score</mat-header-cell>
+                <mat-cell *matCellDef="let player">{{ player.score }}</mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="['name', 'score']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name', 'score']"></mat-row>
+        </mat-table>
         <div *ngIf="isHost">
             <mat-card-content style="text-decoration: line-through" *ngFor="let player of playerLeftList"> {{ player.name }} </mat-card-content>
         </div>
