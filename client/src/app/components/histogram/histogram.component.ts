@@ -88,8 +88,13 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
-        if (this.questionsGame[0].choices) {
-            const questionChoices = new Array(this.questionsGame[0].choices.length).fill(0);
+        const questionChoices = this.countQuestionChoices(this.questionsGame[0]);
+        this.formatData(this.questionsGame[0], questionChoices);
+    }
+
+    private countQuestionChoices(question: Question): number[] {
+        if (question.choices) {
+            const questionChoices = new Array(question.choices.length).fill(0);
             // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
             this.answersPlayer.forEach(([playerId, answerIdx]) => {
                 if (typeof answerIdx !== 'string') {
@@ -98,15 +103,19 @@ export class HistogramComponent implements OnInit, OnChanges {
                     });
                 }
             });
+            return questionChoices;
+        }
+        return [];
+    }
+    private formatData(question: Question, questionChoices: number[]) {
+        if (question.choices) {
             const histogramData: { name: string; value: number }[] = [];
-            for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
-                const choiceText = this.questionsGame[0].choices[i].isCorrect
-                    ? `${this.questionsGame[0].choices[i].text} (correct)`
-                    : this.questionsGame[0].choices[i].text;
+            for (let i = 0; i < question.choices.length; i++) {
+                const choiceText = question.choices[i].isCorrect ? `${question.choices[i].text} (correct)` : question.choices[i].text;
                 histogramData.push({ name: choiceText, value: questionChoices[i] });
             }
 
-            this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
+            this.histogramsData = [{ question: question.text, data: histogramData }];
         }
     }
 
@@ -157,7 +166,6 @@ export class HistogramComponent implements OnInit, OnChanges {
                 }
             }
         });
-
         return answerCountsMap;
     }
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {
