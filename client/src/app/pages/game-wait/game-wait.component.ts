@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameService } from '@app/services/game.service';
-import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SocketService } from '@app/services/socket/socket.service';
 
 @Component({
     selector: 'app-game-wait',
@@ -48,7 +48,6 @@ export class GameWaitComponent implements OnInit {
     }
 
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();

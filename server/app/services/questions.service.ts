@@ -15,24 +15,22 @@ export class QuestionsService {
     }
 
     async addQuestionBank(questionData: IQuestion): Promise<IQuestion> {
-        const question = await questionsModel.create(questionData);
-        return question;
+        return questionsModel.create(questionData);
     }
 
     async deleteQuestion(questionId: string): Promise<IQuestion> {
-        return await questionsModel.findOneAndDelete({ id: questionId });
+        return questionsModel.findOneAndDelete({ id: questionId });
     }
 
     async updateQuestion(questionId: string, questionData: IQuestion): Promise<IQuestion> {
-        const updatedQuestion = await questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
-        return updatedQuestion;
+        return questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
     }
 
     async getFiveRandomQuestions(): Promise<IQuestion[]> {
-        return await questionsModel.aggregate([{ $match: { type: 'QCM' } }, { $sample: { size: 5 } }]);
+        return questionsModel.aggregate([{ $match: { type: 'QCM' } }, { $sample: { size: 5 } }]);
     }
 
     async verifyNumberOfQuestions(): Promise<boolean> {
-        return (await questionsModel.countDocuments({ type: 'QCM' })) >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE;
+        return questionsModel.countDocuments({ type: 'QCM' }).then((count) => count >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE);
     }
 }

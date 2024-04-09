@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
-import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
-import { RoomService } from '@app/services/room.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { ApiService } from '@app/services/api/api.service';
+import { GameService } from '@app/services/game/game.service';
+import { RoomService } from '@app/services/room/room.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 

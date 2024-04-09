@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
-import { HandlerNewQuestionService } from '@app/services/handler-new-question.service';
-import { QuestionService } from '@app/services/question.service';
+import { HandlerNewQuestionService } from '@app/services/handler-new-question/handler-new-question.service';
+import { QuestionService } from '@app/services/question/question.service';
 
 @Component({
     selector: 'app-new-question',
@@ -25,10 +25,15 @@ export class NewQuestionComponent {
         private handlerQuestionService: HandlerNewQuestionService,
     ) {}
 
-    async addQuestion(onlyAddQuestionBank: boolean, event?: Choice[]): Promise<void> {
-        const questionValidated = await this.handlerQuestionService.addQuestion(this.question, onlyAddQuestionBank, this.addBankQuestion, event);
+    async addQuestion(onlyQuestionBank: boolean, event?: Choice[]): Promise<void> {
+        const questionValidated = await this.handlerQuestionService.addQuestion({
+            question: this.question,
+            onlyAddQuestionBank: onlyQuestionBank,
+            addToBank: this.addBankQuestion,
+            choices: event,
+        });
         if (questionValidated) {
-            if (!onlyAddQuestionBank) {
+            if (!onlyQuestionBank) {
                 this.resetComponent(event);
             } else {
                 this.router.navigate(['/question-bank']);

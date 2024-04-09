@@ -6,10 +6,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Question } from '@app/interfaces/game';
-import { ApiService } from '@app/services/api.service';
-import { GameValidationService } from '@app/services/game-validation.service';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { ApiService } from '@app/services/api/api.service';
+import { GameValidationService } from '@app/services/game-validation/game-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { of } from 'rxjs';
 import { CreateQGamePageComponent } from './create-qgame-page.component';
 
@@ -104,10 +104,11 @@ describe('CreateQGamePageComponent', () => {
     });
     it('should throw error if submitting with the server down', async () => {
         gameServiceSpy.isValidGame.and.throwError('test error');
-        spyOn(component, 'handleServerError');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const privateSpy = spyOn<any>(component, 'handleServerError');
 
         await component.onSubmit();
 
-        expect(component.handleServerError).toHaveBeenCalled();
+        expect(privateSpy).toHaveBeenCalled();
     });
 });

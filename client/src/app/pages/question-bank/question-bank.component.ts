@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Question, QuestionType } from '@app/interfaces/game';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { AdminService } from '@app/services/admin.service';
+import { AdminService } from '@app/services/admin/admin.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
 @Component({
     selector: 'app-question-bank',
@@ -12,12 +12,11 @@ import { AdminService } from '@app/services/admin.service';
 export class QuestionBankComponent implements OnInit {
     @Input() fromCreateNewGame: boolean;
     @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
-    questionToAdd: Question[] = [];
     displayedColumns: string[];
     dataSource: Question[] = [];
     filteredQuestions: Question[] = [];
-    defaultDisplayedColumns: string[] = ['question', 'type', 'modify', 'date', 'delete'];
-    selectedRowIds: string[] = [];
+    private questionToAdd: Question[] = [];
+    private defaultDisplayedColumns: string[] = ['question', 'type', 'modify', 'date', 'delete'];
 
     constructor(
         private questionService: QuestionService,

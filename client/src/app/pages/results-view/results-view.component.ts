@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 
 @Component({
     selector: 'app-results-view',
@@ -47,7 +47,6 @@ export class ResultsViewComponent implements OnInit {
     }
 
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();

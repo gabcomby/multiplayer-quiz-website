@@ -4,9 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServerErrorDialogComponent } from '@app/components/server-error-dialog/server-error-dialog.component';
 import { Game } from '@app/interfaces/game';
-import { ApiService } from '@app/services/api.service';
-import { GameValidationService } from '@app/services/game-validation.service';
-import { QuestionService } from '@app/services/question.service';
+import { ApiService } from '@app/services/api/api.service';
+import { GameValidationService } from '@app/services/game-validation/game-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
 
 @Component({
     selector: 'app-create-qgame-page',
@@ -31,7 +31,7 @@ export class CreateQGamePageComponent implements OnInit {
     gameForm: FormGroup;
     dataReady: boolean = false;
 
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private questionService: QuestionService,
         private gameValidationService: GameValidationService,
@@ -60,16 +60,6 @@ export class CreateQGamePageComponent implements OnInit {
             }
         }
     }
-
-    getGame(gameId: string): void {
-        const findGame = this.games.find((gameSelected) => gameSelected.id === gameId);
-        if (findGame) {
-            this.gameModified = findGame;
-        } else {
-            throw new Error(`Game with id ${gameId} not found`);
-        }
-    }
-
     async onSubmit() {
         const newGame: Game = this.gameValidationService.createNewGame(true, this.gameForm, this.gameModified);
         try {
@@ -88,8 +78,16 @@ export class CreateQGamePageComponent implements OnInit {
     toggleModifiedQuestion() {
         this.modifiedQuestion = !this.modifiedQuestion;
     }
+    private getGame(gameId: string): void {
+        const findGame = this.games.find((gameSelected) => gameSelected.id === gameId);
+        if (findGame) {
+            this.gameModified = findGame;
+        } else {
+            throw new Error(`Game with id ${gameId} not found`);
+        }
+    }
 
-    insertIfExist() {
+    private insertIfExist() {
         this.gameForm.patchValue({
             name: this.gameModified.title,
             description: this.gameModified.description,
@@ -98,7 +96,7 @@ export class CreateQGamePageComponent implements OnInit {
         });
     }
 
-    handleServerError = () => {
+    private handleServerError = () => {
         this.dialog.open(ServerErrorDialogComponent, {
             data: { message: 'Nous ne semblons pas être en mesure de contacter le serveur. Est-il allumé ?' },
         });

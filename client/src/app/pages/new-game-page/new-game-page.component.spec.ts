@@ -7,14 +7,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
 import { Game } from '@app/interfaces/game';
-import { ApiService } from '@app/services/api.service';
-import { GameService } from '@app/services/game.service';
-import { RoomService } from '@app/services/room.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { ApiService } from '@app/services/api/api.service';
+import { GameService } from '@app/services/game/game.service';
+import { RoomService } from '@app/services/room/room.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
+import { of } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { NewGamePageComponent } from './new-game-page.component';
-import { of } from 'rxjs';
 
 describe('NewGamePageComponent', () => {
     let component: NewGamePageComponent;

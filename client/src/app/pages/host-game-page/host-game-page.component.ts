@@ -3,11 +3,14 @@ import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-import { GameService } from '@app/services/game.service';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
-const HISTOGRAMM_UPDATE = 5000;
+
+const HISTOGRAMM_UPDATE = 1000;
+const MINIMUM_TIME_FOR_PANIC_MODE_QCM = 10;
+const MINIMUM_TIME_FOR_PANIC_MODE_QRL = 20;
 
 @Component({
     selector: 'app-host-game-page',
@@ -18,11 +21,10 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
-    currentQuestionQRLIndex: number = 0;
-    unsubscribeSubject: Subscription[];
     nextQuestionButtonText: string = 'Prochaine question';
     subscription: Subscription;
-    // eslint-disable-next-line max-params
+
+    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private gameService: GameService,
         private router: Router,
@@ -81,11 +83,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     get currentQuestionArray(): Question[] {
-        if (this.gameService.currentQuestionValue === null) {
-            return [];
-        } else {
-            return [this.gameService.currentQuestionValue];
-        }
+        return this.gameService.currentQuestionValue ? [this.gameService.currentQuestionValue] : [];
     }
 
     get currentGameTitle(): string {
@@ -95,8 +93,11 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.gameService.numberInputModifidedValue;
     }
 
+    get currentQRLIndexValue(): number {
+        return this.gameService.currentQRLIndexValue;
+    }
+
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();
@@ -119,22 +120,20 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     setplayerPointsQRL(points: [Player, number][]) {
-        this.gameService.playerQRLPoints = points;
-    }
-
-    setIsNoted(isNoted: boolean) {
-        this.isNoted = isNoted;
+        if (points.length === this.answersQRL[this.currentQRLIndexValue][1].length) {
+            this.gameService.playerQRLPoints = points;
+            this.isNoted = true;
+        }
     }
 
     nextQuestion(): void {
-        if (this.currentQuestion?.type === 'QRL' && this.answersQRL.length !== 0 && !this.isNoted) {
+        if (this.currentQuestion?.type === 'QRL' && this.answersQRL[this.currentQRLIndexValue][1].length !== 0 && !this.isNoted) {
             this.snackbarService.openSnackBar('Veuillez noter les joueurs', 'Fermer');
             return;
         }
         const timerLength = 1000;
         this.isNoted = false;
         this.gameService.nextQuestion();
-        if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
         let timer = 3;
         this.nextQuestionButtonText = String(timer);
         const intervalId = setInterval(() => {
@@ -159,5 +158,14 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
 
     handlePanicMode(): void {
         this.gameService.enablePanicMode();
+    }
+
+    checkMinimumTimeForPanicMode(): boolean {
+        if (this.gameService.currentQuestionValue?.type === 'QCM') {
+            return this.currentTimerCountdown <= MINIMUM_TIME_FOR_PANIC_MODE_QCM;
+        } else if (this.gameService.currentQuestionValue?.type === 'QRL') {
+            return this.currentTimerCountdown <= MINIMUM_TIME_FOR_PANIC_MODE_QRL;
+        }
+        return false;
     }
 }
