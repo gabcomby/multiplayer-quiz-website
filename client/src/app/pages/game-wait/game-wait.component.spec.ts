@@ -172,6 +172,13 @@ describe('GameWaitComponent', () => {
         const title = gameService.gameTitleValue;
         expect(title).toEqual('ABCD');
     });
+    it('should return the good game type', () => {
+        spyOnProperty(gameService, 'gameTypeValue').and.returnValue(1);
+        const type = gameService.gameTypeValue;
+        const gameType = component.gameType;
+        expect(gameType).toEqual(1);
+        expect(type).toEqual(1);
+    });
 
     it('should call the gameService.banPlayer method', () => {
         spyOn(gameService, 'banPlayer');

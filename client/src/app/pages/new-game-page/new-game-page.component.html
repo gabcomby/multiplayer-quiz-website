@@ -9,6 +9,17 @@
     </mat-toolbar>
 </div>
 <h1 id="title">Liste des jeux</h1>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title><b>Partie aléatoire</b></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p><b>Description: Générez une partie de 5 questions aléatoires</b></p>
+        <p><b>Temps alloué par questions:</b> 20 secondes</p>
+        <p><b>Questions:</b> Surprise!</p>
+        <button mat-raised-button color="primary" (click)="launchRandomGame()">Lancer une partie</button>
+    </mat-card-content>
+</mat-card>
 <mat-card *ngFor="let game of games">
     <mat-card-header *ngIf="game.isVisible" (click)="selected(game)" id="{{ game.id }}">
         <mat-card-title

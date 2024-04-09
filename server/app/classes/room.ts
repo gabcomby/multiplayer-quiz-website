@@ -10,13 +10,20 @@ const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
-const TIME_BETWEEN_QUESTIONS_TEST_MODE = 5000;
+const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE = 10;
+const TIME_HISTOGRAM_UPDATE = 5000;
 
 const enum TimerState {
     RUNNING,
     STOPPED,
     PAUSED,
+}
+
+const enum GameType {
+    NORMAL,
+    TEST,
+    RANDOM,
 }
 
 export class Room {
@@ -30,7 +37,7 @@ export class Room {
     bannedNames: string[] = [];
     roomLocked = false;
     hostId = '';
-    isTestRoom: boolean;
+    gameType: GameType;
     gameHasStarted = false;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
@@ -50,19 +57,38 @@ export class Room {
     assertedAnswers: number = 0;
     playerHasAnswered = new Map<string, boolean>();
     lockedAnswers = 0;
-    livePlayerAnswers = new Map<string, number[]>();
+    livePlayerAnswers = new Map<string, number[] | string>();
     globalAnswerIndex: number[] = [];
-    allAnswersForQuestion = new Map<string, number[]>();
+    allAnswersForQCM = new Map<string, number[]>();
+    allAnswersForQRL = new Map<string, [IPlayer, string][]>();
+    globalAnswersText: [IPlayer, string][] = [];
+    counterCorrectAnswerQRL = 0;
+    counterHalfCorrectAnswerQRL = 0;
+    allAnswersGameResults = new Map<string, number[]>();
+    inputModifications: { player: string; time: number }[] = [];
 
-    constructor(game: IGame, isTestRoom: boolean, io: SocketIoServer) {
+    constructor(game: IGame, gameMode: number, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
         this.game = game;
-        this.isTestRoom = isTestRoom;
+        switch (gameMode) {
+            case 0:
+                this.gameType = GameType.NORMAL;
+                break;
+            case 1:
+                this.gameType = GameType.TEST;
+                break;
+            case 2:
+                this.gameType = GameType.RANDOM;
+                break;
+            default:
+                this.gameType = GameType.NORMAL;
+        }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
     }
 
     startQuestion(): void {
+        this.inputModifications = [];
         if (this.timerState === TimerState.STOPPED) {
             if (this.launchTimer) {
                 this.duration = 5;
@@ -73,16 +99,17 @@ export class Room {
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersForQuestion));
-                    // TODO: Write game in DB
-                    const gamePlayedData: IGamePlayed = {
-                        id: this.generateGamePlayedId(),
-                        title: this.game.title,
-                        creationDate: this.gameStartDateTime,
-                        numberPlayers: this.nbrPlayersAtStart,
-                        bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
-                    } as IGamePlayed;
-                    this.gamePlayedService.createGamePlayed(gamePlayedData);
+                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
+                    if (this.gameType !== GameType.TEST) {
+                        const gamePlayedData: IGamePlayed = {
+                            id: this.generateGamePlayedId(),
+                            title: this.game.title,
+                            creationDate: this.gameStartDateTime,
+                            numberPlayers: this.nbrPlayersAtStart,
+                            bestScore: Math.max(...Array.from(this.playerList).map(([, player]) => player.score)),
+                        } as IGamePlayed;
+                        this.gamePlayedService.createGamePlayed(gamePlayedData);
+                    }
                 } else {
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
@@ -102,7 +129,12 @@ export class Room {
 
     startCountdownTimer(): void {
         this.currentTime = this.duration;
-        this.io.to(this.roomId).emit('timer-countdown', this.duration);
+        if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
+            this.currentTime = 60;
+            this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+        } else {
+            this.io.to(this.roomId).emit('timer-countdown', this.duration);
+        }
         const timerId = setInterval(
             () => {
                 if (this.timerState !== TimerState.PAUSED) {
@@ -139,8 +171,8 @@ export class Room {
             this.startQuestion();
             return;
         }
-        if (this.isTestRoom) {
-            setInterval(() => {
+        if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
+            setTimeout(() => {
                 this.startQuestion();
             }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
         }
@@ -181,57 +213,114 @@ export class Room {
         }
     }
 
-    verifyAnswers(playerId: string, answerIdx: number[]): void {
+    // eslint-disable-next-line complexity
+    verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (!answerIdx || this.playerHasAnswered.get(playerId)) {
             return;
         }
         this.playerHasAnswered.set(playerId, true);
         const question = this.game.questions[this.currentQuestionIndex];
         this.assertedAnswers += 1;
-        if (answerIdx.length !== 0) {
-            answerIdx.forEach((index) => {
-                this.globalAnswerIndex.push(index);
-            });
-            const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-            const isMultipleAnswer = totalCorrectChoices > 1;
-            let isCorrect = false;
-            if (!isMultipleAnswer) {
-                isCorrect = question.choices[answerIdx[0]].isCorrect;
-            } else {
-                for (const index of answerIdx) {
-                    if (answerIdx.length < totalCorrectChoices) {
-                        isCorrect = false;
-                        break;
+        if (typeof answerIdx === 'string') {
+            this.globalAnswersText.push([player, answerIdx]);
+        }
+        if (this.gameType === 1 && question.type === 'QRL') {
+            this.playerList.get(playerId).score += question.points;
+        } else if (typeof answerIdx !== 'string') {
+            if (answerIdx.length !== 0) {
+                answerIdx.forEach((index) => {
+                    this.globalAnswerIndex.push(index);
+                });
+                const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+                const isMultipleAnswer = totalCorrectChoices > 1;
+                let isCorrect = false;
+                if (!isMultipleAnswer) {
+                    isCorrect = question.choices[answerIdx[0]].isCorrect;
+                } else {
+                    for (const index of answerIdx) {
+                        if (answerIdx.length < totalCorrectChoices) {
+                            isCorrect = false;
+                            break;
+                        }
+                        if (!question.choices[index].isCorrect) {
+                            isCorrect = false;
+                            break;
+                        }
+                        isCorrect = true;
                     }
-                    if (!question.choices[index].isCorrect) {
-                        isCorrect = false;
-                        break;
-                    }
-                    isCorrect = true;
+                }
+                if (isCorrect && this.firstAnswerForBonus) {
+                    this.firstAnswerForBonus = false;
+                    this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
+                    this.playerList.get(playerId).bonus += 1;
+                } else if (isCorrect) {
+                    this.playerList.get(playerId).score += question.points;
                 }
             }
-            if (isCorrect && this.firstAnswerForBonus) {
-                this.firstAnswerForBonus = false;
-                this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-                this.playerList.get(playerId).bonus += 1;
-            } else if (isCorrect) {
-                this.playerList.get(playerId).score += question.points;
-            }
         }
+
         if (this.assertedAnswers === this.playerList.size) {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
-            this.allAnswersForQuestion.set(question.text, this.globalAnswerIndex);
-            this.globalAnswerIndex = [];
+            if (question.type === 'QCM') {
+                this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
+                this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
+                this.globalAnswerIndex = [];
+            } else if (question.type === 'QRL') {
+                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+                this.globalAnswersText = [];
+            }
+        } else {
+            if (question.type === 'QRL') {
+                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+            }
         }
     }
 
-    handleEarlyAnswers(playerId: string, answerIdx: number[]): void {
+    calculatePointsQRL(points: [IPlayer, number][]): void {
+        const question = this.game.questions[this.currentQuestionIndex];
+        const playerArray = Array.from(this.playerList.entries());
+        if (!points) return;
+        points.forEach(([player, point]: [IPlayer, number]) => {
+            const playerIndex = playerArray.findIndex(([, p]) => p.id === player.id);
+            if (question && playerIndex >= 0) {
+                playerArray[playerIndex][1].score += point * question.points;
+                if (point === 1) {
+                    this.counterCorrectAnswerQRL += 1;
+                } else {
+                    this.counterHalfCorrectAnswerQRL += 1;
+                }
+            }
+        });
+        this.allAnswersGameResults.set(question.text, [this.counterHalfCorrectAnswerQRL, this.counterCorrectAnswerQRL]);
+        this.counterCorrectAnswerQRL = 0;
+        this.counterHalfCorrectAnswerQRL = 0;
+        this.io.to(this.roomId).emit('playerlist-change', playerArray);
+    }
+
+    handleEarlyAnswers(playerId: string, answer: number[] | string, player: IPlayer): void {
         this.lockedAnswers += 1;
-        this.verifyAnswers(playerId, answerIdx);
+        this.verifyAnswers(playerId, answer, player);
         if (this.lockedAnswers === this.playerList.size) {
+            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
             this.handleTimerEnd();
+        } else {
+            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
+    }
+
+    handleInputModification() {
+        if (this.game.questions[this.currentQuestionIndex]?.type === 'QCM') {
+            return;
+        }
+        const now = new Date().getTime();
+        const fiveSecondsAgo = now - TIME_HISTOGRAM_UPDATE;
+
+        this.inputModifications = this.inputModifications.filter((modification) => modification.time > fiveSecondsAgo);
+
+        const uniquePlayerIds = new Set(this.inputModifications.map((mod) => mod.player));
+        const numberModifications = uniquePlayerIds.size;
+        this.io.to(this.hostId).emit('number-modifications', numberModifications);
     }
 
     generateLobbyId = (): string => {

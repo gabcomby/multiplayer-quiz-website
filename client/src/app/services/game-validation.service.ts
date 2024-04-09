@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Game } from '@app/interfaces/game';
+import { Game, QuestionType } from '@app/interfaces/game';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
 import { ApiService } from './api.service';
 import { QuestionValidationService } from './question-validation.service';
@@ -20,16 +20,17 @@ export class GameValidationService {
         private snackbarService: SnackbarService,
     ) {}
 
+    // TODO: verifier si les jeux peuvent avoir la meme description
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
+        // const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
         if (titleExisting) {
             error.push('Il y a déjà un jeu avec ce nom');
         }
-        if (descriptionExisting) {
-            error.push('Il y a déjà un jeu avec cet description');
-        }
+        // if (descriptionExisting) {
+        //     error.push('Il y a déjà un jeu avec cet description');
+        // }
     }
     async validateDeletedGame(game: Game) {
         const gameList = await this.apiService.getGames();
@@ -76,11 +77,13 @@ export class GameValidationService {
                 if (!this.questionValidationService.validateQuestion(question)) {
                     return false;
                 }
-                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                    return false;
-                }
-                if (!this.questionValidationService.answerValid(question.choices)) {
-                    return false;
+                if (question.choices && question.type === QuestionType.QCM) {
+                    if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                        return false;
+                    }
+                    if (!this.questionValidationService.answerValid(question.choices)) {
+                        return false;
+                    }
                 }
             }
         } catch (error) {

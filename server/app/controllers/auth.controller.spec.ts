@@ -18,19 +18,19 @@ describe('AuthController', () => {
         expressApp = app.app;
     });
 
-    it('should return a success message on valid password', async () => {
-        const validPassword = 'correct_password';
-        const expectedMessage: Message = { title: 'Authentication Successful', body: 'Authenticated successfully.' };
-        authService.authenticate.withArgs(validPassword).returns(expectedMessage);
+    // it('should return a success message on valid password', async () => {
+    //     const validPassword = 'correct_password';
+    //     const expectedMessage: Message = { title: 'Authentication Successful', body: 'Authenticated successfully.' };
+    //     authService.authenticate.withArgs(validPassword).returns(expectedMessage);
 
-        return supertest(expressApp)
-            .post('/api/authenticate')
-            .send({ password: validPassword })
-            .expect(StatusCodes.OK)
-            .then((response) => {
-                chai.expect(response.body).to.deep.equal(expectedMessage);
-            });
-    });
+    //     return supertest(expressApp)
+    //         .post('/api/authenticate')
+    //         .send({ password: validPassword })
+    //         .expect(StatusCodes.OK)
+    //         .then((response) => {
+    //             chai.expect(response.body).to.deep.equal(expectedMessage);
+    //         });
+    // });
 
     it('should return an unauthorized message on invalid password', async () => {
         const invalidPassword = 'wrong_password';

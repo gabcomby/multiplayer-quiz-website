@@ -4,9 +4,11 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
+import { IGame } from './model/game.model';
 import { IPlayer } from './model/match.model';
 import { rooms } from './module';
 import { GameService } from './services/game.service';
+import { QuestionsService } from './services/questions.service';
 
 const BASE_TEN = 10;
 
@@ -52,18 +54,38 @@ export class Server {
 
             socket.on('create-room', async (gameId: string) => {
                 const gameService = new GameService();
-                const game = await gameService.getGame(gameId);
-                const room = new Room(game, false, this.io);
+                const questionService = new QuestionsService();
+                let room: Room;
+                if (gameId === 'randomModeGame') {
+                    const randomQuestions = await questionService.getFiveRandomQuestions();
+                    if (randomQuestions.length === 0) {
+                        // TODO: Handle error and no navigation to game page
+                        return;
+                    }
+                    const game = {
+                        id: 'randomModeGame',
+                        title: 'Mode aléatoire',
+                        isVisible: true,
+                        description: 'Mode aléatoire',
+                        duration: 20,
+                        lastModification: new Date(),
+                        questions: randomQuestions,
+                    } as IGame;
+                    room = new Room(game, 2, this.io);
+                } else {
+                    const game = await gameService.getGame(gameId);
+                    room = new Room(game, 0, this.io);
+                }
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
-                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title);
+                this.io.to(socket.id).emit('room-created', getRoom().roomId, getRoom().game.title, getRoom().gameType);
             });
 
             socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
-                const room = new Room(game, true, this.io);
+                const room = new Room(game, 1, this.io);
                 socket.join(room.roomId);
                 setRoom(room);
                 getRoom().hostId = socket.id;
@@ -84,7 +106,7 @@ export class Server {
                     getRoom().livePlayerAnswers.set(socket.id, []);
                     this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
                     this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
-                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title);
+                    this.io.to(socket.id).emit('room-joined', getRoom().roomId, getRoom().game.title, player);
                 }
             });
 
@@ -135,6 +157,19 @@ export class Server {
 
             socket.on('start-game', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
+                    if (getRoom().gameType === 2) {
+                        const player: IPlayer = {
+                            id: 'organisateur',
+                            name: 'Organisateur',
+                            score: 0,
+                            bonus: 0,
+                        } as IPlayer;
+                        getRoom().playerList.set(socket.id, player);
+                        getRoom().playerHasAnswered.set(socket.id, false);
+                        getRoom().livePlayerAnswers.set(socket.id, []);
+                        this.io.to(getRoom().roomId).emit('playerlist-change', Array.from(getRoom().playerList));
+                        this.io.to(socket.id).emit('playerleftlist-change', Array.from(getRoom().playerLeftList));
+                    }
                     getRoom().gameStartDateTime = new Date();
                     getRoom().nbrPlayersAtStart = getRoom().playerList.size;
                     getRoom().gameHasStarted = true;
@@ -146,6 +181,12 @@ export class Server {
             socket.on('next-question', () => {
                 if (roomExists(getRoom().roomId) && socket.id === getRoom().hostId) {
                     getRoom().startQuestion();
+                }
+            });
+
+            socket.on('update-points-QRL', (points: [IPlayer, number][]) => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().calculatePointsQRL(points);
                 }
             });
 
@@ -161,14 +202,14 @@ export class Server {
                 }
             });
 
-            socket.on('send-answers', (answerIdx: number[]) => {
+            socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
                 if (socket.id !== getRoom().hostId) {
-                    getRoom().verifyAnswers(socket.id, answerIdx);
+                    getRoom().verifyAnswers(socket.id, answer, player);
                 }
             });
 
-            socket.on('send-locked-answers', (answerIdx: number[]) => {
-                getRoom().handleEarlyAnswers(socket.id, answerIdx);
+            socket.on('send-locked-answers', (answerIdx: number[] | string, player: IPlayer) => {
+                getRoom().handleEarlyAnswers(socket.id, answerIdx, player);
             });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
@@ -183,11 +224,20 @@ export class Server {
                 // eslint-disable-next-line no-console
                 console.log('user disconnected');
             });
-
-            socket.on('send-live-answers', (answerIdx: number[]) => {
+            // WTF SOCKET ID
+            socket.on('send-live-answers', (answerIdx: number[] | string, player: IPlayer, reset: boolean) => {
                 if (roomExists(getRoom().roomId)) {
                     getRoom().livePlayerAnswers.set(socket.id, answerIdx);
-                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers));
+                    this.io.to(getRoom().hostId).emit('livePlayerAnswers', Array.from(getRoom().livePlayerAnswers), player);
+
+                    if (!reset) {
+                        getRoom().inputModifications.push({ player: player.id, time: new Date().getTime() });
+                    }
+                }
+            });
+            socket.on('update-histogram', () => {
+                if (roomExists(getRoom().roomId)) {
+                    getRoom().handleInputModification();
                 }
             });
         });

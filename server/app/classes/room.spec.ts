@@ -101,11 +101,11 @@ class MockSocketIO {
 describe('Room', () => {
     let mockSocketIoServer: MockSocketIO;
     let room: Room;
-    let isTestRoom: boolean;
+    let isTestRoom: number;
     let clock: sinon.SinonFakeTimers;
 
     beforeEach(() => {
-        isTestRoom = true;
+        isTestRoom = 1;
         clock = sinon.useFakeTimers();
         mockSocketIoServer = new MockSocketIO();
         room = new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
@@ -149,16 +149,14 @@ describe('Room', () => {
     });
 
     it('should schedule startQuestion call in a test room', () => {
-        room.isTestRoom = true;
+        room.gameType = 1;
         room.launchTimer = false;
-
         room.handleTimerEnd();
-
         clock.tick(TIME_BETWEEN_QUESTIONS_TEST_MODE);
     });
 
     it('should not schedule startQuestion call in a non-test room', () => {
-        room.isTestRoom = false;
+        room.gameType = 0;
         room.launchTimer = false;
 
         room.handleTimerEnd();
@@ -167,7 +165,7 @@ describe('Room', () => {
     });
 
     it('should handle countdown and stop correctly in a test room', () => {
-        room.isTestRoom = true;
+        room.gameType = 1;
         room.timerState = 1;
         room.launchTimer = false;
         room.currentQuestionIndex = 0;
@@ -210,7 +208,7 @@ describe('Room', () => {
     });
 
     it('should lock the room and not start a new question if not a test room and after handling the end of a timer', () => {
-        room.isTestRoom = false;
+        room.gameType = 0;
         room.timerState = 0;
         room.launchTimer = false;
 
@@ -318,12 +316,12 @@ describe('Room', () => {
 
         const verifyAnswersStub = sinon.stub(room, 'verifyAnswers');
 
-        room.handleEarlyAnswers('player1Id', [0]);
-        room.handleEarlyAnswers('player2Id', [1]);
+        room.handleEarlyAnswers('player1Id', [0], player1);
+        room.handleEarlyAnswers('player2Id', [1], player1);
 
         assert.equal(room.lockedAnswers, 2, 'All players have locked in answers');
 
-        room.handleEarlyAnswers('player3Id', [1]);
+        room.handleEarlyAnswers('player3Id', [1], player1);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
 
         verifyAnswersStub.restore();

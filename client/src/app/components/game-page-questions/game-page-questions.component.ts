@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Choice } from '@app/interfaces/game';
+import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state.service';
 import { GameService } from '@app/services/game.service';
 
@@ -16,11 +16,14 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
     @Input() timerExpired: boolean;
     @Input() answerIsCorrect: boolean;
     @Input() isHost: boolean;
+    @Input() type: QuestionType;
     @Output() answerIdx = new EventEmitter<number[]>();
+    @Output() answerText = new EventEmitter<string>();
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
+    answerQrl: string = '';
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -50,6 +53,8 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     ngOnInit(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.document.addEventListener('keydown', this.buttonDetect.bind(this));
     }
@@ -86,11 +91,15 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     resetAnswerState(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
         this.answerStateService.resetAnswerState();
     }
-
+    onInputChange() {
+        this.answerText.emit(this.answerQrl);
+    }
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
     }
