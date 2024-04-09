@@ -21,7 +21,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     isHost: boolean;
     isNoted: boolean = false;
     lobby: MatchLobby;
-    currentQuestionQRLIndex: number = 0;
     nextQuestionButtonText: string = 'Prochaine question';
     subscription: Subscription;
 
@@ -94,6 +93,10 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.gameService.numberInputModifidedValue;
     }
 
+    get currentQRLIndexValue(): number {
+        return this.gameService.currentQRLIndexValue;
+    }
+
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
@@ -117,21 +120,20 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     setplayerPointsQRL(points: [Player, number][]) {
-        if (points.length === this.answersQRL[this.currentQuestionIndexValue][1].length) {
+        if (points.length === this.answersQRL[this.currentQRLIndexValue][1].length) {
             this.gameService.playerQRLPoints = points;
             this.isNoted = true;
         }
     }
 
     nextQuestion(): void {
-        if (this.currentQuestion?.type === 'QRL' && this.answersQRL.length !== 0 && !this.isNoted) {
+        if (this.currentQuestion?.type === 'QRL' && this.answersQRL[this.currentQRLIndexValue][1].length !== 0 && !this.isNoted) {
             this.snackbarService.openSnackBar('Veuillez noter les joueurs', 'Fermer');
             return;
         }
         const timerLength = 1000;
         this.isNoted = false;
         this.gameService.nextQuestion();
-        if (this.currentQuestion?.type === 'QRL') this.currentQuestionQRLIndex++;
         let timer = 3;
         this.nextQuestionButtonText = String(timer);
         const intervalId = setInterval(() => {
