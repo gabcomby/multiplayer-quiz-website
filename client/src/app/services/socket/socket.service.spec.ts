@@ -188,44 +188,6 @@ describe('SocketService', () => {
         expect(mockSocket.emit).toHaveBeenCalledWith('next-question');
     });
 
-    // it('should handle "send-answer" events', (done) => {
-    //     const player: Player = {
-    //         id: '123',
-    //         name: 'test',
-    //         bonus: 1,
-    //         score: 2,
-    //     };
-    //     service.sendAnswers([0], player);
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('send-answers', [0]);
-    //     done();
-    // });
-
-    // it('should handle "send-locked-answers events', (done) => {
-    //     const player: Player = {
-    //         id: '123',
-    //         name: 'test',
-    //         bonus: 1,
-    //         score: 2,
-    //     };
-    //     service.sendLockedAnswers([0], player);
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('send-locked-answers', [0]);
-    //     done();
-    // });
-
-    it('should emit "send-live-answers" events', () => {
-        service.sendLiveAnswers([0]);
-        expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [0]);
-    });
-    it('should handle "livePlayerAnswers" events', (done) => {
-        const fakeData: [string, number[]][] = [
-            ['player1', [1, 2, 3]],
-            ['player2', [3, 2, 1]],
-        ];
-        service.onLivePlayerAnswers((data: [string, number[]][]) => {
-            expect(data).toEqual(fakeData);
-            done();
-        });
-    });
     it('should handle "question" events', (done) => {
         const fakeQuestionIndex = 0;
 

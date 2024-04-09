@@ -112,6 +112,12 @@ export class SocketManager {
                             if (!room.bannedNames.includes(player.name.toLowerCase())) {
                                 room.playerLeftList.push(player);
                                 this.io.to(room.roomId).emit('playerleftlist-change', Array.from(room.playerLeftList));
+                                this.io.to(getRoom().roomId).emit('system-message', {
+                                    text: `${player.name} a quitté la partie`,
+                                    sender: 'Système',
+                                    timestamp: new Date(),
+                                    visible: true,
+                                });
                             }
                             this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                         }
