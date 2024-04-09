@@ -52,7 +52,7 @@ export class Room {
     panicModeEnabled = false;
 
     // Variables for the game
-    chatPermission = new Map<string, boolean>();
+    chatPermissions = new Map<string, boolean>();
 
     // Variables for the questions & answers
     currentQuestionIndex = NOT_FOUND_INDEX;
@@ -333,11 +333,8 @@ export class Room {
         const numberModifications = uniquePlayerIds.size;
         this.io.to(this.hostId).emit('number-modifications', numberModifications);
     }
-    enableChatPermission(playerId: string): void {
-        this.chatPermission.set(playerId, true);
-    }
-    disableChatPermission(playerId: string): void {
-        this.chatPermission.set(playerId, false);
+    setChatPermission(playerId: string, permission: boolean) {
+        this.chatPermissions.set(playerId, permission);
     }
     generateLobbyId = (): string => {
         const nanoid = customAlphabet('1234567890', ID_LOBBY_LENGTH);

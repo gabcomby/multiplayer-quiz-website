@@ -74,7 +74,7 @@ export class SocketManager {
                 const room = getRoom();
                 room.hostId = socket.id;
                 room.playerList.set(socket.id, player);
-                room.chatPermission.set(socket.id, true);
+                room.chatPermissions.set(socket.id, true);
                 room.playerHasAnswered.set(socket.id, false);
                 room.livePlayerAnswers.set(socket.id, []);
                 this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList));
@@ -89,7 +89,7 @@ export class SocketManager {
                     const room = getRoom();
                     room.playerList.set(socket.id, player);
                     room.playerHasAnswered.set(socket.id, false);
-                    room.chatPermission.set(socket.id, true);
+                    room.chatPermissions.set(socket.id, true);
                     room.livePlayerAnswers.set(socket.id, []);
                     this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                     this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
@@ -211,7 +211,7 @@ export class SocketManager {
             socket.on('chat-message', ({ message, playerName, roomId }) => {
                 const room = getRoom();
                 if (room) {
-                    if (room.chatPermission.get(socket.id) || room.hostId === socket.id) {
+                    if (room.chatPermissions.get(socket.id) || room.hostId === socket.id) {
                         socket.to(roomId).emit('chat-message', {
                             text: message,
                             sender: playerName,
@@ -222,6 +222,11 @@ export class SocketManager {
                         console.log('User not allowed to send messages');
                     }
                 }
+            });
+
+            socket.on('chat-permission', (permission: boolean) => {
+                const room = getRoom();
+                room?.setChatPermission(socket.id, permission);
             });
 
             socket.on('disconnect', (reason) => {
