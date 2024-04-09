@@ -58,7 +58,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.answersPlayer && this.currentQuestionValue?.type === QuestionType.QCM) {
             this.constructLiveHistogramData();
-        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL && !this.timerStoppedValue) {
+        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL) {
             this.constructLiveHistogramQrl();
         }
     }
@@ -74,6 +74,7 @@ export class HistogramComponent implements OnInit, OnChanges {
         if (!this.questionsGame[0]) {
             return;
         }
+        console.log(this.nbModified);
         this.maxYAxis = this.playerListValue.length;
         const nbNotModified = this.playerListValue.length - this.nbModified;
         const data = [
