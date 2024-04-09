@@ -11,7 +11,6 @@ import { Socket, io } from 'socket.io-client';
 export class SocketService {
     private socket: Socket;
     private readonly url: string = environment.socketUrl;
-
     connect(): void {
         this.socket = io(this.url, { autoConnect: true });
     }
@@ -158,6 +157,10 @@ export class SocketService {
                 observer.next(data);
             });
         });
+    }
+
+    sendChatPermission(playerId: string, permission: boolean): void {
+        this.socket.emit('chat-permission', { playerId, permission });
     }
 
     onSystemMessage(): Observable<{ text: string; sender: string; timestamp: Date }> {

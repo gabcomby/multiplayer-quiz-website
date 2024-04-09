@@ -5,6 +5,7 @@ export interface IPlayer extends Document {
     name: string;
     score: number;
     bonus: number;
+    chatPermission?: boolean;
 }
 
 // export interface IMatch extends Document {

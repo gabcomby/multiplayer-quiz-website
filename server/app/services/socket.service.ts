@@ -74,7 +74,6 @@ export class SocketManager {
                 const room = getRoom();
                 room.hostId = socket.id;
                 room.playerList.set(socket.id, player);
-                room.chatPermissions.set(socket.id, true);
                 room.playerHasAnswered.set(socket.id, false);
                 room.livePlayerAnswers.set(socket.id, []);
                 this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList));
@@ -89,7 +88,6 @@ export class SocketManager {
                     const room = getRoom();
                     room.playerList.set(socket.id, player);
                     room.playerHasAnswered.set(socket.id, false);
-                    room.chatPermissions.set(socket.id, true);
                     room.livePlayerAnswers.set(socket.id, []);
                     this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                     this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
@@ -154,6 +152,7 @@ export class SocketManager {
                             name: 'Organisateur',
                             score: 0,
                             bonus: 0,
+                            chatPermission: true,
                         } as IPlayer;
                         room.playerList.set(socket.id, player);
                         room.playerHasAnswered.set(socket.id, false);
@@ -211,22 +210,40 @@ export class SocketManager {
             socket.on('chat-message', ({ message, playerName, roomId }) => {
                 const room = getRoom();
                 if (room) {
-                    if (room.chatPermissions.get(socket.id) || room.hostId === socket.id) {
+                    if (socket.id === room.hostId || room.playerList.get(socket.id).chatPermission) {
                         socket.to(roomId).emit('chat-message', {
                             text: message,
                             sender: playerName,
                             timestamp: new Date().toISOString(),
                         });
-                    } else {
-                        // eslint-disable-next-line
-                        console.log('User not allowed to send messages');
                     }
                 }
             });
 
-            socket.on('chat-permission', (permission: boolean) => {
+            socket.on('chat-permission', (chatPermission: { playerId: string; permission: boolean }) => {
                 const room = getRoom();
-                room?.setChatPermission(socket.id, permission);
+                if (room) {
+                    let playerSocketId = null;
+                    for (const [socketId, player] of room.playerList.entries()) {
+                        if (player.id === chatPermission.playerId) {
+                            playerSocketId = socketId;
+                            break;
+                        }
+                    }
+
+                    if (playerSocketId) {
+                        const player = room.playerList.get(playerSocketId);
+                        if (player) {
+                            player.chatPermission = chatPermission.permission;
+                            this.io.to(getRoom().roomId).emit('system-message', {
+                                text: `${player.name} a ${chatPermission.permission ? 'reçu' : 'perdu'} la permission de chat`,
+                                sender: 'Système',
+                                timestamp: new Date(),
+                                visible: true,
+                            });
+                        }
+                    }
+                }
             });
 
             socket.on('disconnect', (reason) => {
