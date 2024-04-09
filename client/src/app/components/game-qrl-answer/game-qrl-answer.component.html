@@ -1,10 +1,11 @@
-<div *ngIf="answersQRLInput">
+<div>
     <div class="answerPlayer" *ngFor="let answer of answersQRLInput; let i = index">
         <div class="answer">
             <div class="answer-player">Nom du joueur : {{ answer[0].name }}</div>
             <div class="answer-text">Réponse du joueur : {{ answer[1] }}</div>
         </div>
         <mat-radio-group aria-label="Select an option" [(ngModel)]="selectedValues[i]">
+            <mat-radio-button [value]="[answer[0], 0]">0%</mat-radio-button>
             <mat-radio-button [value]="[answer[0], 0.5]">50%</mat-radio-button>
             <mat-radio-button [value]="[answer[0], 1]">100%</mat-radio-button>
         </mat-radio-group>
