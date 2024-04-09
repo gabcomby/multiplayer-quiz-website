@@ -1,3 +1,4 @@
+import { CountdownTimer, TimerState } from '@app/classes/countdown-timer';
 import { IGame } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
@@ -5,23 +6,17 @@ import { GamePlayedService } from '@app/services/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
-const ONE_SECOND_IN_MS = 1000;
-const QUARTER_SECOND_IN_MS = 250;
+// const ONE_SECOND_IN_MS = 1000;
+// const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
 const FIRST_ANSWER_MULTIPLIER = 1.2;
-const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
-const MINIMAL_TIME_FOR_PANIC_MODE = 10;
+// const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
+// const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
 const NOT_FOUND_INDEX = -1;
 
-const enum TimerState {
-    RUNNING,
-    STOPPED,
-    PAUSED,
-}
-
-const enum GameType {
+export const enum GameType {
     NORMAL,
     TEST,
     RANDOM,
@@ -29,6 +24,7 @@ const enum GameType {
 
 export class Room {
     gamePlayedService: GamePlayedService;
+    countdownTimer: CountdownTimer;
     // Variables for the lobby
     io: SocketIoServer;
     roomId = '';
@@ -44,12 +40,12 @@ export class Room {
     nbrPlayersAtStart: number;
 
     // Variables for the timer
-    launchTimer = true;
-    duration = 0;
-    timerId = 0;
-    currentTime = 0;
-    timerState: TimerState = TimerState.STOPPED;
-    panicModeEnabled = false;
+    // launchTimer = true;
+    // duration = 0;
+    // timerId = 0;
+    // currentTime = 0;
+    // timerState: TimerState = TimerState.STOPPED;
+    // panicModeEnabled = false;
 
     // Variables for the questions & answers
     currentQuestionIndex = NOT_FOUND_INDEX;
@@ -86,17 +82,29 @@ export class Room {
         }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
+        this.countdownTimer = new CountdownTimer(this);
+    }
+
+    get gameTypeValue(): GameType {
+        return this.gameType;
+    }
+
+    get gameDurationValue(): number {
+        return this.game.duration;
     }
 
     startQuestion(): void {
         this.inputModifications = [];
-        if (this.timerState === TimerState.STOPPED) {
-            if (this.launchTimer) {
-                this.duration = 5;
-                this.timerState = TimerState.RUNNING;
-                this.startCountdownTimer();
+        if (this.countdownTimer.timerStateValue === TimerState.STOPPED) {
+            if (this.countdownTimer.isLaunchTimerValue) {
+                // this.duration = 5;
+                // this.timerState = TimerState.RUNNING;
+                // this.startCountdownTimer();
+                this.countdownTimer.timerDurationValue = 5;
+                this.countdownTimer.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
+                // Moves to game results and writes into DB
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
@@ -111,108 +119,118 @@ export class Room {
                         } as IGamePlayed;
                         this.gamePlayedService.createGamePlayed(gamePlayedData);
                     }
-                } else {
+                }
+                // Moves to next question
+                else {
+                    this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
+                    if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
+                        this.countdownTimer.timerDurationValue = 60;
+                        this.countdownTimer.currentQuestionIsQRLValue = true;
+                    } else {
+                        this.countdownTimer.timerDurationValue = this.game.duration;
+                        this.countdownTimer.currentQuestionIsQRLValue = false;
+                    }
+                    // Reset question logic variables
+                    this.lockedAnswers = 0;
                     this.firstAnswerForBonus = true;
                     this.assertedAnswers = 0;
-                    this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
-                    this.timerState = TimerState.RUNNING;
                     this.playerHasAnswered.forEach((value, key) => {
                         this.playerHasAnswered.set(key, false);
                     });
                     this.livePlayerAnswers.forEach((value, key) => {
                         this.livePlayerAnswers.set(key, []);
                     });
-                    this.startCountdownTimer();
+                    this.countdownTimer.startCountdownTimer();
                 }
             }
         }
     }
 
-    startCountdownTimer(): void {
-        this.currentTime = this.duration;
-        if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
-            this.currentTime = 60;
-            this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-        } else {
-            this.io.to(this.roomId).emit('timer-countdown', this.duration);
-        }
-        const timerId = setInterval(
-            () => {
-                if (this.timerState !== TimerState.PAUSED) {
-                    this.currentTime -= 1;
-                    this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-                    if (this.currentTime === 0) {
-                        this.firstAnswerForBonus = false;
-                        if (!this.launchTimer) {
-                            this.io.to(this.roomId).emit('timer-stopped');
-                        }
-                        this.handleTimerEnd();
-                    }
-                }
-            },
-            ONE_SECOND_IN_MS,
-            this.currentTime,
-        );
-        this.timerId = timerId;
-    }
+    // startCountdownTimer(): void {
+    //     this.currentTime = this.duration;
+    //     if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
+    //         this.currentTime = 60;
+    //         this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+    //     } else {
+    //         this.io.to(this.roomId).emit('timer-countdown', this.duration);
+    //     }
+    //     const timerId = setInterval(
+    //         () => {
+    //             if (this.timerState !== TimerState.PAUSED) {
+    //                 this.currentTime -= 1;
+    //                 this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+    //                 if (this.currentTime === 0) {
+    //                     this.firstAnswerForBonus = false;
+    //                     if (!this.launchTimer) {
+    //                         this.io.to(this.roomId).emit('timer-stopped');
+    //                     }
+    //                     this.handleTimerEnd();
+    //                 }
+    //             }
+    //         },
+    //         ONE_SECOND_IN_MS,
+    //         this.currentTime,
+    //     );
+    //     this.timerId = timerId;
+    // }
 
-    handleTimerEnd(): void {
-        clearInterval(this.timerId);
-        if (this.panicModeEnabled) {
-            this.io.to(this.roomId).emit('panic-mode-disabled');
-            this.panicModeEnabled = false;
-        }
-        this.timerState = TimerState.STOPPED;
-        this.currentTime = this.duration;
-        this.lockedAnswers = 0;
-        if (this.launchTimer) {
-            this.launchTimer = false;
-            this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
-            this.duration = this.game.duration;
-            this.startQuestion();
-            return;
-        }
-        if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
-            setTimeout(() => {
-                this.startQuestion();
-            }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
-        }
-    }
+    // handleTimerEnd(): void {
+    //     clearInterval(this.timerId);
+    //     if (this.panicModeEnabled) {
+    //         this.io.to(this.roomId).emit('panic-mode-disabled');
+    //         this.panicModeEnabled = false;
+    //     }
+    //     this.timerState = TimerState.STOPPED;
+    //     this.currentTime = this.duration;
+    //     this.lockedAnswers = 0;
+    //     if (this.launchTimer) {
+    //         this.launchTimer = false;
+    //         this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
+    //         this.duration = this.game.duration;
+    //         this.startQuestion();
+    //         return;
+    //     }
+    //     if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
+    //         setTimeout(() => {
+    //             this.startQuestion();
+    //         }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
+    //     }
+    // }
 
-    handleTimerPause(): void {
-        if (this.timerState === TimerState.RUNNING) {
-            this.timerState = TimerState.PAUSED;
-        } else if (this.timerState === TimerState.PAUSED) {
-            this.timerState = TimerState.RUNNING;
-        }
-    }
+    // handleTimerPause(): void {
+    //     if (this.timerState === TimerState.RUNNING) {
+    //         this.timerState = TimerState.PAUSED;
+    //     } else if (this.timerState === TimerState.PAUSED) {
+    //         this.timerState = TimerState.RUNNING;
+    //     }
+    // }
 
-    handlePanicMode(): void {
-        // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
-        if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
-            this.panicModeEnabled = true;
-            this.io.to(this.roomId).emit('panic-mode-enabled');
-            clearInterval(this.timerId);
-            const timerId = setInterval(
-                () => {
-                    if (this.timerState !== TimerState.PAUSED) {
-                        this.currentTime -= 1;
-                        this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-                        if (this.currentTime === 0) {
-                            this.firstAnswerForBonus = false;
-                            if (!this.launchTimer) {
-                                this.io.to(this.roomId).emit('timer-stopped');
-                            }
-                            this.handleTimerEnd();
-                        }
-                    }
-                },
-                QUARTER_SECOND_IN_MS,
-                this.currentTime,
-            );
-            this.timerId = timerId;
-        }
-    }
+    // handlePanicMode(): void {
+    //     // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
+    //     if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
+    //         this.panicModeEnabled = true;
+    //         this.io.to(this.roomId).emit('panic-mode-enabled');
+    //         clearInterval(this.timerId);
+    //         const timerId = setInterval(
+    //             () => {
+    //                 if (this.timerState !== TimerState.PAUSED) {
+    //                     this.currentTime -= 1;
+    //                     this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
+    //                     if (this.currentTime === 0) {
+    //                         this.firstAnswerForBonus = false;
+    //                         if (!this.launchTimer) {
+    //                             this.io.to(this.roomId).emit('timer-stopped');
+    //                         }
+    //                         this.handleTimerEnd();
+    //                     }
+    //                 }
+    //             },
+    //             QUARTER_SECOND_IN_MS,
+    //             this.currentTime,
+    //         );
+    //         this.timerId = timerId;
+    //     }
+    // }
 
     // eslint-disable-next-line complexity
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
@@ -311,7 +329,7 @@ export class Room {
         if (this.lockedAnswers === this.playerList.size) {
             this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
-            this.handleTimerEnd();
+            this.countdownTimer.handleTimerEnd();
         } else {
             this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }

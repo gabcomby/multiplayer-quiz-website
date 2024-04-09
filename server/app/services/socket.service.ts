@@ -178,14 +178,14 @@ export class SocketManager {
             socket.on('pause-timer', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId) && socket.id === room.hostId) {
-                    room.handleTimerPause();
+                    room.countdownTimer.handleTimerPause();
                 }
             });
 
             socket.on('enable-panic-mode', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId) && socket.id === room.hostId) {
-                    room.handlePanicMode();
+                    room.countdownTimer.handlePanicMode();
                 }
             });
 
