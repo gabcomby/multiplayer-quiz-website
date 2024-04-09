@@ -7,7 +7,10 @@ import { GameService } from '@app/services/game/game.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
+
 const HISTOGRAMM_UPDATE = 1000;
+const MINIMUM_TIME_FOR_PANIC_MODE_QCM = 10;
+const MINIMUM_TIME_FOR_PANIC_MODE_QRL = 20;
 
 @Component({
     selector: 'app-host-game-page',
@@ -154,5 +157,14 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
 
     handlePanicMode(): void {
         this.gameService.enablePanicMode();
+    }
+
+    checkMinimumTimeForPanicMode(): boolean {
+        if (this.gameService.currentQuestionValue?.type === 'QCM') {
+            return this.currentTimerCountdown <= MINIMUM_TIME_FOR_PANIC_MODE_QCM;
+        } else if (this.gameService.currentQuestionValue?.type === 'QRL') {
+            return this.currentTimerCountdown <= MINIMUM_TIME_FOR_PANIC_MODE_QRL;
+        }
+        return false;
     }
 }

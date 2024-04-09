@@ -158,9 +158,10 @@ export class HistogramComponent implements OnInit, OnChanges {
         const answerCountsMap: Map<string, number> = new Map();
         this.answersPlayer.forEach(([questionText, answer]) => {
             if (questionText === question.text) {
-                if (typeof answer[0] === 'number' && typeof answer[1] === 'number') {
-                    answerCountsMap.set('0.5', answer[0]);
-                    answerCountsMap.set('1', answer[1]);
+                if (typeof answer[0] === 'number' && typeof answer[1] === 'number' && typeof answer[2] === 'number') {
+                    answerCountsMap.set('0', answer[0]);
+                    answerCountsMap.set('0.5', answer[1]);
+                    answerCountsMap.set('1', answer[2]);
                 }
             }
         });
