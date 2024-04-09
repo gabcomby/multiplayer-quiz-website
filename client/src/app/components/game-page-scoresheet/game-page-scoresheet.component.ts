@@ -26,4 +26,9 @@ export class GamePageScoresheetComponent implements OnInit, OnChanges {
             this.dataSource.data = this.playerList;
         }
     }
+
+    toggleChatPermission(player: Player): void {
+        // eslint-disable-next-line no-console
+        console.log('Toggling chat permission for player:', player);
+    }
 }
