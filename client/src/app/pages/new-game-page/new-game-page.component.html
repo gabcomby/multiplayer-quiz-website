@@ -20,18 +20,18 @@
         <button mat-raised-button color="primary" (click)="launchRandomGame()">Lancer une partie</button>
     </mat-card-content>
 </mat-card>
-<mat-card *ngFor="let game of games">
-    <mat-card-header *ngIf="game.isVisible" (click)="selected(game)" id="{{ game.id }}">
+<mat-card *ngFor="let gameVisible of gamesVisible">
+    <mat-card-header (click)="selected(gameVisible)" id="{{ gameVisible.id }}">
         <mat-card-title
-            ><b>{{ game.title }}</b></mat-card-title
+            ><b>{{ gameVisible.title }}</b></mat-card-title
         >
     </mat-card-header>
-    <mat-card-content *ngIf="gameSelected[game.id] === true">
-        <p><b>Description:</b> {{ game.description }}</p>
-        <p><b>Temps alloué par questions:</b> {{ game.duration }}</p>
+    <mat-card-content *ngIf="gameSelected[gameVisible.id] === true">
+        <p><b>Description:</b> {{ gameVisible.description }}</p>
+        <p><b>Temps alloué par questions:</b> {{ gameVisible.duration }}</p>
         <p><b>Questions:</b></p>
-        <p *ngFor="let question of game.questions">- {{ question.text }}</p>
-        <button mat-raised-button color="primary" (click)="launchGameTest(game)">Tester le jeu</button>
-        <button mat-raised-button color="accent" (click)="launchGame(game)">Lancer une partie</button>
+        <p *ngFor="let question of gameVisible.questions">- {{ question.text }}</p>
+        <button mat-raised-button color="primary" (click)="launchGameTest(gameVisible)">Tester le jeu</button>
+        <button mat-raised-button color="accent" (click)="launchGame(gameVisible)">Lancer une partie</button>
     </mat-card-content>
 </mat-card>
