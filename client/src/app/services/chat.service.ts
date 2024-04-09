@@ -4,8 +4,6 @@ import { SocketService } from '@app/services/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
-const DISAPPEAR_DELAY = 60000;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -64,16 +62,6 @@ export class ChatService {
         const newMessage = { ...message, timestamp: new Date(message.timestamp as unknown as string), visible: true };
         this.messages.push(newMessage);
         this.messagesSubject.next(this.messages);
-        setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
-    }
-
-    private hideMessage(message: Message): void {
-        const index = this.messages.indexOf(message);
-        // eslint-disable-next-line -- Used to hide message
-        if (index !== -1) {
-            this.messages[index].visible = false;
-            this.messagesSubject.next([...this.messages]);
-        }
     }
 
     private listenForSystemMessages(): void {
