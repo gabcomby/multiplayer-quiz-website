@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
-import { ChatService } from '@app/services/chat.service';
+import { ChatService } from '@app/services/chat/chat.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -51,7 +51,12 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
     }
 
     private sendMessage(): void {
-        this.chatService.sendMessage(this.text, this.playerName, this.roomId, this.isHost);
+        this.chatService.sendMessage({
+            text: this.text,
+            playerName: this.playerName,
+            roomId: this.roomId,
+            isHost: this.isHost,
+        });
         this.text = '';
     }
 

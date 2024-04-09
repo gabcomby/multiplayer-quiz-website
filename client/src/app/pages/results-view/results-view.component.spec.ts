@@ -6,7 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { ResultsViewComponent } from './results-view.component';
 
 describe('ResultsViewComponent', () => {

@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 import { ChatService } from './chat.service';
-import { SnackbarService } from './snackbar.service';
-import { SocketService } from './socket.service';
 
 const DISAPPEAR_DELAY = 60000;
 
@@ -51,19 +51,19 @@ describe('ChatService', () => {
 
     it('should send message', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
-        service.sendMessage('test', 'test', 'test', true);
+        service.sendMessage({ text: 'test', playerName: 'test', roomId: 'test', isHost: true });
         expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalled();
     });
 
     it('should send message with the name organisateur if host', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
-        service.sendMessage('test', 'test', 'test', true);
+        service.sendMessage({ text: 'test', playerName: 'test', roomId: 'test', isHost: true });
         expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalledWith('test', 'Organisateur', 'test');
     });
 
     it('should send message with the player name if not host', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
-        service.sendMessage('test', 'test', 'test', false);
+        service.sendMessage({ text: 'test', playerName: 'test', roomId: 'test', isHost: false });
         expect(socketServiceSpy.sendMessageToServer).toHaveBeenCalledWith('test', 'test', 'test');
     });
 
@@ -101,7 +101,7 @@ describe('ChatService', () => {
 
     it("shouldn't send message if the playerNmae is empty", () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
-        service.sendMessage('test', '', 'test', false);
+        service.sendMessage({ text: 'test', playerName: '', roomId: 'test', isHost: false });
         expect(socketServiceSpy.sendMessageToServer).not.toHaveBeenCalled();
     });
 
@@ -129,7 +129,7 @@ describe('ChatService', () => {
         const roomId = '123';
         const isHost = false;
 
-        service.sendMessage(text, playerName, roomId, isHost);
+        service.sendMessage({ text, playerName, roomId, isHost });
 
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Vous êtes déconnecté du chat, vos messages ne seront pas envoyés');
         expect(socketServiceSpy.sendMessageToServer).not.toHaveBeenCalled();

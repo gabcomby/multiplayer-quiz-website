@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 
 const SIZE1 = 400;
 const SIZE2 = 400;
@@ -52,9 +52,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        // if (this.currentQuestionValue?.type === QuestionType.QCM) {
         this.constructHistogramsData();
-        // }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -71,6 +69,7 @@ export class HistogramComponent implements OnInit, OnChanges {
             this.currentIndex = newIndex;
         }
     }
+
     private constructLiveHistogramQrl(): void {
         if (!this.questionsGame[0]) {
             return;

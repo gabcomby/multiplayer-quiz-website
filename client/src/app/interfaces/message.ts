@@ -4,3 +4,10 @@ export interface Message {
     timestamp?: Date | string;
     visible?: boolean;
 }
+
+export interface ChatMessageCommand {
+    text: string;
+    playerName: string;
+    roomId: string;
+    isHost: boolean;
+}

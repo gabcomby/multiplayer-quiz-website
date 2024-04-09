@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { Observable, firstValueFrom } from 'rxjs';
-import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',
@@ -65,19 +65,18 @@ export class QuestionService {
         this.questions = question.map((item) => ({ ...item }));
     }
     saveQuestion(index: number, questionList: Question[], listQuestionBank: boolean): boolean {
-        if (questionList[index]) {
-            questionList[index].lastModification = new Date();
-            let validated = this.questionValidationService.validateQuestion(questionList[index]);
+        const question = questionList[index];
 
-            if (questionList[index].choices && questionList[index].type === QuestionType.QCM) {
-                // TODO: Remove the eslint-disable-line comment when the following issue is fixed:
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                validated = this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices!);
-            }
+        if (question) {
+            question.lastModification = new Date();
+            let validated = this.questionValidationService.validateQuestion(question);
+
+            if (question.choices && question.type === QuestionType.QCM)
+                validated = this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices);
 
             if (validated) {
                 if (listQuestionBank) {
-                    this.updateQuestion(questionList[index].id, questionList[index]);
+                    this.updateQuestion(question.id, question);
                 } else {
                     this.updateList(questionList);
                 }
