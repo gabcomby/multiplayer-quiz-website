@@ -21,7 +21,7 @@ export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
-
+    gamesVisible: Game[] = [];
     deletedGamesId: string[] = [];
     subscription: Subscription;
 
@@ -36,9 +36,10 @@ export class NewGamePageComponent implements OnInit {
     ) {}
 
     async ngOnInit() {
-        this.apiService.getGames().then((games) => {
+        await this.apiService.getGames().then((games) => {
             this.games = games;
         });
+        this.gamesVisibleList();
     }
 
     selected(game: Game): void {
@@ -141,5 +142,9 @@ export class NewGamePageComponent implements OnInit {
                 }
             },
         });
+    }
+    gamesVisibleList(): void {
+        this.gamesVisible = this.games.filter((game) => game.isVisible);
+        console.log(this.gamesVisible);
     }
 }
