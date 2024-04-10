@@ -8,12 +8,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
-import { QuestionType } from '@app/interfaces/game';
+import { Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game/game.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription } from 'rxjs';
 import { HostGamePageComponent } from './host-game-page.component';
-
 @Component({
     selector: 'app-game-page-scoresheet',
     template: '',
@@ -52,6 +53,8 @@ describe('HostGamePageComponent', () => {
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let subscriptionSpy: jasmine.SpyObj<Subscription>;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
+    let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -116,6 +119,8 @@ describe('HostGamePageComponent', () => {
             },
         );
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+        socketServiceSpy = jasmine.createSpyObj('SocketService', ['updateHistogram']);
+        snackbarServiceSpy = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -130,6 +135,8 @@ describe('HostGamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: Router, useValue: routerSpyObj },
+                { provide: SocketService, useValue: socketServiceSpy },
+                { provide: SnackbarService, useValue: snackbarServiceSpy },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
         }).compileComponents();
@@ -196,6 +203,12 @@ describe('HostGamePageComponent', () => {
         const expectedQuestion = gameServiceSpy.currentQuestionValue;
         const actualQuestion = component.currentQuestion;
         expect(actualQuestion).toEqual(expectedQuestion);
+    });
+
+    it('should return an empty array when currentQuestionValue is null', () => {
+        spyOnProperty(gameServiceSpy, 'currentQuestionValue', 'get').and.returnValue(null);
+        const result = component.currentQuestionArray;
+        expect(result).toEqual([]);
     });
 
     it('should return timerStopped from gameService with timerStopped', () => {
@@ -323,4 +336,93 @@ describe('HostGamePageComponent', () => {
         jasmine.clock().tick(1000);
         expect(component.nextQuestionButtonText).toBe('Prochaine question');
     }));
+
+    it('should subscribe to interval and call updateHistogram', () => {
+        jasmine.clock().install();
+
+        component.ngOnInit();
+
+        expect(component.subscription).toBeDefined();
+        expect(component.subscription).toBeInstanceOf(Subscription);
+
+        jasmine.clock().tick(1000);
+
+        expect(socketServiceSpy.updateHistogram).toHaveBeenCalled();
+        jasmine.clock().uninstall();
+    });
+
+    it('should open snackbar when currentQuestion is QRL, answersQRL is not empty, and isNoted is false', () => {
+        const mockQuestion = {
+            type: QuestionType.QRL,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question;
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        spyOnProperty(component, 'answersQRL', 'get').and.returnValue([['Answer 1', []]]);
+        component.isNoted = false;
+        component.nextQuestion();
+
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Veuillez noter les joueurs', 'Fermer');
+        expect(gameServiceSpy.nextQuestion).not.toHaveBeenCalled();
+    });
+
+    it('should not open snackbar when currentQuestion is not QRL', () => {
+        const mockQuestion = {
+            type: QuestionType.QCM,
+            text: 'Mock Question?',
+            points: 10,
+            choices: [
+                { text: 'Mock Answer 1', isCorrect: false },
+                { text: 'Mock Answer 2', isCorrect: true },
+            ],
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question;
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        spyOnProperty(component, 'answersQRL', 'get').and.returnValue([['Answer 1', []]]);
+        component.isNoted = false;
+
+        component.nextQuestion();
+
+        expect(snackbarServiceSpy.openSnackBar).not.toHaveBeenCalled();
+        expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
+    });
+
+    it('should not open snackbar when answersQRL is empty', () => {
+        const mockQuestion = {
+            type: QuestionType.QRL,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question;
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        spyOnProperty(component, 'answersQRL', 'get').and.returnValue([]);
+        component.isNoted = false;
+
+        component.nextQuestion();
+
+        expect(snackbarServiceSpy.openSnackBar).not.toHaveBeenCalled();
+        expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
+    });
+
+    it('should not open snackbar when isNoted is true', () => {
+        const mockQuestion = {
+            type: QuestionType.QRL,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question;
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        spyOnProperty(component, 'answersQRL', 'get').and.returnValue([['Answer 1', []]]);
+        component.isNoted = true;
+
+        component.nextQuestion();
+
+        expect(snackbarServiceSpy.openSnackBar).not.toHaveBeenCalled();
+        expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
+    });
 });
