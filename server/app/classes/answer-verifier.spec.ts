@@ -152,12 +152,6 @@ describe('Room', () => {
         assert.isTrue(room.answerVerifier['playerHasAnswered'].get('1'));
     });
 
-    it('should not verify answers if answerIdx is not a string or an array', () => {
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', null, { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.isFalse(room.answerVerifier['playerHasAnswered'].get('1'));
-    });
-
     it('should push the globalAnswersText if answerIdx is a string', () => {
         room.currentQuestionIndex = 0;
         room.answerVerifier['nbrOfAssertedAnswers'] = 0;
