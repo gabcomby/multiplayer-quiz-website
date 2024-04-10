@@ -191,7 +191,7 @@ export class SocketManager {
 
             socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
                 const room = getRoom();
-                if (socket.id !== room.hostId) {
+                if (roomExists(room.roomId)) {
                     room.answerVerifier.verifyAnswers(socket.id, answer, player);
                 }
             });

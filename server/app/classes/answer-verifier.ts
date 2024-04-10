@@ -70,7 +70,6 @@ export class AnswerVerifier {
             }
             return;
         }
-        console.log(playerId, player?.name, answerIdx);
         if (question.type === 'QCM' && Array.isArray(answerIdx) && answerIdx.length !== 0) {
             answerIdx.forEach((index) => {
                 this.globalAnswerIndex.push(index);
