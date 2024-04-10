@@ -6,22 +6,25 @@
         <mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Nom</mat-header-cell>
-                <mat-cell *matCellDef="let player">{{ player.name }}</mat-cell>
+                <mat-cell *matCellDef="let player" [ngClass]="isHost ? getStatusClass(player) : ''">{{ player.name }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="score">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Score</mat-header-cell>
                 <mat-cell *matCellDef="let player">{{ player.score }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="chatPermission">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Chat Permission</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>Chat</mat-header-cell>
                 <mat-cell *matCellDef="let player">
                     <mat-slide-toggle [disabled]="!isHost" [checked]="player.chatPermission" (change)="toggleChatPermission(player)">
                     </mat-slide-toggle>
                 </mat-cell>
             </ng-container>
-
-            <mat-header-row *matHeaderRowDef="['name', 'score', 'chatPermission']"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: ['name', 'score', 'chatPermission']"></mat-row>
+            <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Statut</mat-header-cell>
+                <mat-cell *matCellDef="let player">{{ getPlayerStatus(player.status) }}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="isHost === true ? ['name', 'score', 'chatPermission', 'status'] : ['name', 'score']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: isHost === true ? ['name', 'score', 'chatPermission', 'status'] : ['name', 'score']"></mat-row>
         </mat-table>
         <div *ngIf="isHost">
             <mat-card-content style="text-decoration: line-through" *ngFor="let player of playerLeftList"> {{ player.name }} </mat-card-content>
