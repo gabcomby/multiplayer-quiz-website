@@ -2,6 +2,8 @@ import { IQuestion } from '@app/model/game.model';
 import questionsModel from '@app/model/questions.model';
 import { Service } from 'typedi';
 
+const MINIMUM_QUESTIONS_FOR_RANDOM_MODE = 5;
+
 @Service()
 export class QuestionsService {
     async getQuestions(): Promise<(typeof questionsModel)[]> {
@@ -13,16 +15,22 @@ export class QuestionsService {
     }
 
     async addQuestionBank(questionData: IQuestion): Promise<IQuestion> {
-        const question = await questionsModel.create(questionData);
-        return question;
+        return questionsModel.create(questionData);
     }
 
     async deleteQuestion(questionId: string): Promise<IQuestion> {
-        return await questionsModel.findOneAndDelete({ id: questionId });
+        return questionsModel.findOneAndDelete({ id: questionId });
     }
 
     async updateQuestion(questionId: string, questionData: IQuestion): Promise<IQuestion> {
-        const updatedQuestion = await questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
-        return updatedQuestion;
+        return questionsModel.findOneAndUpdate({ id: questionId }, questionData, { new: true });
+    }
+
+    async getFiveRandomQuestions(): Promise<IQuestion[]> {
+        return questionsModel.aggregate([{ $match: { type: 'QCM' } }, { $sample: { size: 5 } }]);
+    }
+
+    async verifyNumberOfQuestions(): Promise<boolean> {
+        return questionsModel.countDocuments({ type: 'QCM' }).then((count) => count >= MINIMUM_QUESTIONS_FOR_RANDOM_MODE);
     }
 }

@@ -35,4 +35,16 @@ describe('RoomService', () => {
         expect(req.request.body).toEqual(mockPlayer);
         req.flush(expectedResponse);
     });
+
+    it('should verify enough questions', () => {
+        const expectedResponse = true;
+
+        service.verifyEnoughQuestions().subscribe((response) => {
+            expect(response).toEqual(expectedResponse);
+        });
+
+        const req = httpController.expectOne('http://localhost:3000/rooms/questions');
+        expect(req.request.method).toBe('GET');
+        req.flush(expectedResponse);
+    });
 });

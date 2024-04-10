@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, Input, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AnswerStateService } from '@app/services/answer-state.service';
-import { GamePageQuestionsComponent } from './game-page-questions.component';
 import { API_BASE_URL } from '@app/app.module';
-import { GameService } from '@app/services/game.service';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
+import { GameService } from '@app/services/game/game.service';
+import { GamePageQuestionsComponent } from './game-page-questions.component';
 
 @Component({
     selector: 'app-game-page-questions',
@@ -20,7 +20,7 @@ describe('GamePageQuestionsComponent', () => {
     let gameServiceSpy: jasmine.SpyObj<GameService>;
 
     beforeEach(() => {
-        answerStateServiceSpy = jasmine.createSpyObj('AnswerStateService', ['lockAnswer']);
+        answerStateServiceSpy = jasmine.createSpyObj('AnswerStateService', ['lockAnswer', 'resetAnswerState']);
         gameServiceSpy = jasmine.createSpyObj('SocketService', ['submitAnswer']);
         TestBed.configureTestingModule({
             declarations: [GamePageQuestionsComponent, AppGamePageQuestionsStubComponent],

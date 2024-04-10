@@ -1,26 +1,31 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Choice } from '@app/interfaces/game';
-import { AnswerStateService } from '@app/services/answer-state.service';
-import { GameService } from '@app/services/game.service';
+import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Choice, QuestionType } from '@app/interfaces/game';
+import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
+import { GameService } from '@app/services/game/game.service';
+
+const NOT_FOUND_INDEX = -1;
 
 @Component({
     selector: 'app-game-page-questions',
     templateUrl: './game-page-questions.component.html',
     styleUrls: ['./game-page-questions.component.scss'],
 })
-export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges {
+export class GamePageQuestionsComponent implements OnInit, OnChanges {
     @Input() question: string;
     @Input() mark: number;
     @Input() choices: Choice[] = [];
     @Input() timerExpired: boolean;
     @Input() answerIsCorrect: boolean;
     @Input() isHost: boolean;
+    @Input() type: QuestionType;
     @Output() answerIdx = new EventEmitter<number[]>();
+    @Output() answerText = new EventEmitter<string>();
 
     selectedChoices: number[];
     answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
+    answerQrl: string = '';
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -28,7 +33,7 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
         private gameService: GameService,
     ) {}
 
-    @HostListener('keydown', ['$event'])
+    @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         if (this.verifyActiveElement()) {
             const buttonPressed = event.key;
@@ -50,26 +55,19 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     ngOnInit(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
-        this.document.addEventListener('keydown', this.buttonDetect.bind(this));
-    }
-
-    ngOnDestroy(): void {
-        this.document.removeEventListener('keydown', this.buttonDetect.bind(this));
     }
 
     toggleAnswer(index: number) {
         if (this.timerExpired || this.answerIsLocked) return;
-        if (!this.checkIfMultipleChoice()) {
-            this.selectedChoices = [];
-        }
+        if (!this.checkIfMultipleChoice()) this.selectedChoices = [];
+
         const answerIdx = this.selectedChoices.indexOf(index);
-        // eslint-disable-next-line
-        if (answerIdx > -1) {
-            this.selectedChoices.splice(answerIdx, 1);
-        } else {
-            this.selectedChoices.push(index);
-        }
+        if (answerIdx > NOT_FOUND_INDEX) this.selectedChoices.splice(answerIdx, 1);
+        else this.selectedChoices.push(index);
+
         this.answerIdx.emit(this.selectedChoices);
         this.document.body.focus();
     }
@@ -86,11 +84,15 @@ export class GamePageQuestionsComponent implements OnInit, OnDestroy, OnChanges 
 
     resetAnswerState(): void {
         this.selectedChoices = [];
+        this.answerQrl = '';
+        this.answerText.emit(this.answerQrl);
         this.answerIdx.emit(this.selectedChoices);
         this.answerIsLocked = false;
-        this.answerStateService.lockAnswer(this.answerIsLocked);
+        this.answerStateService.resetAnswerState();
     }
-
+    onInputChange() {
+        this.answerText.emit(this.answerQrl);
+    }
     private checkIfNumberValid(buttonPressed: string): boolean {
         return Number(buttonPressed) > 0 && Number(buttonPressed) <= this.choices.length;
     }

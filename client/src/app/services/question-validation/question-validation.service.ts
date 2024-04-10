@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Choice, Question } from '@app/interfaces/game';
-import { SnackbarService } from './snackbar.service';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+
+const MAX_POINTS = 100;
+const MIN_POINTS = 10;
 
 @Injectable({
     providedIn: 'root',
@@ -8,7 +11,7 @@ import { SnackbarService } from './snackbar.service';
 export class QuestionValidationService {
     constructor(private snackbarService: SnackbarService) {}
 
-    answerValid(answer: Choice[]) {
+    answerValid(answer: Choice[]): boolean {
         let valid = true;
         answer.forEach((elem) => {
             if (elem.text === '') {
@@ -34,18 +37,20 @@ export class QuestionValidationService {
     }
 
     validatePoints(newQuestion: Question) {
-        const MAX_POINTS = 100;
-        const MIN_POINTS = 10;
         const points = newQuestion.points;
         return points % MIN_POINTS === 0 && points >= MIN_POINTS && points <= MAX_POINTS;
     }
-    validateQuestion(newQuestion: Question) {
-        if (newQuestion.text !== '' && this.validatePoints(newQuestion) && newQuestion.text.trim().length !== 0) {
-            if (newQuestion.choices) {
-                if (this.answerValid(newQuestion.choices)) return true;
-            }
+    validateQuestion(newQuestion: Question): boolean {
+        if (!this.validateQuestionInput(newQuestion)) {
+            this.snackbarService.openSnackBar('la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces');
+            return false;
         }
-        this.snackbarService.openSnackBar('la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces');
-        return false;
+        if (newQuestion.type === QuestionType.QCM && newQuestion.choices) {
+            return this.answerValid(newQuestion.choices);
+        }
+        return true;
+    }
+    validateQuestionInput(newQuestion: Question): boolean {
+        return newQuestion.text !== '' && this.validatePoints(newQuestion) && newQuestion.text.trim().length !== 0;
     }
 }

@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AnswersPlayer, Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 
 @Component({
     selector: 'app-results-view',
@@ -13,6 +13,7 @@ export class ResultsViewComponent implements OnInit {
     answersQuestions: AnswersPlayer[] = [];
     questions: Question[] = [];
     playerDataSource: Player[] = [];
+    playerDataSorted: Player[] = [];
 
     constructor(
         private gameService: GameService,
@@ -32,7 +33,7 @@ export class ResultsViewComponent implements OnInit {
     }
 
     get playerList(): Player[] {
-        this.playerDataSource = this.gameService.playerListValue;
+        this.playerDataSource = this.gameService.playersListResultValue;
         this.sortDataSource();
         return this.playerDataSource;
     }
@@ -46,7 +47,6 @@ export class ResultsViewComponent implements OnInit {
     }
 
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();
@@ -68,11 +68,7 @@ export class ResultsViewComponent implements OnInit {
 
     private sortDataSource() {
         this.playerDataSource.sort((a, b) => {
-            if (b.score !== a.score) {
-                return b.score - a.score;
-            } else {
-                return a.name.localeCompare(b.name);
-            }
+            return b.score !== a.score ? b.score - a.score : a.name.localeCompare(b.name);
         });
     }
 }

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 
 import { Game } from '@app/interfaces/game';
-import { SnackbarService } from '@app/services/snackbar.service';
-import { SocketService } from '@app/services/socket.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { SocketService } from '@app/services/socket/socket.service';
 
+import { ApiService } from '@app/services/api/api.service';
+import { GameValidationService } from '@app/services/game-validation/game-validation.service';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 import removeUnrecognizedAttributes from '@app/utils/remove-unrecognized-attributes';
-import { ApiService } from './api.service';
-import { GameValidationService } from './game-validation.service';
 
 const MAX_GAME_NAME_LENGTH = 35;
 
@@ -82,9 +82,9 @@ export class AdminService {
         return !this.isGameNameUnique(input, dataSource) || input === title || input.length > MAX_GAME_NAME_LENGTH || input.length === 0;
     };
 
-    prepareGameForImport(game: Game): void {
+    async prepareGameForImport(game: Game): Promise<void> {
         removeUnrecognizedAttributes(game);
-        if (!this.gameValidationService.isValidGame(game)) return;
+        if (!(await this.gameValidationService.isValidGame(game))) return;
         assignNewGameAttributes(game);
     }
 

@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Game } from '@app/interfaces/game';
+import { Game, QuestionType } from '@app/interfaces/game';
+import { ApiService } from '@app/services/api/api.service';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { ApiService } from './api.service';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
-const minDuration = 10;
-const maxDuration = 60;
+
+const MIN_DURATION = 10;
+const MAX_DURATION = 60;
+
 @Injectable({
     providedIn: 'root',
 })
 export class GameValidationService {
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- Single responsibility principle
     constructor(
         private questionService: QuestionService,
         private questionValidationService: QuestionValidationService,
@@ -23,12 +25,9 @@ export class GameValidationService {
     async validateDuplicationGame(game: Game, error: string[]) {
         const gameList = await this.apiService.getGames();
         const titleExisting = gameList.find((element) => element.title.trim() === game.title.trim() && element.id !== game.id);
-        const descriptionExisting = gameList.find((element) => element.description.trim() === game.description.trim() && element.id !== game.id);
+
         if (titleExisting) {
             error.push('Il y a déjà un jeu avec ce nom');
-        }
-        if (descriptionExisting) {
-            error.push('Il y a déjà un jeu avec cet description');
         }
     }
     async validateDeletedGame(game: Game) {
@@ -76,11 +75,13 @@ export class GameValidationService {
                 if (!this.questionValidationService.validateQuestion(question)) {
                     return false;
                 }
-                if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
-                    return false;
-                }
-                if (!this.questionValidationService.answerValid(question.choices)) {
-                    return false;
+                if (question.choices && question.type === QuestionType.QCM) {
+                    if (!this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices)) {
+                        return false;
+                    }
+                    if (!this.questionValidationService.answerValid(question.choices)) {
+                        return false;
+                    }
                 }
             }
         } catch (error) {
@@ -101,7 +102,7 @@ export class GameValidationService {
         if (game.description.trim().length === 0) errors.push('Pas juste des espaces');
         if (!game.description) errors.push('La description est requise');
         if (!game.duration) errors.push('La durée est requise');
-        if (game.duration < minDuration || game.duration > maxDuration) {
+        if (game.duration < MIN_DURATION || game.duration > MAX_DURATION) {
             errors.push('La durée doit être entre 10 et 60 secondes');
         }
         if (!game.lastModification) errors.push('La date de mise à jour est requise');

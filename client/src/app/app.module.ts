@@ -26,7 +26,6 @@ import { PlayerNameDialogComponent } from './components/player-name-dialog/playe
 import { ServerErrorDialogComponent } from './components/server-error-dialog/server-error-dialog.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQGamePageComponent } from './pages/create-qgame-page/create-qgame-page.component';
-import { GameTestComponent } from './pages/game-test/game-test.component';
 import { GameWaitComponent } from './pages/game-wait/game-wait.component';
 import { ModifyQuestionQbankComponent } from './pages/modify-question-qbank/modify-question-qbank.component';
 import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
@@ -35,6 +34,7 @@ import { QuestionBankComponent } from './pages/question-bank/question-bank.compo
 
 import { MatSortModule } from '@angular/material/sort';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { GameQrlAnswerComponent } from './components/game-qrl-answer/game-qrl-answer.component';
 import { HistogramComponent } from './components/histogram/histogram.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
 import { ResultsViewComponent } from './pages/results-view/results-view.component';
@@ -62,7 +62,6 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         GamePageQuestionsComponent,
         GamePageTimerComponent,
         GamePageScoresheetComponent,
-        GameTestComponent,
         GameWaitComponent,
         PasswordDialogComponent,
         ModifiedQuestionComponent,
@@ -76,6 +75,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
         ResultsViewComponent,
         HistogramComponent,
         HostGamePageComponent,
+        GameQrlAnswerComponent,
     ],
     imports: [
         AppMaterialModule,

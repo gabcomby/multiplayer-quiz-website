@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -72,7 +72,6 @@ export class GamePageComponent implements OnInit {
     }
 
     @HostListener('window:beforeunload', ['$event'])
-    // eslint-disable-next-line no-unused-vars
     beforeUnloadHandler(event: Event) {
         event.preventDefault();
         this.gameService.leaveRoom();
@@ -89,6 +88,9 @@ export class GamePageComponent implements OnInit {
 
     setAnswerIndex(answerIdx: number[]): void {
         this.gameService.answerIndexSetter = answerIdx;
+    }
+    setAnswerText(answerText: string): void {
+        this.gameService.answerTextSetter = answerText;
     }
 
     handleGameLeave(): void {

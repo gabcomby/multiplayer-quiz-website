@@ -12,3 +12,6 @@
     justify-content: center;
     text-align: center;
 }
+.histogram-container:before, .histogram-container:after {
+    content: none;
+}

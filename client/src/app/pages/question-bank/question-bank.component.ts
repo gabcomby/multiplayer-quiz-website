@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Question } from '@app/interfaces/game';
-import { QuestionService } from '@app/services/question.service';
-import { SnackbarService } from '@app/services/snackbar.service';
+import { Question, QuestionType } from '@app/interfaces/game';
+import { AdminService } from '@app/services/admin/admin.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
 @Component({
     selector: 'app-question-bank',
@@ -11,15 +12,16 @@ import { SnackbarService } from '@app/services/snackbar.service';
 export class QuestionBankComponent implements OnInit {
     @Input() fromCreateNewGame: boolean;
     @Output() registerQuestion: EventEmitter<Question[]> = new EventEmitter();
-    questionToAdd: Question[] = [];
     displayedColumns: string[];
     dataSource: Question[] = [];
-    defaultDisplayedColumns: string[] = ['question', 'date', 'delete'];
-    selectedRowIds: string[] = [];
+    filteredQuestions: Question[] = [];
+    private questionToAdd: Question[] = [];
+    private defaultDisplayedColumns: string[] = ['question', 'type', 'modify', 'date', 'delete'];
 
     constructor(
         private questionService: QuestionService,
         private snackbarService: SnackbarService,
+        private adminService: AdminService,
     ) {}
 
     ngOnInit() {
@@ -34,6 +36,7 @@ export class QuestionBankComponent implements OnInit {
                 const dateB = new Date(b.lastModification).getTime();
                 return dateB - dateA;
             });
+            this.filteredQuestions = this.dataSource;
         });
     }
 
@@ -44,7 +47,7 @@ export class QuestionBankComponent implements OnInit {
         this.questionService
             .deleteQuestion(questionId)
             .then(() => {
-                this.dataSource = this.dataSource.filter((question) => question.id !== questionId);
+                this.filteredQuestions = this.dataSource.filter((question) => question.id !== questionId);
                 this.snackbarService.openSnackBar('Le jeu a été supprimé avec succès.');
             })
             .catch((error) => {
@@ -62,5 +65,19 @@ export class QuestionBankComponent implements OnInit {
         } else {
             this.questionToAdd.push(question);
         }
+    }
+
+    filter(type?: string) {
+        if (!type) {
+            this.filteredQuestions = this.dataSource;
+        } else if (type === 'QCM') {
+            this.filteredQuestions = this.dataSource.filter((question) => question.type === QuestionType.QCM);
+        } else if (type === 'QRL') {
+            this.filteredQuestions = this.dataSource.filter((question) => question.type === QuestionType.QRL);
+        }
+    }
+
+    formatDate(date: string): string {
+        return this.adminService.formatLastModificationDate(date);
     }
 }

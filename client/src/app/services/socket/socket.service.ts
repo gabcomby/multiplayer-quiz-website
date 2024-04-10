@@ -22,9 +22,9 @@ export class SocketService {
         }
     }
 
-    onRoomCreated(callback: (roomId: string, gameTitle: string) => void): void {
-        this.socket.on('room-created', (roomId: string, gameTitle: string) => {
-            callback(roomId, gameTitle);
+    onRoomCreated(callback: (roomId: string, gameTitle: string, gameType: number) => void): void {
+        this.socket.on('room-created', (roomId: string, gameTitle: string, gameType: number) => {
+            callback(roomId, gameTitle, gameType);
         });
     }
 
@@ -68,9 +68,9 @@ export class SocketService {
         });
     }
 
-    onRoomJoined(callback: (roomId: string, gameTitle: string) => void) {
-        this.socket.on('room-joined', (roomId: string, gameTitle: string) => {
-            callback(roomId, gameTitle);
+    onRoomJoined(callback: (roomId: string, gameTitle: string, playerJoined: Player) => void) {
+        this.socket.on('room-joined', (roomId: string, gameTitle: string, playerJoined: Player) => {
+            callback(roomId, gameTitle, playerJoined);
         });
     }
 
@@ -128,20 +128,24 @@ export class SocketService {
         });
     }
 
+    updatePointsQRL(points: [Player, number][]): void {
+        this.socket.emit('update-points-QRL', points);
+    }
+
     nextQuestion(): void {
         this.socket.emit('next-question');
     }
 
-    sendAnswers(answerIdx: number[]): void {
-        this.socket.emit('send-answers', answerIdx);
+    sendAnswers(answer: number[] | string, player: Player): void {
+        this.socket.emit('send-answers', answer, player);
     }
 
-    sendLockedAnswers(answerIdx: number[]): void {
-        this.socket.emit('send-locked-answers', answerIdx);
+    sendLockedAnswers(answerIdx: number[] | string, player: Player): void {
+        this.socket.emit('send-locked-answers', answerIdx, player);
     }
 
-    sendLiveAnswers(answerIdx: number[]) {
-        this.socket.emit('send-live-answers', answerIdx);
+    sendLiveAnswers(answer: number[] | string, player: Player, reset: boolean) {
+        this.socket.emit('send-live-answers', answer, player, reset);
     }
 
     sendMessageToServer(message: string, playerName: string, roomId: string): void {
@@ -156,9 +160,15 @@ export class SocketService {
         });
     }
 
-    onLivePlayerAnswers(callback: (answers: [string, number[]][]) => void): void {
-        this.socket.on('livePlayerAnswers', (answersArray: [string, number[]][]) => {
+    onLockedAnswersQRL(callback: (answers: [string, [Player, string][]][]) => void): void {
+        this.socket.on('locked-answers-QRL', (answersArray: [string, [Player, string][]][]) => {
             callback(answersArray);
+        });
+    }
+
+    onLivePlayerAnswers(callback: (answers: [string, number[] | string][], player: Player) => void): void {
+        this.socket.on('livePlayerAnswers', (answersArray: [string, string | number[]][], player: Player) => {
+            callback(answersArray, player);
         });
     }
 
@@ -185,6 +195,14 @@ export class SocketService {
     onPanicModeDisabled(callback: () => void): void {
         this.socket.on('panic-mode-disabled', () => {
             callback();
+        });
+    }
+    updateHistogram(): void {
+        this.socket.emit('update-histogram');
+    }
+    onUpdateNbModified(callback: (nbModification: number) => void): void {
+        this.socket.on('number-modifications', (nbModification: number) => {
+            callback(nbModification);
         });
     }
 }

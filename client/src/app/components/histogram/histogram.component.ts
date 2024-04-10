@@ -1,5 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { Player } from '@app/interfaces/match';
+import { GameService } from '@app/services/game/game.service';
 
 const SIZE1 = 400;
 const SIZE2 = 400;
@@ -9,14 +11,17 @@ const SIZE2 = 400;
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent implements OnInit, OnChanges {
-    @Input() answersPlayer: [string, number[]][];
+    @Input() answersPlayer: [string | Player, number[] | string][];
     @Input() questionsGame: Question[];
+    @Input() nbModified: number;
+    @Input() resultView: boolean;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
     histogramData: { name: string; value: number }[] = [];
     histogramsData: { question: string; data: { name: string; value: number }[] }[] = [];
     currentIndex: number = 0;
+    dataQrl: { question: string; data: { name: string; value: number }[] }[] = [];
 
     view: [number, number] = [SIZE2, SIZE1];
     showXAxis: boolean = true;
@@ -25,20 +30,36 @@ export class HistogramComponent implements OnInit, OnChanges {
     showLegend: boolean = true;
     showXAxisLabel: boolean = true;
     yAxisLabel: string = 'Nombre de votes';
+    yAxisLabelQrl: string = 'Nombre de modification';
     showYAxisLabel: boolean = true;
     xAxisLabel: string = 'Choix de réponses';
+    xAxisLabelQrl: string = 'Modification';
+    maxYAxis: number = 1;
 
     colorScheme = {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
     };
+    constructor(private gameService: GameService) {}
+
+    get currentQuestionValue(): Question | null {
+        return this.gameService.currentQuestionValue;
+    }
+    get playerListValue(): Player[] {
+        return this.gameService.playerListValue;
+    }
+    get timerStoppedValue(): boolean {
+        return this.gameService.timerStoppedValue;
+    }
 
     ngOnInit(): void {
         this.constructHistogramsData();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.answersPlayer) {
+        if (changes.answersPlayer && this.currentQuestionValue?.type === QuestionType.QCM) {
             this.constructLiveHistogramData();
+        } else if (changes.nbModified && this.currentQuestionValue?.type === QuestionType.QRL) {
+            this.constructLiveHistogramQrl();
         }
     }
 
@@ -49,61 +70,114 @@ export class HistogramComponent implements OnInit, OnChanges {
         }
     }
 
+    private constructLiveHistogramQrl(): void {
+        if (!this.questionsGame[0]) {
+            return;
+        }
+        this.maxYAxis = this.playerListValue.length;
+        const nbNotModified = this.playerListValue.length - this.nbModified;
+        const data = [
+            { name: 'modified', value: this.nbModified },
+            { name: 'not modified', value: nbNotModified },
+        ];
+
+        this.dataQrl = [{ question: this.questionsGame[0].text, data: Array.from(data) }];
+    }
+
     private constructLiveHistogramData(): void {
         if (!this.questionsGame[0]) {
             return;
         }
-        const array = new Array(this.questionsGame[0].choices.length).fill(0);
-        // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
-        this.answersPlayer.forEach(([playerId, answerIdx]) => {
-            answerIdx.forEach((idx) => {
-                array[idx]++;
-            });
-        });
-        const histogramData: { name: string; value: number }[] = [];
-        for (let i = 0; i < this.questionsGame[0].choices.length; i++) {
-            const choiceText = this.questionsGame[0].choices[i].isCorrect
-                ? `${this.questionsGame[0].choices[i].text} (correct)`
-                : this.questionsGame[0].choices[i].text;
-            histogramData.push({ name: choiceText, value: array[i] });
-        }
+        const questionChoices = this.countQuestionChoices(this.questionsGame[0]);
+        this.formatData(this.questionsGame[0], questionChoices);
+    }
 
-        this.histogramsData = [{ question: this.questionsGame[0].text, data: histogramData }];
+    private countQuestionChoices(question: Question): number[] {
+        if (question.choices) {
+            const questionChoices = new Array(question.choices.length).fill(0);
+            // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
+            this.answersPlayer.forEach(([playerId, answerIdx]) => {
+                if (typeof answerIdx !== 'string') {
+                    answerIdx.forEach((idx) => {
+                        questionChoices[idx]++;
+                    });
+                }
+            });
+            return questionChoices;
+        }
+        return [];
+    }
+    private formatData(question: Question, questionChoices: number[]) {
+        if (question.choices) {
+            const histogramData: { name: string; value: number }[] = [];
+            for (let i = 0; i < question.choices.length; i++) {
+                const choiceText = question.choices[i].isCorrect ? `${question.choices[i].text} (correct)` : question.choices[i].text;
+                histogramData.push({ name: choiceText, value: questionChoices[i] });
+            }
+
+            this.histogramsData = [{ question: question.text, data: histogramData }];
+        }
     }
 
     private constructHistogramsData(): void {
         this.histogramsData = [];
         this.questionsGame.forEach((question) => {
-            const answerCountsMap = this.calculateAnswerCounts(question);
-            const histogramData = this.mapToHistogramData(answerCountsMap);
-            this.histogramsData.push({ question: question.text, data: histogramData });
+            if (question.type === 'QRL') {
+                const answerCountsMap = this.calculateAnswerCountsQRL(question);
+                const histogramData = this.mapToHistogramDataQrl(answerCountsMap);
+                this.histogramsData.push({ question: question.text, data: histogramData });
+            } else {
+                const answerCountsMap = this.calculateAnswerCounts(question);
+                const histogramData = question.type === 'QCM' ? this.mapToHistogramData(answerCountsMap) : [];
+                this.histogramsData.push({ question: question.text, data: histogramData });
+            }
         });
     }
 
     private calculateAnswerCounts(question: Question): Map<Choice, number> {
         const answerCountsMap: Map<Choice, number> = new Map();
+
+        if (!question.choices) return answerCountsMap;
+
         question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
-
         this.answersPlayer.forEach(([questionText, choices]) => {
-            if (questionText === question.text) {
-                choices.forEach((choiceIndex) => {
-                    const choice = question.choices[choiceIndex];
-                    if (choice) {
-                        const count = answerCountsMap.get(choice);
-                        if (count !== undefined) {
-                            answerCountsMap.set(choice, count + 1);
-                        }
-                    }
-                });
-            }
+            if (questionText !== question.text || typeof choices === 'string') return;
+            choices.forEach((choiceIndex) => {
+                if (!question.choices) return;
+                const choice = question.choices[choiceIndex];
+                if (!choice) return;
+                const count = answerCountsMap.get(choice);
+                if (count !== undefined) {
+                    answerCountsMap.set(choice, count + 1);
+                }
+            });
         });
-
         return answerCountsMap;
     }
 
+    private calculateAnswerCountsQRL(question: Question): Map<string, number> {
+        const answerCountsMap: Map<string, number> = new Map();
+        this.answersPlayer.forEach(([questionText, answer]) => {
+            if (questionText === question.text) {
+                if (typeof answer[0] === 'number' && typeof answer[1] === 'number' && typeof answer[2] === 'number') {
+                    answerCountsMap.set('0', answer[0]);
+                    answerCountsMap.set('0.5', answer[1]);
+                    answerCountsMap.set('1', answer[2]);
+                }
+            }
+        });
+        return answerCountsMap;
+    }
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {
         return Array.from(answerCountsMap.entries()).map(([choice, count]) => ({
             name: choice.isCorrect ? `${choice.text} (correct)` : choice.text,
+            value: count,
+        }));
+    }
+
+    private mapToHistogramDataQrl(answerCountsMap: Map<string, number>): { name: string; value: number }[] {
+        return Array.from(answerCountsMap.entries()).map(([point, count]) => ({
+            name: point,
             value: count,
         }));
     }

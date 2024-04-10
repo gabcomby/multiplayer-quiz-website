@@ -5,7 +5,7 @@
         </h1>
         <h2>{{ mark }} points</h2>
     </div>
-    <div class="button-row">
+    <div class="button-row" *ngIf="type !== 'QRL'">
         <button
             *ngFor="let choice of choices; let i = index"
             mat-raised-button
@@ -21,7 +21,16 @@
             {{ i + 1 }}: {{ choice.text }}
         </button>
     </div>
-    <div *ngIf="!answerIsLocked && !isHost">
+    <div *ngIf="type === 'QRL'">
+        <p *ngIf="answerQrl.length > 200">Vous ne pouvez pas dépasser 200 caractères</p>
+
+        <mat-form-field>
+            <mat-label>Réponse</mat-label>
+            <input [maxlength]="200" [(ngModel)]="answerQrl" id="answer" matInput placeholder="Entrer votre réponse" (input)="onInputChange()" />
+        </mat-form-field>
+        <p class="numberOfWords">{{ 200 - answerQrl.length }}</p>
+    </div>
+    <div *ngIf="!answerIsLocked && !isHost && !timerExpired">
         <button mat-raised-button color="primary" (click)="submitAnswer()">Submit</button>
     </div>
 </div>

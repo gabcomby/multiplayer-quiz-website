@@ -14,7 +14,11 @@
         <app-game-page-livechat [playerName]="playerName" id="sidebar" [isHost]="isHostValue" [roomId]="lobbyCode"></app-game-page-livechat>
     </div>
     <div class="timer">
-        <app-game-page-timer [timerCountdown]="currentTimerCountdown" [totalTimer]="totalGameDuration"></app-game-page-timer>
+        <app-game-page-timer
+            [timerExpired]="timerStopped"
+            [timerCountdown]="currentTimerCountdown"
+            [totalTimer]="totalGameDuration"
+        ></app-game-page-timer>
     </div>
     <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
@@ -23,7 +27,9 @@
             [choices]="currentQuestion.choices || []"
             [timerExpired]="timerStopped"
             (answerIdx)="setAnswerIndex($event)"
+            (answerText)="setAnswerText($event)"
             [answerIsCorrect]="true"
+            [type]="currentQuestion.type"
         ></app-game-page-questions>
     </div>
 

@@ -1,8 +1,8 @@
-import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { GameWaitComponent } from '@app/pages/game-wait/game-wait.component';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
+import { Observable } from 'rxjs';
 
 export const hostGuard: CanActivateFn = (): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
     const gameService = inject(GameService);

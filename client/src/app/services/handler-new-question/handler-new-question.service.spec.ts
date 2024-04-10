@@ -1,8 +1,8 @@
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
+import { QuestionService } from '@app/services/question/question.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { HandlerNewQuestionService } from './handler-new-question.service';
-import { QuestionValidationService } from './question-validation.service';
-import { QuestionService } from './question.service';
-import { SnackbarService } from './snackbar.service';
 
 describe('HandlerNewQuestionService', () => {
     let handlerService: HandlerNewQuestionService;
@@ -26,7 +26,7 @@ describe('HandlerNewQuestionService', () => {
     ];
 
     const mockQuestion: Question = {
-        type: 'QCM',
+        type: QuestionType.QCM,
         id: 'abc',
         lastModification: new Date('2018-11-13T20:20:39+00:00'),
         text: 'Test1',
@@ -45,7 +45,7 @@ describe('HandlerNewQuestionService', () => {
 
     const mockQuestionList: Question[] = [
         {
-            type: 'QCM',
+            type: QuestionType.QCM,
             id: '123',
             lastModification: new Date('2018-11-13T20:20:39+00:00'),
             text: 'Test1',
@@ -62,7 +62,7 @@ describe('HandlerNewQuestionService', () => {
             ],
         },
         {
-            type: 'QCM',
+            type: QuestionType.QCM,
             id: 'bcd',
             lastModification: new Date('2018-11-13T20:20:39+00:00'),
             text: 'Test2',
@@ -87,7 +87,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).toHaveBeenCalled();
@@ -101,7 +106,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
@@ -115,8 +125,12 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(false);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
-
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
         expect(result).toBeFalse();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
         expect(questionService.addQuestion).not.toHaveBeenCalled();
@@ -129,21 +143,30 @@ describe('HandlerNewQuestionService', () => {
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(true);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
-
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
         expect(result).toBeTrue();
         expect(questionService.addQuestionBank).toHaveBeenCalled();
         expect(questionService.addQuestion).not.toHaveBeenCalled();
     });
 
     it('should return false if onlyAddQuestionBank is true and question already exist', async () => {
-        const onlyAddQuestionBank = true;
-        const addToBank = true;
+        const onlyQuestionBank = true;
+        const addBank = true;
         questionValidationService.validateQuestion.and.returnValue(true);
         spyOn(handlerService, 'validateQuestionExisting').and.resolveTo(false);
         spyOn(handlerService, 'createNewQuestion').and.returnValue(mockQuestion);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank: onlyQuestionBank,
+            addToBank: addBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeFalse();
         expect(questionService.addQuestionBank).not.toHaveBeenCalled();
@@ -155,7 +178,12 @@ describe('HandlerNewQuestionService', () => {
         const addToBank = true;
         questionValidationService.validateQuestion.and.returnValue(false);
 
-        const result = await handlerService.addQuestion(mockChoices, mockQuestion, onlyAddQuestionBank, addToBank);
+        const result = await handlerService.addQuestion({
+            question: mockQuestion,
+            onlyAddQuestionBank,
+            addToBank,
+            choices: mockChoices,
+        });
 
         expect(result).toBeFalse();
     });

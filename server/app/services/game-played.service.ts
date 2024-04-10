@@ -8,10 +8,10 @@ export class GamePlayedService {
     }
 
     async createGamePlayed(gamePlayedData: IGamePlayed): Promise<IGamePlayed> {
-        return await gamePlayedModel.create(gamePlayedData);
+        return gamePlayedModel.create(gamePlayedData);
     }
 
     async deletePlayedGames(): Promise<{ deletedCount: number }> {
-        return await gamePlayedModel.deleteMany({});
+        return gamePlayedModel.deleteMany({});
     }
 }

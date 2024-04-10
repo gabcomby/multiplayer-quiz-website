@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
-import { Choice, Question } from '@app/interfaces/game';
+import { Choice, Question, QuestionType } from '@app/interfaces/game';
+import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { Observable, firstValueFrom } from 'rxjs';
-import { QuestionValidationService } from './question-validation.service';
 
 @Injectable({
     providedIn: 'root',
@@ -65,17 +65,27 @@ export class QuestionService {
         this.questions = question.map((item) => ({ ...item }));
     }
     saveQuestion(index: number, questionList: Question[], listQuestionBank: boolean): boolean {
-        questionList[index].lastModification = new Date();
-        const validated =
-            this.questionValidationService.verifyOneGoodAndBadAnswer(questionList[index].choices) &&
-            this.questionValidationService.validateQuestion(questionList[index]);
+        const question = questionList[index];
 
-        if (listQuestionBank && validated) {
-            this.updateQuestion(questionList[index].id, questionList[index]);
-        } else if (validated) {
-            this.updateList(questionList);
+        if (question) {
+            question.lastModification = new Date();
+            let validated = this.questionValidationService.validateQuestion(question);
+
+            if (question.choices && question.type === QuestionType.QCM)
+                validated = this.questionValidationService.verifyOneGoodAndBadAnswer(question.choices);
+
+            if (validated) {
+                if (listQuestionBank) {
+                    this.updateQuestion(question.id, question);
+                } else {
+                    this.updateList(questionList);
+                }
+            }
+
+            return validated;
         }
-        return validated;
+
+        return false;
     }
 
     moveQuestionUp(index: number, array: Choice[] | Question[]): void {

@@ -87,5 +87,19 @@ $base-font-size: 16;
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-top: 60%;
+    position: absolute;
+    margin-top: 20%;
+    top: 0;
+    right: 0;
+}
+
+.gameControl {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    margin-top: 20%;
+    top: 0;
+    right: 0;
 }
