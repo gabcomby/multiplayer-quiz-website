@@ -62,13 +62,13 @@ export class AnswerVerifier {
             if (this.room.gameTypeValue === GameType.TEST) {
                 this.room.playerListValue.get(playerId).score += question.points;
             }
-            if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
-                this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
-                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
-                this.globalAnswersText = [];
-                this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
-            }
-            return;
+            // if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
+            //     this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+            //     this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+            //     this.globalAnswersText = [];
+            //     this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
+            // }
+            // return;
         }
         if (question.type === 'QCM' && Array.isArray(answerIdx) && answerIdx.length !== 0) {
             answerIdx.forEach((index) => {
@@ -101,11 +101,25 @@ export class AnswerVerifier {
                     this.room.playerListValue.get(playerId).score += question.points;
                 }
             }
-            if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
+            // if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
+            //     this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+            //     this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
+            //     this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
+            //     this.globalAnswerIndex = [];
+            // }
+        }
+
+        if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
+            if (question.type === 'QCM') {
                 this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
                 this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
                 this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
                 this.globalAnswerIndex = [];
+            } else if (question.type === 'QRL') {
+                this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+                this.globalAnswersText = [];
+                this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             }
         }
     }
