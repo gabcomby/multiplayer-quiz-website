@@ -110,7 +110,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.subscription?.unsubscribe();
     }
 
     setplayerPointsQRL(points: [Player, number][]) {
