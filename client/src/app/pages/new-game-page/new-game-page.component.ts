@@ -7,7 +7,6 @@ import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -23,8 +22,6 @@ export class NewGamePageComponent implements OnInit {
     socket: Socket;
     gamesVisible: Game[] = [];
     deletedGamesId: string[] = [];
-    subscription: Subscription;
-
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private socketService: SocketService,
