@@ -87,9 +87,6 @@ export class Room {
         this.inputModifications = [];
         if (this.countdownTimer.timerStateValue === TimerState.STOPPED) {
             if (this.countdownTimer.isLaunchTimerValue) {
-                // this.duration = 5;
-                // this.timerState = TimerState.RUNNING;
-                // this.startCountdownTimer();
                 this.countdownTimer.timerDurationValue = LAUNCH_TIMER_DURATION;
                 this.countdownTimer.startCountdownTimer();
             } else {
