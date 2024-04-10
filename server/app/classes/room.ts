@@ -1,6 +1,7 @@
+/* eslint-disable max-lines */
 import { IGame } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
-import { IPlayer } from '@app/model/match.model';
+import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { GamePlayedService } from '@app/services/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
@@ -147,6 +148,16 @@ export class Room {
                             this.io.to(this.roomId).emit('timer-stopped');
                         }
                         this.handleTimerEnd();
+                        if (this.launchTimer) {
+                            this.playerList.forEach((playerInRoom) => {
+                                playerInRoom.status = PlayerStatus.Inactive;
+
+                                this.io.to(this.hostId).emit('player-status-changed', {
+                                    playerId: playerInRoom.id,
+                                    status: playerInRoom.status,
+                                });
+                            });
+                        }
                     }
                 }
             },
