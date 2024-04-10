@@ -1,6 +1,6 @@
 import { Room } from '@app/classes/room';
 import { IGame } from '@app/model/game.model';
-import { IPlayer } from '@app/model/match.model';
+import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { rooms } from '@app/module';
 import { GameService } from '@app/services/game.service';
 import { QuestionsService } from '@app/services/questions.service';
@@ -153,6 +153,7 @@ export class SocketManager {
                             score: 0,
                             bonus: 0,
                             chatPermission: true,
+                            status: 0,
                         } as IPlayer;
                         room.playerList.set(socket.id, player);
                         room.playerHasAnswered.set(socket.id, false);
@@ -160,6 +161,7 @@ export class SocketManager {
                         this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                         this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
                     }
+
                     room.gameStartDateTime = new Date();
                     room.nbrPlayersAtStart = room.playerList.size;
                     room.gameHasStarted = true;
@@ -171,6 +173,14 @@ export class SocketManager {
             socket.on('next-question', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.playerList.forEach((player) => {
+                        player.status = PlayerStatus.Inactive;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: player.id,
+                            status: player.status,
+                        });
+                    });
                     room.startQuestion();
                 }
             });
@@ -198,13 +208,26 @@ export class SocketManager {
 
             socket.on('send-answers', (answer: number[] | string, player: IPlayer) => {
                 const room = getRoom();
-                if (socket.id !== room.hostId) {
+                if (room) {
                     room.verifyAnswers(socket.id, answer, player);
                 }
             });
 
             socket.on('send-locked-answers', (answerIdx: number[] | string, player: IPlayer) => {
-                getRoom().handleEarlyAnswers(socket.id, answerIdx, player);
+                const room = getRoom();
+                if (room) {
+                    const playerFromRoom = room.playerList.get(socket.id);
+                    if (playerFromRoom) {
+                        playerFromRoom.status = PlayerStatus.Confirmed;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: playerFromRoom.id,
+                            status: playerFromRoom.status,
+                        });
+
+                        room.handleEarlyAnswers(socket.id, answerIdx, player);
+                    }
+                }
             });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
@@ -259,8 +282,19 @@ export class SocketManager {
                     if (!reset && room.gameType !== 1) {
                         room.inputModifications.push({ player: player.id, time: new Date().getTime() });
                     }
+
+                    const playerInRoom = room.playerList.get(socket.id);
+                    if (playerInRoom && playerInRoom.status === PlayerStatus.Inactive && answerIdx.length > 0) {
+                        playerInRoom.status = PlayerStatus.Active;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: playerInRoom.id,
+                            status: playerInRoom.status,
+                        });
+                    }
                 }
             });
+
             socket.on('update-histogram', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId)) {
