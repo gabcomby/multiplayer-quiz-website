@@ -1,5 +1,5 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
-import { Room } from '@app/classes/room';
+import { GameType, Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import { assert } from 'chai';
@@ -32,11 +32,12 @@ const mockGame = new gameModel({
                     isCorrect: false,
                 },
                 {
-                    text: 'this',
-                    isCorrect: true,
+                    text: 'lol',
+                    isCorrect: false,
                 },
                 {
-                    text: 'int',
+                    text: 'kek',
+                    isCorrect: false,
                 },
             ],
         },
@@ -55,20 +56,17 @@ const mockGame = new gameModel({
                     isCorrect: true,
                 },
                 {
+                    text: 'Non aussi',
+                    isCorrect: true,
+                },
+                {
                     text: 'Oui',
-                    isCorrect: null,
+                    isCorrect: false,
                 },
             ],
         },
     ],
 });
-
-const mockPlayer: IPlayer = {
-    id: '1',
-    name: 'toto',
-    score: 0,
-    bonus: 0,
-} as IPlayer;
 
 class MockSocketIO {
     // eslint-disable-next-line -- This is a stub
@@ -156,7 +154,7 @@ describe('Room', () => {
 
     it('should not verify answers if answerIdx is not a string or an array', () => {
         room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', null, mockPlayer);
+        room.answerVerifier.verifyAnswers('1', null, { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
         assert.isFalse(room.answerVerifier['playerHasAnswered'].get('1'));
     });
 
@@ -164,35 +162,118 @@ describe('Room', () => {
         room.currentQuestionIndex = 0;
         room.answerVerifier['nbrOfAssertedAnswers'] = 0;
         room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', 'answer', mockPlayer);
+        room.answerVerifier.verifyAnswers('1', 'answer', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
         assert.equal(room.answerVerifier['nbrOfAssertedAnswers'], 1);
         assert.isTrue(room.answerVerifier['playerHasAnswered'].get('1'));
-        assert.deepEqual(room.answerVerifier['globalAnswersText'], [[mockPlayer, 'answer']]);
+        assert.deepEqual(room.answerVerifier['globalAnswersText'], [[{ id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer, 'answer']]);
     });
 
     it('should increment the score of the player if the game is a test and the question is a QRL', () => {
         room.currentQuestionIndex = 1;
-        room.playerList.set('1', mockPlayer);
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
         room.answerVerifier['nbrOfAssertedAnswers'] = 0;
         room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', 'zozo', mockPlayer);
+        room.answerVerifier.verifyAnswers('1', 'zozo', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
         // eslint-disable-next-line
         assert.equal(room.playerListValue.get('1').score, 60);
     });
 
-    // it('should increment the score of a single answer QCM if the answer is correct', () => {
-    //     room.currentQuestionIndex = 0;
-    //     room.gameType = GameType.NORMAL;
-    //     room.answerVerifier['globalAnswerIndex'] = [];
-    //     room.answerVerifier['firstAnswerForBonus'] = true;
-    //     room.playerList.set('1', mockPlayer);
-    //     room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-    //     room.answerVerifier['playerHasAnswered'].set('1', false);
-    //     room.answerVerifier.verifyAnswers('1', [0], mockPlayer);
-    //     // eslint-disable-next-line
-    //     assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
-    //     // eslint-disable-next-line
-    //     assert.equal(room.playerListValue.get('1').score, 48);
-    //     assert.equal(room.playerListValue.get('1').bonus, 1);
-    // });
+    it('should increment the score of a single answer QCM if the answer is correct', () => {
+        room.currentQuestionIndex = 0;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['firstAnswerForBonus'] = true;
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
+        // eslint-disable-next-line
+        assert.equal(room.playerListValue.get('1').score, 48);
+        assert.equal(room.playerListValue.get('1').bonus, 1);
+    });
+
+    it('should not increment the score of a single answer QCM if the answer is incorrect', () => {
+        room.currentQuestionIndex = 0;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['firstAnswerForBonus'] = true;
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier.verifyAnswers('1', [1], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 1);
+        // eslint-disable-next-line
+        assert.equal(room.playerListValue.get('1').score, 0);
+        assert.equal(room.playerListValue.get('1').bonus, 0);
+    });
+
+    it('should increment the score of a multiple answer QCM if the answers are correct', () => {
+        room.currentQuestionIndex = 2;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['firstAnswerForBonus'] = false;
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier.verifyAnswers('1', [0, 1], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][1], 1);
+        // eslint-disable-next-line
+        assert.equal(room.playerListValue.get('1').score, 20);
+        assert.equal(room.playerListValue.get('1').bonus, 0);
+    });
+
+    it('should not increment the score of a multiple answer QCM if there are not enough answers', () => {
+        room.currentQuestionIndex = 2;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['firstAnswerForBonus'] = false;
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
+        // eslint-disable-next-line
+        assert.equal(room.playerListValue.get('1').score, 0);
+        assert.equal(room.playerListValue.get('1').bonus, 0);
+    });
+
+    it('should not increment the score of a multiple answer QCM if the answers are incorrect', () => {
+        room.currentQuestionIndex = 2;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['firstAnswerForBonus'] = false;
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier.verifyAnswers('1', [0, 2], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
+        assert.equal(room.answerVerifier['globalAnswerIndex'][1], 2);
+        // eslint-disable-next-line
+        assert.equal(room.playerListValue.get('1').score, 0);
+        assert.equal(room.playerListValue.get('1').bonus, 0);
+    });
+
+    it('should send a playerlist-change event when all players have answered a QRL question', () => {
+        room.currentQuestionIndex = 0;
+        room.gameType = GameType.NORMAL;
+        room.answerVerifier['globalAnswerIndex'] = [];
+        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
+        room.answerVerifier['playerHasAnswered'].set('1', false);
+        room.answerVerifier['playerHasAnswered'].set('2', false);
+        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
+        room.answerVerifier.verifyAnswers('2', [1], { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'playerlist-change', sinon.match.any);
+        assert.deepEqual(room.answerVerifier['allAnswersForQCM'].get(mockGame.questions[0].text), [0, 1]);
+        assert.deepEqual(room.answerVerifier['allAnswersGameResults'].get(mockGame.questions[0].text), [0, 1]);
+        assert.equal(room.answerVerifier['globalAnswerIndex'].length, 0);
+    });
 });
