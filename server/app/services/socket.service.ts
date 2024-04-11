@@ -258,8 +258,8 @@ export class SocketManager {
                         const player = room.playerList.get(playerSocketId);
                         if (player) {
                             player.chatPermission = chatPermission.permission;
-                            this.io.to(getRoom().roomId).emit('system-message', {
-                                text: `${player.name} a ${chatPermission.permission ? 'reçu' : 'perdu'} la permission de chat`,
+                            this.io.to(playerSocketId).emit('system-message', {
+                                text: `Vous avez ${chatPermission.permission ? 'reçu' : 'perdu'} la permission de chat`,
                                 sender: 'Système',
                                 timestamp: new Date(),
                                 visible: true,
