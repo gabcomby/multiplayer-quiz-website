@@ -161,12 +161,10 @@ export class Room {
         const numberModifications = uniquePlayerIds.size;
         this.io.to(this.hostId).emit('number-modifications', numberModifications);
     }
-
     generateLobbyId = (): string => {
         const nanoid = customAlphabet('1234567890', ID_LOBBY_LENGTH);
         return nanoid();
     };
-
     generateGamePlayedId = (): string => {
         const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRTSUVWXYZ', ID_GAME_PLAYED_LENGTH);
         return nanoid();

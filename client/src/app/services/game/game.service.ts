@@ -11,7 +11,6 @@ import { SocketService } from '@app/services/socket/socket.service';
 
 const TIME_BETWEEN_QUESTIONS = 3000;
 const LAUNCH_TIMER_DURATION = 5;
-
 const QRL_TIMER_DURATION = 60;
 const WAIT_UNTIL_FIRE_DISCONNECTS = 500;
 const AUDIO_CLIP_PATH = 'assets/chipi-chipi-chapa-chapa.mp3';
