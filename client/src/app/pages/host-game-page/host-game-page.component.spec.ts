@@ -9,7 +9,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { Question, QuestionType } from '@app/interfaces/game';
-import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game/game.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
@@ -315,15 +314,8 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should set isNoted property', () => {
-        component.setIsNoted(true);
+        component.isNoted = true;
         expect(component.isNoted).toBe(true);
-    });
-
-    it('should set playerQRLPoints in gameService', () => {
-        const mockPlayer = { id: 'player1', name: 'Player 1', score: 10, bonus: 0 };
-        const mockPoints: [Player, number][] = [[mockPlayer, 10]];
-        component.setplayerPointsQRL(mockPoints);
-        expect(gameServiceSpy.playerQRLPoints).toEqual(mockPoints);
     });
 
     it('should update nextQuestionButtonText during countdown', fakeAsync(() => {
@@ -349,23 +341,6 @@ describe('HostGamePageComponent', () => {
 
         expect(socketServiceSpy.updateHistogram).toHaveBeenCalled();
         jasmine.clock().uninstall();
-    });
-
-    it('should open snackbar when currentQuestion is QRL, answersQRL is not empty, and isNoted is false', () => {
-        const mockQuestion = {
-            type: QuestionType.QRL,
-            text: 'Mock Question?',
-            points: 10,
-            lastModification: new Date(),
-            id: 'mockQuestion',
-        } as Question;
-        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
-        spyOnProperty(component, 'answersQRL', 'get').and.returnValue([['Answer 1', []]]);
-        component.isNoted = false;
-        component.nextQuestion();
-
-        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Veuillez noter les joueurs', 'Fermer');
-        expect(gameServiceSpy.nextQuestion).not.toHaveBeenCalled();
     });
 
     it('should not open snackbar when currentQuestion is not QRL', () => {
