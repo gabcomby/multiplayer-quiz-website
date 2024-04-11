@@ -142,6 +142,5 @@ export class NewGamePageComponent implements OnInit {
     }
     gamesVisibleList(): void {
         this.gamesVisible = this.games.filter((game) => game.isVisible);
-        console.log(this.gamesVisible);
     }
 }

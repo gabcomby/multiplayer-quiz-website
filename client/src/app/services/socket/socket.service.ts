@@ -218,8 +218,6 @@ export class SocketService {
     }
     onPlayerStatusChanged(callback: (data: { playerId: string; status: number }) => void): void {
         this.socket.on('player-status-changed', (data: { playerId: string; status: number }) => {
-            // eslint-disable-next-line
-            console.log(data);
             callback(data);
         });
     }
