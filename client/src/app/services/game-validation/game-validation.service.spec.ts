@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import { TestBed } from '@angular/core/testing';
 
 import { FormGroup } from '@angular/forms';
@@ -9,7 +10,6 @@ import { QuestionValidationService } from '../question-validation/question-valid
 import { QuestionService } from '../question/question.service';
 import { SnackbarService } from '../snackbar/snackbar.service';
 import { GameValidationService } from './game-validation.service';
-
 
 describe('GameValidationService', () => {
     let service: GameValidationService;

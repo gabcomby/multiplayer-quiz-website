@@ -55,4 +55,16 @@ describe('AuthController', () => {
                 chai.expect(response.body.title).to.equal('Invalid Request');
             });
     });
+    it('should return a ok message on successfull password', async () => {
+        const validPassword = 'good_password';
+        const expectedMessage: Message = { title: 'Authentication Successful', body: 'Access granted' };
+        authService.authenticate.withArgs(validPassword).returns(expectedMessage);
+        return supertest(expressApp)
+            .post('/api/authenticate')
+            .send({ password: validPassword })
+            .expect(StatusCodes.OK)
+            .then((response) => {
+                chai.expect(response.body.title).to.equal('Authentication Successful');
+            });
+    });
 });
