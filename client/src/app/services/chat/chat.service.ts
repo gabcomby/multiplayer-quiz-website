@@ -27,6 +27,8 @@ export class ChatService {
             next: (message) => this.handleNewMessage(message),
             error: () => this.snackbar.openSnackBar('Pas de salle, vos messages ne seront pas envoyés'),
         });
+
+        this.listenForSystemMessages();
     }
 
     stopListeningForMessages(): void {
@@ -55,6 +57,13 @@ export class ChatService {
             this.handleNewMessage(message);
             this.socket.sendMessageToServer(trimmedText, message.sender, chatMessageCommand.roomId);
         }
+    }
+
+    private listenForSystemMessages(): void {
+        this.socket.onSystemMessage().subscribe({
+            next: (message) => this.handleNewMessage(message),
+            error: () => this.snackbar.openSnackBar('Erreur lors de la réception des messages système'),
+        });
     }
 
     private handleNewMessage(message: Message): void {

@@ -1,9 +1,12 @@
 import { GameType, Room } from '@app/classes/room';
+import { PlayerStatus } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
 
-const ONE_SECOND_IN_MS = 1000;
-const QUARTER_SECOND_IN_MS = 250;
+const DEFAULT_DELAY = 1000;
+const SHORT_DELAY = 250;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
+const MINIMAL_TIME_FOR_PANIC_MODE_QRL = 20;
+const MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT = 10;
 
 export const enum TimerState {
     RUNNING,
@@ -60,11 +63,21 @@ export class CountdownTimer {
                         if (!this.isLaunchTimer) {
                             this.io.to(this.roomId).emit('timer-stopped');
                         }
+                        if (this.isLaunchTimer) {
+                            this.room.playerList.forEach((playerInRoom) => {
+                                playerInRoom.status = PlayerStatus.Inactive;
+                                this.io.to(this.room.hostId).emit('player-status-changed', {
+                                    playerId: playerInRoom.id,
+                                    status: playerInRoom.status,
+                                });
+                            });
+                        }
+
                         this.handleTimerEnd();
                     }
                 }
             },
-            ONE_SECOND_IN_MS,
+            DEFAULT_DELAY,
             this.currentCountdownTime,
         );
         this.timerId = timerId;
@@ -99,8 +112,7 @@ export class CountdownTimer {
     }
 
     handlePanicMode(): void {
-        // eslint-disable-next-line
-        const MINIMAL_TIME_FOR_PANIC_MODE = this.currentQuestionIsQRL ? 20 : 10;
+        const MINIMAL_TIME_FOR_PANIC_MODE = this.currentQuestionIsQRL ? MINIMAL_TIME_FOR_PANIC_MODE_QRL : MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT;
         if (this.timerState === TimerState.RUNNING && this.currentCountdownTime <= MINIMAL_TIME_FOR_PANIC_MODE && !this.isLaunchTimer) {
             this.panicModeEnabled = true;
             this.io.to(this.roomId).emit('panic-mode-enabled');
@@ -117,7 +129,7 @@ export class CountdownTimer {
                         }
                     }
                 },
-                QUARTER_SECOND_IN_MS,
+                SHORT_DELAY,
                 this.currentCountdownTime,
             );
             this.timerId = timerId;
