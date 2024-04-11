@@ -259,7 +259,6 @@ describe('QuestionService', () => {
     it('should not save question and return false', () => {
         spyOn(service, 'saveQuestion').and.callThrough();
         const result = service.saveQuestion(3, mockQuestionList, false);
-        // expect(questionValidationServiceMock.validateQuestion).toHaveBeenCalled();
         expect(service.saveQuestion).toHaveBeenCalled();
         expect(result).toBeFalse();
     });
