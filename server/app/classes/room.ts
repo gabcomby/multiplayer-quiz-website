@@ -1,28 +1,19 @@
-/* eslint-disable max-lines */
-import { IGame } from '@app/model/game.model';
+import { AnswerVerifier } from '@app/classes/answer-verifier';
+import { CountdownTimer, TimerState } from '@app/classes/countdown-timer';
+import { IGame, IQuestion } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
-import { IPlayer, PlayerStatus } from '@app/model/match.model';
+import { IPlayer } from '@app/model/match.model';
 import { GamePlayedService } from '@app/services/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
-const ONE_SECOND_IN_MS = 1000;
-const QUARTER_SECOND_IN_MS = 250;
 const ID_LOBBY_LENGTH = 4;
 const ID_GAME_PLAYED_LENGTH = 10;
-const FIRST_ANSWER_MULTIPLIER = 1.2;
-const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
-const MINIMAL_TIME_FOR_PANIC_MODE = 10;
 const TIME_HISTOGRAM_UPDATE = 5000;
 const NOT_FOUND_INDEX = -1;
+const LAUNCH_TIMER_DURATION = 5;
 
-const enum TimerState {
-    RUNNING,
-    STOPPED,
-    PAUSED,
-}
-
-const enum GameType {
+export const enum GameType {
     NORMAL,
     TEST,
     RANDOM,
@@ -30,7 +21,8 @@ const enum GameType {
 
 export class Room {
     gamePlayedService: GamePlayedService;
-    // Variables for the lobby
+    countdownTimer: CountdownTimer;
+    answerVerifier: AnswerVerifier;
     io: SocketIoServer;
     roomId = '';
     playerList = new Map<string, IPlayer>();
@@ -43,31 +35,11 @@ export class Room {
     gameHasStarted = false;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
-
-    // Variables for the timer
-    launchTimer = true;
-    duration = 0;
-    timerId = 0;
-    currentTime = 0;
-    timerState: TimerState = TimerState.STOPPED;
-    panicModeEnabled = false;
-
-    // Variables for the questions & answers
-    currentQuestionIndex = NOT_FOUND_INDEX;
-    firstAnswerForBonus = true;
-    assertedAnswers: number = 0;
-    playerHasAnswered = new Map<string, boolean>();
-    lockedAnswers = 0;
-    livePlayerAnswers = new Map<string, number[] | string>();
-    globalAnswerIndex: number[] = [];
-    allAnswersForQCM = new Map<string, number[]>();
-    allAnswersForQRL = new Map<string, [IPlayer, string][]>();
-    globalAnswersText: [IPlayer, string][] = [];
-    counterCorrectAnswerQRL = 0;
-    counterHalfCorrectAnswerQRL = 0;
-    counterIncorrectAnswerQRL = 0;
-    allAnswersGameResults = new Map<string, number[]>();
     inputModifications: { player: string; time: number }[] = [];
+    currentQuestionIndex = NOT_FOUND_INDEX;
+    lockedAnswers: number = 0;
+    playerHasAnswered = new Map<string, boolean>();
+    livePlayerAnswers = new Map<string, number[] | string>();
 
     constructor(game: IGame, gameMode: number, io: SocketIoServer) {
         this.roomId = this.generateLobbyId();
@@ -87,21 +59,48 @@ export class Room {
         }
         this.io = io;
         this.gamePlayedService = new GamePlayedService();
+        this.countdownTimer = new CountdownTimer(this);
+        this.answerVerifier = new AnswerVerifier(this);
+    }
+
+    get gameTypeValue(): GameType {
+        return this.gameType;
+    }
+
+    get gameDurationValue(): number {
+        return this.game.duration;
+    }
+
+    get currentQuestion(): IQuestion {
+        return this.game.questions[this.currentQuestionIndex];
+    }
+
+    get playerListValue(): Map<string, IPlayer> {
+        return this.playerList;
+    }
+
+    disableFirstAnswerBonus(): void {
+        this.answerVerifier.firstAnswerForBonusValue = false;
     }
 
     startQuestion(): void {
         this.inputModifications = [];
-        if (this.timerState === TimerState.STOPPED) {
-            if (this.launchTimer) {
-                this.duration = 5;
-                this.timerState = TimerState.RUNNING;
-                this.startCountdownTimer();
+        if (this.countdownTimer.timerStateValue === TimerState.STOPPED) {
+            if (this.countdownTimer.isLaunchTimerValue) {
+                this.countdownTimer.timerDurationValue = LAUNCH_TIMER_DURATION;
+                this.countdownTimer.startCountdownTimer();
             } else {
                 this.currentQuestionIndex += 1;
+                // Moves to game results and writes into DB
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.io
                         .to(this.roomId)
-                        .emit('go-to-results', Array.from(this.playerList), this.game.questions, Array.from(this.allAnswersGameResults));
+                        .emit(
+                            'go-to-results',
+                            Array.from(this.playerList),
+                            this.game.questions,
+                            Array.from(this.answerVerifier.allAnswersGameResultsValue),
+                        );
                     if (this.gameType !== GameType.TEST) {
                         const gamePlayedData: IGamePlayed = {
                             id: this.generateGamePlayedId(),
@@ -112,219 +111,40 @@ export class Room {
                         } as IGamePlayed;
                         this.gamePlayedService.createGamePlayed(gamePlayedData);
                     }
-                } else {
-                    this.firstAnswerForBonus = true;
-                    this.assertedAnswers = 0;
+                }
+                // Moves to next question
+                else {
                     this.io.to(this.roomId).emit('question', this.game.questions[this.currentQuestionIndex], this.currentQuestionIndex);
-                    this.timerState = TimerState.RUNNING;
+                    if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
+                        this.countdownTimer.timerDurationValue = 60;
+                        this.countdownTimer.currentQuestionIsQRLValue = true;
+                    } else {
+                        this.countdownTimer.timerDurationValue = this.game.duration;
+                        this.countdownTimer.currentQuestionIsQRLValue = false;
+                    }
+                    // Reset question logic variables
+                    this.lockedAnswers = 0;
+                    this.answerVerifier.firstAnswerForBonusValue = true;
+                    this.answerVerifier.nbrOfAssertedAnswersValue = 0;
                     this.playerHasAnswered.forEach((value, key) => {
                         this.playerHasAnswered.set(key, false);
                     });
+                    this.answerVerifier.playerHasAnsweredSetter = this.playerHasAnswered;
                     this.livePlayerAnswers.forEach((value, key) => {
                         this.livePlayerAnswers.set(key, []);
                     });
-                    this.startCountdownTimer();
+                    this.countdownTimer.startCountdownTimer();
                 }
             }
         }
-    }
-
-    startCountdownTimer(): void {
-        this.currentTime = this.duration;
-        if (this.game.questions[this.currentQuestionIndex]?.type === 'QRL') {
-            this.currentTime = 60;
-            this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-        } else {
-            this.io.to(this.roomId).emit('timer-countdown', this.duration);
-        }
-        const timerId = setInterval(
-            () => {
-                if (this.timerState !== TimerState.PAUSED) {
-                    this.currentTime -= 1;
-                    this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-                    if (this.currentTime === 0) {
-                        this.firstAnswerForBonus = false;
-                        if (!this.launchTimer) {
-                            this.io.to(this.roomId).emit('timer-stopped');
-                        }
-                        this.handleTimerEnd();
-                        if (this.launchTimer) {
-                            this.playerList.forEach((playerInRoom) => {
-                                playerInRoom.status = PlayerStatus.Inactive;
-
-                                this.io.to(this.hostId).emit('player-status-changed', {
-                                    playerId: playerInRoom.id,
-                                    status: playerInRoom.status,
-                                });
-                            });
-                        }
-                    }
-                }
-            },
-            ONE_SECOND_IN_MS,
-            this.currentTime,
-        );
-        this.timerId = timerId;
-    }
-
-    handleTimerEnd(): void {
-        clearInterval(this.timerId);
-        if (this.panicModeEnabled) {
-            this.io.to(this.roomId).emit('panic-mode-disabled');
-            this.panicModeEnabled = false;
-        }
-        this.timerState = TimerState.STOPPED;
-        this.currentTime = this.duration;
-        this.lockedAnswers = 0;
-        if (this.launchTimer) {
-            this.launchTimer = false;
-            this.io.to(this.roomId).emit('question-time-updated', this.game.duration);
-            this.duration = this.game.duration;
-            this.startQuestion();
-            return;
-        }
-        if (this.gameType === GameType.TEST || this.gameType === GameType.RANDOM) {
-            setTimeout(() => {
-                this.startQuestion();
-            }, TIME_BETWEEN_QUESTIONS_TEST_MODE);
-        }
-    }
-
-    handleTimerPause(): void {
-        if (this.timerState === TimerState.RUNNING) {
-            this.timerState = TimerState.PAUSED;
-        } else if (this.timerState === TimerState.PAUSED) {
-            this.timerState = TimerState.RUNNING;
-        }
-    }
-
-    handlePanicMode(): void {
-        // TODO: Rajouter un if pour checker si le temps minimal est 10 ou 20 secondes selon QCM ou QRL
-        if (this.timerState === TimerState.RUNNING && this.currentTime <= MINIMAL_TIME_FOR_PANIC_MODE) {
-            this.panicModeEnabled = true;
-            this.io.to(this.roomId).emit('panic-mode-enabled');
-            clearInterval(this.timerId);
-            const timerId = setInterval(
-                () => {
-                    if (this.timerState !== TimerState.PAUSED) {
-                        this.currentTime -= 1;
-                        this.io.to(this.roomId).emit('timer-countdown', this.currentTime);
-                        if (this.currentTime === 0) {
-                            this.firstAnswerForBonus = false;
-                            if (!this.launchTimer) {
-                                this.io.to(this.roomId).emit('timer-stopped');
-                            }
-                            this.handleTimerEnd();
-                        }
-                    }
-                },
-                QUARTER_SECOND_IN_MS,
-                this.currentTime,
-            );
-            this.timerId = timerId;
-        }
-    }
-
-    // eslint-disable-next-line complexity
-    verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
-        if (!answerIdx || this.playerHasAnswered.get(playerId)) {
-            return;
-        }
-        this.playerHasAnswered.set(playerId, true);
-        const question = this.game.questions[this.currentQuestionIndex];
-        this.assertedAnswers += 1;
-        if (typeof answerIdx === 'string') {
-            this.globalAnswersText.push([player, answerIdx]);
-        }
-        if (this.gameType === 1 && question.type === 'QRL') {
-            this.playerList.get(playerId).score += question.points;
-        } else if (typeof answerIdx !== 'string') {
-            if (answerIdx.length !== 0) {
-                answerIdx.forEach((index) => {
-                    this.globalAnswerIndex.push(index);
-                });
-                const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-                const isMultipleAnswer = totalCorrectChoices > 1;
-                let isCorrect = false;
-                if (!isMultipleAnswer) {
-                    isCorrect = question.choices[answerIdx[0]].isCorrect;
-                } else {
-                    for (const index of answerIdx) {
-                        if (answerIdx.length < totalCorrectChoices) {
-                            isCorrect = false;
-                            break;
-                        }
-                        if (!question.choices[index].isCorrect) {
-                            isCorrect = false;
-                            break;
-                        }
-                        isCorrect = true;
-                    }
-                }
-                if (isCorrect && this.firstAnswerForBonus) {
-                    this.firstAnswerForBonus = false;
-                    this.playerList.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-                    this.playerList.get(playerId).bonus += 1;
-                } else if (isCorrect) {
-                    this.playerList.get(playerId).score += question.points;
-                }
-            }
-        }
-
-        if (this.assertedAnswers === this.playerList.size) {
-            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.playerList));
-            if (question.type === 'QCM') {
-                this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
-                this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
-                this.globalAnswerIndex = [];
-            } else if (question.type === 'QRL') {
-                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
-                this.globalAnswersText = [];
-            }
-        } else {
-            if (question.type === 'QRL') {
-                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
-            }
-        }
-    }
-
-    calculatePointsQRL(points: [IPlayer, number][]): void {
-        const question = this.game.questions[this.currentQuestionIndex];
-        const playerArray = Array.from(this.playerList.entries());
-        if (!points) return;
-        points.forEach(([player, point]: [IPlayer, number]) => {
-            const playerIndex = playerArray.findIndex(([, p]) => p.id === player.id);
-            if (question && playerIndex >= 0) {
-                playerArray[playerIndex][1].score += point * question.points;
-                if (point === 1) {
-                    this.counterCorrectAnswerQRL += 1;
-                } else if (point === 0) {
-                    this.counterIncorrectAnswerQRL += 1;
-                } else {
-                    this.counterHalfCorrectAnswerQRL += 1;
-                }
-            }
-        });
-        this.allAnswersGameResults.set(question.text, [
-            this.counterIncorrectAnswerQRL,
-            this.counterHalfCorrectAnswerQRL,
-            this.counterCorrectAnswerQRL,
-        ]);
-        this.counterIncorrectAnswerQRL = 0;
-        this.counterCorrectAnswerQRL = 0;
-        this.counterHalfCorrectAnswerQRL = 0;
-        this.io.to(this.roomId).emit('playerlist-change', playerArray);
     }
 
     handleEarlyAnswers(playerId: string, answer: number[] | string, player: IPlayer): void {
         this.lockedAnswers += 1;
-        this.verifyAnswers(playerId, answer, player);
+        this.answerVerifier.verifyAnswers(playerId, answer, player);
         if (this.lockedAnswers === this.playerList.size) {
-            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
             this.io.to(this.roomId).emit('timer-stopped');
-            this.handleTimerEnd();
-        } else {
-            this.io.to(this.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
+            this.countdownTimer.handleTimerEnd();
         }
     }
 

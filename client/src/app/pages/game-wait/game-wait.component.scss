@@ -48,12 +48,22 @@
     text-align: center;
 }
 
+
 .start-game {
     grid-area: start-game;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+}
+
+.start-game > * {
+    margin-bottom: 10px;
+}
+
+.start-game button {
+    margin-top: 10px;
 }
 
 .lobby-text {

@@ -7,7 +7,6 @@ import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import { Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const INDEX_NOT_FOUND = -1;
@@ -21,10 +20,8 @@ export class NewGamePageComponent implements OnInit {
     games: Game[] = [];
     gameSelected: { [key: string]: boolean } = {};
     socket: Socket;
-
+    gamesVisible: Game[] = [];
     deletedGamesId: string[] = [];
-    subscription: Subscription;
-
     // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private socketService: SocketService,
@@ -36,9 +33,10 @@ export class NewGamePageComponent implements OnInit {
     ) {}
 
     async ngOnInit() {
-        this.apiService.getGames().then((games) => {
+        await this.apiService.getGames().then((games) => {
             this.games = games;
         });
+        this.gamesVisibleList();
     }
 
     selected(game: Game): void {
@@ -141,5 +139,9 @@ export class NewGamePageComponent implements OnInit {
                 }
             },
         });
+    }
+    gamesVisibleList(): void {
+        this.gamesVisible = this.games.filter((game) => game.isVisible);
+        console.log(this.gamesVisible);
     }
 }
