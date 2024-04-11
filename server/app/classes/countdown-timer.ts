@@ -5,6 +5,8 @@ import { Server as SocketIoServer } from 'socket.io';
 const ONE_SECOND_IN_MS = 1000;
 const QUARTER_SECOND_IN_MS = 250;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
+const MINIMAL_TIME_FOR_PANIC_MODE_QRL = 20;
+const MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT = 10;
 
 export const enum TimerState {
     RUNNING,
@@ -110,8 +112,7 @@ export class CountdownTimer {
     }
 
     handlePanicMode(): void {
-        // eslint-disable-next-line
-        const MINIMAL_TIME_FOR_PANIC_MODE = this.currentQuestionIsQRL ? 20 : 10;
+        const MINIMAL_TIME_FOR_PANIC_MODE = this.currentQuestionIsQRL ? MINIMAL_TIME_FOR_PANIC_MODE_QRL : MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT;
         if (this.timerState === TimerState.RUNNING && this.currentCountdownTime <= MINIMAL_TIME_FOR_PANIC_MODE && !this.isLaunchTimer) {
             this.panicModeEnabled = true;
             this.io.to(this.roomId).emit('panic-mode-enabled');
