@@ -2,8 +2,8 @@ import { GameType, Room } from '@app/classes/room';
 import { PlayerStatus } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
 
-const ONE_SECOND_IN_MS = 1000;
-const QUARTER_SECOND_IN_MS = 250;
+const DEFAULT_DELAY = 1000;
+const SHORT_DELAY = 250;
 const TIME_BETWEEN_QUESTIONS_TEST_MODE = 3000;
 const MINIMAL_TIME_FOR_PANIC_MODE_QRL = 20;
 const MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT = 10;
@@ -77,7 +77,7 @@ export class CountdownTimer {
                     }
                 }
             },
-            ONE_SECOND_IN_MS,
+            DEFAULT_DELAY,
             this.currentCountdownTime,
         );
         this.timerId = timerId;
@@ -129,7 +129,7 @@ export class CountdownTimer {
                         }
                     }
                 },
-                QUARTER_SECOND_IN_MS,
+                SHORT_DELAY,
                 this.currentCountdownTime,
             );
             this.timerId = timerId;
