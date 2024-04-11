@@ -31,17 +31,23 @@ describe('AnswerVerifier', () => {
     it('should be able to get the allAnswersForQRLValue', () => {
         expect(answerVerifier).to.have.property('allAnswersForQRLValue');
     });
-    it('should be able to set the firstAnswerForBonusValue', () => {
+    it('should be able to set the firstAnswerForBonusValue : true', () => {
+        const testValue = true;
+        answerVerifier.firstAnswerForBonusValue = testValue;
+        expect(testValue).to.equal(true);
         expect(answerVerifier).to.have.property('firstAnswerForBonusValue');
     });
     it('should be able to set the nbrOfAssertedAnswersValue', () => {
+        const testValue = 2;
+        answerVerifier.nbrOfAssertedAnswersValue = testValue;
         expect(answerVerifier).to.have.property('nbrOfAssertedAnswersValue');
     });
     it('should be able to set the playerHasAnsweredSetter', () => {
+        const testValue = new Map<string, boolean>();
+        answerVerifier.playerHasAnsweredSetter = testValue;
         expect(answerVerifier).to.have.property('playerHasAnsweredSetter');
     });
     it('should have a verifyAnswers method', () => {
         expect(answerVerifier).to.have.property('verifyAnswers');
     });
-
 });
