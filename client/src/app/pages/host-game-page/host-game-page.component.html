@@ -77,11 +77,12 @@
     </div>
 
     <div class="buttonGame">
-        <button mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
+        <button class="pause-button" mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
             {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
         </button>
         <button
+            class="panic-button"
             mat-raised-button
             color="accent"
             (click)="handlePanicMode()"
