@@ -33,20 +33,4 @@ export class GameQrlAnswerComponent implements OnChanges {
         this.selectedValues[index] = value;
         this.selectedValuesEmitter.emit(this.selectedValues);
     }
-
-    // onSubmit() {
-    //     if (this.selectedValues.length !== this.answersQRLInput.length) {
-    //         this.snackbarService.openSnackBar('Veuillez noter tous les joueurs', 'Fermer');
-    //         return;
-    //     }
-    //     this.isNoted = true;
-    //     this.isNotedEmitter.emit(this.isNoted);
-    //     this.selectedValuesEmitter.emit(this.selectedValues);
-    //     this.reset();
-    // }
-
-    // reset() {
-    //     this.selectedValues = [];
-    //     this.answersQRLInput = [];
-    // }
 }

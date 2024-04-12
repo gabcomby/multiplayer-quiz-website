@@ -309,4 +309,35 @@ describe('HistogramComponent', () => {
         const calculateAnswerCountsSpy = spyOn<any>(component, 'calculateAnswerCounts').and.callThrough();
         expect(calculateAnswerCountsSpy.call(component, [])).toEqual(new Map());
     });
+
+    it('returns empty map when question choices are null', () => {
+        const question = {
+            type: QuestionType.QCM,
+            text: 'What is the capital of France?',
+            points: 10,
+            choices: [
+                { text: 'True', isCorrect: false },
+                { text: 'False', isCorrect: true },
+            ],
+            lastModification: new Date(),
+            id: 'abc',
+        };
+        const calculateAnswerCountsSpy = spyOn<any>(component, 'calculateAnswerCounts').and.callThrough();
+        const result = calculateAnswerCountsSpy.call(component, question);
+        expect(result.size).toEqual(2);
+    });
+
+    it('ignores null choices', () => {
+        const question = {
+            type: QuestionType.QCM,
+            text: 'What is the capital of France?',
+            points: 10,
+            choices: [null],
+            lastModification: new Date(),
+            id: 'abc',
+        };
+
+        const calculateAnswerCountsSpy = spyOn<any>(component, 'calculateAnswerCounts').and.callThrough();
+        expect(calculateAnswerCountsSpy.call(component, question).size).toEqual(1);
+    });
 });
