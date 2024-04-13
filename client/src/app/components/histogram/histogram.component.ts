@@ -128,7 +128,7 @@ export class HistogramComponent implements OnInit, OnChanges {
                 this.histogramsData.push({ question: question.text, data: histogramData });
             } else {
                 const answerCountsMap = this.calculateAnswerCounts(question);
-                const histogramData = question.type === 'QCM' ? this.mapToHistogramData(answerCountsMap) : [];
+                const histogramData = this.mapToHistogramData(answerCountsMap);
                 this.histogramsData.push({ question: question.text, data: histogramData });
             }
         });
@@ -138,13 +138,12 @@ export class HistogramComponent implements OnInit, OnChanges {
         const answerCountsMap: Map<Choice, number> = new Map();
 
         if (!question.choices) return answerCountsMap;
-
+        const choicesQuestion = question.choices;
         question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
         this.answersPlayer.forEach(([questionText, choices]) => {
             if (questionText !== question.text || typeof choices === 'string') return;
             choices.forEach((choiceIndex) => {
-                if (!question.choices) return;
-                const choice = question.choices[choiceIndex];
+                const choice = choicesQuestion[choiceIndex];
                 if (!choice) return;
                 const count = answerCountsMap.get(choice);
                 if (count !== undefined) {
