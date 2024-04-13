@@ -1,5 +1,6 @@
 import { GameType, Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
+import { IPlayer } from '@app/model/match.model';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
@@ -173,6 +174,8 @@ describe('CountdownTimer', () => {
     });
 
     it('should not emit timer-stopped if the timer is a launch timer', () => {
+        room.playerList = new Map([['test', { id: 'player1', score: 0, bonus: 0, name: 'Player 1' } as IPlayer]]);
+
         const disableFirstAnswerBonusSpy = sinon.spy(room, 'disableFirstAnswerBonus');
         const handleTimerEndSpy = sinon.spy(room.countdownTimer, 'handleTimerEnd');
         room.countdownTimer['isLaunchTimer'] = true;
@@ -221,6 +224,11 @@ describe('CountdownTimer', () => {
         room.countdownTimer['timerState'] = TimerState.PAUSED;
         room.countdownTimer.handleTimerPause();
         assert.equal(room.countdownTimer.timerStateValue, TimerState.RUNNING);
+    });
+    it('should do nothing pause when timer is stopped', () => {
+        room.countdownTimer['timerState'] = TimerState.STOPPED;
+        room.countdownTimer.handleTimerPause();
+        assert.equal(room.countdownTimer.timerStateValue, TimerState.STOPPED);
     });
 
     it('should handle panic mode for QCM questions', () => {

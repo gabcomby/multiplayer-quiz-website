@@ -47,7 +47,6 @@ export class GameService {
     private audio = new Audio();
     private gameType: number;
     private numberInputModified: number = 0;
-    private numberInputNotModified: number = 0;
     private playersListResult: Player[] = [];
     private countAnswerQrl: number = 0;
 
@@ -152,7 +151,7 @@ export class GameService {
     get answersTextQRLValue(): [string, [Player, string][]][] {
         return this.answersTextQRL;
     }
-    get answersTextQRLVal() {
+    get answerTextQRLValue() {
         return this.answerText;
     }
 
@@ -165,9 +164,6 @@ export class GameService {
     }
     get numberInputModifidedValue(): number {
         return this.numberInputModified;
-    }
-    get numberInputNotModifidedValue(): number {
-        return this.numberInputNotModified;
     }
 
     get gameTypeValue(): number {

@@ -18,20 +18,6 @@ describe('AuthController', () => {
         expressApp = app.app;
     });
 
-    // it('should return a success message on valid password', async () => {
-    //     const validPassword = 'correct_password';
-    //     const expectedMessage: Message = { title: 'Authentication Successful', body: 'Authenticated successfully.' };
-    //     authService.authenticate.withArgs(validPassword).returns(expectedMessage);
-
-    //     return supertest(expressApp)
-    //         .post('/api/authenticate')
-    //         .send({ password: validPassword })
-    //         .expect(StatusCodes.OK)
-    //         .then((response) => {
-    //             chai.expect(response.body).to.deep.equal(expectedMessage);
-    //         });
-    // });
-
     it('should return an unauthorized message on invalid password', async () => {
         const invalidPassword = 'wrong_password';
         const expectedMessage: Message = { title: 'Authentication Failed', body: 'Invalid password.' };
@@ -53,6 +39,18 @@ describe('AuthController', () => {
             .expect(StatusCodes.BAD_REQUEST)
             .then((response) => {
                 chai.expect(response.body.title).to.equal('Invalid Request');
+            });
+    });
+    it('should return a successful message on successfull password', async () => {
+        const validPassword = 'good_password';
+        const expectedMessage: Message = { title: 'Authentication Successful', body: 'Access granted' };
+        authService.authenticate.withArgs(validPassword).returns(expectedMessage);
+        return supertest(expressApp)
+            .post('/api/authenticate')
+            .send({ password: validPassword })
+            .expect(StatusCodes.OK)
+            .then((response) => {
+                chai.expect(response.body.title).to.equal('Authentication Successful');
             });
     });
 });
