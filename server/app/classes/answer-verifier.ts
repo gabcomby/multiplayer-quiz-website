@@ -1,4 +1,5 @@
 import { GameType, Room } from '@app/classes/room';
+import { IQuestion } from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
 
@@ -85,28 +86,35 @@ export class AnswerVerifier {
                 }
             }
             if (isCorrect) {
-                if (this.firstAnswerForBonus) {
-                    this.firstAnswerForBonus = false;
-                    this.room.playerListValue.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-                    this.room.playerListValue.get(playerId).bonus += 1;
-                } else {
-                    this.room.playerListValue.get(playerId).score += question.points;
-                }
+                this.handleCorrectAnswer(playerId, question);
             }
         }
 
         if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
-            if (question.type === 'QCM') {
-                this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
-                this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
-                this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
-                this.globalAnswerIndex = [];
-            } else if (question.type === 'QRL') {
-                this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
-                this.allAnswersForQRL.set(question.text, this.globalAnswersText);
-                this.globalAnswersText = [];
-                this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
-            }
+            this.handleSocketQuestionType(question);
+        }
+    }
+    handleCorrectAnswer(playerId: string, question: IQuestion) {
+        if (this.firstAnswerForBonus) {
+            this.firstAnswerForBonus = false;
+            this.room.playerListValue.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
+            this.room.playerListValue.get(playerId).bonus += 1;
+        } else {
+            this.room.playerListValue.get(playerId).score += question.points;
+        }
+    }
+
+    handleSocketQuestionType(question: IQuestion): void {
+        if (question.type === 'QCM') {
+            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+            this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
+            this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
+            this.globalAnswerIndex = [];
+        } else if (question.type === 'QRL') {
+            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+            this.allAnswersForQRL.set(question.text, this.globalAnswersText);
+            this.globalAnswersText = [];
+            this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
     }
 
