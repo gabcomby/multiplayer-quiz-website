@@ -68,11 +68,7 @@ export class ResultsViewComponent implements OnInit {
 
     private sortDataSource() {
         this.playerDataSource.sort((a, b) => {
-            if (b.score !== a.score) {
-                return b.score - a.score;
-            } else {
-                return a.name.localeCompare(b.name);
-            }
+            return b.score !== a.score ? b.score - a.score : a.name.localeCompare(b.name);
         });
     }
 }

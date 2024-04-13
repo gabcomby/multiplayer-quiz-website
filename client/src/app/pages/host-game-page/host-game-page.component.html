@@ -34,7 +34,7 @@
     </div>
     <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
         <app-game-qrl-answer
-            *ngIf="answersQRL && (answersQRL.length > currentQRLIndexValue) && answersQRL[currentQRLIndexValue][1]"
+            *ngIf="answersQRL && answersQRL.length > currentQRLIndexValue && answersQRL[currentQRLIndexValue][1]"
             [answersQRL]="answersQRL[currentQRLIndexValue][1]"
             [timerStopped]="timerStopped"
             (selectedValuesEmitter)="setplayerPointsQRL($event)"
@@ -55,7 +55,7 @@
         ></app-histogram>
     </div>
 
-    <div class="gameControl" *ngIf="(currentQuestion?.type === 'QRL') || currentQuestion?.type === 'QCM' || timerStopped">
+    <div class="gameControl" *ngIf="currentQuestion?.type === 'QRL' || currentQuestion?.type === 'QCM' || timerStopped">
         <button
             mat-raised-button
             color="primary"
@@ -81,7 +81,12 @@
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
             {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
         </button>
-        <button mat-raised-button color="accent" (click)="handlePanicMode()" *ngIf="!isLaunchTimer && currentTimerCountdown <= 10 && !timerStopped">
+        <button
+            mat-raised-button
+            color="accent"
+            (click)="handlePanicMode()"
+            *ngIf="!isLaunchTimer && checkMinimumTimeForPanicMode() && !timerStopped"
+        >
             Mode panique
         </button>
     </div>

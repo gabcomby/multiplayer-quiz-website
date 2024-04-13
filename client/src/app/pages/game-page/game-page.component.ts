@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Question } from '@app/interfaces/game';
 import { MatchLobby } from '@app/interfaces/match-lobby';
 import { GameService } from '@app/services/game/game.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
@@ -13,7 +12,6 @@ import { Subscription } from 'rxjs';
 export class GamePageComponent implements OnInit {
     isHost: boolean;
     lobby: MatchLobby;
-    unsubscribeSubject: Subscription[];
     constructor(
         private gameService: GameService,
         private router: Router,

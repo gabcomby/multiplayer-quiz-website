@@ -116,7 +116,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.subscription?.unsubscribe();
     }
 
     setplayerPointsQRL(points: [Player, number][]) {
@@ -127,7 +127,12 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     nextQuestion(): void {
-        if (this.currentQuestion?.type === 'QRL' && this.answersQRL[this.currentQRLIndexValue][1].length !== 0 && !this.isNoted) {
+        if (
+            this.currentQuestion?.type === 'QRL' &&
+            this.answersQRL[this.currentQRLIndexValue] &&
+            this.answersQRL[this.currentQRLIndexValue][1].length !== 0 &&
+            !this.isNoted
+        ) {
             this.snackbarService.openSnackBar('Veuillez noter les joueurs', 'Fermer');
             return;
         }
