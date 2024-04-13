@@ -1,5 +1,4 @@
 import { GameType, Room } from '@app/classes/room';
-import { IQuestion } from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
 
