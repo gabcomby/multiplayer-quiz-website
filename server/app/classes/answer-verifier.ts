@@ -64,27 +64,7 @@ export class AnswerVerifier {
             }
         }
         if (question.type === 'QCM' && Array.isArray(answerIdx) && answerIdx.length !== 0) {
-            answerIdx.forEach((index) => {
-                this.globalAnswerIndex.push(index);
-            });
-            const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-            const isMultipleAnswer = totalCorrectChoices > 1;
-            let isCorrect = false;
-            if (!isMultipleAnswer) {
-                isCorrect = question.choices[answerIdx[0]].isCorrect;
-            } else {
-                if (answerIdx.length < totalCorrectChoices) {
-                    isCorrect = false;
-                } else {
-                    for (const index of answerIdx) {
-                        if (!question.choices[index].isCorrect) {
-                            isCorrect = false;
-                            break;
-                        }
-                        isCorrect = true;
-                    }
-                }
-            }
+            const isCorrect = this.handleQCMAnswers(question, playerId, answerIdx);
             if (isCorrect) {
                 this.handleCorrectAnswer(playerId, question);
             }
@@ -116,6 +96,30 @@ export class AnswerVerifier {
             this.globalAnswersText = [];
             this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
+    }
+    handleQCMAnswers(question: IQuestion, playerId: string, answerIdx: number[]): boolean {
+        answerIdx.forEach((index) => {
+            this.globalAnswerIndex.push(index);
+        });
+        const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+        const isMultipleAnswer = totalCorrectChoices > 1;
+        let isCorrect = false;
+        if (!isMultipleAnswer) {
+            isCorrect = question.choices[answerIdx[0]].isCorrect;
+        } else {
+            if (answerIdx.length < totalCorrectChoices) {
+                isCorrect = false;
+            } else {
+                for (const index of answerIdx) {
+                    if (!question.choices[index].isCorrect) {
+                        isCorrect = false;
+                        break;
+                    }
+                    isCorrect = true;
+                }
+            }
+        }
+        return isCorrect;
     }
 
     calculatePointsQRL(points: [IPlayer, number][]): void {
