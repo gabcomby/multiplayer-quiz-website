@@ -46,8 +46,6 @@ export class AnswerVerifier {
     set playerHasAnsweredSetter(value: Map<string, boolean>) {
         this.playerHasAnswered = value;
     }
-
-    // eslint-disable-next-line complexity
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (this.playerHasAnswered.get(playerId)) {
             return;
@@ -69,7 +67,6 @@ export class AnswerVerifier {
                 this.handleCorrectAnswer(playerId, question);
             }
         }
-
         if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
             this.handleSocketQuestionType(question);
         }
@@ -85,14 +82,12 @@ export class AnswerVerifier {
     }
 
     handleSocketQuestionType(question: IQuestion): void {
+        this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
+        this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
         if (question.type === 'QCM') {
-            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
-            this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
             this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
             this.globalAnswerIndex = [];
         } else if (question.type === 'QRL') {
-            this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
-            this.allAnswersForQRL.set(question.text, this.globalAnswersText);
             this.globalAnswersText = [];
             this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
