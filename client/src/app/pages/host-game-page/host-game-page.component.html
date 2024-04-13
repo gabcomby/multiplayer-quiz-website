@@ -22,6 +22,46 @@
             [totalTimer]="totalGameDuration"
         ></app-game-page-timer>
     </div>
+    <div class="score" *ngIf="!isLaunchTimer">
+        <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
+    </div>
+    <div class="button-game">
+        <button class="pause-button" mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
+            <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
+            {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
+        </button>
+        <button
+            class="panic-button"
+            mat-raised-button
+            color="accent"
+            (click)="handlePanicMode()"
+            *ngIf="!isLaunchTimer && checkMinimumTimeForPanicMode() && !timerStopped"
+        >
+            Mode panique
+        </button>
+    </div>
+
+    <div class="game-control">
+        <button
+            mat-raised-button
+            color="primary"
+            class="nextQuestion"
+            *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
+            (click)="nextQuestion()"
+        >
+            Voir les résultats
+        </button>
+        <button
+            mat-raised-button
+            color="primary"
+            class="nextQuestion"
+            *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
+            (click)="nextQuestion()"
+        >
+            {{ nextQuestionButtonText }}
+        </button>
+    </div>
+
     <div class="question" *ngIf="currentQuestion">
         <app-game-page-questions
             [isHost]="true"
@@ -29,9 +69,7 @@
             [mark]="currentQuestion.points || 0"
         ></app-game-page-questions>
     </div>
-    <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
-    </div>
+
     <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
         <app-game-qrl-answer
             *ngIf="answersQRL && answersQRL.length > currentQRLIndexValue && answersQRL[currentQRLIndexValue][1]"
@@ -53,42 +91,5 @@
             [questionsGame]="currentQuestionArray"
             [nbModified]="nbModified"
         ></app-histogram>
-    </div>
-
-    <div class="gameControl" *ngIf="currentQuestion?.type === 'QRL' || currentQuestion?.type === 'QCM' || timerStopped">
-        <button
-            mat-raised-button
-            color="primary"
-            class="nextQuestion"
-            *ngIf="timerStopped && currentQuestionIndexValue + 1 === nbrOfQuestions"
-            (click)="nextQuestion()"
-        >
-            Voir les résultats
-        </button>
-        <button
-            mat-raised-button
-            color="primary"
-            class="nextQuestion"
-            *ngIf="timerStopped && currentQuestionIndexValue + 1 !== nbrOfQuestions"
-            (click)="nextQuestion()"
-        >
-            {{ nextQuestionButtonText }}
-        </button>
-    </div>
-
-    <div class="buttonGame">
-        <button class="pause-button" mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
-            <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
-            {{ gameTimerPaused ? 'Réactiver le timer' : 'Mettre le timer en pause' }}
-        </button>
-        <button
-            class="panic-button"
-            mat-raised-button
-            color="accent"
-            (click)="handlePanicMode()"
-            *ngIf="!isLaunchTimer && checkMinimumTimeForPanicMode() && !timerStopped"
-        >
-            Mode panique
-        </button>
     </div>
 </div>

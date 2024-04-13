@@ -23,17 +23,46 @@ $base-font-size: 16;
     height: 100%;
     display: grid;
     grid-template-columns: 25% 50% 25%;
-    grid-template-rows: px-to-em(50) 40% 50%;
+    grid-template-rows: px-to-em(50) 35% 15% 40%;
     gap: 0px 0px;
     grid-auto-flow: row;
     grid-template-areas:
         'top-bar top-bar top-bar'
-        'results timer score'
+        'QRL timer score'
+        '. button-game game-control'
         'live-chat histogram question';
 }
 
 .top-bar {
     grid-area: top-bar;
+}
+
+.QRL {
+    grid-area: QRL;
+    display: flex;
+    justify-content: flex-start; /* Align content to the start */
+    align-items: flex-start; /* Align content to the start */
+    text-align: center; /* Align text to the left */
+    margin-top: px-to-em(20);
+    overflow: hidden; /* Hide overflow content */
+    flex-wrap: wrap; /* Allow content to wrap */
+    word-wrap: break-word;
+}
+
+.button-game {
+    grid-area: button-game;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.game-control {
+    grid-area: game-control;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .histogram {
@@ -72,34 +101,4 @@ $base-font-size: 16;
     text-align: center;
     font-size: px-to-em(16);
     margin-top: px-to-em(30);
-}
-
-.results {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-top: 30%;
-}
-
-.buttonGame {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: absolute;
-    margin-top: 20%;
-    top: 0;
-    right: 0;
-}
-
-.gameControl {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: absolute;
-    margin-top: 20%;
-    top: 0;
-    right: 0;
 }
