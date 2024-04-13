@@ -5,6 +5,15 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { AnswerVerifier } from './answer-verifier';
+import { IPlayer } from '@app/model/match.model';
+import { mock } from 'node:test';
+
+const player = {
+    id: 'testId',
+    name: 'Test Player',
+    score: 0,
+    bonus: 0,
+} as IPlayer;
 
 const mockGame = new gameModel({
     id: '1a2b3c',
@@ -151,5 +160,27 @@ describe('Room', () => {
     });
     it('should have a verifyAnswers method', () => {
         expect(answerVerifier).to.have.property('verifyAnswers');
+    });
+    it('should return not return anything if the player has already answered', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        answerVerifier['playerHasAnswered'].set(playerId, true);
+        answerVerifier.verifyAnswers(playerId, answerIdx, player);
+        expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
+    });
+    it('should add score to the player if the question type is QRL and the game type is TEST', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        room.gameType = 1;
+        answerVerifier.verifyAnswers(playerId, answerIdx, player);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- 60 is the score of the player
+        expect(room['playerList'].get(playerId).score).to.equal(60);
+    });
+    it('should push the player answer to the globalAnswersText if the answer is a string', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        answerVerifier['globalAnswersText'] = [];
+        answerVerifier.verifyAnswers(playerId, answerIdx, player);
+        expect(answerVerifier['globalAnswersText']).to.deep.equal([[player, answerIdx]]);
     });
 });
