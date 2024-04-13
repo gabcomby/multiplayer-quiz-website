@@ -23,13 +23,13 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-// import { MatSortModule } from '@angular/material/sort';
+import { MatSortModule } from '@angular/material/sort';
 // import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 // import { MatTabsModule } from '@angular/material/tabs';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 
 const modules = [
     // MatAutocompleteModule,
@@ -57,7 +57,7 @@ const modules = [
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
-    // MatSortModule,
+    MatSortModule,
     // MatStepperModule,
     MatTableModule,
     // MatTabsModule,

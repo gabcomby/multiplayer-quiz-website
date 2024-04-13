@@ -118,4 +118,11 @@ describe('GamePageQuestionsComponent', () => {
         });
         expect(component.resetAnswerState).toHaveBeenCalled();
     });
+
+    it('should emit answerText on Input change', () => {
+        spyOn(component.answerText, 'emit');
+        component.answerQrl = 'answer';
+        component.onInputChange();
+        expect(component.answerText.emit).toHaveBeenCalledWith('answer');
+    });
 });

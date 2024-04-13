@@ -85,6 +85,14 @@ class MockSocket {
         if (eventName === 'panic-mode-disabled') {
             callback('disabled');
         }
+
+        if (eventName === 'system-message') {
+            callback({
+                text: 'System alert',
+                sender: 'System',
+                timestamp: new Date(),
+            });
+        }
     });
 
     simulateEvent(eventName: string, ...args: unknown[]) {
@@ -149,19 +157,16 @@ describe('SocketService', () => {
         service.toggleRoomLock();
         expect(mockSocket.emit).toHaveBeenCalledWith('toggle-room-lock');
     });
-
     it('should handle "room-lock-status" events', (done) => {
         service.onRoomLockStatus((isLocked: boolean) => {
             expect(isLocked).toBe(true);
             done();
         });
     });
-
     it('should emit "start-game" when startGame is called', () => {
         service.startGame();
         expect(mockSocket.emit).toHaveBeenCalledWith('start-game');
     });
-
     it('should handle "question-time-event" events', (done) => {
         service.onQuestionTimeUpdated((data: number) => {
             expect(data).toBe(QUESTION_TIME_UPDATE);
@@ -183,54 +188,6 @@ describe('SocketService', () => {
         expect(mockSocket.emit).toHaveBeenCalledWith('next-question');
     });
 
-    // it('should handle "send-answer" events', (done) => {
-    //     const player: Player = {
-    //         id: '123',
-    //         name: 'test',
-    //         bonus: 1,
-    //         score: 2,
-    //     };
-    //     service.sendAnswers([0], player);
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('send-answers', [0]);
-    //     done();
-    // });
-
-    // it('should handle "send-locked-answers events', (done) => {
-    //     const player: Player = {
-    //         id: '123',
-    //         name: 'test',
-    //         bonus: 1,
-    //         score: 2,
-    //     };
-    //     service.sendLockedAnswers([0], player);
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('send-locked-answers', [0]);
-    //     done();
-    // });
-
-    // it('should emit "send-live-answers" events', () => {
-    //     const player: Player = {
-    //         id: '123',
-    //         name: 'test',
-    //         bonus: 1,
-    //         score: 2,
-    //     };
-    //     service.sendLiveAnswers([0], player);
-    //     expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [0]);
-    // });
-
-    it('should handle "livePlayerAnswers" events', (done) => {
-        const fakeData: [string, number[]][] = [
-            ['player1', [1, 2, 3]],
-            ['player2', [3, 2, 1]],
-        ];
-
-        // eslint-disable-next-line no-unused-vars
-        service.onLivePlayerAnswers((data: [string, number[] | string][], player: Player) => {
-            expect(data).toEqual(fakeData);
-            done();
-        });
-    });
-
     it('should handle "question" events', (done) => {
         const fakeQuestionIndex = 0;
 
@@ -239,7 +196,6 @@ describe('SocketService', () => {
             done();
         });
     });
-
     it('should handle "game-started" events', (done) => {
         const fakeQuestionDuration = 10;
 
@@ -398,5 +354,16 @@ describe('SocketService', () => {
         const mockPoints: [Player, number][] = [[{ id: '123', name: 'alex', score: 123, bonus: 0 }, points]];
         service.updatePointsQRL(mockPoints);
         expect(mockSocket.emit).toHaveBeenCalledWith('update-points-QRL', [[{ id: '123', name: 'alex', score: 123, bonus: 0 }, points]]);
+    });
+    it('should handle "system-message" events', (done) => {
+        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: new Date() };
+        mockSocket.simulateEvent('system-message', expectedSystemMessage);
+        service.onSystemMessage().subscribe({
+            next: (message) => {
+                expect(message).toEqual(expectedSystemMessage);
+                done();
+            },
+            error: done.fail,
+        });
     });
 });
