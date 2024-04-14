@@ -167,15 +167,18 @@ describe('Room', () => {
         assert.equal(game.gameType, GameType.NORMAL);
     });
 
-    it('should increment the current question index, send players to results page when and not write to db if test mode is enabled', () => {
-        const createGamePlayedSpy = sinon.spy(room.gamePlayedService, 'createGamePlayed');
+    it('should call game result if end of the game', () => {
+        const spy = sinon.spy(room, 'gameResult');
         room.gameType = GameType.TEST;
         room.countdownTimer['isLaunchTimer'] = false;
         room.currentQuestionIndex = mockGame.questions.length - 1;
         room.startQuestion();
-        sinon.assert.calledWith(mockSocketIoServer.emit, 'go-to-results', sinon.match.any, sinon.match.any, sinon.match.any);
+        sinon.assert.called(spy);
         assert.equal(room.currentQuestionIndex, mockGame.questions.length);
-        sinon.assert.notCalled(createGamePlayedSpy);
+    });
+    it('should increment the current question index, send players to results page when and not write to db if test mode is enabled', () => {
+        room.gameResult();
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'go-to-results', sinon.match.any, sinon.match.any, sinon.match.any);
     });
 
     it('should increment the current question index, send players to results page when and write to db if test mode is disabled', () => {
