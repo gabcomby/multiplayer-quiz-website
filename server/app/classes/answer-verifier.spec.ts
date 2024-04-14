@@ -2,10 +2,10 @@
 import { Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
-import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { AnswerVerifier } from './answer-verifier';
+import { expect } from 'chai';
 
 const player = {
     id: 'testId',
@@ -116,7 +116,6 @@ class MockSocketIO {
 describe('Room', () => {
     let mockSocketIoServer: MockSocketIO;
     let room: Room;
-    let isTestRoom: number;
     let clock: sinon.SinonFakeTimers;
     let answerVerifier: AnswerVerifier;
 
@@ -173,7 +172,7 @@ describe('Room', () => {
     it('should return not return anything if the player has already answered', () => {
         const playerId = '123';
         const answerIdx = '1';
-        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
+        new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
         answerVerifier['playerHasAnswered'].set(playerId, true);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
@@ -181,14 +180,15 @@ describe('Room', () => {
     it('should increment the number of asserted answers', () => {
         const playerId = '123';
         const answerIdx = '1';
-        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        sinon.stub(roomMock, 'currentQuestion').returns(mockGame.questions[0]);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['nbrOfAssertedAnswers']).to.equal(1);
     });
     it('should add the player answer to the globalAnswersText', () => {
         const playerId = '123';
         const answerIdx = '1';
-        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
+        new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['globalAnswersText']).to.deep.equal([[player, answerIdx]]);
     });
