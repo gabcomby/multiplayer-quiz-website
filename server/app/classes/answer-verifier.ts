@@ -63,38 +63,11 @@ export class AnswerVerifier {
             }
         }
         if (question.type === 'QCM' && Array.isArray(answerIdx) && answerIdx.length !== 0) {
-            answerIdx.forEach((index) => {
-                this.globalAnswerIndex.push(index);
-            });
-            const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
-            const isMultipleAnswer = totalCorrectChoices > 1;
-            let isCorrect = false;
-            if (!isMultipleAnswer) {
-                isCorrect = question.choices[answerIdx[0]].isCorrect;
-            } else {
-                if (answerIdx.length < totalCorrectChoices) {
-                    isCorrect = false;
-                } else {
-                    for (const index of answerIdx) {
-                        if (!question.choices[index].isCorrect) {
-                            isCorrect = false;
-                            break;
-                        }
-                        isCorrect = true;
-                    }
-                }
-            }
+            const isCorrect = this.handleQCMAnswers(question, answerIdx);
             if (isCorrect) {
-                if (this.firstAnswerForBonus) {
-                    this.firstAnswerForBonus = false;
-                    this.room.playerListValue.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
-                    this.room.playerListValue.get(playerId).bonus += 1;
-                } else {
-                    this.room.playerListValue.get(playerId).score += question.points;
-                }
+                this.handleCorrectAnswer(playerId, question);
             }
         }
-
         if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
             this.handleAllPlayersAnswered(question);
         }
@@ -112,31 +85,39 @@ export class AnswerVerifier {
             this.io.to(this.room.hostId).emit('locked-answers-QRL', Array.from(this.allAnswersForQRL));
         }
     }
-    /* verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
-        if (this.playerHasAnswered.get(playerId)) {
-            return;
+    handleCorrectAnswer(playerId: string, question: IQuestion): void {
+        if (this.firstAnswerForBonus) {
+            this.firstAnswerForBonus = false;
+            this.room.playerListValue.get(playerId).score += question.points * FIRST_ANSWER_MULTIPLIER;
+            this.room.playerListValue.get(playerId).bonus += 1;
+        } else {
+            this.room.playerListValue.get(playerId).score += question.points;
         }
-        this.playerHasAnswered.set(playerId, true);
-        const question = this.room.currentQuestion;
-        this.nbrOfAssertedAnswers += 1;
-        if (typeof answerIdx === 'string' && answerIdx.trim() !== '') {
-            this.globalAnswersText.push([player, answerIdx]);
-        }
-        if (question.type === 'QRL') {
-            if (this.room.gameTypeValue === GameType.TEST) {
-                this.room.playerListValue.get(playerId).score += question.points;
+    }
+    handleQCMAnswers(question: IQuestion, answerIdx: number[]): boolean {
+        answerIdx.forEach((index) => {
+            this.globalAnswerIndex.push(index);
+        });
+        const totalCorrectChoices = question.choices.reduce((count, choice) => (choice.isCorrect ? count + 1 : count), 0);
+        const isMultipleAnswer = totalCorrectChoices > 1;
+        let isCorrect = false;
+        if (!isMultipleAnswer) {
+            isCorrect = question.choices[answerIdx[0]].isCorrect;
+        } else {
+            if (answerIdx.length < totalCorrectChoices) {
+                isCorrect = false;
+            } else {
+                for (const index of answerIdx) {
+                    if (!question.choices[index].isCorrect) {
+                        isCorrect = false;
+                        break;
+                    }
+                    isCorrect = true;
+                }
             }
         }
-        if (question.type === 'QCM' && Array.isArray(answerIdx) && answerIdx.length !== 0) {
-            const isCorrect = this.handleQCMAnswers(question, playerId, answerIdx);
-            if (isCorrect) {
-                this.handleCorrectAnswer(playerId, question);
-            }
-        }
-        if (this.nbrOfAssertedAnswers === this.room.playerList.size) {
-            this.handleSocketQuestionType(question);
-        }
-    }*/
+        return isCorrect;
+    }
 
     calculatePointsQRL(points: [IPlayer, number][]): void {
         const question = this.room.currentQuestion;
