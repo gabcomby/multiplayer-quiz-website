@@ -123,6 +123,19 @@ export class AnswerVerifier {
         const question = this.room.currentQuestion;
         const playerArray = Array.from(this.room.playerListValue.entries());
         if (!points) return;
+        this.handleQRLAnswersPoints(points, playerArray, question);
+        this.allAnswersGameResults.set(question.text, [
+            this.counterIncorrectAnswerQRL,
+            this.counterHalfCorrectAnswerQRL,
+            this.counterCorrectAnswerQRL,
+        ]);
+        this.counterIncorrectAnswerQRL = 0;
+        this.counterCorrectAnswerQRL = 0;
+        this.counterHalfCorrectAnswerQRL = 0;
+        this.io.to(this.roomId).emit('playerlist-change', playerArray);
+    }
+
+    handleQRLAnswersPoints(points: [IPlayer, number][], playerArray: [string, IPlayer][], question: IQuestion): void {
         points.forEach(([player, point]: [IPlayer, number]) => {
             const playerIndex = playerArray.findIndex(([, p]) => p.id === player.id);
             if (question && playerIndex >= 0) {
@@ -136,14 +149,5 @@ export class AnswerVerifier {
                 }
             }
         });
-        this.allAnswersGameResults.set(question.text, [
-            this.counterIncorrectAnswerQRL,
-            this.counterHalfCorrectAnswerQRL,
-            this.counterCorrectAnswerQRL,
-        ]);
-        this.counterIncorrectAnswerQRL = 0;
-        this.counterCorrectAnswerQRL = 0;
-        this.counterHalfCorrectAnswerQRL = 0;
-        this.io.to(this.roomId).emit('playerlist-change', playerArray);
     }
 }
