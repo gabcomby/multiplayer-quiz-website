@@ -2,9 +2,9 @@ mat-card {
     width: 75%;
 }
 button #bannedPlayer {
-    width: 15%; 
+    width: 15%;
     height: 55%;
-    background-color: #04AA6D; 
+    background-color: #04aa6d;
     color: white;
     text-align: center;
     display: flex;
@@ -14,4 +14,21 @@ button #bannedPlayer {
 
 .goneplayers {
     text-decoration: line-through;
+}
+
+.mat-sort-header-disabled .mat-sort-header-arrow,
+.mat-sort-header-disabled .mat-sort-header-indicator {
+    display: none;
+}
+
+.inactive-player {
+    color: red;
+}
+
+.active-player {
+    color: rgb(192, 192, 6);
+}
+
+.confirmed-player {
+    color: green;
 }

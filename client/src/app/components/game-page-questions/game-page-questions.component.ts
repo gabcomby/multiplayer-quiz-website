@@ -32,6 +32,9 @@ export class GamePageQuestionsComponent implements OnInit, OnChanges {
         private answerStateService: AnswerStateService,
         private gameService: GameService,
     ) {}
+    get timerStopped(): boolean {
+        return this.gameService.timerStoppedValue;
+    }
 
     @HostListener('document:keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
