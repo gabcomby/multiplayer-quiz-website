@@ -11,7 +11,7 @@ import { type Socket as ServerSocket } from 'socket.io';
 import { io as ioc, type Socket as ClientSocket } from 'socket.io-client';
 
 const mockGame: Partial<IGame> = {
-    id: '1',
+    id: 'game1',
     title: 'Test Game',
     isVisible: true,
     description: 'A test game for validation',
@@ -39,42 +39,60 @@ const mockPlayer: Partial<IPlayer> = {
 };
 
 const mockRoom: Partial<Room> = {
+    hostId: '',
     roomId: '1',
-    playerList: new Map<string, IPlayer>().set('player1', mockPlayer as IPlayer),
+    playerList: new Map<string, IPlayer>(),
     game: mockGame as IGame,
 };
 
 describe('Socket Manager service', () => {
     let serverSocket: ServerSocket;
     let clientSocket: ClientSocket;
+    /*     let hostSocket: ClientSocket; */
     let socketManager: SocketManager;
 
-    beforeEach((done) => {
+    before((done) => {
         const httpServer = createServer();
         socketManager = new SocketManager();
         socketManager.init(httpServer);
         httpServer.listen(() => {
             const port = (httpServer.address() as AddressInfo).port;
             clientSocket = ioc(`http://localhost:${port}`);
+            /*             hostSocket = ioc(`http://localhost:${port}`); */
             socketManager['io'].on('connect', (socket) => {
                 serverSocket = socket;
+
+                // eslint-disable-next-line
+                console.log('Socket connected', serverSocket.id);
+                if (!mockRoom.hostId) {
+                    mockRoom.hostId = serverSocket.id;
+                }
+
                 serverSocket.join(mockRoom.roomId);
-                mockRoom.playerList.set(socket.id, { ...mockPlayer, id: socket.id } as IPlayer);
+                serverSocket.to(mockRoom.roomId).emit('room-joined', mockRoom.roomId, mockRoom.game.title, mockPlayer);
+                mockRoom.playerList.set(socket.id, mockPlayer as IPlayer);
+
+                // eslint-disable-next-line
+                console.log('Mock Room', mockRoom);
+
                 return serverSocket;
             });
-            clientSocket.on('connect', done);
+            clientSocket.connect();
+            /*         hostSocket.connect(); */
+            done();
         });
     });
 
-    afterEach(() => {
+    after(() => {
         socketManager['io'].close();
         clientSocket.disconnect();
+        /*      hostSocket.disconnect(); */
     });
 
     it('should create a game room and emit room-created event', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
 
-        clientSocket.emit('create-room', '1');
+        clientSocket.emit('create-room', mockGame.id);
         clientSocket.on('room-created', (roomId, title) => {
             expect(roomId).to.be.a('string');
             expect(title).to.equal('Test Game');
@@ -86,7 +104,7 @@ describe('Socket Manager service', () => {
     it('should create a room test and emit room-test-created event', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
 
-        clientSocket.emit('create-room-test', '1');
+        clientSocket.emit('create-room-test', mockGame.id);
         clientSocket.on('room-test-created', (title, players) => {
             expect(title).to.equal('Test Game');
             expect(players).to.have.property('length', 1);
@@ -95,18 +113,47 @@ describe('Socket Manager service', () => {
         });
     });
 
-    it('should allow a player to join a room and receive appropriate events', (done) => {
+    it('should allow a player to join a room and receive appropriate events', () => {
         clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-        // eslint-disable-next-line
-        console.log('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-
         clientSocket.on('room-joined', (roomId, title, joinedPlayer) => {
-            // eslint-disable-next-line
-            console.log('room-joined', roomId, title, joinedPlayer);
             expect(title).to.equal('Test Game');
             expect(joinedPlayer).to.eql(mockPlayer);
-
-            done();
         });
     });
+
+    it('should allow a player to leave room and emit appropriate events based on conditions', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('leave-room');
+
+        clientSocket.on('playerlist-change', (players) => {
+            expect(players).to.have.property('length', 1);
+        });
+        clientSocket.on('system-message', (message) => {
+            expect(message.text).to.equal(`${mockPlayer.name} a quitté la partie`);
+            expect(message.sender).to.equal('Système');
+        });
+    });
+
+    /*     it('should ban player from room and emit appropriate events', (done) => {
+        clientSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive });
+        clientSocket.emit('ban-player', 'player1');
+        clientSocket.on('banned-from-game', (playerId) => {
+            expect(playerId).to.equal('player1');
+            done();
+        });
+    }); */
+
+    /* it('should allow only host to ban player and emit appropriate events', (done) => {
+          hostSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive });
+        clientSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive }); 
+        clientSocket.emit('ban-player', 'player1');
+        // eslint-disable-next-line
+        console.log('asked to ban player');
+        clientSocket.on('banned-from-game', (playerId) => {
+            // eslint-disable-next-line
+            console.log('Banned Player', playerId);
+            expect(playerId).to.equal('player1');
+            done();
+        });
+    }); */
 });

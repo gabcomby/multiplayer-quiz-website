@@ -65,11 +65,13 @@ export class CountdownTimer {
                         }
                         if (this.isLaunchTimer) {
                             this.room.playerList.forEach((playerInRoom) => {
-                                playerInRoom.status = PlayerStatus.Inactive;
-                                this.io.to(this.room.hostId).emit('player-status-changed', {
-                                    playerId: playerInRoom.id,
-                                    status: playerInRoom.status,
-                                });
+                                if (playerInRoom) {
+                                    playerInRoom.status = PlayerStatus.Inactive;
+                                    this.io.to(this.room.hostId).emit('player-status-changed', {
+                                        playerId: playerInRoom.id,
+                                        status: playerInRoom.status,
+                                    });
+                                }
                             });
                         }
 
