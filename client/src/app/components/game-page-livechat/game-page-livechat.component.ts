@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewChecked, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import type { Message } from '@app/interfaces/message';
 import { ChatService } from '@app/services/chat/chat.service';
@@ -8,12 +7,6 @@ import { Subject, takeUntil } from 'rxjs';
     selector: 'app-game-page-livechat',
     templateUrl: './game-page-livechat.component.html',
     styleUrls: ['./game-page-livechat.component.scss'],
-    animations: [
-        trigger('fade', [
-            transition(':enter', [style({ opacity: 0 }), animate('500ms', style({ opacity: 1 }))]),
-            transition(':leave', [animate('500ms', style({ opacity: 0 }))]),
-        ]),
-    ],
 })
 export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewChecked {
     @Input() playerName: string;
