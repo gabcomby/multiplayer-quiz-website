@@ -5,8 +5,7 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 import { ChatService } from './chat.service';
-
-const DISAPPEAR_DELAY = 60000;
+import { DISAPPEAR_DELAY } from 'src/config/game-config';
 
 describe('ChatService', () => {
     let service: ChatService;

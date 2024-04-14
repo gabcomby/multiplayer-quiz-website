@@ -11,11 +11,7 @@ import { Player } from '@app/interfaces/match';
 import { GameService } from './game.service';
 // eslint-disable-next-line no-restricted-imports
 import { SocketService } from '../socket/socket.service';
-
-const LAUNCH_TIMER_DURATION = 5;
-const QRL_TIMER_DURATION = 60;
-const TIME_BETWEEN_QUESTIONS = 3000;
-const WAIT_UNTIL_FIRE_DISCONNECT = 2000;
+import { SOCKET_TIMER_DURATION, QRL_TIMER_DURATION, TIME_BETWEEN_QUESTIONS, WAIT_UNTIL_FIRE_DISCONNECTS } from 'src/config/game-config';
 
 describe('GameService', () => {
     let service: GameService;
@@ -204,7 +200,7 @@ describe('GameService', () => {
     it('should return LAUNCH_TIMER_DURATION if launchTimer is true', () => {
         service['launchTimer'] = true;
         const result = service.totalQuestionDurationValue;
-        expect(result).toBe(LAUNCH_TIMER_DURATION);
+        expect(result).toBe(SOCKET_TIMER_DURATION);
     });
     it('should return QRL-timer-duration if currentQuestion is a QRL', () => {
         service['launchTimer'] = false;
@@ -315,7 +311,7 @@ describe('GameService', () => {
     it('should leave the room', fakeAsync(() => {
         service.leaveRoom();
         expect(socketServiceSpy.leaveRoom).toHaveBeenCalled();
-        tick(WAIT_UNTIL_FIRE_DISCONNECT);
+        tick(WAIT_UNTIL_FIRE_DISCONNECTS);
         expect(socketServiceSpy.disconnect).toHaveBeenCalled();
     }));
 

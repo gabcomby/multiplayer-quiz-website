@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-
+import { MAX_QUESTIONS_CHOICES } from 'src/config/game-config';
 import { Choice } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 
-const MAX_CHOICES = 4;
 @Component({
     selector: 'app-choice',
     templateUrl: './choice.component.html',
@@ -37,7 +36,7 @@ export class ChoiceComponent implements OnInit {
 
     addChoice(choices: Choice[]) {
         if (choices) {
-            if (choices.length < MAX_CHOICES) {
+            if (choices.length < MAX_QUESTIONS_CHOICES) {
                 choices.push({ text: '', isCorrect: false });
             } else {
                 this.snackbarService.openSnackBar('Maximum 4 choix');

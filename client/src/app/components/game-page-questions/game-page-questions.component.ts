@@ -3,8 +3,7 @@ import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnInit
 import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GameService } from '@app/services/game/game.service';
-
-const NOT_FOUND_INDEX = -1;
+import { NOT_FOUND_INDEX } from 'src/config/game-config';
 
 @Component({
     selector: 'app-game-page-questions',

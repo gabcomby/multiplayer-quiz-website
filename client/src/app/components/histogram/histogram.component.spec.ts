@@ -6,10 +6,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QuestionType } from '@app/interfaces/game';
 import { GameService } from '@app/services/game/game.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { MAX_QUESTIONS_CHOICES, NAVIGATE_LEFT } from 'src/config/game-config';
 import { HistogramComponent } from './histogram.component';
 
-const LENGTH_CHOICES_TEST = 4;
-const NAVIGATE_LEFT = -1;
 describe('HistogramComponent', () => {
     let component: HistogramComponent;
     let fixture: ComponentFixture<HistogramComponent>;
@@ -170,7 +169,7 @@ describe('HistogramComponent', () => {
         const constructLiveHistogramDataSpy = spyOn<any>(component, 'constructLiveHistogramData').and.callThrough();
         constructLiveHistogramDataSpy.call(component);
         expect(component.histogramsData.length).toBe(1);
-        expect(component.histogramsData[0].data.length).toBe(LENGTH_CHOICES_TEST);
+        expect(component.histogramsData[0].data.length).toBe(MAX_QUESTIONS_CHOICES);
         expect(component.histogramsData[0].data[0].name).toBe('Paris (correct)');
         expect(component.histogramsData[0].data[0].value).toBe(3);
         expect(component.histogramsData[0].data[1].name).toBe('London');

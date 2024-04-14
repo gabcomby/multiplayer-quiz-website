@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
-
-const MAX_POINTS = 100;
-const MIN_POINTS = 10;
+import { MAX_POINTS, MIN_POINTS } from 'src/config/game-config';
 
 @Injectable({
     providedIn: 'root',

@@ -8,9 +8,8 @@ import { RoomService } from '@app/services/room/room.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Socket } from 'socket.io-client';
+import { NOT_FOUND_INDEX, GAME_CREATION_DELAY } from 'src/config/game-config';
 
-const INDEX_NOT_FOUND = -1;
-const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
     templateUrl: './new-game-page.component.html',
@@ -74,7 +73,7 @@ export class NewGamePageComponent implements OnInit {
         let result = true;
         const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((item) => item.id === game.id);
-        if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
+        if (this.deletedGamesId.indexOf(game.id) !== NOT_FOUND_INDEX || indexG === NOT_FOUND_INDEX) {
             this.snackbarDeletedGame(game);
             result = false;
         } else if (!newGameArray[indexG].isVisible) {
