@@ -254,6 +254,7 @@ export class GameService {
             this.socketService.nextQuestion();
         } else {
             setTimeout(() => {
+                this.gameTimerPaused = false;
                 this.socketService.nextQuestion();
             }, TIME_BETWEEN_QUESTIONS);
         }
