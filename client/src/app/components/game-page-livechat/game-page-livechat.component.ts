@@ -22,6 +22,7 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
 
     ngOnInit(): void {
         this.chatService.listenForMessages();
+        this.chatService.listenForSystemMessages();
         this.chatService.messages$.pipe(takeUntil(this.onDestroy$)).subscribe((messages: Message[]) => {
             this.messages = messages;
             this.scrollToBottom();
@@ -30,6 +31,7 @@ export class GamePageLivechatComponent implements OnInit, OnDestroy, AfterViewCh
 
     ngOnDestroy() {
         this.chatService.stopListeningForMessages();
+        this.chatService.stopListeningForSystemMessages();
         this.onDestroy$.next(true);
         this.onDestroy$.unsubscribe();
     }
