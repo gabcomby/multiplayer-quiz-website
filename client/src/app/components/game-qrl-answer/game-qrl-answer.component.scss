@@ -3,6 +3,7 @@
     margin-bottom: 10px;
     padding: 10px;
     background-color: cornflowerblue;
+    overflow: auto;
 }
 
 .answer-player {
@@ -10,6 +11,7 @@
 }
 
 .answer-text {
+    overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;
 }

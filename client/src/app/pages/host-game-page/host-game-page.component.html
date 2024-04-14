@@ -72,6 +72,7 @@
 
     <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
         <app-game-qrl-answer
+            style="max-width: 300px"
             *ngIf="answersQRL && answersQRL.length > currentQRLIndexValue && answersQRL[currentQRLIndexValue][1]"
             [answersQRL]="answersQRL[currentQRLIndexValue][1]"
             [timerStopped]="timerStopped"

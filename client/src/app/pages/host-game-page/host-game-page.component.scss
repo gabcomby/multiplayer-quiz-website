@@ -39,13 +39,14 @@ $base-font-size: 16;
 
 .QRL {
     grid-area: QRL;
+    max-width: 300px;
     display: flex;
-    justify-content: flex-start; /* Align content to the start */
-    align-items: flex-start; /* Align content to the start */
-    text-align: center; /* Align text to the left */
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: center;
     margin-top: px-to-em(20);
-    overflow: hidden; /* Hide overflow content */
-    flex-wrap: wrap; /* Allow content to wrap */
+    overflow-y: visible;
+    white-space: normal;
     word-wrap: break-word;
 }
 
