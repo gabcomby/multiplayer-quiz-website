@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MAX_QUESTIONS_CHOICES } from 'src/config/game-config';
 import { Choice } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { MAX_QUESTIONS_CHOICES } from 'src/config/client-config';
 
 @Component({
     selector: 'app-choice',

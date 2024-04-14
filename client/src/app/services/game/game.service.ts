@@ -8,7 +8,7 @@ import { AnswerStateService } from '@app/services/answer-state/answer-state.serv
 import { ChatService } from '@app/services/chat/chat.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import { TIME_BETWEEN_QUESTIONS, SOCKET_TIMER_DURATION, QRL_TIMER_DURATION, WAIT_UNTIL_FIRE_DISCONNECTS } from 'src/config/game-config';
+import { QRL_TIMER_DURATION, SOCKET_TIMER_DURATION, TIME_BETWEEN_QUESTIONS, WAIT_UNTIL_FIRE_DISCONNECTS } from 'src/config/client-config';
 
 const AUDIO_CLIP_PATH = 'assets/chipi-chipi-chapa-chapa.mp3';
 

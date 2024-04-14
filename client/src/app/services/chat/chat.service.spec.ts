@@ -4,8 +4,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
+import { DISAPPEAR_DELAY } from 'src/config/client-config';
 import { ChatService } from './chat.service';
-import { DISAPPEAR_DELAY } from 'src/config/game-config';
 
 describe('ChatService', () => {
     let service: ChatService;

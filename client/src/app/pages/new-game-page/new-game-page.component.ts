@@ -8,7 +8,7 @@ import { RoomService } from '@app/services/room/room.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Socket } from 'socket.io-client';
-import { NOT_FOUND_INDEX, GAME_CREATION_DELAY } from 'src/config/game-config';
+import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from 'src/config/client-config';
 
 @Component({
     selector: 'app-new-game-page',

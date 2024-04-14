@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QuestionType } from '@app/interfaces/game';
 import { GameService } from '@app/services/game/game.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { MAX_QUESTIONS_CHOICES, NAVIGATE_LEFT } from 'src/config/game-config';
+import { MAX_QUESTIONS_CHOICES, NAVIGATE_LEFT } from 'src/config/client-config';
 import { HistogramComponent } from './histogram.component';
 
 describe('HistogramComponent', () => {

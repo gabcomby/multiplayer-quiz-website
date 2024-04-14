@@ -3,7 +3,7 @@ import type { ChatMessageCommand, Message } from '@app/interfaces/message';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { DISAPPEAR_DELAY, NOT_FOUND_INDEX } from 'src/config/game-config';
+import { DISAPPEAR_DELAY, NOT_FOUND_INDEX } from 'src/config/client-config';
 
 @Injectable({
     providedIn: 'root',

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import { MAX_GAME_NAME_LENGTH } from 'src/config/game-config';
+import { MAX_GAME_NAME_LENGTH } from 'src/config/client-config';
 
 import { ApiService } from '@app/services/api/api.service';
 import { GameValidationService } from '@app/services/game-validation/game-validation.service';

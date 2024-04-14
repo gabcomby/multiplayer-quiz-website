@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DURATION_SNACKBAR } from 'src/config/game-config';
+import { DURATION_SNACKBAR } from 'src/config/client-config';
 
 @Injectable({
     providedIn: 'root',

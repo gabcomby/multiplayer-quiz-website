@@ -6,8 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
+import { MAX_QUESTIONS_CHOICES } from 'src/config/client-config';
 import { ChoiceComponent } from './choice.component';
-import { MAX_QUESTIONS_CHOICES } from 'src/config/game-config';
 
 describe('ChoiceComponent', () => {
     let questionServiceSpy: jasmine.SpyObj<QuestionService>;

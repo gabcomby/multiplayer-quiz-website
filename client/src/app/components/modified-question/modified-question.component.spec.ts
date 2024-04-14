@@ -7,7 +7,7 @@ import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
-import { MAX_LENGTH } from 'src/config/game-config';
+import { MAX_LENGTH } from 'src/config/client-config';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
 

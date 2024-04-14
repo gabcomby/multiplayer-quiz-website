@@ -6,7 +6,7 @@ import { QuestionValidationService } from '@app/services/question-validation/que
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { MAX_DURATION, MIN_DURATION } from 'src/config/game-config';
+import { MAX_DURATION, MIN_DURATION } from 'src/config/client-config';
 
 @Injectable({
     providedIn: 'root',

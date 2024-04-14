@@ -4,14 +4,10 @@ import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import * as chai from 'chai';
 import { assert } from 'chai';
+import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, QRL_DURATION } from 'config/server-config';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { TimerState } from './countdown-timer';
-
-const ID_LOBBY_LENGTH = 4;
-const ID_GAME_PLAYED_LENGTH = 10;
-const LAUNCH_TIMER_DURATION = 5;
-const QRL_DURATION = 60;
 
 const mockGame = new gameModel({
     id: '1a2b3c',

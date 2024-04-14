@@ -6,11 +6,6 @@ import { assert } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 
-// const ID_LOBBY_LENGTH = 4;
-// const ID_GAME_PLAYED_LENGTH = 10;
-// const LAUNCH_TIMER_DURATION = 5;
-// const QRL_DURATION = 60;
-
 const mockGame = new gameModel({
     id: '1a2b3c',
     title: 'Questionnaire sur le JS',

@@ -7,7 +7,7 @@ import { GameService } from '@app/services/game/game.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
-import { HISTOGRAMM_UPDATE, MINIMUM_TIME_FOR_PANIC_MODE_QCM, MINIMUM_TIME_FOR_PANIC_MODE_QRL } from 'src/config/game-config';
+import { HISTOGRAMM_UPDATE, MINIMUM_TIME_FOR_PANIC_MODE_QCM, MINIMUM_TIME_FOR_PANIC_MODE_QRL } from 'src/config/client-config';
 
 @Component({
     selector: 'app-host-game-page',

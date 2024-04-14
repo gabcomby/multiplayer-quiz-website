@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question/question.service';
-import { MAX_LENGTH } from 'src/config/game-config';
+import { MAX_LENGTH } from 'src/config/client-config';
 
 @Component({
     selector: 'app-modified-question',
