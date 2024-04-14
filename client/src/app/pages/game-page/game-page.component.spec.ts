@@ -124,6 +124,7 @@ describe('GamePageComponent', () => {
         const result = component.playerName;
         expect(result).toBe(gameServiceSpy.playerNameValue);
     });
+
     it('should return lobbyCodeValue fro service with lobbyCode', () => {
         const result = component.lobbyCode;
         expect(result).toBe(gameServiceSpy.lobbyCodeValue);
@@ -188,6 +189,12 @@ describe('GamePageComponent', () => {
         component.setAnswerIndex(newAnswerIdx);
         expect(gameServiceSpy['answerIndexSetter']).toEqual(newAnswerIdx);
     });
+    it('should call setAnswerText from gameService with setAnswerText', () => {
+        const newAnswerText = 'hello';
+        gameServiceSpy['answerText'] = '';
+        component.setAnswerText(newAnswerText);
+        expect(gameServiceSpy['answerTextSetter']).toEqual(newAnswerText);
+    });
 
     it('should not navigate on ngOnInit if refreshedPage is not present', () => {
         component.ngOnInit();
@@ -211,4 +218,5 @@ describe('GamePageComponent', () => {
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
         expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
     });
+    
 });
