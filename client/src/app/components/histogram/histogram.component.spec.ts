@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -339,5 +340,19 @@ describe('HistogramComponent', () => {
 
         const calculateAnswerCountsSpy = spyOn<any>(component, 'calculateAnswerCounts').and.callThrough();
         expect(calculateAnswerCountsSpy.call(component, question).size).toEqual(1);
+    });
+
+    it('should set to 100% if test', () => {
+        component.isTest = true;
+        const calculateAnswerCountsQRLSpy = spyOn<any>(component, 'calculateAnswerCountsQRL').and.callThrough();
+        const answerCountsMap = calculateAnswerCountsQRLSpy.call(component, component.questionsGame[0]);
+
+        expect(answerCountsMap).toEqual(
+            new Map([
+                ['0', 0],
+                ['0.5', 0],
+                ['1', 1],
+            ]),
+        );
     });
 });
