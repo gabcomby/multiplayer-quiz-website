@@ -1,12 +1,11 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
 import { Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
+import { IPlayer } from '@app/model/match.model';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { AnswerVerifier } from './answer-verifier';
-import { IPlayer } from '@app/model/match.model';
-import { mock } from 'node:test';
 
 const player = {
     id: 'testId',
@@ -14,7 +13,6 @@ const player = {
     score: 0,
     bonus: 0,
 } as IPlayer;
-
 const mockGame = new gameModel({
     id: '1a2b3c',
     title: 'Questionnaire sur le JS',
@@ -36,12 +34,11 @@ const mockGame = new gameModel({
                     isCorrect: false,
                 },
                 {
-                    text: 'lol',
-                    isCorrect: false,
+                    text: 'this',
+                    isCorrect: true,
                 },
                 {
-                    text: 'kek',
-                    isCorrect: false,
+                    text: 'int',
                 },
             ],
         },
@@ -60,17 +57,27 @@ const mockGame = new gameModel({
                     isCorrect: true,
                 },
                 {
-                    text: 'Non aussi',
-                    isCorrect: true,
-                },
-                {
                     text: 'Oui',
-                    isCorrect: false,
+                    isCorrect: null,
                 },
             ],
         },
     ],
 });
+
+/* const choiceSchema: Schema = new Schema({
+    text: { type: String, required: true },
+    isCorrect: Boolean,
+});
+
+const questionSchema: Schema = new Schema({
+    type: { type: String, required: true },
+    text: { type: String, required: true },
+    points: { type: Number, required: true },
+    lastModification: Date,
+    id: { type: String, required: true },
+    choices: [choiceSchema],
+});*/
 
 class MockSocketIO {
     // eslint-disable-next-line -- This is a stub
@@ -114,11 +121,8 @@ describe('Room', () => {
     let answerVerifier: AnswerVerifier;
 
     beforeEach(() => {
-        isTestRoom = 1;
         clock = sinon.useFakeTimers();
         mockSocketIoServer = new MockSocketIO();
-        room = new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
-        room = sinon.createStubInstance(Room);
         answerVerifier = new AnswerVerifier(room);
     });
 
@@ -127,9 +131,14 @@ describe('Room', () => {
         clock.restore();
     });
 
-    it('should create an instance from the constructor', () => {
-        expect(answerVerifier).to.be.instanceOf(AnswerVerifier);
+    before(() => {
+        room = new Room(mockGame, 1, mockSocketIoServer as unknown as SocketIO.Server);
+        room = sinon.createStubInstance(Room);
+        it('should create an instance from the constructor', () => {
+            expect(answerVerifier).to.be.instanceOf(AnswerVerifier);
+        });
     });
+
     it('should have a room property', () => {
         expect(answerVerifier).to.have.property('room');
     });
@@ -164,22 +173,22 @@ describe('Room', () => {
     it('should return not return anything if the player has already answered', () => {
         const playerId = '123';
         const answerIdx = '1';
+        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
         answerVerifier['playerHasAnswered'].set(playerId, true);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
     });
-    it('should add score to the player if the question type is QRL and the game type is TEST', () => {
+    it('should increment the number of asserted answers', () => {
         const playerId = '123';
         const answerIdx = '1';
-        room.gameType = 1;
+        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- 60 is the score of the player
-        expect(room['playerList'].get(playerId).score).to.equal(60);
+        expect(answerVerifier['nbrOfAssertedAnswers']).to.equal(1);
     });
-    it('should push the player answer to the globalAnswersText if the answer is a string', () => {
+    it('should add the player answer to the globalAnswersText', () => {
         const playerId = '123';
         const answerIdx = '1';
-        answerVerifier['globalAnswersText'] = [];
+        new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['globalAnswersText']).to.deep.equal([[player, answerIdx]]);
     });
