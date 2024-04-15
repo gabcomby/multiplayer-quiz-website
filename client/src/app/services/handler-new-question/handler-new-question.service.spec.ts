@@ -207,4 +207,8 @@ describe('HandlerNewQuestionService', () => {
         expect(result).toBeTrue();
         expect(snackbarService.openSnackBar).not.toHaveBeenCalled();
     });
+    it('should create a new question with choices undefined', () => {
+        const question = handlerService.createNewQuestion(mockQuestion, undefined);
+        expect(question.choices).toEqual(undefined);
+    });
 });
