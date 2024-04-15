@@ -2,11 +2,13 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
 import { GamePlayed } from '@app/interfaces/game';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { GamePlayedService } from './game-played.service';
 
 describe('GamePlayedService', () => {
     let service: GamePlayedService;
     let httpTestingController: HttpTestingController;
+    const snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
     const mockApiBaseUrl = 'http://localhost:3000';
     const mockGamesPlayed: GamePlayed[] = [
@@ -22,7 +24,11 @@ describe('GamePlayedService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [GamePlayedService, { provide: API_BASE_URL, useValue: mockApiBaseUrl }],
+            providers: [
+                GamePlayedService,
+                { provide: API_BASE_URL, useValue: mockApiBaseUrl },
+                { provide: SnackbarService, useValue: snackbarServiceMock },
+            ],
         });
         service = TestBed.inject(GamePlayedService);
         httpTestingController = TestBed.inject(HttpTestingController);
@@ -47,7 +53,7 @@ describe('GamePlayedService', () => {
     });
 
     it('deleteGamesPlayed() should delete all games played', async () => {
-        service.deleteGamesPLayed().then(() => {
+        service.deleteGamesPlayed().then(() => {
             return;
         });
 

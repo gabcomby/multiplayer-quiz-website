@@ -1,17 +1,49 @@
-.answerPlayer {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: cornflowerblue;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.answers-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 40px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.answer-player,
-.answer-text {
+.answerPlayer {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: cornflowerblue;
+    width: 100%;
+    max-height: 300px;
+    overflow: auto;
+    margin-bottom: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+.answer-player {
     margin-bottom: 5px;
 }
 
 .answer-text {
+    margin-bottom: 5px;
     overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;
