@@ -3,7 +3,7 @@
     <div *ngFor="let question of questionList; index as i">
         <div class="container">
             <div *ngIf="disabled[i]">
-                <p>{{ question.type }}</p>
+                <p id="questionText">{{ question.type }}</p>
                 {{ i + 1 }}
                 <p>Question : {{ question.text }}</p>
                 <p>Nombre de point : {{ question.points }}</p>

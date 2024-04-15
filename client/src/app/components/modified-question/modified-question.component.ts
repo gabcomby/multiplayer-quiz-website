@@ -67,7 +67,7 @@ export class ModifiedQuestionComponent implements OnInit {
         const validated = this.questionService.saveQuestion(index, this.questionList, this.listQuestionBank);
 
         this.disabled[index] = validated;
-        if (this.fromBank) {
+        if (this.fromBank && validated) {
             this.router.navigate(['/question-bank']);
         }
     }

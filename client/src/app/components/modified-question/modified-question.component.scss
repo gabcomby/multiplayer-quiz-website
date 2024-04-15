@@ -3,6 +3,11 @@
     height: 100%;
     padding: 15px;
     margin-bottom: 10px;
+    width: 250px;      
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 #list {
     padding: 15px;
@@ -22,3 +27,4 @@ input[type='text'],
 textarea {
     background-color: rgba(255, 255, 255, 0.75);
 }
+
