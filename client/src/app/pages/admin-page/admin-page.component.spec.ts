@@ -76,7 +76,7 @@ describe('AdminPageComponent', () => {
     let fixture: ComponentFixture<AdminPageComponent>;
     let router: Router;
     const matDialogMock = jasmine.createSpyObj('MatDialog', ['open', 'afterClosed']);
-    const gamePlayedServiceMock = jasmine.createSpyObj('GamePlayedService', ['getGamesPlayed', 'formatDate', 'deleteGamesPLayed']);
+    const gamePlayedServiceMock = jasmine.createSpyObj('GamePlayedService', ['getGamesPlayed', 'formatDate', 'deleteGamesPlayed']);
     const snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
 
     const adminServiceMock = jasmine.createSpyObj('AdminService', [
@@ -231,11 +231,6 @@ describe('AdminPageComponent', () => {
         expect(component.dataSource).toEqual(copyData);
     });
 
-    // it('should call deleteGamesPlayed on GamePlayedService when deleteGameHistoric is called', () => {
-    //     component.deleteGameHistoric();
-    //     expect(gamePlayedServiceMock.deleteGamesPlayed).toHaveBeenCalled();
-    // });
-
     it('should call formatDate on GamePlayedService and return its result', () => {
         const testDate = '2024-03-29';
         const expectedFormattedDate = '29 March 2024';
@@ -245,5 +240,37 @@ describe('AdminPageComponent', () => {
 
         expect(gamePlayedServiceMock.formatDate).toHaveBeenCalledWith(testDate);
         expect(result).toEqual(expectedFormattedDate);
+    });
+
+    it('should delete game history with deleteGameHistoric', async () => {
+        component.historicDataSource.data = [{ id: '1', title: 'Game 1', creationDate: new Date(), numberPlayers: 4, bestScore: 100 }];
+
+        matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
+
+        gamePlayedServiceMock.deleteGamesPlayed.and.returnValue(Promise.resolve());
+
+        await component.deleteGameHistoric();
+
+        expect(gamePlayedServiceMock.deleteGamesPlayed).toHaveBeenCalled();
+
+        expect(component.historicDataSource.data.length).toBe(0);
+    });
+
+    it('should not delete game history when confirmation is false', async () => {
+        component.historicDataSource.data = [{ id: '1', title: 'Game 1', creationDate: new Date(), numberPlayers: 4, bestScore: 100 }];
+
+        matDialogMock.open.and.returnValue({ afterClosed: () => of(false) });
+
+        await component.deleteGameHistoric();
+
+        expect(gamePlayedServiceMock.deleteGamesPlayed).not.toHaveBeenCalled();
+    });
+
+    it('should show snackbar message when historic data is empty', async () => {
+        component.historicDataSource.data = [];
+
+        await component.deleteGameHistoric();
+
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith("L'historique est déjà vide.");
     });
 });
