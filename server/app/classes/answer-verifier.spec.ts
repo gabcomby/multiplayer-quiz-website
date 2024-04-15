@@ -13,6 +13,12 @@ const player = {
     score: 0,
     bonus: 0,
 } as IPlayer;
+const playerSecondAnswer = {
+    id: 'testId2',
+    name: 'Test Player2',
+    score: 0,
+    bonus: 0,
+} as IPlayer;
 const mockGame = new gameModel({
     id: '1a2b3c',
     title: 'Questionnaire sur le JS',
@@ -225,6 +231,46 @@ describe('Room', () => {
         const answerVerifierGood = new AnswerVerifier(roomMock);
         answerVerifierGood.handleAllPlayersAnswered(mockGame.questions[1]);
         expect(mockSocketIoServer.emit.called).to.equal(true);
+    });
+    it('should handle score if the player is not the first to answer', () => {
+        const answerIdxPlayerFirst = [0];
+        const answerIdxPlayerSecond = [0];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 2;
+        roomMock.playerList.set(player.id, player);
+        roomMock.playerList.set(playerSecondAnswer.id, playerSecondAnswer);
+        playerSecondAnswer.score = 0;
+        player.score = 0;
+        player.bonus = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(player.id, answerIdxPlayerFirst, player);
+        answerVerifierGood.verifyAnswers(playerSecondAnswer.id, answerIdxPlayerSecond, playerSecondAnswer);
+        expect(player.bonus).to.equal(1);
+        expect(player.score).to.equal(24);
+        expect(playerSecondAnswer.score).to.equal(20);
+        expect(playerSecondAnswer.bonus).to.equal(0);
+    });
+    it('should handle response with handleQCMAnswers if answerIdx.lenght == of totalCorrectChoices', () => {
+        const playerId = '123';
+        const answerIdx = [0, 2];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
+    });
+    it('should handle response with handleQCMAnswers if answerIdx.lenght == of totalCorrectChoices', () => {
+        const playerId = '123';
+        const answerIdx = [0, 1];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
     });
 
 });
