@@ -102,7 +102,6 @@ export class SocketManager {
                         this.io.to(room.roomId).emit('lobby-deleted');
                         rooms.delete(room.roomId);
                     } else {
-                        // Move this to the room class
                         const player = room.playerList.get(socket.id);
                         room.playerList.delete(socket.id);
                         if (room.playerList.size === 0 && room.gameHasStarted) {

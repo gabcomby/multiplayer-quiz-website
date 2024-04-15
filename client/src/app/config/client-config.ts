@@ -28,8 +28,6 @@ export const MINIMUM_TIME_FOR_PANIC_MODE_QRL = 20;
 export const GAME_CREATION_DELAY = 750;
 export const MAX_GAME_NAME_LENGTH = 35;
 
-export const DISAPPEAR_DELAY = 60000;
-
 export const DURATION_SNACKBAR = 7000;
 
 export const ID_LENGTH = 6;

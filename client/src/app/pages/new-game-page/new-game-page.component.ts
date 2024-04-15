@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import { Game } from '@app/interfaces/game';
@@ -29,6 +29,7 @@ export class NewGamePageComponent implements OnInit {
         private apiService: ApiService,
         private gameService: GameService,
         private roomService: RoomService,
+        private ngZone: NgZone,
     ) {}
 
     async ngOnInit() {
@@ -99,7 +100,9 @@ export class NewGamePageComponent implements OnInit {
             this.socketService.createRoomTest(game.id, player);
             this.gameService.setupWebsocketEvents();
             setTimeout(() => {
-                this.router.navigate(['/game']);
+                this.ngZone.run(() => {
+                    this.router.navigate(['/gameWait']);
+                });
             }, GAME_CREATION_DELAY);
         }
     }
@@ -117,7 +120,9 @@ export class NewGamePageComponent implements OnInit {
             this.gameService.resetGameVariables();
             this.gameService.setupWebsocketEvents();
             setTimeout(() => {
-                this.router.navigate(['/gameWait']);
+                this.ngZone.run(() => {
+                    this.router.navigate(['/gameWait']);
+                });
             }, GAME_CREATION_DELAY);
         }
     }
