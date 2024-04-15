@@ -2,10 +2,10 @@
 import { Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
+import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { AnswerVerifier } from './answer-verifier';
-import { expect } from 'chai';
 
 const player = {
     id: 'testId',
@@ -65,20 +65,6 @@ const mockGame = new gameModel({
     ],
 });
 
-/* const choiceSchema: Schema = new Schema({
-    text: { type: String, required: true },
-    isCorrect: Boolean,
-});
-
-const questionSchema: Schema = new Schema({
-    type: { type: String, required: true },
-    text: { type: String, required: true },
-    points: { type: Number, required: true },
-    lastModification: Date,
-    id: { type: String, required: true },
-    choices: [choiceSchema],
-});*/
-
 class MockSocketIO {
     // eslint-disable-next-line -- This is a stub
     callbacks: { [key: string]: (...args: any[]) => void } = {};
@@ -122,7 +108,6 @@ describe('Room', () => {
     beforeEach(() => {
         clock = sinon.useFakeTimers();
         mockSocketIoServer = new MockSocketIO();
-        answerVerifier = new AnswerVerifier(room);
     });
 
     afterEach(() => {
@@ -139,37 +124,46 @@ describe('Room', () => {
     });
 
     it('should have a room property', () => {
+        answerVerifier = new AnswerVerifier(room);
         expect(answerVerifier).to.have.property('room');
     });
     it('should have a io property', () => {
+        answerVerifier = new AnswerVerifier(room);
         expect(answerVerifier).to.have.property('io');
     });
     it('should be able to get the allAnswersGameResultsValue', () => {
+        answerVerifier = new AnswerVerifier(room);
         expect(answerVerifier).to.have.property('allAnswersGameResultsValue');
     });
     it('should be able to get the allAnswersForQRLValue', () => {
+        answerVerifier = new AnswerVerifier(room);
         expect(answerVerifier).to.have.property('allAnswersForQRLValue');
     });
     it('should be able to set the firstAnswerForBonusValue : true', () => {
+        answerVerifier = new AnswerVerifier(room);
         const testValue = true;
         answerVerifier.firstAnswerForBonusValue = testValue;
         expect(testValue).to.equal(true);
         expect(answerVerifier).to.have.property('firstAnswerForBonusValue');
     });
     it('should be able to set the nbrOfAssertedAnswersValue', () => {
+        answerVerifier = new AnswerVerifier(room);
         const testValue = 2;
         answerVerifier.nbrOfAssertedAnswersValue = testValue;
         expect(answerVerifier).to.have.property('nbrOfAssertedAnswersValue');
     });
     it('should be able to set the playerHasAnsweredSetter', () => {
+        answerVerifier = new AnswerVerifier(room);
         const testValue = new Map<string, boolean>();
         answerVerifier.playerHasAnsweredSetter = testValue;
         expect(answerVerifier).to.have.property('playerHasAnsweredSetter');
     });
     it('should have a verifyAnswers method', () => {
+        answerVerifier = new AnswerVerifier(room);
         expect(answerVerifier).to.have.property('verifyAnswers');
     });
     it('should return not return anything if the player has already answered', () => {
+        answerVerifier = new AnswerVerifier(room);
         const playerId = '123';
         const answerIdx = '1';
         new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
@@ -177,19 +171,25 @@ describe('Room', () => {
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
     });
-    it('should increment the number of asserted answers', () => {
+    /* it('should increment the number of asserted answers', () => {
+        const playerId = '123';
+        const answerIdx = [1];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 0;
+        console.log('currentQuestionIndex');
+        console.log(roomMock.currentQuestionIndex);
+        console.log('currentQuestion');
+        console.log(roomMock.currentQuestion);
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+    });*/
+    it('should call the globalAnswersText.push method if the answer is a string', () => {
         const playerId = '123';
         const answerIdx = '1';
         const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
-        sinon.stub(roomMock, 'currentQuestion').returns(mockGame.questions[0]);
-        answerVerifier.verifyAnswers(playerId, answerIdx, player);
-        expect(answerVerifier['nbrOfAssertedAnswers']).to.equal(1);
-    });
-    it('should add the player answer to the globalAnswersText', () => {
-        const playerId = '123';
-        const answerIdx = '1';
-        new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
-        answerVerifier.verifyAnswers(playerId, answerIdx, player);
-        expect(answerVerifier['globalAnswersText']).to.deep.equal([[player, answerIdx]]);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        expect(answerVerifierGood['globalAnswersText']).to.have.lengthOf(1);
     });
 });

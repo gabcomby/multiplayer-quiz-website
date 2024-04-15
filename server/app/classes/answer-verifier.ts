@@ -46,7 +46,6 @@ export class AnswerVerifier {
     set playerHasAnsweredSetter(value: Map<string, boolean>) {
         this.playerHasAnswered = value;
     }
-    // eslint-disable-next-line complexity
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (this.playerHasAnswered.get(playerId)) {
             return;
