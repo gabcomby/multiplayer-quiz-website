@@ -1,9 +1,38 @@
+.answers-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 40px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .answerPlayer {
     margin-top: 10px;
-    margin-bottom: 10px;
     padding: 10px;
     background-color: cornflowerblue;
+    width: 100%;
+    max-height: 300px;
     overflow: auto;
+    margin-bottom: 10px;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 }
 
 .answer-player {

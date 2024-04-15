@@ -8,6 +8,7 @@ import { InputDialogComponent } from '@app/components/input-dialog/input-dialog.
 import type { Game, GamePlayed } from '@app/interfaces/game';
 import { AdminService } from '@app/services/admin/admin.service';
 import { GamePlayedService } from '@app/services/game-played/game-played.service';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -28,6 +29,7 @@ export class AdminPageComponent implements OnInit, AfterViewInit {
         private dialog: MatDialog,
         private adminService: AdminService,
         private gamePlayedService: GamePlayedService,
+        private snackbarService: SnackbarService,
     ) {}
 
     async ngOnInit() {
@@ -108,7 +110,23 @@ export class AdminPageComponent implements OnInit, AfterViewInit {
     }
 
     deleteGameHistoric(): void {
-        this.gamePlayedService.deleteGamesPLayed();
+        if (this.historicDataSource.data.length === 0) {
+            this.snackbarService.openSnackBar("L'historique est déjà vide.");
+            return;
+        }
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '300px',
+            data: {
+                title: "Confirmer la suppression de l'historique",
+                message: "Êtes-vous sûr de vouloir supprimer l'historique?",
+            },
+        });
+        dialogRef.afterClosed().subscribe((confirmDelete) => {
+            if (!confirmDelete) return;
+            this.gamePlayedService.deleteGamesPlayed().then(() => {
+                this.historicDataSource.data = [];
+            });
+        });
     }
 
     formatDateHistoric(date: string): string {
