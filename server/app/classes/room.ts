@@ -14,6 +14,12 @@ export const enum GameType {
     RANDOM,
 }
 
+export const enum RoomState {
+    WAITING,
+    PLAYING,
+    FINISHED,
+}
+
 export class Room {
     gamePlayedService: GamePlayedService;
     countdownTimer: CountdownTimer;
@@ -27,7 +33,7 @@ export class Room {
     roomLocked = false;
     hostId = '';
     gameType: GameType;
-    gameHasStarted = false;
+    roomState = RoomState.WAITING;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
     inputModifications: { player: string; time: number }[] = [];
@@ -89,6 +95,7 @@ export class Room {
 
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.gameResult();
+                    this.roomState = RoomState.FINISHED;
                 } else {
                     this.moveNextQuestion();
                 }

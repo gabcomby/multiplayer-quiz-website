@@ -1,4 +1,4 @@
-import { Room } from '@app/classes/room';
+import { Room, RoomState } from '@app/classes/room';
 import { IGame } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { rooms } from '@app/module';
@@ -97,14 +97,16 @@ export class SocketManager {
 
             socket.on('leave-room', () => {
                 const room = getRoom();
-                if (roomExists(room.roomId)) {
+                if (room !== undefined && roomExists(room.roomId)) {
                     if (room.hostId === socket.id) {
-                        this.io.to(room.roomId).emit('lobby-deleted');
+                        if (room.roomState !== RoomState.FINISHED) {
+                            this.io.to(room.roomId).emit('lobby-deleted');
+                        }
                         rooms.delete(room.roomId);
                     } else {
                         const player = room.playerList.get(socket.id);
                         room.playerList.delete(socket.id);
-                        if (room.playerList.size === 0 && room.gameHasStarted) {
+                        if (room.playerList.size === 0 && room.roomState !== RoomState.WAITING) {
                             this.io.to(room.roomId).emit('lobby-deleted');
                             rooms.delete(room.roomId);
                         } else {
@@ -163,7 +165,7 @@ export class SocketManager {
 
                     room.gameStartDateTime = new Date();
                     room.nbrPlayersAtStart = room.playerList.size;
-                    room.gameHasStarted = true;
+                    room.roomState = RoomState.PLAYING;
                     this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
                     room.startQuestion();
                 }
