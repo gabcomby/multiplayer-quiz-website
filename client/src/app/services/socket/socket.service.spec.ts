@@ -316,6 +316,7 @@ describe('SocketService', () => {
         expect(mockSocket.emit).toHaveBeenCalledWith('update-histogram');
     });
     it('should handle number modification and should call callback', (done) => {
+        // eslint-disable-next-line no-unused-vars -- need it for the test
         service.onUpdateNbModified((nbModification: number) => {
             done();
         });
@@ -323,6 +324,7 @@ describe('SocketService', () => {
         mockSocket.simulateEvent('number-modifications', 1);
     });
     it('should handle locked answers QRL', (done) => {
+        // eslint-disable-next-line no-unused-vars -- need it for the test
         service.onLockedAnswersQRL((answers: [string, [Player, string][]][]) => {
             done();
         });

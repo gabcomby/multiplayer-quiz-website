@@ -329,6 +329,7 @@ describe('Room', () => {
         const answerVerifierGood = new AnswerVerifier(roomMock);
         answerVerifierGood['counterHalfCorrectAnswerQRL'] = 0;
         player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
         const points: [IPlayer, number][] = [[player, 30]];
         const playerArray: [string, IPlayer][] = [[player.id, player]];
         answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
