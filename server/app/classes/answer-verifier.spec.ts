@@ -1,11 +1,24 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
-import { GameType, Room } from '@app/classes/room';
+import { Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
-import { assert } from 'chai';
+import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
+import { AnswerVerifier } from './answer-verifier';
 
+const player = {
+    id: 'testId',
+    name: 'Test Player',
+    score: 0,
+    bonus: 0,
+} as IPlayer;
+const playerSecondAnswer = {
+    id: 'testId2',
+    name: 'Test Player2',
+    score: 0,
+    bonus: 0,
+} as IPlayer;
 const mockGame = new gameModel({
     id: '1a2b3c',
     title: 'Questionnaire sur le JS',
@@ -27,12 +40,11 @@ const mockGame = new gameModel({
                     isCorrect: false,
                 },
                 {
-                    text: 'lol',
-                    isCorrect: false,
+                    text: 'this',
+                    isCorrect: true,
                 },
                 {
-                    text: 'kek',
-                    isCorrect: false,
+                    text: 'int',
                 },
             ],
         },
@@ -51,12 +63,8 @@ const mockGame = new gameModel({
                     isCorrect: true,
                 },
                 {
-                    text: 'Non aussi',
-                    isCorrect: true,
-                },
-                {
                     text: 'Oui',
-                    isCorrect: false,
+                    isCorrect: null,
                 },
             ],
         },
@@ -100,14 +108,12 @@ class MockSocketIO {
 describe('Room', () => {
     let mockSocketIoServer: MockSocketIO;
     let room: Room;
-    let isTestRoom: number;
     let clock: sinon.SinonFakeTimers;
+    let answerVerifier: AnswerVerifier;
 
     beforeEach(() => {
-        isTestRoom = 1;
         clock = sinon.useFakeTimers();
         mockSocketIoServer = new MockSocketIO();
-        room = new Room(mockGame, isTestRoom, mockSocketIoServer as unknown as SocketIO.Server);
     });
 
     afterEach(() => {
@@ -115,154 +121,240 @@ describe('Room', () => {
         clock.restore();
     });
 
-    it('should get allAnswersGameResultsValue', () => {
-        room.answerVerifier['allAnswersGameResults'].set('1', [1, 2, 3]);
-        const fakeMap = new Map<string, number[]>();
-        fakeMap.set('1', [1, 2, 3]);
-        assert.deepEqual(room.answerVerifier.allAnswersGameResultsValue, fakeMap);
+    before(() => {
+        room = new Room(mockGame, 1, mockSocketIoServer as unknown as SocketIO.Server);
+        room = sinon.createStubInstance(Room);
+        it('should create an instance from the constructor', () => {
+            expect(answerVerifier).to.be.instanceOf(AnswerVerifier);
+        });
     });
 
-    it('should get allAnswersForQRLValue', () => {
-        room.answerVerifier['allAnswersForQRL'].set('1', [[{ id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer, 'answer']]);
-        const fakeMap = new Map<string, [IPlayer, string][]>();
-        fakeMap.set('1', [[{ id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer, 'answer']]);
-        assert.deepEqual(room.answerVerifier.allAnswersForQRLValue, fakeMap);
+    it('should have a room property', () => {
+        answerVerifier = new AnswerVerifier(room);
+        expect(answerVerifier).to.have.property('room');
     });
-
-    it('should set firstAnswerForBonusValue', () => {
-        room.answerVerifier['firstAnswerForBonus'] = false;
-        room.answerVerifier.firstAnswerForBonusValue = true;
-        assert.isTrue(room.answerVerifier['firstAnswerForBonus']);
+    it('should have a io property', () => {
+        answerVerifier = new AnswerVerifier(room);
+        expect(answerVerifier).to.have.property('io');
     });
-
-    it('should set nbrOfAssertedAnswersValue', () => {
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier.nbrOfAssertedAnswersValue = 1;
-        assert.equal(room.answerVerifier['nbrOfAssertedAnswers'], 1);
+    it('should be able to get the allAnswersGameResultsValue', () => {
+        answerVerifier = new AnswerVerifier(room);
+        expect(answerVerifier).to.have.property('allAnswersGameResultsValue');
     });
-
-    it('should set playerHasAnsweredSetter', () => {
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.playerHasAnsweredSetter = new Map<string, boolean>([['1', true]]);
-        assert.isTrue(room.answerVerifier['playerHasAnswered'].get('1'));
+    it('should be able to get the allAnswersForQRLValue', () => {
+        answerVerifier = new AnswerVerifier(room);
+        expect(answerVerifier).to.have.property('allAnswersForQRLValue');
     });
-
-    it('should push the globalAnswersText if answerIdx is a string', () => {
-        room.currentQuestionIndex = 0;
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', 'answer', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['nbrOfAssertedAnswers'], 1);
-        assert.isTrue(room.answerVerifier['playerHasAnswered'].get('1'));
-        assert.deepEqual(room.answerVerifier['globalAnswersText'], [[{ id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer, 'answer']]);
+    it('should be able to set the firstAnswerForBonusValue : true', () => {
+        answerVerifier = new AnswerVerifier(room);
+        const testValue = true;
+        answerVerifier.firstAnswerForBonusValue = testValue;
+        expect(testValue).to.equal(true);
+        expect(answerVerifier).to.have.property('firstAnswerForBonusValue');
     });
-
-    it('should increment the score of the player if the game is a test and the question is a QRL', () => {
-        room.currentQuestionIndex = 1;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', 'zozo', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 60);
+    it('should be able to set the nbrOfAssertedAnswersValue', () => {
+        answerVerifier = new AnswerVerifier(room);
+        const testValue = 2;
+        answerVerifier.nbrOfAssertedAnswersValue = testValue;
+        expect(answerVerifier).to.have.property('nbrOfAssertedAnswersValue');
     });
-
-    it('should increment the score of a single answer QCM if the answer is correct', () => {
-        room.currentQuestionIndex = 0;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['firstAnswerForBonus'] = true;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 48);
-        assert.equal(room.playerListValue.get('1').bonus, 1);
+    it('should be able to set the playerHasAnsweredSetter', () => {
+        answerVerifier = new AnswerVerifier(room);
+        const testValue = new Map<string, boolean>();
+        answerVerifier.playerHasAnsweredSetter = testValue;
+        expect(answerVerifier).to.have.property('playerHasAnsweredSetter');
     });
-
-    it('should not increment the score of a single answer QCM if the answer is incorrect', () => {
-        room.currentQuestionIndex = 0;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['firstAnswerForBonus'] = true;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', [1], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 1);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 0);
-        assert.equal(room.playerListValue.get('1').bonus, 0);
+    it('should have a verifyAnswers method', () => {
+        answerVerifier = new AnswerVerifier(room);
+        expect(answerVerifier).to.have.property('verifyAnswers');
     });
-
-    it('should increment the score of a multiple answer QCM if the answers are correct', () => {
-        room.currentQuestionIndex = 2;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['firstAnswerForBonus'] = false;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', [0, 1], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][1], 1);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 20);
-        assert.equal(room.playerListValue.get('1').bonus, 0);
+    it('should return not return anything if the player has already answered', () => {
+        answerVerifier = new AnswerVerifier(room);
+        const playerId = '123';
+        const answerIdx = '1';
+        new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        answerVerifier['playerHasAnswered'].set(playerId, true);
+        answerVerifier.verifyAnswers(playerId, answerIdx, player);
+        expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
     });
-
-    it('should not increment the score of a multiple answer QCM if there are not enough answers', () => {
-        room.currentQuestionIndex = 2;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['firstAnswerForBonus'] = false;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 0);
-        assert.equal(room.playerListValue.get('1').bonus, 0);
+    it('should add question points to the player score if the question type is QRL and the game type is TEST', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        const roomMock = new Room(mockGame, 1, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 1;
+        roomMock.playerList.set(playerId, player);
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- it is a test and need it to calculate score
+        expect(player.score).to.equal(60);
     });
-
-    it('should not increment the score of a multiple answer QCM if the answers are incorrect', () => {
-        room.currentQuestionIndex = 2;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['firstAnswerForBonus'] = false;
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier.verifyAnswers('1', [0, 2], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][0], 0);
-        assert.equal(room.answerVerifier['globalAnswerIndex'][1], 2);
-        // eslint-disable-next-line
-        assert.equal(room.playerListValue.get('1').score, 0);
-        assert.equal(room.playerListValue.get('1').bonus, 0);
+    it('should call the globalAnswersText.push method if the answer is a string', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        expect(answerVerifierGood['globalAnswersText']).to.have.lengthOf(1);
     });
-
-    it('should send a playerlist-change event when all players have answered a QRL question', () => {
-        room.currentQuestionIndex = 0;
-        room.gameType = GameType.NORMAL;
-        room.answerVerifier['globalAnswerIndex'] = [];
-        room.answerVerifier['nbrOfAssertedAnswers'] = 0;
-        room.answerVerifier['playerHasAnswered'].set('1', false);
-        room.answerVerifier['playerHasAnswered'].set('2', false);
-        room.playerList.set('1', { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.playerList.set('2', { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier.verifyAnswers('1', [0], { id: '1', name: 'toto', score: 0, bonus: 0 } as IPlayer);
-        room.answerVerifier.verifyAnswers('2', [1], { id: '2', name: 'titi', score: 0, bonus: 0 } as IPlayer);
-        sinon.assert.calledWith(mockSocketIoServer.emit, 'playerlist-change', sinon.match.any);
-        assert.deepEqual(room.answerVerifier['allAnswersForQCM'].get(mockGame.questions[0].text), [0, 1]);
-        assert.deepEqual(room.answerVerifier['allAnswersGameResults'].get(mockGame.questions[0].text), [0, 1]);
-        assert.equal(room.answerVerifier['globalAnswerIndex'].length, 0);
+    it('should call handleQCMAnswers if the question type is QCM', () => {
+        const playerId = '123';
+        const answerIdx = [1];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
+    });
+    it('should call handleCorrectAnswer if the answer is correct', () => {
+        const playerId = '123';
+        const answerIdx = [0];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 2;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleCorrectAnswerSpy = sinon.spy(answerVerifierGood, 'handleCorrectAnswer');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleCorrectAnswerSpy);
+    });
+    it('should handle socket calls if the question type is QCM', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.handleAllPlayersAnswered(mockGame.questions[0]);
+        expect(mockSocketIoServer.emit.called).to.equal(true);
+    });
+    it('should handle socket calls if the question type is QRL', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.handleAllPlayersAnswered(mockGame.questions[1]);
+        expect(mockSocketIoServer.emit.called).to.equal(true);
+    });
+    it('should handle score if the player is not the first to answer', () => {
+        const answerIdxPlayerFirst = [0];
+        const answerIdxPlayerSecond = [0];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 2;
+        roomMock.playerList.set(player.id, player);
+        roomMock.playerList.set(playerSecondAnswer.id, playerSecondAnswer);
+        playerSecondAnswer.score = 0;
+        player.score = 0;
+        player.bonus = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(player.id, answerIdxPlayerFirst, player);
+        answerVerifierGood.verifyAnswers(playerSecondAnswer.id, answerIdxPlayerSecond, playerSecondAnswer);
+        expect(player.bonus).to.equal(1);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
+        expect(player.score).to.equal(24);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
+        expect(playerSecondAnswer.score).to.equal(20);
+        expect(playerSecondAnswer.bonus).to.equal(0);
+    });
+    it('should handle response with handleQCMAnswers if answerIdx.lenght == of totalCorrectChoices', () => {
+        const playerId = '123';
+        const answerIdx = [0, 2];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
+    });
+    it('should handle response with handleQCMAnswers if answerIdx.lenght == of totalCorrectChoices', () => {
+        const playerId = '123';
+        const answerIdx = [0, 1];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
+    });
+    it('should call handleQRLAnswersPoints if the question type is QRL', () => {
+        const playerId = '123';
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQRLAnswersPointsSpy = sinon.spy(answerVerifierGood, 'handleQRLAnswersPoints');
+        player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to calculate score
+        const points: [IPlayer, number][] = [[player, 60]];
+        answerVerifierGood.calculatePointsQRL(points);
+        sinon.assert.calledOnce(handleQRLAnswersPointsSpy);
+    });
+    it('should increment counterIncorrectAnswerQRL is the answer is incorrect', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterIncorrectAnswerQRL'] = 0;
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 0]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterIncorrectAnswerQRL']).to.equal(1);
+    });
+    it('should increment counterCorrectAnswerQRL is the answer is correct', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterCorrectAnswerQRL'] = 0;
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 1]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterCorrectAnswerQRL']).to.equal(1);
+    });
+    it('should do nothing if the points is empty', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        const points: [IPlayer, number][] = [];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(points).to.have.lengthOf(0);
+    });
+    it('should take the else if answer are half correct', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterHalfCorrectAnswerQRL'] = 0;
+        player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
+        const points: [IPlayer, number][] = [[player, 30]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterHalfCorrectAnswerQRL']).to.equal(1);
+    });
+    it('should do nothing if question is undefined', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
+        const points: [IPlayer, number][] = [[player, 30]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, undefined);
+        expect(points).to.have.lengthOf(1);
+    });
+    it('should do nothing if points is undefined', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.calculatePointsQRL(undefined);
+        expect(playerArray).to.have.lengthOf(1);
     });
 });

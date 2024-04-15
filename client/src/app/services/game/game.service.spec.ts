@@ -140,6 +140,12 @@ describe('GameService', () => {
         expect(result).toBe(timerCountdownSpy);
     });
 
+    it('should get test value', () => {
+        const testSpy = service['isTest'];
+        const result = service.isTestValue;
+        expect(result).toBe(testSpy);
+    });
+
     it('should get currentQuestionIndexValue', () => {
         const currentQuestionIndexSpy = service['currentQuestionIndex'];
         const result = service.currentQuestionIndexValue;

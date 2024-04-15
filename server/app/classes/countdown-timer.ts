@@ -56,32 +56,39 @@ export class CountdownTimer {
         this.io.to(this.roomId).emit('timer-countdown', this.timerDuration);
         const timerId = setInterval(
             () => {
-                if (this.timerState !== TimerState.PAUSED) {
-                    this.currentCountdownTime -= 1;
-                    this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
-                    if (this.currentCountdownTime === 0) {
-                        this.room.disableFirstAnswerBonus();
-                        if (!this.isLaunchTimer) {
-                            this.io.to(this.roomId).emit('timer-stopped');
-                        }
-                        if (this.isLaunchTimer) {
-                            this.room.playerList.forEach((playerInRoom) => {
-                                playerInRoom.status = PlayerStatus.Inactive;
-                                this.io.to(this.room.hostId).emit('player-status-changed', {
-                                    playerId: playerInRoom.id,
-                                    status: playerInRoom.status,
-                                });
-                            });
-                        }
-
-                        this.handleTimerEnd();
-                    }
-                }
+                this.countdownInterval();
             },
             DEFAULT_DELAY,
             this.currentCountdownTime,
         );
         this.timerId = timerId;
+    }
+    countdownInterval() {
+        if (this.timerState !== TimerState.PAUSED) {
+            this.currentCountdownTime -= 1;
+            this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
+            if (this.currentCountdownTime === 0) {
+                this.room.disableFirstAnswerBonus();
+                if (!this.isLaunchTimer) {
+                    this.io.to(this.roomId).emit('timer-stopped');
+                }
+                if (this.isLaunchTimer) {
+                    this.handleLaunchTimer();
+                }
+
+                this.handleTimerEnd();
+            }
+        }
+    }
+
+    handleLaunchTimer() {
+        this.room.playerList.forEach((playerInRoom) => {
+            playerInRoom.status = PlayerStatus.Inactive;
+            this.io.to(this.room.hostId).emit('player-status-changed', {
+                playerId: playerInRoom.id,
+                status: playerInRoom.status,
+            });
+        });
     }
 
     handleTimerEnd(): void {
@@ -120,20 +127,24 @@ export class CountdownTimer {
             clearInterval(this.timerId);
             const timerId = setInterval(
                 () => {
-                    if (this.timerState !== TimerState.PAUSED) {
-                        this.currentCountdownTime -= 1;
-                        this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
-                        if (this.currentCountdownTime === 0) {
-                            this.room.disableFirstAnswerBonus();
-                            this.io.to(this.roomId).emit('timer-stopped');
-                            this.handleTimerEnd();
-                        }
-                    }
+                    this.intervalPanicMode();
                 },
                 SHORT_DELAY,
                 this.currentCountdownTime,
             );
             this.timerId = timerId;
+        }
+    }
+
+    intervalPanicMode() {
+        if (this.timerState !== TimerState.PAUSED) {
+            this.currentCountdownTime -= 1;
+            this.io.to(this.roomId).emit('timer-countdown', this.currentCountdownTime);
+            if (this.currentCountdownTime === 0) {
+                this.room.disableFirstAnswerBonus();
+                this.io.to(this.roomId).emit('timer-stopped');
+                this.handleTimerEnd();
+            }
         }
     }
 }

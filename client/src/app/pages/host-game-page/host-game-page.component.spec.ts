@@ -14,6 +14,7 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription } from 'rxjs';
 import { HostGamePageComponent } from './host-game-page.component';
+import { Player } from '@app/interfaces/match';
 @Component({
     selector: 'app-game-page-scoresheet',
     template: '',
@@ -115,6 +116,7 @@ describe('HostGamePageComponent', () => {
                 gameTitleValue: 'Test Game Title',
                 numberInputModifidedValue: 0,
                 gameTimerPausedValue: false,
+                currentQRLIndexValue: 0,
             },
         );
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
@@ -205,6 +207,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should return an empty array when currentQuestionValue is null', () => {
+
         spyOnProperty(gameServiceSpy, 'currentQuestionValue', 'get').and.returnValue(null);
         const result = component.currentQuestionArray;
         expect(result).toEqual([]);
@@ -400,4 +403,82 @@ describe('HostGamePageComponent', () => {
         expect(snackbarServiceSpy.openSnackBar).not.toHaveBeenCalled();
         expect(gameServiceSpy.nextQuestion).toHaveBeenCalled();
     });
+    it('should  open snackbar when isNoted is false and rest true', () => {
+        const mockQuestion = {
+            type: QuestionType.QRL,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question;
+        
+        const answerQRL: [string, [Player, string][]][] = [
+
+            [ 'Q1',[
+                [{ name: 'player1', id: '1', bonus: 2, score: 0 }, 'A'],
+                [{ name: 'player2', id: '2', bonus: 2, score: 0 }, 'B']],
+            ],
+        ];
+        spyOnProperty(gameServiceSpy, 'answersTextQRLValue', 'get').and.returnValue(answerQRL);
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        component.isNoted = false;
+
+        component.nextQuestion();
+
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalled();
+    });
+    it('should set playerPointsQRL', () => {
+        const playerPoints: [Player, number][] = [
+            [{ name: 'player1', id: '1', bonus: 2, score: 0 }, 0],
+            [{ name: 'player2', id: '2', bonus: 2, score: 0 }, 0.5],
+        ];
+        const answerQRL: [string, [Player, string][]][] = [
+
+            [ 'Q1',[
+                [{ name: 'player1', id: '1', bonus: 2, score: 0 }, 'A'],
+                [{ name: 'player2', id: '2', bonus: 2, score: 0 }, 'B']],
+            ],
+        ];
+        spyOnProperty(gameServiceSpy, 'answersTextQRLValue', 'get').and.returnValue(answerQRL);
+        component.setplayerPointsQRL(playerPoints);
+        expect(gameServiceSpy.playerQRLPoints).toEqual(playerPoints);
+    });
+    it('should return minimum time for qcm', () => {
+        spyOnProperty(gameServiceSpy, 'timerCountdownValue', 'get').and.returnValue(10);
+        const mockQuestion = {
+            type: QuestionType.QCM,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question; 
+        spyOnProperty(component, 'currentQuestion', 'get').and.returnValue(mockQuestion);
+        const result = component.checkMinimumTimeForPanicMode();
+        expect(result).toBeTrue();
+
+
+    });
+    it('should return minimum time for qrl', () => {
+        spyOnProperty(gameServiceSpy, 'timerCountdownValue', 'get').and.returnValue(20);
+        const mockQuestion = {
+            type: QuestionType.QRL,
+            text: 'Mock Question?',
+            points: 10,
+            lastModification: new Date(),
+            id: 'mockQuestion',
+        } as Question; 
+        spyOnProperty(gameServiceSpy, 'currentQuestionValue', 'get').and.returnValue(mockQuestion);
+        const result = component.checkMinimumTimeForPanicMode();
+        expect(result).toBeTrue();
+
+
+    });
+    it('should return minimum time for qrl', () => {
+        spyOnProperty(gameServiceSpy, 'currentQuestionValue', 'get').and.returnValue(null);
+        const result = component.checkMinimumTimeForPanicMode();
+        expect(result).toBeFalse();
+
+
+    });
+
 });

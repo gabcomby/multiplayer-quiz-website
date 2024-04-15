@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Question } from '@app/interfaces/game';
+import { Question, QuestionType } from '@app/interfaces/game';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { QuestionValidationService } from './question-validation.service';
 
@@ -80,6 +80,18 @@ describe('QuestionValidationService', () => {
             expect(snackbarSpy.openSnackBar).toHaveBeenCalledWith(
                 'la question a un besoin d un nom, de point (multiple de 10 entre 10 et 100) et pas juste des espaces',
             );
+        });
+        it('should return true for a valid QCM question and should call answer valid', () => {
+            const validQuestion = {
+                text: 'Valid Question',
+                points: 30,
+                choices: [{ text: 'Answer 1', isCorrect: true }],
+                type: QuestionType.QCM,
+            } as Partial<Question>;
+            spyOn(service, 'answerValid').and.returnValue(true);
+            expect(service.validateQuestion(validQuestion as Question)).toBeTrue();
+            expect(snackbarSpy.openSnackBar).not.toHaveBeenCalled();
+            expect(service.answerValid).toHaveBeenCalled();
         });
     });
 });
