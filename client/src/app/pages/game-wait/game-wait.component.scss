@@ -60,16 +60,30 @@
 .player-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #fff;
+    margin: 5px 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
 }
 
 .player-name {
     font-size: 1em;
+    flex-grow: 1;
     margin-right: 10px;
 }
 
 .banned-player-button {
-    font-size: 1em;
-    padding: 8px 16px;
+    font-size: 0.9em;
+    padding: 6px 12px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .lobby-text {
