@@ -246,7 +246,9 @@ describe('Room', () => {
         answerVerifierGood.verifyAnswers(player.id, answerIdxPlayerFirst, player);
         answerVerifierGood.verifyAnswers(playerSecondAnswer.id, answerIdxPlayerSecond, playerSecondAnswer);
         expect(player.bonus).to.equal(1);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
         expect(player.score).to.equal(24);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
         expect(playerSecondAnswer.score).to.equal(20);
         expect(playerSecondAnswer.bonus).to.equal(0);
     });
@@ -272,5 +274,75 @@ describe('Room', () => {
         answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
         sinon.assert.calledOnce(handleQCMAnswersSpy);
     });
-
+    it('should call handleQRLAnswersPoints if the question type is QRL', () => {
+        const playerId = '123';
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQRLAnswersPointsSpy = sinon.spy(answerVerifierGood, 'handleQRLAnswersPoints');
+        player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to calculate score
+        const points: [IPlayer, number][] = [[player, 60]];
+        answerVerifierGood.calculatePointsQRL(points);
+        sinon.assert.calledOnce(handleQRLAnswersPointsSpy);
+    });
+    it('should increment counterIncorrectAnswerQRL is the answer is incorrect', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterIncorrectAnswerQRL'] = 0;
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 0]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterIncorrectAnswerQRL']).to.equal(1);
+    });
+    it('should increment counterCorrectAnswerQRL is the answer is correct', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterCorrectAnswerQRL'] = 0;
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 1]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterCorrectAnswerQRL']).to.equal(1);
+    });
+    it('should do nothing if the points is empty', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        const points: [IPlayer, number][] = [];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(points).to.have.lengthOf(0);
+    });
+    it('should take the else if answer are half correct', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood['counterHalfCorrectAnswerQRL'] = 0;
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 30]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, mockGame.questions[1]);
+        expect(answerVerifierGood['counterHalfCorrectAnswerQRL']).to.equal(1);
+    });
+    it('should do nothing if question is undefined', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        const points: [IPlayer, number][] = [[player, 30]];
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.handleQRLAnswersPoints(points, playerArray, undefined);
+        expect(points).to.have.lengthOf(1);
+    });
 });

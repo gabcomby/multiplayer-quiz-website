@@ -77,7 +77,7 @@ export class AnswerVerifier {
             this.allAnswersForQCM.set(question.text, this.globalAnswerIndex);
             this.allAnswersGameResults.set(question.text, this.globalAnswerIndex);
             this.globalAnswerIndex = [];
-        } else if (question.type === 'QRL') {
+        } else {
             this.io.to(this.roomId).emit('playerlist-change', Array.from(this.room.playerList));
             this.allAnswersForQRL.set(question.text, this.globalAnswersText);
             this.globalAnswersText = [];
