@@ -340,9 +340,20 @@ describe('Room', () => {
         roomMock.currentQuestionIndex = 1;
         const answerVerifierGood = new AnswerVerifier(roomMock);
         player.score = 0;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it to test
         const points: [IPlayer, number][] = [[player, 30]];
         const playerArray: [string, IPlayer][] = [[player.id, player]];
         answerVerifierGood.handleQRLAnswersPoints(points, playerArray, undefined);
         expect(points).to.have.lengthOf(1);
+    });
+    it('should do nothing if points is undefined', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(player.id, player);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        player.score = 0;
+        const playerArray: [string, IPlayer][] = [[player.id, player]];
+        answerVerifierGood.calculatePointsQRL(undefined);
+        expect(playerArray).to.have.lengthOf(1);
     });
 });
