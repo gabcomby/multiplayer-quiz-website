@@ -8,10 +8,15 @@
     width: 100%;
 }
 
-header {
+
+#menu-bar{
     display: flex;
     justify-content: space-between;
+    width: 100%;
     align-items: center;
-    background-color: #f0f0f0; /* Add your desired background color */
-    padding: 10px; /* Add padding for better visual appearance */
+
 }
+.title {
+    font-size: 1.5em;
+    font-weight: bold;
+  }

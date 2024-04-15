@@ -11,6 +11,7 @@ import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { QuestionBankComponent } from './question-bank.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 describe('QuestionBankComponent', () => {
     let component: QuestionBankComponent;
@@ -50,7 +51,16 @@ describe('QuestionBankComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [QuestionBankComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule, MatTableModule, MatIconModule, MatMenuModule],
+            imports: [
+                HttpClientTestingModule,
+                MatSnackBarModule,
+                RouterTestingModule,
+                MatDialogModule,
+                MatTableModule,
+                MatIconModule,
+                MatMenuModule,
+                MatToolbarModule,
+            ],
             providers: [
                 { provide: QuestionService, useValue: questionServiceMock },
                 { provide: SnackbarService, useValue: snackbarServiceMock },

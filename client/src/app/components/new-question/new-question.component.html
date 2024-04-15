@@ -1,40 +1,47 @@
 <div id="newQuestion">
-    <div id="buttonAdd" >
-        <div>
-            <button  type="button" mat-raised-button color="accent" (click)="createQcm()">QCM</button>
-            <button type="button" mat-raised-button color="accent" (click)="createQrl()">QRL</button>
-        </div>
-        <button *ngIf="!fromBank" type="button" mat-raised-button color="accent" (click)="this.addFromQuestionBank = true">Ajouter de la banque de question</button>
+    <div id="buttonAdd">
+        <button id="qcm" type="button" mat-raised-button color="accent" (click)="createQcm()">QCM</button>
+        <button id="qrl" type="button" mat-raised-button color="accent" (click)="createQrl()">QRL</button>
+        <button *ngIf="!fromBank" type="button" mat-raised-button color="accent" (click)="this.addFromQuestionBank = true">
+            Ajouter de la banque de question
+        </button>
     </div>
     <div id="createQuestion" *ngIf="createQuestionShown">
-        <p>Ajouter des questions:</p>
-        <mat-form-field>
-            <mat-label>Question</mat-label>
-            <input matInput [(ngModel)]="question.text" />
-        </mat-form-field>
+        <div id="containerAdd">
+            <p>Ajouter des questions:</p>
+            <mat-form-field>
+                <mat-label>Question</mat-label>
+                <input matInput [(ngModel)]="question.text" />
+            </mat-form-field>
+    
+            <mat-form-field>
+                <mat-label>Nombre de points</mat-label>
+                <input matInput type="number" value="10" min="10" max="100" step="10" [(ngModel)]="question.points" />
+            </mat-form-field>
+            <div *ngIf="!fromBank">
+                <label>Ajouter à la banque de question</label>
+                <input type="checkbox" [(ngModel)]="addBankQuestion" />
+            </div>
+            <div *ngIf="isQCM">
+                <p>Choix de reponse:</p>
+                <app-choice (registerAnswer)="addQuestion(fromBank, $event)"> </app-choice>
+            </div>
+        </div>
+        
+        
+        <div id="buttonControl">
+            <div id="addQuestion">
+                <button *ngIf="isQCM === false" mat-raised-button color="accent" id="add" (click)="addQuestion(fromBank)">Ajouter la question</button>
 
-        <mat-form-field>
-            <mat-label>Nombre de points</mat-label>
-            <input matInput type="number" value="10" min="10" max="100" step="10" [(ngModel)]="question.points" />
-        </mat-form-field>
-        <div *ngIf="!fromBank">
-            <label>Ajouter à la banque de question</label>
-            <input type="checkbox" [(ngModel)]="addBankQuestion" />
+            </div>
+            <button id="closeQuestion"type="button" mat-raised-button color="warn" (click)="createQuestionShown = false">Fermer</button>
         </div>
-        <div *ngIf="isQCM">
-            <p>Choix de reponse:</p>
-            <app-choice (registerAnswer)="addQuestion(fromBank, $event)"> </app-choice>
-        </div>
-        <div *ngIf = "isQCM === false">
-            <button mat-raised-button color="accent" id="add" (click)="addQuestion(fromBank)">Ajouter la question</button>
-            
-        </div>
-        <button type="button" mat-raised-button color="warn" (click)="createQuestionShown = false">Fermer</button>
-
     </div>
 </div>
 
 <div id="bank" *ngIf="addFromQuestionBank">
     <app-question-bank [fromCreateNewGame]="addFromQuestionBank" (registerQuestion)="addQuestionFromBank($event)"> </app-question-bank>
-    <button type="button" mat-raised-button color="warn" (click)="this.addFromQuestionBank = false">Fermer</button>
+    <div id="closeBank">
+        <button type="button" mat-raised-button color="warn" (click)="this.addFromQuestionBank = false">Fermer</button>
+    </div>
 </div>

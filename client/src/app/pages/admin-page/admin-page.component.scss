@@ -5,3 +5,20 @@
         margin-right: 10px;
     }
 }
+.game-list{
+    margin: 20px;
+}
+.historic{
+    margin: 20px;
+}
+#menu-bar{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+}
+.title {
+    font-size: 1.5em;
+    font-weight: bold;
+  }

@@ -9,10 +9,42 @@
 }
 #bank {
     border: solid green;
+    margin: 15px;
     display: flex;
     flex-direction: row;
+    width: 100%;
 }
 
 #createQuestion {
     border: solid blue;
+    margin: 15px;
+    
 }
+#containerAdd{
+    margin-left: 10px;
+}
+
+#buttonAdd{
+    display: flex;
+    justify-content: space-evenly;
+    width: 90%;
+}
+
+#closeQuestion{
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+#addQuestion{
+
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+}
+#closeBank{
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
