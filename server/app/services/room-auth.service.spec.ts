@@ -59,6 +59,7 @@ describe('RoomAuthService', () => {
     });
 
     it('should allow access if none of the conditions are met', async () => {
+        room.roomState = RoomState.WAITING;
         rooms.set(roomId, room as Room);
         const result = await service.verifyPlayerCanJoinRoom(roomId, player);
         expect(result).to.equal(true);
