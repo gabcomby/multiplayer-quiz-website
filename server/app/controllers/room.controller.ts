@@ -1,5 +1,5 @@
-import { QuestionsService } from '@app/services/questions.service';
-import { RoomAuthService } from '@app/services/room-auth.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
+import { RoomAuthService } from '@app/services/room-auth/room-auth.service';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';

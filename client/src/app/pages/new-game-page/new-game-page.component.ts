@@ -101,7 +101,7 @@ export class NewGamePageComponent implements OnInit {
             this.gameService.setupWebsocketEvents();
             setTimeout(() => {
                 this.ngZone.run(() => {
-                    this.router.navigate(['/gameWait']);
+                    this.router.navigate(['/game']);
                 });
             }, GAME_CREATION_DELAY);
         }

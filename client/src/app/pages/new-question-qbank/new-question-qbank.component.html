@@ -1,10 +1,14 @@
+
 <header>
-    <div id="title">
-        <h1>Création d'une nouvelle question!</h1>
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+                <mat-icon>home</mat-icon>
+            </button>
+            <span class="title">Création d'une nouvelle question</span>
+            
+        </mat-toolbar>
     </div>
-    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/question-bank">
-        <mat-icon>arrow_back</mat-icon>
-    </button>
 </header>
 <div id="questionForm">
     <app-new-question [fromBank]="true"> </app-new-question>

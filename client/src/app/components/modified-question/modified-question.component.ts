@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MAX_LENGTH } from '@app/config/client-config';
 import { Question } from '@app/interfaces/game';
 import { QuestionService } from '@app/services/question/question.service';
@@ -19,7 +20,10 @@ export class ModifiedQuestionComponent implements OnInit {
     disabled: boolean[] = [];
     menuSelected: boolean = false;
 
-    constructor(protected questionService: QuestionService) {}
+    constructor(
+        protected questionService: QuestionService,
+        private router: Router,
+    ) {}
 
     ngOnInit() {
         if (this.listQuestionBank) {
@@ -63,6 +67,9 @@ export class ModifiedQuestionComponent implements OnInit {
         const validated = this.questionService.saveQuestion(index, this.questionList, this.listQuestionBank);
 
         this.disabled[index] = validated;
+        if (this.fromBank) {
+            this.router.navigate(['/question-bank']);
+        }
     }
 
     removeQuestion(question: Question, index: number) {

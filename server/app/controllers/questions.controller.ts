@@ -1,4 +1,4 @@
-import { QuestionsService } from '@app/services/questions.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';

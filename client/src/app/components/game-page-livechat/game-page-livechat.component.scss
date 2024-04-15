@@ -61,3 +61,9 @@ mat-card {
     margin-bottom: 10px;
     background-color: gainsboro;
 }
+
+mat-card-content {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 8px;
+}

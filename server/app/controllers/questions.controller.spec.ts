@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import questionsModel from '@app/model/questions.model';
-import { QuestionsService } from '@app/services/questions.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';

@@ -4,7 +4,7 @@ import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, NOT_FOUN
 import { IGame, IQuestion } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
-import { GamePlayedService } from '@app/services/game-played.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 
@@ -12,6 +12,12 @@ export const enum GameType {
     NORMAL,
     TEST,
     RANDOM,
+}
+
+export const enum RoomState {
+    WAITING,
+    PLAYING,
+    FINISHED,
 }
 
 export class Room {
@@ -27,7 +33,7 @@ export class Room {
     roomLocked = false;
     hostId = '';
     gameType: GameType;
-    gameHasStarted = false;
+    roomState = RoomState.WAITING;
     gameStartDateTime: Date;
     nbrPlayersAtStart: number;
     inputModifications: { player: string; time: number }[] = [];
@@ -89,6 +95,7 @@ export class Room {
 
                 if (this.currentQuestionIndex === this.game.questions.length) {
                     this.gameResult();
+                    this.roomState = RoomState.FINISHED;
                 } else {
                     this.moveNextQuestion();
                 }

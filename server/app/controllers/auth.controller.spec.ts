@@ -1,5 +1,5 @@
 import { Application } from '@app/app';
-import { AuthService } from '@app/services/auth.service';
+import { AuthService } from '@app/services/auth/auth.service';
 import { Message } from '@common/message';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';

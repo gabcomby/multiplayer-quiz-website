@@ -1,10 +1,9 @@
 import { Application } from '@app/app';
-import { SocketManager } from '@app/services/socket.service';
+import { PARSED_PORT } from '@app/config/server-config';
+import { SocketManager } from '@app/services/socket/socket.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
-
-const PARSED_PORT = 10;
 
 @Service()
 export class Server {

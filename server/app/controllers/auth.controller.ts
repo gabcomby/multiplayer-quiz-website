@@ -1,4 +1,4 @@
-import { AuthService } from '@app/services/auth.service';
+import { AuthService } from '@app/services/auth/auth.service';
 import { Message } from '@common/message';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';

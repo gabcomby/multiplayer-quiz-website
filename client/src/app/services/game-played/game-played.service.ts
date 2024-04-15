@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { API_BASE_URL } from '@app/app.module';
 import { GamePlayed } from '@app/interfaces/game';
+import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -11,6 +12,7 @@ export class GamePlayedService {
     private apiUrl: string;
 
     constructor(
+        private snackbarService: SnackbarService,
         private http: HttpClient,
         @Inject(API_BASE_URL) apiBaseURL: string,
     ) {
@@ -23,8 +25,18 @@ export class GamePlayedService {
         return gamesPLayed;
     }
 
-    async deleteGamesPLayed(): Promise<void> {
-        await firstValueFrom(this.http.delete(`${this.apiUrl}/deleteAllGamesPlayed`));
+    async deleteGamesApi(): Promise<void> {
+        await firstValueFrom(this.http.delete(`${this.apiUrl}/deleteAllGamesPlayed`, { responseType: 'text' }));
+    }
+
+    async deleteGamesPlayed(): Promise<void> {
+        return this.deleteGamesApi()
+            .then(() => {
+                this.snackbarService.openSnackBar("L'historique a été supprimé avec succès.");
+            })
+            .catch(() => {
+                this.snackbarService.openSnackBar("Erreur lors de la suppression de l'historique.");
+            });
     }
 
     formatDate(dateString: string): string {

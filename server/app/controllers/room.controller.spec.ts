@@ -1,11 +1,11 @@
 import { Application } from '@app/app';
-import { RoomAuthService } from '@app/services/room-auth.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
+import { RoomAuthService } from '@app/services/room-auth/room-auth.service';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
-import { QuestionsService } from '@app/services/questions.service';
 
 describe('RoomController', () => {
     let roomAuthService: SinonStubbedInstance<RoomAuthService>;

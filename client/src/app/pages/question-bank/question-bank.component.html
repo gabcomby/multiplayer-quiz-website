@@ -1,15 +1,19 @@
 <header *ngIf="!fromCreateNewGame">
-    <h2 class="title">Banque de Question</h2>
-    <button mat-icon-button color="white" aria-label="Example icon button with an add icon" routerLink="/new-question-qbank">
-        <mat-icon>add</mat-icon>
-    </button>
-
-    <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
-        <mat-icon>home</mat-icon>
-    </button>
+    <div class="top-bar">
+        <mat-toolbar color="primary" id="menu-bar">
+            <button mat-icon-button color="white" aria-label="Example icon button with a home icon" routerLink="/home">
+                <mat-icon>home</mat-icon>
+            </button>
+            <span class="title">Banque de Question</span>
+            
+            <button mat-icon-button color="white" aria-label="Example icon button with an add icon" routerLink="/new-question-qbank">
+                <mat-icon>add</mat-icon>
+            </button>
+        </mat-toolbar>
+    </div>
 </header>
 
-<button mat-button [matMenuTriggerFor]="menu">Filtre</button>
+<button id="filtre"mat-button [matMenuTriggerFor]="menu">Filtrer</button>
 <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="filter('QCM')">QCM</button>
     <button mat-menu-item (click)="filter('QRL')">QRL</button>
@@ -60,6 +64,6 @@
     <tr mat-row *matRowDef="let element; columns: displayedColumns"></tr>
 </table>
 
-<div *ngIf="fromCreateNewGame">
+<div id="registerBank"*ngIf="fromCreateNewGame">
     <button type="button" mat-raised-button color="accent" (click)="addQuestionToGame()">Enregistrer les questions</button>
 </div>
