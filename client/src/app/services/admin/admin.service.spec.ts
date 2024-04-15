@@ -8,7 +8,7 @@ import { ApiService } from '@app/services/api/api.service';
 import { GameValidationService } from '@app/services/game-validation/game-validation.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
+import * as utils from '@app/utils/assign-new-game-attributes';
 import { of, throwError } from 'rxjs';
 import { AdminService } from './admin.service';
 
@@ -27,8 +27,6 @@ describe('AdminService', () => {
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['connect']);
         const SPY_API_SERVICE = jasmine.createSpyObj('ApiService', ['getGame', 'getGames', 'patchGame', 'createGame', 'deleteGame']);
-        const SPY_ASSIGN_NEW_GAME_ATTRIBUTES = jasmine.createSpy('assignNewGameAttributes');
-        assignNewGameAttributesSpy = SPY_ASSIGN_NEW_GAME_ATTRIBUTES;
         gameValidationServiceSpy = SPY_GAME_VALIDATION_SERVICE;
 
         TestBed.configureTestingModule({
@@ -39,7 +37,7 @@ describe('AdminService', () => {
                 { provide: SnackbarService, useValue: SPY_SNACKBAR_SERVICE },
                 { provide: SocketService, useValue: SPY_SOCKET_SERVICE },
                 { provide: ApiService, useValue: SPY_API_SERVICE },
-                { provide: assignNewGameAttributes, useValue: SPY_ASSIGN_NEW_GAME_ATTRIBUTES },
+                // { provide: assignNewGameAttributes, useValue: SPY_ASSIGN_NEW_GAME_ATTRIBUTES },
             ],
             imports: [HttpClientTestingModule, MatSnackBarModule, BrowserAnimationsModule],
         });
@@ -49,7 +47,7 @@ describe('AdminService', () => {
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         apiServiceSpy = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
-        // assignNewGameAttributesSpy = TestBed.inject(assignNewGameAttributes) as jasmine.Spy;
+        assignNewGameAttributesSpy = spyOn(utils, 'default');
     });
 
     it('should be created', () => {
