@@ -171,22 +171,21 @@ describe('Room', () => {
         answerVerifier.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifier['playerHasAnswered'].get(playerId)).to.equal(true);
     });
-    /* it('should increment the number of asserted answers', () => {
-        const playerId = '123';
-        const answerIdx = [1];
-        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
-        roomMock.currentQuestionIndex = 0;
-        console.log('currentQuestionIndex');
-        console.log(roomMock.currentQuestionIndex);
-        console.log('currentQuestion');
-        console.log(roomMock.currentQuestion);
-        const answerVerifierGood = new AnswerVerifier(roomMock);
-        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
-    });*/
-    it('should call the globalAnswersText.push method if the answer is a string', () => {
+    it('should add question points to the player score if the question type is QRL and the game type is TEST', () => {
         const playerId = '123';
         const answerIdx = '1';
         const roomMock = new Room(mockGame, 1, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 1;
+        roomMock.playerList.set(playerId, player);
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- it is a test and need it to calculate score
+        expect(player.score).to.equal(60);
+    });
+    it('should call the globalAnswersText.push method if the answer is a string', () => {
+        const playerId = '123';
+        const answerIdx = '1';
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
         roomMock.currentQuestionIndex = 1;
         const answerVerifierGood = new AnswerVerifier(roomMock);
         answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
@@ -202,4 +201,30 @@ describe('Room', () => {
         answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
         sinon.assert.calledOnce(handleQCMAnswersSpy);
     });
+    it('should call handleCorrectAnswer if the answer is correct', () => {
+        const playerId = '123';
+        const answerIdx = [0];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.playerList.set(playerId, player);
+        roomMock.currentQuestionIndex = 2;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleCorrectAnswerSpy = sinon.spy(answerVerifierGood, 'handleCorrectAnswer');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleCorrectAnswerSpy);
+    });
+    it('should handle socket calls if the question type is QCM', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.handleAllPlayersAnswered(mockGame.questions[0]);
+        expect(mockSocketIoServer.emit.called).to.equal(true);
+    });
+    it('should handle socket calls if the question type is QRL', () => {
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 1;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        answerVerifierGood.handleAllPlayersAnswered(mockGame.questions[1]);
+        expect(mockSocketIoServer.emit.called).to.equal(true);
+    });
+
 });
