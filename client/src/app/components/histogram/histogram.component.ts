@@ -1,10 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { HISTOGRAM_SIZE } from '@app/config/client-config';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game/game.service';
 
-const SIZE1 = 400;
-const SIZE2 = 400;
 @Component({
     selector: 'app-histogram',
     templateUrl: './histogram.component.html',
@@ -24,7 +23,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     currentIndex: number = 0;
     dataQrl: { question: string; data: { name: string; value: number }[] }[] = [];
 
-    view: [number, number] = [SIZE2, SIZE1];
+    view: [number, number] = [HISTOGRAM_SIZE, HISTOGRAM_SIZE];
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;

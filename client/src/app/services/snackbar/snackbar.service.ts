@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-const DURATION = 7000;
+import { DURATION_SNACKBAR } from '@app/config/client-config';
 
 @Injectable({
     providedIn: 'root',
@@ -9,7 +8,7 @@ const DURATION = 7000;
 export class SnackbarService {
     constructor(private snackBar: MatSnackBar) {}
 
-    openSnackBar(message: string, action: string = 'Fermer', duration: number = DURATION) {
+    openSnackBar(message: string, action: string = 'Fermer', duration: number = DURATION_SNACKBAR) {
         this.snackBar.open(message, action, {
             duration,
         });

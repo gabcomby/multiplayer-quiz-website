@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import { Game } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api/api.service';
@@ -9,8 +10,6 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Socket } from 'socket.io-client';
 
-const INDEX_NOT_FOUND = -1;
-const GAME_CREATION_DELAY = 750;
 @Component({
     selector: 'app-new-game-page',
     templateUrl: './new-game-page.component.html',
@@ -74,7 +73,7 @@ export class NewGamePageComponent implements OnInit {
         let result = true;
         const newGameArray = await this.apiService.getGames();
         const indexG = newGameArray.findIndex((item) => item.id === game.id);
-        if (this.deletedGamesId.indexOf(game.id) !== INDEX_NOT_FOUND || indexG === INDEX_NOT_FOUND) {
+        if (this.deletedGamesId.indexOf(game.id) !== NOT_FOUND_INDEX || indexG === NOT_FOUND_INDEX) {
             this.snackbarDeletedGame(game);
             result = false;
         } else if (!newGameArray[indexG].isVisible) {

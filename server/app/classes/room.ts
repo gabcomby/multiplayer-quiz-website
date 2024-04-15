@@ -1,17 +1,12 @@
 import { AnswerVerifier } from '@app/classes/answer-verifier';
 import { CountdownTimer, TimerState } from '@app/classes/countdown-timer';
+import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, NOT_FOUND_INDEX, TIME_HISTOGRAM_UPDATE } from '@app/config/server-config';
 import { IGame, IQuestion } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
 import { GamePlayedService } from '@app/services/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
-
-const ID_LOBBY_LENGTH = 4;
-const ID_GAME_PLAYED_LENGTH = 10;
-const TIME_HISTOGRAM_UPDATE = 5000;
-const NOT_FOUND_INDEX = -1;
-const LAUNCH_TIMER_DURATION = 5;
 
 export const enum GameType {
     NORMAL,

@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
+import { DISAPPEAR_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import type { ChatMessageCommand, Message } from '@app/interfaces/message';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-
-const DISAPPEAR_DELAY = 60000;
-const NOT_FOUND_INDEX = -1;
 
 @Injectable({
     providedIn: 'root',

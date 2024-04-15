@@ -2,6 +2,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
+import { QRL_TIMER_DURATION, SOCKET_TIMER_DURATION, TIME_BETWEEN_QUESTIONS, WAIT_UNTIL_FIRE_DISCONNECTS } from '@app/config/client-config';
 import { QuestionType, type Question } from '@app/interfaces/game';
 import type { Player } from '@app/interfaces/match';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
@@ -9,10 +10,6 @@ import { ChatService } from '@app/services/chat/chat.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 
-const TIME_BETWEEN_QUESTIONS = 3000;
-const LAUNCH_TIMER_DURATION = 5;
-const QRL_TIMER_DURATION = 60;
-const WAIT_UNTIL_FIRE_DISCONNECTS = 500;
 const AUDIO_CLIP_PATH = 'assets/chipi-chipi-chapa-chapa.mp3';
 
 @Injectable({
@@ -117,7 +114,7 @@ export class GameService {
 
     get totalQuestionDurationValue(): number {
         if (this.launchTimer) {
-            return LAUNCH_TIMER_DURATION;
+            return SOCKET_TIMER_DURATION;
         } else if (this.currentQuestion?.type === QuestionType.QRL) {
             return QRL_TIMER_DURATION;
         } else {

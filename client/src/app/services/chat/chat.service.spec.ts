@@ -1,12 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DISAPPEAR_DELAY } from '@app/config/client-config';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 import { ChatService } from './chat.service';
-
-const DISAPPEAR_DELAY = 60000;
 
 describe('ChatService', () => {
     let service: ChatService;

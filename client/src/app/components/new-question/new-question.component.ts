@@ -13,12 +13,10 @@ export class NewQuestionComponent {
     @Input() fromBank: boolean;
     addFromQuestionBank: boolean = false;
     createQuestionShown: boolean = false;
-    // TODO: add a question type
     question: Question = { type: QuestionType.QCM, text: '', points: 10, id: '', lastModification: new Date(), choices: [] };
     addBankQuestion: boolean = false;
     isQCM: boolean = false;
 
-    // eslint-disable-next-line max-params -- single responsibility principle
     constructor(
         private questionService: QuestionService,
         private router: Router,
