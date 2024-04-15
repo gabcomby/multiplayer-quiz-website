@@ -2,10 +2,10 @@
     Liste de question:
     <div *ngFor="let question of questionList; index as i">
         <div class="container">
-            <div *ngIf="disabled[i]">
-                <p id="questionText">{{ question.type }}</p>
+            <div *ngIf="disabled[i]" class="question-container">
+                <p>{{ question.type }}</p>
                 {{ i + 1 }}
-                <p>Question : {{ question.text }}</p>
+                <p class="ellipsis">Question : {{ question.text }}</p>
                 <p>Nombre de point : {{ question.points }}</p>
                 <div *ngIf="question.type === 'QCM'">
                     Choix de réponse :
@@ -24,7 +24,7 @@
 
                 <p *ngIf="question.type === 'QCM'">Choix de réponse :</p>
 
-                <app-choice *ngIf="question.choices && question.type === 'QCM' "[question]="question.choices"></app-choice>
+                <app-choice *ngIf="question.choices && question.type === 'QCM'" [question]="question.choices"></app-choice>
             </div>
 
             <button *ngIf="!fromBank" mat-mini-fab class="buttonIcon" color="primary" aria-label="Delete" (click)="removeQuestion(question, i)">

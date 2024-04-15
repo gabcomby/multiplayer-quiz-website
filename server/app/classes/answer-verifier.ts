@@ -46,7 +46,7 @@ export class AnswerVerifier {
         this.playerHasAnswered = value;
     }
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
-        if (this.playerHasAnswered.get(playerId)) {
+        if (this.playerHasAnswered.get(playerId) || !player) {
             return;
         }
         this.playerHasAnswered.set(playerId, true);

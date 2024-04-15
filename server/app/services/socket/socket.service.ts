@@ -2,8 +2,8 @@ import { Room, RoomState } from '@app/classes/room';
 import { IGame } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { rooms } from '@app/module';
-import { GameService } from '@app/services/game.service';
-import { QuestionsService } from '@app/services/questions.service';
+import { GameService } from '@app/services/game/game.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
 import type * as http from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import { Service } from 'typedi';
@@ -106,7 +106,7 @@ export class SocketManager {
                     } else {
                         const player = room.playerList.get(socket.id);
                         room.playerList.delete(socket.id);
-                        if (room.playerList.size === 0 && room.roomState !== RoomState.WAITING) {
+                        if (room.playerList.size === 0 && room.roomState === RoomState.PLAYING) {
                             this.io.to(room.roomId).emit('lobby-deleted');
                             rooms.delete(room.roomId);
                         } else {

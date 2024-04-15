@@ -4,7 +4,7 @@ import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, NOT_FOUN
 import { IGame, IQuestion } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
-import { GamePlayedService } from '@app/services/game-played.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 

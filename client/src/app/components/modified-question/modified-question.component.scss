@@ -14,8 +14,26 @@
     flex-direction: column;
 }
 
+mat-form-field {
+    margin: 10px;
+}
+
 .buttonIcon {
     margin: 5px;
+}
+
+.question-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    max-width: 400px;
+}
+
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 90%;
 }
 
 input[type='text'],

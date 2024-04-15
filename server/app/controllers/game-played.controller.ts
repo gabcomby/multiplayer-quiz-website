@@ -1,4 +1,4 @@
-import { GamePlayedService } from '@app/services/game-played.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';

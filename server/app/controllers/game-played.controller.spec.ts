@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import { IGamePlayed } from '@app/model/gameplayed.model';
-import { GamePlayedService } from '@app/services/game-played.service';
+import { GamePlayedService } from '@app/services/game-played/game-played.service';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
