@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '@app/app.module';
@@ -254,6 +255,12 @@ describe('QuestionService', () => {
         expect(result).toBeTrue();
         expect(req.request.method).toEqual('PATCH');
         req.flush({});
+    });
+    it('should not save question and return false', () => {
+        spyOn(service, 'saveQuestion').and.callThrough();
+        const result = service.saveQuestion(3, mockQuestionList, false);
+        expect(service.saveQuestion).toHaveBeenCalled();
+        expect(result).toBeFalse();
     });
 
     it('should save question when valid', () => {

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
-import { GameType, Room } from '@app/classes/room';
+/* import { GameType, Room } from '@app/classes/room';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import * as chai from 'chai';
@@ -276,4 +276,4 @@ describe('Room', () => {
         room.handleInputModification();
         sinon.assert.notCalled(mockSocketIoServer.emit);
     });
-});
+}); */

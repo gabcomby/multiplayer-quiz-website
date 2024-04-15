@@ -312,6 +312,52 @@ describe('SocketService', () => {
         });
         expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-disabled', jasmine.any(Function));
     });
+    it('should emit "update-histogram" when updateHistogram is called', () => {
+        service.updateHistogram();
+        expect(mockSocket.emit).toHaveBeenCalledWith('update-histogram');
+    });
+    it('should handle number modification and should call callback', (done) => {
+        // eslint-disable-next-line no-unused-vars -- need it for the test
+        service.onUpdateNbModified((nbModification: number) => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('number-modifications', jasmine.any(Function));
+        mockSocket.simulateEvent('number-modifications', 1);
+    });
+    it('should handle locked answers QRL', (done) => {
+        // eslint-disable-next-line no-unused-vars -- need it for the test
+        service.onLockedAnswersQRL((answers: [string, [Player, string][]][]) => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('locked-answers-QRL', jasmine.any(Function));
+        mockSocket.simulateEvent('locked-answers-QRL', ['123', [['123', '123']]]);
+    });
+    it('should handle a send-answers event', () => {
+        service.sendAnswers([1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 });
+        expect(mockSocket.emit).toHaveBeenCalledWith('send-answers', [1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 });
+    });
+    it('should handle a send-locked-answers event', () => {
+        service.sendLockedAnswers([1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 });
+        expect(mockSocket.emit).toHaveBeenCalledWith('send-locked-answers', [1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 });
+    });
+    it('should handle a send-live-answers event: true', () => {
+        service.sendLiveAnswers([1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 }, true);
+        expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 }, true);
+    });
+    it('should handle a send-live-answers event: false', () => {
+        service.sendLiveAnswers([1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 }, false);
+        expect(mockSocket.emit).toHaveBeenCalledWith('send-live-answers', [1, 2, 3], { id: '123', name: 'alex', score: 123, bonus: 0 }, false);
+    });
+    it('should handle send message to server', () => {
+        service.sendMessageToServer('hello', 'john', '123');
+        expect(mockSocket.emit).toHaveBeenCalledWith('chat-message', { message: 'hello', playerName: 'john', roomId: '123' });
+    });
+    it('should update points in qrl', () => {
+        const points = 5;
+        const mockPoints: [Player, number][] = [[{ id: '123', name: 'alex', score: 123, bonus: 0 }, points]];
+        service.updatePointsQRL(mockPoints);
+        expect(mockSocket.emit).toHaveBeenCalledWith('update-points-QRL', [[{ id: '123', name: 'alex', score: 123, bonus: 0 }, points]]);
+    });
     it('should handle "system-message" events', (done) => {
         const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: date };
         mockSocket.simulateEvent('system-message', expectedSystemMessage);
