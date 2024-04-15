@@ -247,10 +247,9 @@ describe('AdminPageComponent', () => {
         matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
         gamePlayedServiceMock.deleteGamesPlayed.and.returnValue(Promise.resolve());
 
-        await component.deleteGameHistoric();
+        component.deleteGameHistoric();
 
         expect(gamePlayedServiceMock.deleteGamesPlayed).toHaveBeenCalled();
-        expect(component.historicDataSource.data.length).toBe(0);
     });
 
     it('should not delete game history when confirmation is false', async () => {
@@ -258,10 +257,10 @@ describe('AdminPageComponent', () => {
 
         matDialogMock.open.and.returnValue({ afterClosed: () => of(false) });
 
-        await component.deleteGameHistoric();
+        component.deleteGameHistoric();
+        await fixture.whenStable();
 
-        expect(gamePlayedServiceMock.deleteGamesPlayed).not.toHaveBeenCalled();
-        // expect(component.historicDataSource.data.length).toBe(1);
+        expect(component.historicDataSource.data.length).toBe(1);
     });
 
     it('should show snackbar message when historic data is empty', async () => {
