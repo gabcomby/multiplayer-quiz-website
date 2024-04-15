@@ -191,6 +191,19 @@ describe('QuestionBankComponent', () => {
     });
 
     it('should display a success snackbar message after successful question deletion', async () => {
+        component.dataSource = [
+            {
+                id: 'abc',
+                type: QuestionType.QCM,
+                text: 'question de test',
+                points: 40,
+                lastModification: new Date('2020-01-01'),
+                choices: [
+                    { text: 'Ceci est une question de test', isCorrect: true },
+                    { text: 'Ceci est une question de test 2', isCorrect: false },
+                ],
+            },
+        ];
         spyOn(window, 'confirm').and.returnValue(true);
         spyOn(component, 'deleteQuestion').and.callThrough();
         questionServiceMock.deleteQuestion.and.returnValue(Promise.resolve());
