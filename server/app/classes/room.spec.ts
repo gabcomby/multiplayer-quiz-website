@@ -272,4 +272,4 @@ describe('Room', () => {
         room.handleInputModification();
         sinon.assert.notCalled(mockSocketIoServer.emit);
     });
-}); */
+});
