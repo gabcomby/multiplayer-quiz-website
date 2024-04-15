@@ -349,6 +349,7 @@ export class GameService {
         });
 
         this.socketService.onPlayerListChange((playerList: [[string, Player]]) => {
+            console.log('Player list change detected:', playerList);
             this.playerListChange(playerList);
         });
 
