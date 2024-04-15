@@ -244,15 +244,12 @@ describe('AdminPageComponent', () => {
 
     it('should delete game history with deleteGameHistoric', async () => {
         component.historicDataSource.data = [{ id: '1', title: 'Game 1', creationDate: new Date(), numberPlayers: 4, bestScore: 100 }];
-
         matDialogMock.open.and.returnValue({ afterClosed: () => of(true) });
-
         gamePlayedServiceMock.deleteGamesPlayed.and.returnValue(Promise.resolve());
 
         await component.deleteGameHistoric();
 
         expect(gamePlayedServiceMock.deleteGamesPlayed).toHaveBeenCalled();
-
         expect(component.historicDataSource.data.length).toBe(0);
     });
 
@@ -264,6 +261,7 @@ describe('AdminPageComponent', () => {
         await component.deleteGameHistoric();
 
         expect(gamePlayedServiceMock.deleteGamesPlayed).not.toHaveBeenCalled();
+        expect(component.historicDataSource.data.length).toBe(1);
     });
 
     it('should show snackbar message when historic data is empty', async () => {
