@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HISTOGRAMM_UPDATE, MINIMUM_TIME_FOR_PANIC_MODE_QCM, MINIMUM_TIME_FOR_PANIC_MODE_QRL } from '@app/config/client-config';
 import { Question } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { MatchLobby } from '@app/interfaces/match-lobby';
@@ -7,7 +8,6 @@ import { GameService } from '@app/services/game/game.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Subscription, interval } from 'rxjs';
-import { HISTOGRAMM_UPDATE, MINIMUM_TIME_FOR_PANIC_MODE_QCM, MINIMUM_TIME_FOR_PANIC_MODE_QRL } from 'src/config/client-config';
 
 @Component({
     selector: 'app-host-game-page',

@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { NOT_FOUND_INDEX, SORT_AFTER, SORT_BEFORE } from '@app/config/client-config';
 import { Player, PlayerStatus } from '@app/interfaces/match';
 import { SocketService } from '@app/services/socket/socket.service';
-import { NOT_FOUND_INDEX, SORT_AFTER, SORT_BEFORE } from 'src/config/client-config';
 
 @Component({
     selector: 'app-game-page-scoresheet',

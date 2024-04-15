@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import { Game } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api/api.service';
@@ -8,7 +9,6 @@ import { RoomService } from '@app/services/room/room.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { Socket } from 'socket.io-client';
-import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from 'src/config/client-config';
 
 @Component({
     selector: 'app-new-game-page',

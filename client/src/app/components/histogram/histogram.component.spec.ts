@@ -3,10 +3,10 @@ import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MAX_QUESTIONS_CHOICES, NAVIGATE_LEFT } from '@app/config/client-config';
 import { QuestionType } from '@app/interfaces/game';
 import { GameService } from '@app/services/game/game.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { MAX_QUESTIONS_CHOICES, NAVIGATE_LEFT } from 'src/config/client-config';
 import { HistogramComponent } from './histogram.component';
 
 describe('HistogramComponent', () => {

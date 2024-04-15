@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { HISTOGRAM_SIZE } from '@app/config/client-config';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game/game.service';
-import { HISTOGRAM_SIZE } from 'src/config/client-config';
 
 @Component({
     selector: 'app-histogram',

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MAX_DURATION, MIN_DURATION } from '@app/config/client-config';
 import { Game, QuestionType } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api/api.service';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { generateNewId } from '@app/utils/assign-new-game-attributes';
-import { MAX_DURATION, MIN_DURATION } from 'src/config/client-config';
 
 @Injectable({
     providedIn: 'root',

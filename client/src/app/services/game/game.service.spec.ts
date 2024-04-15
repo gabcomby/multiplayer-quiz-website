@@ -10,7 +10,7 @@ import { Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from './game.service';
 // eslint-disable-next-line no-restricted-imports
-import { QRL_TIMER_DURATION, SOCKET_TIMER_DURATION, TIME_BETWEEN_QUESTIONS, WAIT_UNTIL_FIRE_DISCONNECTS } from 'src/config/client-config';
+import { QRL_TIMER_DURATION, SOCKET_TIMER_DURATION, TIME_BETWEEN_QUESTIONS, WAIT_UNTIL_FIRE_DISCONNECTS } from '@app/config/client-config';
 import { SocketService } from '../socket/socket.service';
 
 describe('GameService', () => {

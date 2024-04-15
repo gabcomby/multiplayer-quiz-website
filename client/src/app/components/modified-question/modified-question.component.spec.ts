@@ -3,11 +3,11 @@ import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MAX_LENGTH } from '@app/config/client-config';
 import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
-import { MAX_LENGTH } from 'src/config/client-config';
 import { ModifiedQuestionComponent } from './modified-question.component';
 import SpyObj = jasmine.SpyObj;
 
