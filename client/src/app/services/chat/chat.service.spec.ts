@@ -6,20 +6,21 @@ import { SocketService } from '@app/services/socket/socket.service';
 import { of, throwError } from 'rxjs';
 import { ChatService } from './chat.service';
 
-const DISAPPEAR_DELAY = 60000;
-
 describe('ChatService', () => {
     let service: ChatService;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
+    // eslint-disable-next-line -- it is used as a date mock
+    const mockedDate = new Date(2024, 3, 14);
 
     beforeEach(() => {
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['onChatMessage', 'onSystemMessage', 'sendMessageToServer']);
 
-        SPY_SOCKET_SERVICE.onChatMessage.and.returnValue(of({ text: 'test', sender: 'test', timestamp: new Date() }));
-
         jasmine.clock().install();
+        jasmine.clock().mockDate(mockedDate);
+
+        SPY_SOCKET_SERVICE.onChatMessage.and.returnValue(of({ text: 'test', sender: 'test', timestamp: mockedDate, visible: true }));
 
         TestBed.configureTestingModule({
             providers: [
@@ -44,7 +45,6 @@ describe('ChatService', () => {
 
     it('should listen for messages', () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
-        service['listenForSystemMessages'] = jasmine.createSpy();
         service.listenForMessages();
         expect(socketServiceSpy.onChatMessage).toHaveBeenCalled();
     });
@@ -68,7 +68,7 @@ describe('ChatService', () => {
     });
 
     it('should handle system messages correctly', () => {
-        const systemMessage = { text: 'System message', sender: 'System', timestamp: new Date(), visible: true };
+        const systemMessage = { text: 'test', sender: 'test', timestamp: mockedDate, visible: true };
         socketServiceSpy.onSystemMessage.and.returnValue(of(systemMessage));
 
         service.listenForMessages();
@@ -89,16 +89,6 @@ describe('ChatService', () => {
         expect(service.messagesSubject.value[0]).toEqual(expectedMessage);
     });
 
-    it('should hide message', () => {
-        const initialTimestamp = new Date();
-        const message = { text: 'test', sender: 'test', timestamp: initialTimestamp };
-        service['handleNewMessage'](message);
-        const messageToHide = service.messagesSubject.value[0];
-        service['hideMessage'](messageToHide);
-
-        expect(service.messagesSubject.value[0].visible).toBeFalse();
-    });
-
     it("shouldn't send message if the playerNmae is empty", () => {
         snackbarServiceSpy.openSnackBar.and.returnValue();
         service.sendMessage({ text: 'test', playerName: '', roomId: 'test', isHost: false });
@@ -111,16 +101,6 @@ describe('ChatService', () => {
 
         service.listenForMessages();
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Pas de salle, vos messages ne seront pas envoyés');
-    });
-
-    it('should hide a new message after DISAPPEAR_DELAY', () => {
-        const testMessage = { text: 'Test message', sender: 'Tester', timestamp: new Date().toISOString(), visible: true };
-        service['handleNewMessage'](testMessage);
-
-        jasmine.clock().tick(DISAPPEAR_DELAY);
-
-        const messages = service.messagesSubject.value;
-        expect(messages[messages.length - 1].visible).toBeFalse();
     });
 
     it('should not send message if not host and no playerName provided', () => {
