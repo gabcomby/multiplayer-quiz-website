@@ -207,7 +207,6 @@ export class GameService {
         this.socketService.leaveRoom();
         setTimeout(() => {
             this.socketService.disconnect();
-            // this.router.navigate(['/home']);
         }, WAIT_UNTIL_FIRE_DISCONNECTS);
     }
 

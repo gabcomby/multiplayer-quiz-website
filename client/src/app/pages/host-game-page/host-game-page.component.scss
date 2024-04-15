@@ -39,6 +39,7 @@ $base-font-size: 16;
 
 .QRL {
     grid-area: QRL;
+    margin-left: 40px;
     max-width: 300px;
     display: flex;
     justify-content: flex-start;
@@ -48,6 +49,12 @@ $base-font-size: 16;
     overflow-y: visible;
     white-space: normal;
     word-wrap: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .button-game {
