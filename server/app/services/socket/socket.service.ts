@@ -106,7 +106,7 @@ export class SocketManager {
                     } else {
                         const player = room.playerList.get(socket.id);
                         room.playerList.delete(socket.id);
-                        if (room.playerList.size === 0 && room.roomState !== RoomState.WAITING) {
+                        if (room.playerList.size === 0 && room.roomState === RoomState.PLAYING) {
                             this.io.to(room.roomId).emit('lobby-deleted');
                             rooms.delete(room.roomId);
                         } else {
