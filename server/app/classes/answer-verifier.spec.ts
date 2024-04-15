@@ -186,10 +186,20 @@ describe('Room', () => {
     it('should call the globalAnswersText.push method if the answer is a string', () => {
         const playerId = '123';
         const answerIdx = '1';
-        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        const roomMock = new Room(mockGame, 1, mockSocketIoServer as unknown as SocketIO.Server);
         roomMock.currentQuestionIndex = 1;
         const answerVerifierGood = new AnswerVerifier(roomMock);
         answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
         expect(answerVerifierGood['globalAnswersText']).to.have.lengthOf(1);
+    });
+    it('should call handleQCMAnswers if the question type is QCM', () => {
+        const playerId = '123';
+        const answerIdx = [1];
+        const roomMock = new Room(mockGame, 0, mockSocketIoServer as unknown as SocketIO.Server);
+        roomMock.currentQuestionIndex = 0;
+        const answerVerifierGood = new AnswerVerifier(roomMock);
+        const handleQCMAnswersSpy = sinon.spy(answerVerifierGood, 'handleQCMAnswers');
+        answerVerifierGood.verifyAnswers(playerId, answerIdx, player);
+        sinon.assert.calledOnce(handleQCMAnswersSpy);
     });
 });
