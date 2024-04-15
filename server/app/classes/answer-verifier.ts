@@ -1,7 +1,7 @@
 import { GameType, Room } from '@app/classes/room';
+import { FIRST_ANSWER_MULTIPLIER } from '@app/config/server-config';
 import { IPlayer } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
-import { FIRST_ANSWER_MULTIPLIER } from 'config/server-config';
 
 export class AnswerVerifier {
     private room: Room;

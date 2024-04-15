@@ -1,11 +1,11 @@
 import { GameType, Room } from '@app/classes/room';
+import { DEFAULT_DELAY, SHORT_DELAY, TIME_BETWEEN_QUESTIONS_TEST_MODE } from '@app/config/server-config';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { TimerState } from './countdown-timer';
-import { DEFAULT_DELAY, SHORT_DELAY, TIME_BETWEEN_QUESTIONS_TEST_MODE } from 'config/server-config';
 
 const mockGame = new gameModel({
     id: '1a2b3c',

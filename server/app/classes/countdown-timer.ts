@@ -1,12 +1,12 @@
 import { GameType, Room } from '@app/classes/room';
-import { PlayerStatus } from '@app/model/match.model';
 import {
     DEFAULT_DELAY,
     MINIMAL_TIME_FOR_PANIC_MODE_DEFAULT,
     MINIMAL_TIME_FOR_PANIC_MODE_QRL,
     SHORT_DELAY,
     TIME_BETWEEN_QUESTIONS_TEST_MODE,
-} from 'config/server-config';
+} from '@app/config/server-config';
+import { PlayerStatus } from '@app/model/match.model';
 import { Server as SocketIoServer } from 'socket.io';
 
 export const enum TimerState {

@@ -1,10 +1,10 @@
 import { AnswerVerifier } from '@app/classes/answer-verifier';
 import { CountdownTimer, TimerState } from '@app/classes/countdown-timer';
+import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, NOT_FOUND_INDEX, TIME_HISTOGRAM_UPDATE } from '@app/config/server-config';
 import { IGame, IQuestion } from '@app/model/game.model';
 import { IGamePlayed } from '@app/model/gameplayed.model';
 import { IPlayer } from '@app/model/match.model';
 import { GamePlayedService } from '@app/services/game-played.service';
-import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, NOT_FOUND_INDEX, TIME_HISTOGRAM_UPDATE } from 'config/server-config';
 import { customAlphabet } from 'nanoid';
 import { Server as SocketIoServer } from 'socket.io';
 

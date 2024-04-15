@@ -1,10 +1,10 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
 import { GameType, Room } from '@app/classes/room';
+import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, QRL_DURATION } from '@app/config/server-config';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import * as chai from 'chai';
 import { assert } from 'chai';
-import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, QRL_DURATION } from 'config/server-config';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { TimerState } from './countdown-timer';
