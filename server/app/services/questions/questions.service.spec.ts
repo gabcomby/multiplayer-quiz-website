@@ -1,5 +1,5 @@
 import questionsModel from '@app/model/questions.model';
-import { QuestionsService } from '@app/services/questions.service';
+import { QuestionsService } from '@app/services/questions/questions.service';
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 

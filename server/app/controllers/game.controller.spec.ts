@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
 import gameModel from '@app/model/game.model';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 import * as chai from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';

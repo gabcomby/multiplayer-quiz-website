@@ -14,3 +14,5 @@ export const NOT_FOUND_INDEX = -1;
 export const LAUNCH_TIMER_DURATION = 5;
 
 export const MINIMUM_QUESTIONS_FOR_RANDOM_MODE = 5;
+
+export const PARSED_PORT = 10;

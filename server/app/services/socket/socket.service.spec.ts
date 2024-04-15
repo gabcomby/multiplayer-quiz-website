@@ -1,8 +1,8 @@
 import type { Room } from '@app/classes/room';
 import { IChoice, IGame, IQuestion } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
-import { GameService } from '@app/services/game.service';
-import { SocketManager } from '@app/services/socket.service';
+import { GameService } from '@app/services/game/game.service';
+import { SocketManager } from '@app/services/socket/socket.service';
 import { expect } from 'chai';
 import { createServer } from 'node:http';
 import { type AddressInfo } from 'node:net';
