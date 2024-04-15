@@ -15,26 +15,34 @@
 .demo-row-is-clicked {
     font-weight: bold;
 }
+.header{
+    display: flex;
+    justify-content: center;
+}
 
-header {
+#menu-bar{
     display: flex;
     justify-content: space-between;
+    width: 100%;
     align-items: center;
-    padding: 10px;
-    background-color: pink;
-}
 
-.header-content {
-    display: flex;
-    align-items: center;
 }
+#filtre{
+    font-weight: bold;
+    font-size: 1em;
+
+}
+.title {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
 
 .title {
-    margin-right: 20px; /* Adjust margin as needed */
+    margin-right: 20px; 
 }
 
 .button {
-    margin-left: auto; /* Pushes the button to the right */
+    margin-left: auto; 
 }
 
 .mat-cell.delete-cell {
@@ -45,5 +53,9 @@ header {
 }
 
 .mat-cell.delete-cell button {
-    width: 80%; /* Adjust the width as needed */
+    width: 80%; 
+}
+#registerBank{
+    margin-bottom: 10px;
+    margin-left: 10px;
 }
