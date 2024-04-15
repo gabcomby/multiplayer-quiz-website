@@ -9,11 +9,16 @@ import { GamePageLivechatComponent } from './game-page-livechat.component';
 describe('GamePageLivechatComponent', () => {
     let component: GamePageLivechatComponent;
     let fixture: ComponentFixture<GamePageLivechatComponent>;
-
     let chatServiceMock: jasmine.SpyObj<ChatService>;
 
     beforeEach(async () => {
-        chatServiceMock = jasmine.createSpyObj('ChatService', ['listenForMessages', 'sendMessage', 'stopListeningForMessages']);
+        chatServiceMock = jasmine.createSpyObj('ChatService', [
+            'listenForMessages',
+            'listenForSystemMessages',
+            'sendMessage',
+            'stopListeningForMessages',
+            'stopListeningForSystemMessages',
+        ]);
         chatServiceMock.messages$ = of([]);
         await TestBed.configureTestingModule({
             declarations: [GamePageLivechatComponent],
@@ -25,6 +30,10 @@ describe('GamePageLivechatComponent', () => {
         fixture = TestBed.createComponent(GamePageLivechatComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        fixture.destroy();
     });
 
     it('should listen for messages on init', () => {

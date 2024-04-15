@@ -1,13 +1,11 @@
 import { GameType, Room } from '@app/classes/room';
+import { DEFAULT_DELAY, SHORT_DELAY, TIME_BETWEEN_QUESTIONS_TEST_MODE } from '@app/config/server-config';
 import gameModel from '@app/model/game.model';
+import { IPlayer } from '@app/model/match.model';
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { TimerState } from './countdown-timer';
-
-const ONE_SECOND = 1000;
-const QUARTER_SECOND = 250;
-const TIME_BETWEEN_QUESTIONS = 3000;
 
 const mockGame = new gameModel({
     id: '1a2b3c',
@@ -145,7 +143,7 @@ describe('CountdownTimer', () => {
         room.countdownTimer.timerDurationValue = 5;
         room.countdownTimer.startCountdownTimer();
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', sinon.match.any);
-        clock.tick(ONE_SECOND);
+        clock.tick(DEFAULT_DELAY);
         // eslint-disable-next-line
         assert.equal(room.countdownTimer['currentCountdownTime'], 4);
     });
@@ -154,7 +152,7 @@ describe('CountdownTimer', () => {
         room.countdownTimer.timerDurationValue = 5;
         room.countdownTimer.startCountdownTimer();
         room.countdownTimer['timerState'] = TimerState.PAUSED;
-        clock.tick(ONE_SECOND);
+        clock.tick(DEFAULT_DELAY);
         // eslint-disable-next-line
         assert.equal(room.countdownTimer['currentCountdownTime'], 5);
     });
@@ -166,20 +164,22 @@ describe('CountdownTimer', () => {
         room.countdownTimer.timerDurationValue = 1;
         room.countdownTimer.startCountdownTimer();
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', sinon.match.any);
-        clock.tick(ONE_SECOND);
+        clock.tick(DEFAULT_DELAY);
         sinon.assert.calledOnce(disableFirstAnswerBonusSpy);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
         sinon.assert.calledOnce(handleTimerEndSpy);
     });
 
     it('should not emit timer-stopped if the timer is a launch timer', () => {
+        room.playerList = new Map([['test', { id: 'player1', score: 0, bonus: 0, name: 'Player 1' } as IPlayer]]);
+
         const disableFirstAnswerBonusSpy = sinon.spy(room, 'disableFirstAnswerBonus');
         const handleTimerEndSpy = sinon.spy(room.countdownTimer, 'handleTimerEnd');
         room.countdownTimer['isLaunchTimer'] = true;
         room.countdownTimer.timerDurationValue = 1;
         room.countdownTimer.startCountdownTimer();
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', sinon.match.any);
-        clock.tick(ONE_SECOND);
+        clock.tick(DEFAULT_DELAY);
         sinon.assert.calledOnce(disableFirstAnswerBonusSpy);
         sinon.assert.neverCalledWith(mockSocketIoServer.emit, 'timer-stopped');
         sinon.assert.calledOnce(handleTimerEndSpy);
@@ -207,7 +207,7 @@ describe('CountdownTimer', () => {
         room.gameType = GameType.TEST;
         room.countdownTimer['isLaunchTimer'] = false;
         room.countdownTimer.handleTimerEnd();
-        clock.tick(TIME_BETWEEN_QUESTIONS);
+        clock.tick(TIME_BETWEEN_QUESTIONS_TEST_MODE);
         sinon.assert.calledOnce(startQuestionSpy);
     });
 
@@ -221,6 +221,11 @@ describe('CountdownTimer', () => {
         room.countdownTimer['timerState'] = TimerState.PAUSED;
         room.countdownTimer.handleTimerPause();
         assert.equal(room.countdownTimer.timerStateValue, TimerState.RUNNING);
+    });
+    it('should do nothing pause when timer is stopped', () => {
+        room.countdownTimer['timerState'] = TimerState.STOPPED;
+        room.countdownTimer.handleTimerPause();
+        assert.equal(room.countdownTimer.timerStateValue, TimerState.STOPPED);
     });
 
     it('should handle panic mode for QCM questions', () => {
@@ -249,7 +254,7 @@ describe('CountdownTimer', () => {
         room.countdownTimer['currentQuestionIsQRL'] = false;
         room.countdownTimer['isLaunchTimer'] = false;
         room.countdownTimer.handlePanicMode();
-        clock.tick(QUARTER_SECOND);
+        clock.tick(SHORT_DELAY);
         // eslint-disable-next-line
         assert.equal(room.countdownTimer['currentCountdownTime'], 9);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-countdown', sinon.match.any);
@@ -263,7 +268,7 @@ describe('CountdownTimer', () => {
         room.countdownTimer['currentQuestionIsQRL'] = false;
         room.countdownTimer['isLaunchTimer'] = false;
         room.countdownTimer.handlePanicMode();
-        clock.tick(QUARTER_SECOND);
+        clock.tick(SHORT_DELAY);
         sinon.assert.calledOnce(disableFirstAnswerBonusSpy);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
         sinon.assert.calledOnce(handleTimerEndSpy);
@@ -285,7 +290,7 @@ describe('CountdownTimer', () => {
         room.countdownTimer['timerState'] = TimerState.RUNNING;
         room.countdownTimer.handlePanicMode();
         room.countdownTimer['timerState'] = TimerState.PAUSED;
-        clock.tick(QUARTER_SECOND);
+        clock.tick(SHORT_DELAY);
         // eslint-disable-next-line
         assert.equal(room.countdownTimer['currentCountdownTime'], 10);
     });

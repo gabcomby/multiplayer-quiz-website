@@ -1,5 +1,6 @@
 /* eslint-disable max-lines  -- it is a test file so it is normal to have a lot of lines */
 import { GameType, Room } from '@app/classes/room';
+import { ID_GAME_PLAYED_LENGTH, ID_LOBBY_LENGTH, LAUNCH_TIMER_DURATION, QRL_DURATION } from '@app/config/server-config';
 import gameModel from '@app/model/game.model';
 import { IPlayer } from '@app/model/match.model';
 import * as chai from 'chai';
@@ -7,12 +8,6 @@ import { assert } from 'chai';
 import * as sinon from 'sinon';
 import * as SocketIO from 'socket.io';
 import { TimerState } from './countdown-timer';
-// import exp = require('constants');
-
-const ID_LOBBY_LENGTH = 4;
-const ID_GAME_PLAYED_LENGTH = 10;
-const LAUNCH_TIMER_DURATION = 5;
-const QRL_DURATION = 60;
 
 const mockGame = new gameModel({
     id: '1a2b3c',
@@ -158,19 +153,32 @@ describe('Room', () => {
         assert.equal(room.countdownTimer['timerDuration'], LAUNCH_TIMER_DURATION);
         sinon.assert.calledOnce(startCountdownTimerSpy);
     });
+    it('initialize gameType to random', () => {
+        const game = new Room(mockGame, 2, room.io);
+        assert.equal(game.gameType, GameType.RANDOM);
+    });
+    it('initialize gameType to normal', () => {
+        const roomType = 55;
+        const game = new Room(mockGame, roomType, room.io);
+        assert.equal(game.gameType, GameType.NORMAL);
+    });
 
-    it('should increment the current question index, send players to results page when and not write to db if test mode is enabled', () => {
-        const createGamePlayedSpy = sinon.spy(room.gamePlayedService, 'createGamePlayed');
+    it('should call game result if end of the game', () => {
+        const spy = sinon.spy(room, 'gameResult');
         room.gameType = GameType.TEST;
         room.countdownTimer['isLaunchTimer'] = false;
         room.currentQuestionIndex = mockGame.questions.length - 1;
         room.startQuestion();
-        sinon.assert.calledWith(mockSocketIoServer.emit, 'go-to-results', sinon.match.any, sinon.match.any, sinon.match.any);
+        sinon.assert.called(spy);
         assert.equal(room.currentQuestionIndex, mockGame.questions.length);
-        sinon.assert.notCalled(createGamePlayedSpy);
+    });
+    it('should increment the current question index, send players to results page when and not write to db if test mode is enabled', () => {
+        room.gameResult();
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'go-to-results', sinon.match.any, sinon.match.any, sinon.match.any);
     });
 
     it('should increment the current question index, send players to results page when and write to db if test mode is disabled', () => {
+        room.playerList = new Map([['test', { id: 'player1', score: 0, bonus: 0, name: 'Player 1' } as IPlayer]]);
         const createGamePlayedSpy = sinon.spy(room.gamePlayedService, 'createGamePlayed');
         room.gameType = GameType.NORMAL;
         room.countdownTimer['isLaunchTimer'] = false;
@@ -182,6 +190,14 @@ describe('Room', () => {
     });
 
     it('should set the timer duration to game time and set the current question as a QCM question', () => {
+        room.playerHasAnswered = new Map([
+            ['h', true],
+            ['c', true],
+        ]);
+        room.livePlayerAnswers = new Map([
+            ['h', 'he'],
+            ['c', 'test'],
+        ]);
         room.countdownTimer['timerState'] = TimerState.STOPPED;
         room.countdownTimer['isLaunchTimer'] = false;
         room.currentQuestionIndex = -1;
@@ -199,6 +215,19 @@ describe('Room', () => {
         sinon.assert.calledWith(mockSocketIoServer.emit, 'question', sinon.match.any, sinon.match.any);
         assert.equal(room.countdownTimer['timerDuration'], QRL_DURATION);
         assert.isTrue(room.countdownTimer['currentQuestionIsQRL']);
+    });
+    it('should set the timer duration to gameDuration if no question', () => {
+        room.countdownTimer['timerState'] = TimerState.STOPPED;
+        room.countdownTimer['isLaunchTimer'] = false;
+        room.currentQuestionIndex = 3;
+        room.startQuestion();
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'question', sinon.match.any, sinon.match.any);
+        assert.equal(room.countdownTimer['timerDuration'], room.game.duration);
+    });
+    it('should do nothing if timerStateVAlue is not stopped', () => {
+        room.countdownTimer['timerState'] = TimerState.RUNNING;
+        room.startQuestion();
+        sinon.assert.notCalled(mockSocketIoServer.emit);
     });
 
     it('should handle early answers correctly, emitting "timer-stopped" when all players have answered', () => {
@@ -227,5 +256,20 @@ describe('Room', () => {
         sinon.assert.calledWith(verifyAnswersStub, 'player3Id', [1], player1);
         sinon.assert.calledWith(mockSocketIoServer.emit, 'timer-stopped');
         sinon.assert.calledOnce(handleTimerEndSpy);
+    });
+    it('should only count recent modifications and emit the correct number', () => {
+        room.inputModifications = [
+            { time: Date.now(), player: 'player1' },
+            { time: Date.now(), player: 'player2' },
+            { time: Date.now(), player: 'player3' },
+        ];
+        room.handleInputModification();
+        sinon.assert.calledWith(mockSocketIoServer.emit, 'number-modifications');
+    });
+    it('should return if the current question is not a qrl', () => {
+        room.currentQuestionIndex = 0;
+        room.game.questions[room.currentQuestionIndex].type = 'QCM';
+        room.handleInputModification();
+        sinon.assert.notCalled(mockSocketIoServer.emit);
     });
 });

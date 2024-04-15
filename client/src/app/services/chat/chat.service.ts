@@ -4,9 +4,6 @@ import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-const DISAPPEAR_DELAY = 60000;
-const NOT_FOUND_INDEX = -1;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -16,6 +13,7 @@ export class ChatService {
 
     private messages: Message[] = [];
     private listenToMessageSubscription: Subscription | undefined;
+    private listenToSystemMessageSubscription: Subscription | undefined;
 
     constructor(
         private snackbar: SnackbarService,
@@ -29,9 +27,21 @@ export class ChatService {
         });
     }
 
+    listenForSystemMessages(): void {
+        this.listenToSystemMessageSubscription = this.socket.onSystemMessage().subscribe({
+            next: (message) => this.handleNewMessage(message),
+            error: () => this.snackbar.openSnackBar('Erreur lors de la réception des messages système'),
+        });
+    }
+
     stopListeningForMessages(): void {
         this.listenToMessageSubscription?.unsubscribe();
     }
+
+    stopListeningForSystemMessages(): void {
+        this.listenToSystemMessageSubscription?.unsubscribe();
+    }
+
     resetMessages(): void {
         this.messagesSubject = new BehaviorSubject<Message[]>([]);
         this.messages$ = this.messagesSubject.asObservable();
@@ -56,19 +66,9 @@ export class ChatService {
             this.socket.sendMessageToServer(trimmedText, message.sender, chatMessageCommand.roomId);
         }
     }
-
     private handleNewMessage(message: Message): void {
         const newMessage = { ...message, timestamp: new Date(message.timestamp as unknown as string), visible: true };
         this.messages.push(newMessage);
         this.messagesSubject.next(this.messages);
-        setTimeout(() => this.hideMessage(newMessage), DISAPPEAR_DELAY);
-    }
-
-    private hideMessage(message: Message): void {
-        const index = this.messages.indexOf(message);
-        if (index !== NOT_FOUND_INDEX) {
-            this.messages[index].visible = false;
-            this.messagesSubject.next([...this.messages]);
-        }
     }
 }

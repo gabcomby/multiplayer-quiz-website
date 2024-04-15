@@ -1,6 +1,6 @@
 import { Room } from '@app/classes/room';
 import { IGame } from '@app/model/game.model';
-import { IPlayer } from '@app/model/match.model';
+import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { rooms } from '@app/module';
 import { GameService } from '@app/services/game.service';
 import { QuestionsService } from '@app/services/questions.service';
@@ -102,7 +102,6 @@ export class SocketManager {
                         this.io.to(room.roomId).emit('lobby-deleted');
                         rooms.delete(room.roomId);
                     } else {
-                        // Move this to the room class
                         const player = room.playerList.get(socket.id);
                         room.playerList.delete(socket.id);
                         if (room.playerList.size === 0 && room.gameHasStarted) {
@@ -112,6 +111,12 @@ export class SocketManager {
                             if (!room.bannedNames.includes(player.name.toLowerCase())) {
                                 room.playerLeftList.push(player);
                                 this.io.to(room.roomId).emit('playerleftlist-change', Array.from(room.playerLeftList));
+                                this.io.to(getRoom().roomId).emit('system-message', {
+                                    text: `${player.name} a quitté la partie`,
+                                    sender: 'Système',
+                                    timestamp: new Date(),
+                                    visible: true,
+                                });
                             }
                             this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                         }
@@ -146,6 +151,8 @@ export class SocketManager {
                             name: 'Organisateur',
                             score: 0,
                             bonus: 0,
+                            chatPermission: true,
+                            status: 0,
                         } as IPlayer;
                         room.playerList.set(socket.id, player);
                         room.playerHasAnswered.set(socket.id, false);
@@ -153,6 +160,7 @@ export class SocketManager {
                         this.io.to(room.roomId).emit('playerlist-change', Array.from(room.playerList));
                         this.io.to(socket.id).emit('playerleftlist-change', Array.from(room.playerLeftList));
                     }
+
                     room.gameStartDateTime = new Date();
                     room.nbrPlayersAtStart = room.playerList.size;
                     room.gameHasStarted = true;
@@ -164,6 +172,14 @@ export class SocketManager {
             socket.on('next-question', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId) && socket.id === room.hostId) {
+                    room.playerList.forEach((player) => {
+                        player.status = PlayerStatus.Inactive;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: player.id,
+                            status: player.status,
+                        });
+                    });
                     room.startQuestion();
                 }
             });
@@ -197,15 +213,59 @@ export class SocketManager {
             });
 
             socket.on('send-locked-answers', (answerIdx: number[] | string, player: IPlayer) => {
-                getRoom().handleEarlyAnswers(socket.id, answerIdx, player);
+                const room = getRoom();
+                if (room) {
+                    const playerFromRoom = room.playerList.get(socket.id);
+                    if (playerFromRoom) {
+                        playerFromRoom.status = PlayerStatus.Confirmed;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: playerFromRoom.id,
+                            status: playerFromRoom.status,
+                        });
+
+                        room.handleEarlyAnswers(socket.id, answerIdx, player);
+                    }
+                }
             });
 
             socket.on('chat-message', ({ message, playerName, roomId }) => {
-                socket.to(roomId).emit('chat-message', {
-                    text: message,
-                    sender: playerName,
-                    timestamp: new Date().toISOString(),
-                });
+                const room = getRoom();
+                if (room) {
+                    if (socket.id === room.hostId || room.playerList.get(socket.id).chatPermission) {
+                        socket.to(roomId).emit('chat-message', {
+                            text: message,
+                            sender: playerName,
+                            timestamp: new Date().toISOString(),
+                        });
+                    }
+                }
+            });
+
+            socket.on('chat-permission', (chatPermission: { playerId: string; permission: boolean }) => {
+                const room = getRoom();
+                if (room) {
+                    let playerSocketId = null;
+                    for (const [socketId, player] of room.playerList.entries()) {
+                        if (player.id === chatPermission.playerId) {
+                            playerSocketId = socketId;
+                            break;
+                        }
+                    }
+
+                    if (playerSocketId) {
+                        const player = room.playerList.get(playerSocketId);
+                        if (player) {
+                            player.chatPermission = chatPermission.permission;
+                            this.io.to(playerSocketId).emit('system-message', {
+                                text: `Vous avez ${chatPermission.permission ? 'reçu' : 'perdu'} la permission de chat`,
+                                sender: 'Système',
+                                timestamp: new Date(),
+                                visible: true,
+                            });
+                        }
+                    }
+                }
             });
 
             socket.on('disconnect', (reason) => {
@@ -221,8 +281,19 @@ export class SocketManager {
                     if (!reset && room.gameType !== 1) {
                         room.inputModifications.push({ player: player.id, time: new Date().getTime() });
                     }
+
+                    const playerInRoom = room.playerList.get(socket.id);
+                    if (playerInRoom && playerInRoom.status === PlayerStatus.Inactive && answerIdx.length > 0) {
+                        playerInRoom.status = PlayerStatus.Active;
+
+                        this.io.to(room.hostId).emit('player-status-changed', {
+                            playerId: playerInRoom.id,
+                            status: playerInRoom.status,
+                        });
+                    }
                 }
             });
+
             socket.on('update-histogram', () => {
                 const room = getRoom();
                 if (roomExists(room.roomId)) {

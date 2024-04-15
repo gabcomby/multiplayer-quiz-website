@@ -3,12 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MAX_QUESTIONS_CHOICES } from '@app/config/client-config';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
 import { QuestionService } from '@app/services/question/question.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { ChoiceComponent } from './choice.component';
-
-const MAX_CHOICES = 4;
 
 describe('ChoiceComponent', () => {
     let questionServiceSpy: jasmine.SpyObj<QuestionService>;
@@ -69,7 +68,7 @@ describe('ChoiceComponent', () => {
 
         component.addChoice(component.answers);
 
-        expect(component.answers.length).toBe(MAX_CHOICES);
+        expect(component.answers.length).toBe(MAX_QUESTIONS_CHOICES);
         expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith('Maximum 4 choix');
     });
 
@@ -80,7 +79,7 @@ describe('ChoiceComponent', () => {
         ];
 
         spyOn(component, 'addChoice').and.callFake(() => {
-            if (component.answers.length < MAX_CHOICES) {
+            if (component.answers.length < MAX_QUESTIONS_CHOICES) {
                 component.answers.push({ text: 'test3', isCorrect: false });
             }
         });
@@ -100,7 +99,7 @@ describe('ChoiceComponent', () => {
 
         component.addChoice(component.answers);
         component.addChoice(component.answers);
-        expect(component.answers.length).toBe(MAX_CHOICES);
+        expect(component.answers.length).toBe(MAX_QUESTIONS_CHOICES);
     });
 
     it('should be able to remove a choice if length of choices is higher than 2', () => {

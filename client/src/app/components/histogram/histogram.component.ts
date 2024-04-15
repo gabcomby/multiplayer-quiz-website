@@ -1,10 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { HISTOGRAM_SIZE } from '@app/config/client-config';
 import { Choice, Question, QuestionType } from '@app/interfaces/game';
 import { Player } from '@app/interfaces/match';
 import { GameService } from '@app/services/game/game.service';
 
-const SIZE1 = 400;
-const SIZE2 = 400;
 @Component({
     selector: 'app-histogram',
     templateUrl: './histogram.component.html',
@@ -15,6 +14,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     @Input() questionsGame: Question[];
     @Input() nbModified: number;
     @Input() resultView: boolean;
+    @Input() isTest: boolean;
 
     answerCounts: Map<string, Map<Choice, number>> = new Map();
     answerCountsArray: { key: string; value: Map<Choice, number> }[] = [];
@@ -23,7 +23,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     currentIndex: number = 0;
     dataQrl: { question: string; data: { name: string; value: number }[] }[] = [];
 
-    view: [number, number] = [SIZE2, SIZE1];
+    view: [number, number] = [HISTOGRAM_SIZE, HISTOGRAM_SIZE];
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;
@@ -128,7 +128,7 @@ export class HistogramComponent implements OnInit, OnChanges {
                 this.histogramsData.push({ question: question.text, data: histogramData });
             } else {
                 const answerCountsMap = this.calculateAnswerCounts(question);
-                const histogramData = question.type === 'QCM' ? this.mapToHistogramData(answerCountsMap) : [];
+                const histogramData = this.mapToHistogramData(answerCountsMap);
                 this.histogramsData.push({ question: question.text, data: histogramData });
             }
         });
@@ -138,13 +138,12 @@ export class HistogramComponent implements OnInit, OnChanges {
         const answerCountsMap: Map<Choice, number> = new Map();
 
         if (!question.choices) return answerCountsMap;
-
+        const choicesQuestion = question.choices;
         question.choices.forEach((choice) => answerCountsMap.set(choice, 0));
         this.answersPlayer.forEach(([questionText, choices]) => {
             if (questionText !== question.text || typeof choices === 'string') return;
             choices.forEach((choiceIndex) => {
-                if (!question.choices) return;
-                const choice = question.choices[choiceIndex];
+                const choice = choicesQuestion[choiceIndex];
                 if (!choice) return;
                 const count = answerCountsMap.get(choice);
                 if (count !== undefined) {
@@ -157,15 +156,21 @@ export class HistogramComponent implements OnInit, OnChanges {
 
     private calculateAnswerCountsQRL(question: Question): Map<string, number> {
         const answerCountsMap: Map<string, number> = new Map();
-        this.answersPlayer.forEach(([questionText, answer]) => {
-            if (questionText === question.text) {
-                if (typeof answer[0] === 'number' && typeof answer[1] === 'number' && typeof answer[2] === 'number') {
-                    answerCountsMap.set('0', answer[0]);
-                    answerCountsMap.set('0.5', answer[1]);
-                    answerCountsMap.set('1', answer[2]);
+        if (!this.isTest) {
+            this.answersPlayer.forEach(([questionText, answer]) => {
+                if (questionText === question.text) {
+                    if (typeof answer[0] === 'number' && typeof answer[1] === 'number' && typeof answer[2] === 'number') {
+                        answerCountsMap.set('0', answer[0]);
+                        answerCountsMap.set('0.5', answer[1]);
+                        answerCountsMap.set('1', answer[2]);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            answerCountsMap.set('0', 0);
+            answerCountsMap.set('0.5', 0);
+            answerCountsMap.set('1', 1);
+        }
         return answerCountsMap;
     }
     private mapToHistogramData(answerCountsMap: Map<Choice, number>): { name: string; value: number }[] {

@@ -11,7 +11,6 @@ import { Socket, io } from 'socket.io-client';
 export class SocketService {
     private socket: Socket;
     private readonly url: string = environment.socketUrl;
-
     connect(): void {
         this.socket = io(this.url, { autoConnect: true });
     }
@@ -160,6 +159,18 @@ export class SocketService {
         });
     }
 
+    sendChatPermission(playerId: string, permission: boolean): void {
+        this.socket.emit('chat-permission', { playerId, permission });
+    }
+
+    onSystemMessage(): Observable<{ text: string; sender: string; timestamp: Date }> {
+        return new Observable((observer) => {
+            this.socket.on('system-message', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+
     onLockedAnswersQRL(callback: (answers: [string, [Player, string][]][]) => void): void {
         this.socket.on('locked-answers-QRL', (answersArray: [string, [Player, string][]][]) => {
             callback(answersArray);
@@ -203,6 +214,11 @@ export class SocketService {
     onUpdateNbModified(callback: (nbModification: number) => void): void {
         this.socket.on('number-modifications', (nbModification: number) => {
             callback(nbModification);
+        });
+    }
+    onPlayerStatusChanged(callback: (data: { playerId: string; status: number }) => void): void {
+        this.socket.on('player-status-changed', (data: { playerId: string; status: number }) => {
+            callback(data);
         });
     }
 }

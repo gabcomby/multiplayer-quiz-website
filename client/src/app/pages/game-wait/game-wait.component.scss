@@ -48,7 +48,6 @@
     text-align: center;
 }
 
-
 .start-game {
     grid-area: start-game;
     display: flex;
@@ -58,12 +57,19 @@
     text-align: center;
 }
 
-.start-game > * {
-    margin-bottom: 10px;
+.player-container {
+    display: flex;
+    align-items: center;
 }
 
-.start-game button {
-    margin-top: 10px;
+.player-name {
+    font-size: 1em;
+    margin-right: 10px;
+}
+
+.banned-player-button {
+    font-size: 1em;
+    padding: 8px 16px;
 }
 
 .lobby-text {

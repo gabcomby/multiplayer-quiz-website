@@ -13,18 +13,16 @@
         <p class="lobby-text">Code pour rejoindre le match: {{ lobbyCode }}</p>
     </div>
     <div *ngIf="isHost" class="start-game">
-        <h2>Bonjour host!</h2>
+        <h2>Bonjour Organisateur!</h2>
         <div *ngIf="(this.playerList.length !== 0 || this.gameType === 2) && roomIsLocked">
             <button mat-raised-button color="accent" (click)="handleGameLaunch()">Démarrer la partie!</button>
         </div>
         <h2>Verrouiller la partie?</h2>
         <mat-slide-toggle (change)="toggleRoomLock()"> </mat-slide-toggle>
         <h2>Qui veux-tu bannir?</h2>
-        <div *ngFor="let player of playerList">
-            <div>
-                {{ player.name }}
-                <button id="bannedPlayer" type="checkbox" (click)="banPlayer(player.name)">bannir</button>
-            </div>
+        <div *ngFor="let player of playerList" class="player-container">
+            <div class="player-name">{{ player.name }}</div>
+            <button mat-raised-button class="banned-player-button" type="checkbox" (click)="banPlayer(player.name)">bannir</button>
         </div>
     </div>
 </div>
