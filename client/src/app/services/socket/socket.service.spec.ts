@@ -10,6 +10,7 @@ import * as SocketIOClient from 'socket.io-client';
 const TIMER_COUNTDOWN = 10;
 const QUESTION_TIME_UPDATE = 10;
 const GAME_DURATION = 10;
+const date = new Date();
 
 class MockSocket {
     callbacks: { [eventName: string]: (data: unknown) => void } = {};
@@ -90,7 +91,7 @@ class MockSocket {
             callback({
                 text: 'System alert',
                 sender: 'System',
-                timestamp: new Date(),
+                timestamp: date,
             });
         }
     });
@@ -105,7 +106,6 @@ class MockSocket {
 describe('SocketService', () => {
     let service: SocketService;
     let mockSocket: MockSocket;
-    const date = new Date();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
