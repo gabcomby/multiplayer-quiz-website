@@ -105,6 +105,7 @@ class MockSocket {
 describe('SocketService', () => {
     let service: SocketService;
     let mockSocket: MockSocket;
+    const date = new Date();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -312,7 +313,7 @@ describe('SocketService', () => {
         expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-disabled', jasmine.any(Function));
     });
     it('should handle "system-message" events', (done) => {
-        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: new Date() };
+        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: date };
         mockSocket.simulateEvent('system-message', expectedSystemMessage);
         service.onSystemMessage().subscribe({
             next: (message) => {
