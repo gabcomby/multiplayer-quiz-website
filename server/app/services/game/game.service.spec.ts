@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import gameModel from '@app/model/game.model';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 

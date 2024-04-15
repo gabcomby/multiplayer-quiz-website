@@ -1,7 +1,7 @@
 import { Room, RoomState } from '@app/classes/room';
 import { IPlayer } from '@app/model/match.model';
 import { rooms } from '@app/module';
-import { RoomAuthService } from '@app/services/room-auth.service';
+import { RoomAuthService } from '@app/services/room-auth/room-auth.service';
 import { expect } from 'chai';
 
 describe('RoomAuthService', () => {
