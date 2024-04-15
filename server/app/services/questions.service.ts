@@ -1,8 +1,7 @@
 import { IQuestion } from '@app/model/game.model';
 import questionsModel from '@app/model/questions.model';
 import { Service } from 'typedi';
-
-const MINIMUM_QUESTIONS_FOR_RANDOM_MODE = 5;
+import { MINIMUM_QUESTIONS_FOR_RANDOM_MODE } from '@app/config/server-config';
 
 @Service()
 export class QuestionsService {

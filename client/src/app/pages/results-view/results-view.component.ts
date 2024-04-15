@@ -32,6 +32,10 @@ export class ResultsViewComponent implements OnInit {
         return this.gameService.isHostValue;
     }
 
+    get isTestValue(): boolean {
+        return this.gameService.isTestValue;
+    }
+
     get playerList(): Player[] {
         this.playerDataSource = this.gameService.playersListResultValue;
         this.sortDataSource();

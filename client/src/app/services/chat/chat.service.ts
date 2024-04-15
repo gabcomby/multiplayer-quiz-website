@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DISAPPEAR_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import type { ChatMessageCommand, Message } from '@app/interfaces/message';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';

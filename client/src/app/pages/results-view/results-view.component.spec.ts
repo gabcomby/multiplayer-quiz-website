@@ -154,6 +154,11 @@ describe('ResultsViewComponent', () => {
         expect(result).toEqual(gameServiceSpy.isHostValue);
     });
 
+    it('should return the test value', () => {
+        const result = component.isTestValue;
+        expect(result).toEqual(gameServiceSpy.isTestValue);
+    });
+
     it('should not navigate on ngOnInit if refreshedPage is not present', () => {
         component.ngOnInit();
 

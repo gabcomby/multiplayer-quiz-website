@@ -1,7 +1,7 @@
+import { ID_LENGTH } from '@app/config/client-config';
 import { Game } from '@app/interfaces/game';
 import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
 
-const ID_LENGTH = 6;
 const YEAR = 2020;
 const MONTH = 1;
 const DAY = 1;

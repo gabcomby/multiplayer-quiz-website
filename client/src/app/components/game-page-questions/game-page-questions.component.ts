@@ -1,10 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { NOT_FOUND_INDEX } from '@app/config/client-config';
 import { Choice, QuestionType } from '@app/interfaces/game';
 import { AnswerStateService } from '@app/services/answer-state/answer-state.service';
 import { GameService } from '@app/services/game/game.service';
-
-const NOT_FOUND_INDEX = -1;
 
 @Component({
     selector: 'app-game-page-questions',
