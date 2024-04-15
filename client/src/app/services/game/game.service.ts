@@ -49,6 +49,7 @@ export class GameService {
     private numberInputModified: number = 0;
     private playersListResult: Player[] = [];
     private countAnswerQrl: number = 0;
+    private isTest: boolean = false;
 
     // eslint-disable-next-line -- needed for SoC (Separation of Concerns)
     constructor(
@@ -170,6 +171,10 @@ export class GameService {
         return this.gameType;
     }
 
+    get isTestValue(): boolean {
+        return this.isTest;
+    }
+
     set answerIndexSetter(answerIdx: number[]) {
         this.answerIndex = answerIdx;
         this.socketService.sendLiveAnswers(this.answerIndex, this.currentPlayer, true);
@@ -233,6 +238,7 @@ export class GameService {
         this.audio.src = AUDIO_CLIP_PATH;
         this.audio.load();
         this.countAnswerQrl = 0;
+        this.isTest = false;
     }
 
     startGame(): void {
@@ -299,6 +305,7 @@ export class GameService {
         const newPlayerList = [...playerListOriginal.values()];
         this.playerList = [...newPlayerList];
         this.gameTitle = gameTitle;
+        this.isTest = true;
     }
     playerListChange(playerList: [[string, Player]]) {
         const playerListOriginal = new Map(playerList);
