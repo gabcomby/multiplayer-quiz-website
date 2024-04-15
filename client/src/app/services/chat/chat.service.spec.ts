@@ -123,4 +123,32 @@ describe('ChatService', () => {
         service.stopListeningForMessages();
         expect(service['listenToMessageSubscription']?.closed).toBeTrue();
     });
+
+    it('should stop listening for system messages', () => {
+        socketServiceSpy.onSystemMessage.and.returnValue(of({ text: 'test', sender: 'Système', timestamp: mockedDate }));
+
+        service['listenForSystemMessages'] = jasmine.createSpy();
+        service.listenForSystemMessages();
+        service.stopListeningForSystemMessages();
+        expect(service['listenToSystemMessageSubscription']?.closed).toBeUndefined();
+    });
+
+    it('should listen for system messages and handle new message', () => {
+        const systemMessage = { text: 'System alert', sender: 'System', timestamp: new Date() };
+        socketServiceSpy.onSystemMessage.and.returnValue(of(systemMessage));
+
+        service.listenForSystemMessages();
+
+        expect(socketServiceSpy.onSystemMessage).toHaveBeenCalled();
+        expect(service.messagesSubject.value).toContain(jasmine.objectContaining({ text: 'System alert' }));
+    });
+
+    it('should handle error when listening for system messages fails', () => {
+        socketServiceSpy.onSystemMessage.and.returnValue(throwError(() => new Error('Error during system message reception')));
+
+        service.listenForSystemMessages();
+
+        expect(socketServiceSpy.onSystemMessage).toHaveBeenCalled();
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Erreur lors de la réception des messages système');
+    });
 });
