@@ -10,6 +10,7 @@ import * as SocketIOClient from 'socket.io-client';
 const TIMER_COUNTDOWN = 10;
 const QUESTION_TIME_UPDATE = 10;
 const GAME_DURATION = 10;
+const date = new Date();
 
 class MockSocket {
     callbacks: { [eventName: string]: (data: unknown) => void } = {};
@@ -90,7 +91,7 @@ class MockSocket {
             callback({
                 text: 'System alert',
                 sender: 'System',
-                timestamp: new Date(),
+                timestamp: date,
             });
         }
     });
@@ -312,7 +313,7 @@ describe('SocketService', () => {
         expect(mockSocket.on).toHaveBeenCalledWith('panic-mode-disabled', jasmine.any(Function));
     });
     it('should handle "system-message" events', (done) => {
-        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: new Date() };
+        const expectedSystemMessage = { text: 'System alert', sender: 'System', timestamp: date };
         mockSocket.simulateEvent('system-message', expectedSystemMessage);
         service.onSystemMessage().subscribe({
             next: (message) => {

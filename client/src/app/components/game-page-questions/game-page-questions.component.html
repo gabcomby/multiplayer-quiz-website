@@ -29,8 +29,10 @@
             <input [maxlength]="200" [(ngModel)]="answerQrl" id="answer" matInput placeholder="Entrer votre réponse" (input)="onInputChange()" />
         </mat-form-field>
         <p class="numberOfWords">{{ 200 - answerQrl.length }}</p>
+        <p *ngIf="answerQrl.length > 199"> Vous ne pouvez pas avoir plus que 200 caractères</p>
     </div>
     <div *ngIf="!answerIsLocked && !isHost && !timerExpired">
         <button mat-raised-button color="primary" (click)="submitAnswer()">Submit</button>
     </div>
+    <p *ngIf="timerStopped && type === 'QRL'">Votre réponse est en évaluation</p>
 </div>

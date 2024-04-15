@@ -76,9 +76,10 @@
             <input type="file" accept=".json" (change)="onFileSelected($event)" style="display: none" #fileInput />
         </div>
     </div>
-    <button mat-raised-button (click)="deleteGameHistoric()">Delete historic</button>
+
     <div class="historic">
         <h1>Historique des parties</h1>
+        <button mat-raised-button (click)="deleteGameHistoric()">Supprimer l'historique</button>
         <mat-table [dataSource]="historicDataSource" matSort>
             <ng-container matColumnDef="title">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> Titre </mat-header-cell>
