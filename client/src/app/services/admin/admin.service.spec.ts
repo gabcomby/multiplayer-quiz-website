@@ -3,30 +3,31 @@ import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { API_BASE_URL } from '@app/app.module';
-import { Game } from '@app/interfaces/game';
+import { Game, QuestionType } from '@app/interfaces/game';
 import { ApiService } from '@app/services/api/api.service';
 import { GameValidationService } from '@app/services/game-validation/game-validation.service';
 import { SnackbarService } from '@app/services/snackbar/snackbar.service';
 import { SocketService } from '@app/services/socket/socket.service';
-import assignNewGameAttributes from '@app/utils/assign-new-game-attributes';
+import * as utils from '@app/utils/assign-new-game-attributes';
 import { of, throwError } from 'rxjs';
 import { AdminService } from './admin.service';
 
 describe('AdminService', () => {
     let service: AdminService;
     let apiServiceSpy: jasmine.SpyObj<ApiService>;
-    // let gameValidationServiceSpy: jasmine.SpyObj<GameValidationService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackbarService>;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
-    // let assignNewGameAttributesSpy: jasmine.Spy;
+    let assignNewGameAttributesSpy: jasmine.Spy;
+    let gameValidationServiceSpy: jasmine.SpyObj<GameValidationService>;
     let gameMock = {} as unknown as Game;
+    const defaultDate = new Date();
 
     beforeEach(() => {
         const SPY_GAME_VALIDATION_SERVICE = jasmine.createSpyObj('GameValidationService', ['isValidGame']);
         const SPY_SNACKBAR_SERVICE = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         const SPY_SOCKET_SERVICE = jasmine.createSpyObj('SocketService', ['connect']);
         const SPY_API_SERVICE = jasmine.createSpyObj('ApiService', ['getGame', 'getGames', 'patchGame', 'createGame', 'deleteGame']);
-        const SPY_ASSIGN_NEW_GAME_ATTRIBUTES = jasmine.createSpy('assignNewGameAttributes');
+        gameValidationServiceSpy = SPY_GAME_VALIDATION_SERVICE;
 
         TestBed.configureTestingModule({
             providers: [
@@ -36,7 +37,7 @@ describe('AdminService', () => {
                 { provide: SnackbarService, useValue: SPY_SNACKBAR_SERVICE },
                 { provide: SocketService, useValue: SPY_SOCKET_SERVICE },
                 { provide: ApiService, useValue: SPY_API_SERVICE },
-                { provide: assignNewGameAttributes, useValue: SPY_ASSIGN_NEW_GAME_ATTRIBUTES },
+                // { provide: assignNewGameAttributes, useValue: SPY_ASSIGN_NEW_GAME_ATTRIBUTES },
             ],
             imports: [HttpClientTestingModule, MatSnackBarModule, BrowserAnimationsModule],
         });
@@ -46,7 +47,7 @@ describe('AdminService', () => {
         snackbarServiceSpy = TestBed.inject(SnackbarService) as jasmine.SpyObj<SnackbarService>;
         socketServiceSpy = TestBed.inject(SocketService) as jasmine.SpyObj<SocketService>;
         apiServiceSpy = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
-        // assignNewGameAttributesSpy = TestBed.inject(assignNewGameAttributes) as jasmine.Spy;
+        assignNewGameAttributesSpy = spyOn(utils, 'default');
     });
 
     it('should be created', () => {
@@ -189,5 +190,33 @@ describe('AdminService', () => {
         const dataSource = [gameMock];
         const result = service['hasValidInput']('', 'title', dataSource);
         expect(result).toBeTrue();
+    });
+
+    it('should assign new game attributes if game is valid', async () => {
+        const fakeGame: Game = {
+            id: '123',
+            title: 'allo',
+            description: 'test',
+            isVisible: false,
+            duration: 10,
+            lastModification: defaultDate,
+            questions: [
+                {
+                    type: QuestionType.QCM,
+                    text: 'Ceci est une question de test',
+                    points: 10,
+                    id: 'dsdsd',
+                    choices: [
+                        { text: '1', isCorrect: false },
+                        { text: '2', isCorrect: true },
+                    ],
+                    lastModification: defaultDate,
+                },
+            ],
+        };
+        gameValidationServiceSpy.isValidGame.and.returnValue(Promise.resolve(true));
+        await service.prepareGameForImport(fakeGame);
+        expect(gameValidationServiceSpy.isValidGame).toHaveBeenCalled();
+        expect(assignNewGameAttributesSpy).toHaveBeenCalled();
     });
 });

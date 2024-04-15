@@ -1,4 +1,4 @@
-import { Room } from '@app/classes/room';
+import { Room, RoomState } from '@app/classes/room';
 import { IPlayer } from '@app/model/match.model';
 import { rooms } from '@app/module';
 import { RoomAuthService } from '@app/services/room-auth.service';
@@ -59,13 +59,14 @@ describe('RoomAuthService', () => {
     });
 
     it('should allow access if none of the conditions are met', async () => {
+        room.roomState = RoomState.WAITING;
         rooms.set(roomId, room as Room);
         const result = await service.verifyPlayerCanJoinRoom(roomId, player);
         expect(result).to.equal(true);
     });
 
     it('should return false if game is already launched', async () => {
-        room.gameHasStarted = true;
+        room.roomState = RoomState.PLAYING;
         rooms.set(roomId, room as Room);
         const result = await service.verifyPlayerCanJoinRoom(roomId, player);
         expect(result).to.equal(false);

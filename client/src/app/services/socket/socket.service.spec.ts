@@ -21,6 +21,10 @@ class MockSocket {
     on = jasmine.createSpy('on').and.callFake((eventName: string, callback) => {
         this.callbacks[eventName] = callback;
 
+        if (eventName === 'player-status-changed') {
+            callback();
+        }
+
         if (eventName === 'timer-countdown') {
             callback(TIMER_COUNTDOWN);
         }
@@ -368,5 +372,21 @@ describe('SocketService', () => {
             },
             error: done.fail,
         });
+    });
+    it('should emit chat permission', () => {
+        service.sendChatPermission('123', true);
+        expect(mockSocket.emit).toHaveBeenCalledWith('chat-permission', { playerId: '123', permission: true });
+    });
+    it('should handle "livePlayerAnswers" events', (done) => {
+        service.onLivePlayerAnswers(() => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('livePlayerAnswers', jasmine.any(Function));
+    });
+    it('should handle onPlayerStatusChanged', (done) => {
+        service.onPlayerStatusChanged(() => {
+            done();
+        });
+        expect(mockSocket.on).toHaveBeenCalledWith('player-status-changed', jasmine.any(Function));
     });
 });

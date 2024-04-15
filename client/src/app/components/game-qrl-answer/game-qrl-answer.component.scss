@@ -17,6 +17,9 @@
     max-height: 300px;
     overflow: auto;
     margin-bottom: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
     &::-webkit-scrollbar {
         width: 6px;
@@ -36,10 +39,11 @@
 }
 
 .answer-player {
-    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .answer-text {
+    margin-bottom: 5px;
     overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;

@@ -1,3 +1,4 @@
+import { RoomState } from '@app/classes/room';
 import { IPlayer } from '@app/model/match.model';
 import { rooms } from '@app/module';
 import { Service } from 'typedi';
@@ -10,7 +11,7 @@ export class RoomAuthService {
         }
         const room = rooms.get(roomId);
         if (room) {
-            if (room.gameHasStarted) {
+            if (room.roomState !== RoomState.WAITING) {
                 return false;
             }
             const bannedNames = room.bannedNames;
