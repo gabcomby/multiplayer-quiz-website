@@ -453,4 +453,15 @@ describe('Socket Manager service', () => {
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
         }, 100);
     });
+
+    it('should emit live-answers', (done) => {
+        clientSocket.emit('send-live-answers', 'answer1', mockPlayer as IPlayer, false);
+        clientSocket.on('live-answers', (answer, player, isCorrect) => {
+            expect(answer).to.equal('answer1');
+            expect(player).to.eql(mockPlayer);
+            expect(isCorrect).to.equal(false);
+            done();
+        });
+        done();
+    });
 });
