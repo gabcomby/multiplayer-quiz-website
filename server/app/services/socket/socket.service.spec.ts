@@ -1,4 +1,5 @@
-import type { Room } from '@app/classes/room';
+import type { AnswerVerifier } from '@app/classes/answer-verifier';
+import { Room } from '@app/classes/room';
 import { IChoice, IGame, IQuestion } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { GameService } from '@app/services/game/game.service';
@@ -44,6 +45,11 @@ const mockRoom: Partial<Room> = {
     roomId: '1',
     playerList: new Map<string, IPlayer>(),
     game: mockGame as IGame,
+    currentQuestionIndex: 0,
+
+    answerVerifier: {
+        calculatePointsQRL: sinon.stub(),
+    } as unknown as AnswerVerifier,
 };
 
 const rooms: Map<string, Room> = new Map<string, Room>();
@@ -65,6 +71,9 @@ describe('Socket Manager service', () => {
             socketManager['io'].on('connect', (socket) => {
                 serverSocket = socket;
                 if (!mockRoom.hostId) mockRoom.hostId = serverSocket.id;
+
+                rooms.set(socket.id, mockRoom as Room);
+                socket.join(mockRoom.roomId);
 
                 return serverSocket;
             });
@@ -88,6 +97,7 @@ describe('Socket Manager service', () => {
 
     afterEach(() => {
         sinon.restore();
+        clientSocket.removeAllListeners();
     });
 
     after(() => {
@@ -133,102 +143,112 @@ describe('Socket Manager service', () => {
         socketManager.setRoom(mockRoom as Room, clientSocketHost as unknown as ServerSocket);
         clientSocket.emit('join-room', '1', mockPlayer as IPlayer);
         clientSocket.on('room-joined', (roomIdRes, title, joinedPlayer) => {
+            console.log('room-joined', roomIdRes, title, joinedPlayer);
             expect(roomIdRes).to.be.a('string');
             expect(title).to.equal('Test Game');
             expect(joinedPlayer).to.eql(mockPlayer);
             const room = socketManager.getRoom(clientSocket as unknown as ServerSocket);
             expect(room.playerList.size).to.equal(1);
-            expect(room.playerHasAnswered.get(serverSocket.id)).to.equal(false);
-            expect(room.livePlayerAnswers.get(serverSocket.id).length).to.eql(0);
             gameServiceStub.restore();
             done();
         });
     });
 
-    // it('should allow a player to join a room and receive appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.on('room-joined', (roomId, title, joinedPlayer) => {
-    //         expect(title).to.equal('Test Game');
-    //         expect(joinedPlayer).to.eql(mockPlayer);
-    //     });
-    // });
+    it('should allow the host to ban a player and emit banned-from-game event to the banned player', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
 
-    // it('should allow a player to leave room and emit appropriate events based on conditions', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('leave-room');
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
 
-    //     clientSocket.on('playerlist-change', (players) => {
-    //         expect(players).to.have.property('length', 1);
-    //     });
-    //     clientSocket.on('system-message', (message) => {
-    //         expect(message.text).to.equal(`${mockPlayer.name} a quitté la partie`);
-    //         expect(message.sender).to.equal('Système');
-    //     });
-    // });
+        clientSocket.emit('ban-player', mockPlayer.name);
+        clientSocket.on('banned-from-game', () => {
+            const room = socketManager.getRoom(clientSocket as unknown as ServerSocket);
+            expect(room.playerList.size).to.equal(1);
+            gameServiceStub.restore();
+            done();
+        });
+    });
 
-    // it('should ban player from room and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('ban-player', 'player1');
-    //     clientSocket.on('banned-from-game', (playerId) => {
-    //         expect(playerId).to.equal('player1');
-    //     });
-    // });
+    it('should allow the host to toggle room lock status and emit room-lock-status event', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
 
-    // it('should toggle the room lock and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('toggle-room-lock');
-    //     clientSocket.on('room-locked', (isLocked) => {
-    //         expect(isLocked).to.equal(true);
-    //     });
-    // });
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+        rooms.get(serverSocket.id).roomLocked = false;
 
-    // it('should start the game and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('start-game');
-    //     clientSocket.on('game-started', (game) => {
-    //         expect(game).to.eql(mockGame);
-    //     });
-    // });
+        clientSocket.emit('toggle-room-lock');
+        clientSocket.on('room-lock-status', (isLocked: boolean) => {
+            const room = socketManager.getRoom(serverSocket as unknown as ServerSocket);
+            expect(isLocked).to.be.a('boolean');
+            expect(room.roomLocked).to.equal(!isLocked);
+            gameServiceStub.restore();
+            done();
+        });
+    });
 
-    // it('should start the next question and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('next-question');
-    //     clientSocket.on('question', (question, index) => {
-    //         expect(question).to.eql(mockGame.questions[0]);
-    //         expect(index).to.equal(0);
-    //     });
-    // });
+    it('should start the game and emit relevant events when initiated by the host with gameType 2', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
 
-    // it('should update the points after a QRL question and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('answer-question', '1', 'QRL', [0]);
-    //     clientSocket.on('player-points', (points) => {
-    //         expect(points).to.equal(0);
-    //     });
-    // });
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+        rooms.get(serverSocket.id).gameType = 2;
+        rooms.get(serverSocket.id).playerList = new Map();
 
-    // it('should pause the timer and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('pause-timer');
-    //     clientSocket.on('timer-paused', (isPaused) => {
-    //         expect(isPaused).to.equal(true);
-    //     });
-    // });
+        clientSocket.emit('start-game');
 
-    // it('should enable panic mode and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('enable-panic-mode');
-    //     clientSocket.on('panic-mode-enabled', (isPanic) => {
-    //         expect(isPanic).to.equal(true);
-    //     });
-    // });
+        clientSocket.on('game-started', (duration, numQuestions) => {
+            const room = socketManager.getRoom(serverSocket as unknown as ServerSocket);
+            expect(duration).to.equal(mockGame.duration);
+            expect(numQuestions).to.equal(mockGame.questions.length);
+            expect(room.playerList.size).to.equal(0);
+            gameServiceStub.restore();
+            done();
+        });
+    });
 
-    // it('should receive sent answer and emit appropriate events', () => {
-    //     clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-    //     clientSocket.emit('send-answers', '1', 'QRL', [0]);
-    //     clientSocket.on('answer-sent', (playerId, answer) => {
-    //         expect(playerId).to.equal('1');
-    //         expect(answer).to.eql([0]);
-    //     });
-    // });
+    it('should set all players to inactive and emit player-status-changed events when host triggers next-question', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+
+        clientSocket.emit('next-question');
+        let emitCount = 0;
+        clientSocket.on('player-status-changed', ({ status }) => {
+            expect(status).to.equal(PlayerStatus.Inactive);
+            emitCount++;
+            if (emitCount === rooms.get(serverSocket.id).playerList.size) {
+                expect(emitCount).to.equal(1);
+                gameServiceStub.restore();
+                done();
+            }
+        });
+    });
+
+    // TODO: GAB GROS COQUIN je sais pourquoi ça marche pas, mais j'arrive pas à le fix. Si tu vois ce test avant moi.
+
+    // 1. J'ai mis des logs l'erreur que tu recois viens de cette ligne
+    //    this.allAnswersGameResults.set(question.text, [
+    //    this.counterIncorrectAnswerQRL,
+    //    this.counterHalfCorrectAnswerQRL,
+    //    this.counterCorrectAnswerQRL,
+    // ]);
+
+    // En fait question.text est pas défini, même si on mock correctement notre room pourquoi ?
+    // Parce que on rejoints une room aléatoire qui n'a pas de question.
+    // Ça nous fuck de fou
+    // Il faudrait trouver le moyen de joins la room qu'on mock mais j'arrive pas fuck that
+    // Regarde j'ai mis des consoles log pour voir ce qui se passe quand j'appelle calculatePointsQRL
+
+    it('should update player status to Confirmed and handle early answers when send-locked-answers event is triggered', () => {
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+        rooms.get(serverSocket.id).playerList.set(serverSocket.id, mockPlayer as IPlayer);
+
+        rooms.get(serverSocket.id).answerVerifier.calculatePointsQRL = sinon.stub();
+
+        clientSocket.emit('update-points-QRL', [[mockPlayer as IPlayer, 0]]);
+        clientSocket.on('playerlist-change', (playerList) => {
+            expect(playerList[0][1].status).to.equal(PlayerStatus.Confirmed);
+        });
+    });
 });

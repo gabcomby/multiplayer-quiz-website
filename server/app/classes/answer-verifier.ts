@@ -45,6 +45,7 @@ export class AnswerVerifier {
     set playerHasAnsweredSetter(value: Map<string, boolean>) {
         this.playerHasAnswered = value;
     }
+
     verifyAnswers(playerId: string, answerIdx: number[] | string, player?: IPlayer): void {
         if (this.playerHasAnswered.get(playerId) || !player) {
             return;
@@ -119,8 +120,11 @@ export class AnswerVerifier {
 
     calculatePointsQRL(points: [IPlayer, number][]): void {
         const question = this.room.currentQuestion;
+        console.log('points', points);
+        console.log('question', this.room);
         const playerArray = Array.from(this.room.playerListValue.entries());
         if (!points) return;
+
         this.handleQRLAnswersPoints(points, playerArray, question);
         this.allAnswersGameResults.set(question.text, [
             this.counterIncorrectAnswerQRL,
