@@ -433,11 +433,16 @@ describe('Socket Manager service', () => {
     it('should handle socket start-game', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as IGame);
         socketManager.setRoom(mockRoom as Room, serverSocket);
+        mockRoom.gameType = 2;
+        mockRoom.roomId = serverSocket.id;
+
         const cbSpy = sinon.spy();
         serverSocket.on('start-game', () => {
             cbSpy();
             expect(mockRoom.roomState).to.equal(RoomState.PLAYING);
-
+            expect(mockRoom.playerList.size).to.equal(0);
+            expect(socketManager.roomExists(mockRoom.roomId)).to.equal(true);
+            expect(mockRoom.gameType).to.equal(2);
             gameServiceStub.restore();
             done();
         });
