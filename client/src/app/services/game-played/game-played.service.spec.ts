@@ -67,4 +67,22 @@ describe('GamePlayedService', () => {
         const formattedDate = service.formatDate(date);
         expect(formattedDate).toBeDefined();
     });
+
+    it('deleteGamesPlayed() should delete all games played and display appropriate snackbar message on success', async () => {
+        const deleteSpy = spyOn(service, 'deleteGamesApi').and.returnValue(Promise.resolve());
+
+        await service.deleteGamesPlayed();
+
+        expect(deleteSpy).toHaveBeenCalled();
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith("L'historique a été supprimé avec succès.");
+    });
+
+    it('deleteGamesPlayed() should display error snackbar message on failure', async () => {
+        const deleteSpy = spyOn(service, 'deleteGamesApi').and.returnValue(Promise.reject());
+
+        await service.deleteGamesPlayed();
+
+        expect(deleteSpy).toHaveBeenCalled();
+        expect(snackbarServiceMock.openSnackBar).toHaveBeenCalledWith("Erreur lors de la suppression de l'historique.");
+    });
 });
