@@ -85,9 +85,6 @@ export class SocketManager {
                 room.playerList.set(socket.id, player);
                 room.playerHasAnswered.set(socket.id, false);
                 room.livePlayerAnswers.set(socket.id, []);
-                // room.playerList.set(socket.id, player);
-                // room.playerHasAnswered.set(socket.id, false);
-                // room.livePlayerAnswers.set(socket.id, []);
                 this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList), player);
                 this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
                 room.startQuestion();

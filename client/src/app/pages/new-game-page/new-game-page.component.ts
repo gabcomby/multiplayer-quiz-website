@@ -2,7 +2,6 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GAME_CREATION_DELAY, NOT_FOUND_INDEX } from '@app/config/client-config';
 import { Game } from '@app/interfaces/game';
-// import { Player } from '@app/interfaces/match';
 import { ApiService } from '@app/services/api/api.service';
 import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
@@ -91,12 +90,6 @@ export class NewGamePageComponent implements OnInit {
         } else {
             this.socketService.connect();
             this.gameService.resetGameVariables();
-            // const player: Player = {
-            //     id: 'test-player-id',
-            //     name: 'Test Player',
-            //     score: 0,
-            //     bonus: 0,
-            // };
             this.socketService.createRoomTest(game.id);
             this.gameService.setupWebsocketEvents();
             setTimeout(() => {
