@@ -120,8 +120,6 @@ export class AnswerVerifier {
 
     calculatePointsQRL(points: [IPlayer, number][]): void {
         const question = this.room.currentQuestion;
-        console.log('points', points);
-        console.log('question', this.room);
         const playerArray = Array.from(this.room.playerListValue.entries());
         if (!points) return;
 
