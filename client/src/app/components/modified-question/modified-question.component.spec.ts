@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { MAX_LENGTH } from '@app/config/client-config';
 import { Question, QuestionType } from '@app/interfaces/game';
 import { QuestionValidationService } from '@app/services/question-validation/question-validation.service';
@@ -22,6 +23,8 @@ class AppChoiceStubComponent {
 describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
+    let routerSpy: SpyObj<Router>;
+    // const router = Router;
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     let questionValidationSpy: SpyObj<QuestionValidationService>;
@@ -30,6 +33,7 @@ describe('ModifiedQuestionComponent', () => {
     beforeEach(() => {
         snackbarServiceMock = jasmine.createSpyObj('SnackbarService', ['openSnackBar']);
         questionValidationSpy = jasmine.createSpyObj('SnackbarService', ['validateQuestion', 'verifyOneGoodAndBadAnswer']);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         questionServiceSpy = jasmine.createSpyObj('QuestionService', {
             saveQuestion: {},
             addQuestion: {},
@@ -82,6 +86,7 @@ describe('ModifiedQuestionComponent', () => {
                 { provide: QuestionService, useValue: questionServiceSpy },
                 { provide: SnackbarService, useValue: snackbarServiceMock },
                 { provide: QuestionValidationService, useValue: questionValidationSpy },
+                { provide: Router, useValue: routerSpy },
             ],
             imports: [DragDropModule, FormsModule, MatIconModule],
             schemas: [NO_ERRORS_SCHEMA],
@@ -170,6 +175,13 @@ describe('ModifiedQuestionComponent', () => {
         const index = 1;
         component.saveQuestion(index);
         expect(questionServiceSpy.saveQuestion).toHaveBeenCalled();
+    });
+    it('should call saveQuestion from service when saveQuestion is called', () => {
+        questionServiceSpy.saveQuestion.and.returnValue(true);
+        component.fromBank = true;
+        const index = 1;
+        component.saveQuestion(index);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/question-bank']);
     });
     it('should call saveQuestion from service when saveQuestion is called', () => {
         component.disabled = [false, false];
