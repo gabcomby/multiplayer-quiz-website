@@ -68,9 +68,9 @@ describe('Socket Manager service', () => {
                     mockRoom.hostId = serverSocket.id;
                 }
 
-                serverSocket.join(mockRoom.roomId);
-                serverSocket.to(mockRoom.roomId).emit('room-joined', mockRoom.roomId, mockRoom.game.title, mockPlayer);
-                mockRoom.playerList.set(socket.id, mockPlayer as IPlayer);
+                // serverSocket.join(mockRoom.roomId);
+                // serverSocket.to(mockRoom.roomId).emit('room-joined', mockRoom.roomId, mockRoom.game.title, mockPlayer);
+                // mockRoom.playerList.set(socket.id, mockPlayer as IPlayer);
 
                 // eslint-disable-next-line
                 console.log('Mock Room', mockRoom);
@@ -134,14 +134,71 @@ describe('Socket Manager service', () => {
         });
     });
 
-    /*     it('should ban player from room and emit appropriate events', (done) => {
-        clientSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive });
+    it('should ban player from room and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
         clientSocket.emit('ban-player', 'player1');
         clientSocket.on('banned-from-game', (playerId) => {
             expect(playerId).to.equal('player1');
-            done();
         });
-    }); */
+    });
+
+    it('should toggle the room lock and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('toggle-room-lock');
+        clientSocket.on('room-locked', (isLocked) => {
+            expect(isLocked).to.equal(true);
+        });
+    });
+
+    it('should start the game and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('start-game');
+        clientSocket.on('game-started', (game) => {
+            expect(game).to.eql(mockGame);
+        });
+    });
+
+    it('should start the next question and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('next-question');
+        clientSocket.on('question', (question, index) => {
+            expect(question).to.eql(mockGame.questions[0]);
+            expect(index).to.equal(0);
+        });
+    });
+
+    it('should update the points after a QRL question and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('answer-question', '1', 'QRL', [0]);
+        clientSocket.on('player-points', (points) => {
+            expect(points).to.equal(0);
+        });
+    });
+
+    it('should pause the timer and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('pause-timer');
+        clientSocket.on('timer-paused', (isPaused) => {
+            expect(isPaused).to.equal(true);
+        });
+    });
+
+    it('should enable panic mode and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('enabke-panic-mode');
+        clientSocket.on('panic-mode-enabled', (isPanic) => {
+            expect(isPanic).to.equal(true);
+        });
+    });
+
+    it('should receive sent answer and emit appropriate events', () => {
+        clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
+        clientSocket.emit('send-answers', '1', 'QRL', [0]);
+        clientSocket.on('answer-sent', (playerId, answer) => {
+            expect(playerId).to.equal('1');
+            expect(answer).to.eql([0]);
+        });
+    });
 
     /* it('should allow only host to ban player and emit appropriate events', (done) => {
           hostSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive });
