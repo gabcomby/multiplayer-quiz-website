@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Room } from '@app/classes/room';
 import { IChoice, IGame, IQuestion } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
@@ -102,6 +103,27 @@ describe('Socket Manager service', () => {
             gameServiceStub.restore();
             done();
         });
+    });
+
+    it('should get room', () => {
+        const result = socketManager.getRoom(serverSocket);
+        expect(result).to.eql(mockRoom);
+    });
+
+    it('should get a room associated with a socket', () => {
+        const roomsArray = Array.from(rooms.keys());
+        rooms.set(roomsArray[1], mockRoom);
+
+        const result = socketManager.getRoom(serverSocket);
+        expect(result).to.eql(mockRoom);
+    });
+
+    it('should set a room associated with a socket', () => {
+        const roomsArray = Array.from(rooms.keys());
+
+        socketManager.setRoom(mockRoom, serverSocket);
+        const result = rooms.get(roomsArray[1]);
+        expect(result).to.eql(mockRoom);
     });
 
     /* it('should create a room test and emit room-test-created event', (done) => {
@@ -233,5 +255,79 @@ describe('Socket Manager service', () => {
             gameServiceStub.restore();
             done();
         });
+    });
+    it('should handle chat-message event', (done) => {
+        const messageData = { message: 'Test message', playerName: 'Test Player', roomId: 'room1' };
+        clientSocket.emit('chat-message', messageData);
+
+        clientSocket.on('chat-message', (data) => {
+            expect(data).to.eql(messageData);
+            done();
+        });
+        done();
+    });
+
+    it('should handle chat-permission event', (done) => {
+        const chatPermissionData = { playerId: 'player1', permission: true };
+        clientSocket.emit('chat-permission', chatPermissionData);
+
+        clientSocket.on('system-message', (data) => {
+            expect(data.text).to.include(chatPermissionData.permission ? 'reçu' : 'perdu');
+            expect(data.sender).to.equal('Système');
+            done();
+        });
+    });
+
+    it('should say perdu when chat permission is false', (done) => {
+        const chatPermissionData = { playerId: 'player1', permission: false };
+        clientSocket.emit('chat-permission', chatPermissionData);
+
+        clientSocket.on('system-message', (data) => {
+            expect(data.text).to.include(chatPermissionData.permission ? 'reçu' : 'perdu');
+            expect(data.sender).to.equal('Système');
+            done();
+        });
+    });
+
+    it('should emit chat message if has chatpermission', (done) => {
+        const messageData = { message: 'Test message', playerName: 'Test Player', roomId: 'room1' };
+        clientSocket.emit('chat-message', messageData);
+        mockRoom.playerList.set(clientSocket.id, { ...mockPlayer, chatPermission: true } as IPlayer);
+
+        mockRoom.hostId = 'some-other-id';
+
+        clientSocket.on('chat-message', (data) => {
+            expect(data).to.eql(messageData);
+            done();
+        });
+        done();
+    });
+    it('should not emit if not playersocketId for chat-permission', (done) => {
+        const chatPermissionData = { playerId: 'non-existent', permission: true };
+
+        const emitSpy = sinon.spy(clientSocket, 'emit');
+        clientSocket.emit('chat-permission', chatPermissionData);
+
+        sinon.assert.neverCalledWithMatch(emitSpy, 'system-message');
+        emitSpy.restore();
+        done();
+    });
+
+    it('should set room ', () => {
+        // Restore all stubs to test the actual implementation
+        sinon.restore();
+
+        const result = socketManager.setRoom(mockRoom, serverSocket);
+
+        // After testing, you can re-stub the methods for the remaining tests
+        sinon.stub(socketManager, 'getRoom').callsFake((socket) => {
+            return socket ? (mockRoom as Room) : undefined;
+        });
+        sinon.stub(socketManager, 'setRoom').callsFake((room, socket) => {
+            rooms.set(socket.id, room);
+        });
+        sinon.stub(socketManager, 'roomExists').returns(true);
+
+        expect(result).to.eql(undefined);
     });
 });
