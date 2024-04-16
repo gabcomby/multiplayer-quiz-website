@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
-import { Room } from '@app/classes/room';
+import { Room, RoomState } from '@app/classes/room';
 import { IChoice, IGame, IQuestion } from '@app/model/game.model';
 import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { GameService } from '@app/services/game/game.service';
 import { SocketManager } from '@app/services/socket/socket.service';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { createServer } from 'node:http';
 import { type AddressInfo } from 'node:net';
 import * as sinon from 'sinon';
@@ -408,5 +408,26 @@ describe('Socket Manager service', () => {
         sinon.stub(socketManager, 'roomExists').returns(true);
 
         expect(result).to.eql(undefined);
+    });
+    it('should handle socket on leave-room', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as IGame);
+        socketManager.setRoom(mockRoom as Room, serverSocket);
+        mockRoom.roomState = RoomState.PLAYING;
+        const cbSpy = sinon.spy();
+        const spyPush = sinon.spy(mockRoom.playerLeftList, 'push');
+        serverSocket.on('leave-room', cbSpy);
+        clientSocket.on('lobby-deleted', () => {
+            assert.isTrue(cbSpy.calledOnce);
+            assert.isTrue(spyPush.calledOnce);
+            assert.strictEqual(mockRoom.playerList.size, 0);
+            gameServiceStub.restore();
+            done();
+        });
+        clientSocket.emit('leave-room');
+        setTimeout(() => {
+            gameServiceStub.restore();
+            done();
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
+        }, 100);
     });
 });
