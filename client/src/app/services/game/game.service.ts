@@ -269,7 +269,7 @@ export class GameService {
             this.socketService.sendLockedAnswers(this.answerIndex, this.currentPlayer);
         }
     }
-    gameLaunch(nbrOfQuestions: number, questionDuration: number): void {
+    gameLaunch(nbrOfQuestions: number, questionDuration: number, player: Player): void {
         this.launchTimer = true;
         this.timerStopped = false;
         this.nbrOfQuestions = nbrOfQuestions;
@@ -279,6 +279,9 @@ export class GameService {
             this.router.navigate(['/host-game-page']);
         } else {
             this.router.navigate(['/game']);
+            if (player) {
+                this.currentPlayer = player;
+            }
         }
     }
     goToResult(playerList: [[string, Player]], questionList: Question[], allAnswersIndex: [string, number[]][]) {
@@ -296,12 +299,13 @@ export class GameService {
         this.gameTitle = gameTitle;
         this.gameType = gameType;
     }
-    roomTestCreated(gameTitle: string, playerList: [[string, Player]]) {
+    roomTestCreated(gameTitle: string, playerList: [[string, Player]], player: Player) {
         const playerListOriginal = new Map(playerList);
         const newPlayerList = [...playerListOriginal.values()];
         this.playerList = [...newPlayerList];
         this.gameTitle = gameTitle;
         this.isTest = true;
+        this.currentPlayer = player;
     }
     playerListChange(playerList: [[string, Player]]) {
         const playerListOriginal = new Map(playerList);
@@ -340,8 +344,8 @@ export class GameService {
             this.roomCreated(roomId, gameTitle, gameType);
         });
 
-        this.socketService.onRoomTestCreated((gameTitle: string, playerList: [[string, Player]]) => {
-            this.roomTestCreated(gameTitle, playerList);
+        this.socketService.onRoomTestCreated((gameTitle: string, playerList: [[string, Player]], player: Player) => {
+            this.roomTestCreated(gameTitle, playerList, player);
         });
 
         this.socketService.onTimerCountdown((data) => {
@@ -373,8 +377,8 @@ export class GameService {
             this.roomLocked = isLocked;
         });
 
-        this.socketService.onGameLaunch((questionDuration: number, nbrOfQuestions: number) => {
-            this.gameLaunch(nbrOfQuestions, questionDuration);
+        this.socketService.onGameLaunch((questionDuration: number, nbrOfQuestions: number, player: Player) => {
+            this.gameLaunch(nbrOfQuestions, questionDuration, player);
         });
         this.socketService.onQuestionTimeUpdated((data: number) => {
             this.totalQuestionDuration = data;

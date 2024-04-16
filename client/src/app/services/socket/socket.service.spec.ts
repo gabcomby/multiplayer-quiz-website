@@ -243,8 +243,8 @@ describe('SocketService', () => {
         expect(mockSocket.emit).toHaveBeenCalledWith('create-room', '123');
     });
     it('should emit "create-room-test" events', () => {
-        service.createRoomTest('123', { id: '124', name: 'alex', score: 123, bonus: 0 });
-        expect(mockSocket.emit).toHaveBeenCalledWith('create-room-test', '123', { id: '124', name: 'alex', score: 123, bonus: 0 });
+        service.createRoomTest('123');
+        expect(mockSocket.emit).toHaveBeenCalledWith('create-room-test', '123');
     });
     it('should handle room test creation', (done) => {
         const fakeRoom = 'room';

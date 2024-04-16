@@ -39,6 +39,7 @@ export class SocketManager {
                 const gameService = new GameService();
                 const questionService = new QuestionsService();
                 let room: Room;
+                // let player: IPlayer;
                 if (gameId === 'randomModeGame') {
                     const randomQuestions = await questionService.getFiveRandomQuestions();
                     if (randomQuestions.length === 0) {
@@ -65,7 +66,7 @@ export class SocketManager {
                 this.io.to(socket.id).emit('room-created', room.roomId, room.game.title, room.gameType);
             });
 
-            socket.on('create-room-test', async (gameId: string, player: IPlayer) => {
+            socket.on('create-room-test', async (gameId: string) => {
                 const gameService = new GameService();
                 const game = await gameService.getGame(gameId);
                 const baseRoom = new Room(game, 1, this.io);
@@ -73,10 +74,21 @@ export class SocketManager {
                 this.setRoom(baseRoom, socket);
                 const room = this.getRoom(socket);
                 room.hostId = socket.id;
+                const player = {
+                    id: 'organisateur',
+                    name: 'Organisateur',
+                    score: 0,
+                    bonus: 0,
+                    chatPermission: true,
+                    status: 0,
+                } as IPlayer;
                 room.playerList.set(socket.id, player);
                 room.playerHasAnswered.set(socket.id, false);
                 room.livePlayerAnswers.set(socket.id, []);
-                this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList));
+                // room.playerList.set(socket.id, player);
+                // room.playerHasAnswered.set(socket.id, false);
+                // room.livePlayerAnswers.set(socket.id, []);
+                this.io.to(room.roomId).emit('room-test-created', room.game.title, Array.from(room.playerList), player);
                 this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
                 room.startQuestion();
             });
@@ -146,8 +158,9 @@ export class SocketManager {
             socket.on('start-game', () => {
                 const room = this.getRoom(socket);
                 if (this.roomExists(room.roomId) && socket.id === room.hostId) {
+                    let player: IPlayer;
                     if (room.gameType === 2) {
-                        const player: IPlayer = {
+                        player = {
                             id: 'organisateur',
                             name: 'Organisateur',
                             score: 0,
@@ -165,7 +178,7 @@ export class SocketManager {
                     room.gameStartDateTime = new Date();
                     room.nbrPlayersAtStart = room.playerList.size;
                     room.roomState = RoomState.PLAYING;
-                    this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length);
+                    this.io.to(room.roomId).emit('game-started', room.game.duration, room.game.questions.length, player);
                     room.startQuestion();
                 }
             });
