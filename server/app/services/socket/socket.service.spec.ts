@@ -48,7 +48,6 @@ const mockRoom: Partial<Room> = {
 describe('Socket Manager service', () => {
     let serverSocket: ServerSocket;
     let clientSocket: ClientSocket;
-    /*     let hostSocket: ClientSocket; */
     let socketManager: SocketManager;
 
     before((done) => {
@@ -58,27 +57,13 @@ describe('Socket Manager service', () => {
         httpServer.listen(() => {
             const port = (httpServer.address() as AddressInfo).port;
             clientSocket = ioc(`http://localhost:${port}`);
-            /*             hostSocket = ioc(`http://localhost:${port}`); */
             socketManager['io'].on('connect', (socket) => {
                 serverSocket = socket;
-
-                // eslint-disable-next-line
-                console.log('Socket connected', serverSocket.id);
-                if (!mockRoom.hostId) {
-                    mockRoom.hostId = serverSocket.id;
-                }
-
-                // serverSocket.join(mockRoom.roomId);
-                // serverSocket.to(mockRoom.roomId).emit('room-joined', mockRoom.roomId, mockRoom.game.title, mockPlayer);
-                // mockRoom.playerList.set(socket.id, mockPlayer as IPlayer);
-
-                // eslint-disable-next-line
-                console.log('Mock Room', mockRoom);
+                if (!mockRoom.hostId) mockRoom.hostId = serverSocket.id;
 
                 return serverSocket;
             });
             clientSocket.connect();
-            /*         hostSocket.connect(); */
             done();
         });
     });
@@ -86,7 +71,6 @@ describe('Socket Manager service', () => {
     after(() => {
         socketManager['io'].close();
         clientSocket.disconnect();
-        /*      hostSocket.disconnect(); */
     });
 
     it('should create a game room and emit room-created event', (done) => {
@@ -185,7 +169,7 @@ describe('Socket Manager service', () => {
 
     it('should enable panic mode and emit appropriate events', () => {
         clientSocket.emit('join-room', '1', { ...(mockPlayer as IPlayer), status: PlayerStatus.Inactive });
-        clientSocket.emit('enabke-panic-mode');
+        clientSocket.emit('enable-panic-mode');
         clientSocket.on('panic-mode-enabled', (isPanic) => {
             expect(isPanic).to.equal(true);
         });
@@ -199,18 +183,4 @@ describe('Socket Manager service', () => {
             expect(answer).to.eql([0]);
         });
     });
-
-    /* it('should allow only host to ban player and emit appropriate events', (done) => {
-          hostSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive });
-        clientSocket.emit('join-room', '1', { ...mockPlayer, status: PlayerStatus.Inactive }); 
-        clientSocket.emit('ban-player', 'player1');
-        // eslint-disable-next-line
-        console.log('asked to ban player');
-        clientSocket.on('banned-from-game', (playerId) => {
-            // eslint-disable-next-line
-            console.log('Banned Player', playerId);
-            expect(playerId).to.equal('player1');
-            done();
-        });
-    }); */
 });
