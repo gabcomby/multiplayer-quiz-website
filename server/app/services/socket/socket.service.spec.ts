@@ -1,6 +1,6 @@
 import type { Room } from '@app/classes/room';
 import { IChoice, IGame, IQuestion } from '@app/model/game.model';
-import { IPlayer } from '@app/model/match.model';
+import { IPlayer, PlayerStatus } from '@app/model/match.model';
 import { GameService } from '@app/services/game/game.service';
 import { SocketManager } from '@app/services/socket/socket.service';
 import { expect } from 'chai';
@@ -30,14 +30,14 @@ const mockGame: Partial<IGame> = {
     ],
 };
 
-// const mockPlayer: Partial<IPlayer> = {
-//     id: 'player1',
-//     name: 'Test Player',
-//     score: 0,
-//     bonus: 0,
-//     chatPermission: true,
-//     status: PlayerStatus.Inactive,
-// };
+const mockPlayer: Partial<IPlayer> = {
+    id: 'player1',
+    name: 'Test Player',
+    score: 0,
+    bonus: 0,
+    chatPermission: true,
+    status: PlayerStatus.Inactive,
+};
 
 const mockRoom: Partial<Room> = {
     hostId: '',
@@ -51,6 +51,7 @@ const rooms: Map<string, Room> = new Map<string, Room>();
 describe('Socket Manager service', () => {
     let serverSocket: ServerSocket;
     let clientSocket: ClientSocket;
+    let clientSocketHost: ClientSocket;
     let socketManager: SocketManager;
 
     before((done) => {
@@ -60,6 +61,7 @@ describe('Socket Manager service', () => {
         httpServer.listen(() => {
             const port = (httpServer.address() as AddressInfo).port;
             clientSocket = ioc(`http://localhost:${port}`);
+            clientSocketHost = ioc(`http://localhost:${port}`);
             socketManager['io'].on('connect', (socket) => {
                 serverSocket = socket;
                 if (!mockRoom.hostId) mockRoom.hostId = serverSocket.id;
@@ -67,6 +69,7 @@ describe('Socket Manager service', () => {
                 return serverSocket;
             });
             clientSocket.connect();
+            clientSocketHost.connect();
             done();
         });
     });
@@ -79,6 +82,8 @@ describe('Socket Manager service', () => {
         sinon.stub(socketManager, 'setRoom').callsFake((room, socket) => {
             rooms.set(socket.id, room);
         });
+
+        sinon.stub(socketManager, 'roomExists').returns(true);
     });
 
     afterEach(() => {
@@ -88,6 +93,7 @@ describe('Socket Manager service', () => {
     after(() => {
         socketManager['io'].close();
         clientSocket.disconnect();
+        clientSocketHost.disconnect();
     });
 
     it('should create a game room and emit room-created event', (done) => {
@@ -112,8 +118,26 @@ describe('Socket Manager service', () => {
             const room = socketManager.getRoom(clientSocket as unknown as ServerSocket);
             expect(room).to.have.property('gameType', 1);
             expect(room).to.have.property('game', mockGame);
-            expect(room.hostId).to.equal(serverSocket.id);
-            // expect(room.playerList.get(serverSocket.id)).to.eql({ ...mockPlayer, status: PlayerStatus.Active });
+            expect(room.hostId).to.equal(clientSocket.id);
+            expect(room.playerList.size).to.equal(1);
+            expect(room.playerHasAnswered.get(clientSocket.id)).to.equal(false);
+            expect(room.livePlayerAnswers.get(clientSocket.id).length).to.eql(0);
+            clientSocket.emit('leave-room');
+            gameServiceStub.restore();
+            done();
+        });
+    });
+
+    it('should allow a player to join a room and receive appropriate events', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+        socketManager.setRoom(mockRoom as Room, clientSocketHost as unknown as ServerSocket);
+        clientSocket.emit('join-room', '1', mockPlayer as IPlayer);
+        clientSocket.on('room-joined', (roomIdRes, title, joinedPlayer) => {
+            expect(roomIdRes).to.be.a('string');
+            expect(title).to.equal('Test Game');
+            expect(joinedPlayer).to.eql(mockPlayer);
+            const room = socketManager.getRoom(clientSocket as unknown as ServerSocket);
+            expect(room.playerList.size).to.equal(1);
             expect(room.playerHasAnswered.get(serverSocket.id)).to.equal(false);
             expect(room.livePlayerAnswers.get(serverSocket.id).length).to.eql(0);
             gameServiceStub.restore();
