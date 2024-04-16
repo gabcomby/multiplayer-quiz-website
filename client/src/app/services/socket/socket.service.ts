@@ -43,13 +43,13 @@ export class SocketService {
         this.socket.emit('create-room', gameId);
     }
 
-    createRoomTest(gameId: string, player: Player): void {
-        this.socket.emit('create-room-test', gameId, player);
+    createRoomTest(gameId: string): void {
+        this.socket.emit('create-room-test', gameId);
     }
 
-    onRoomTestCreated(callback: (gameTitle: string, playerList: [[string, Player]]) => void) {
-        this.socket.on('room-test-created', (gameTitle: string, playerList: [[string, Player]]) => {
-            callback(gameTitle, playerList);
+    onRoomTestCreated(callback: (gameTitle: string, playerList: [[string, Player]], player: Player) => void) {
+        this.socket.on('room-test-created', (gameTitle: string, playerList: [[string, Player]], player: Player) => {
+            callback(gameTitle, playerList, player);
         });
     }
 
@@ -97,9 +97,9 @@ export class SocketService {
         this.socket.emit('start-game');
     }
 
-    onGameLaunch(callback: (questionDuration: number, nbrOfQuestions: number) => void) {
-        this.socket.on('game-started', (questionDuration: number, nbrOfQuestions: number) => {
-            callback(questionDuration, nbrOfQuestions);
+    onGameLaunch(callback: (questionDuration: number, nbrOfQuestions: number, player: Player) => void) {
+        this.socket.on('game-started', (questionDuration: number, nbrOfQuestions: number, player: Player) => {
+            callback(questionDuration, nbrOfQuestions, player);
         });
     }
 
