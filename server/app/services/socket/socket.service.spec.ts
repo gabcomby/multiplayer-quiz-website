@@ -209,6 +209,85 @@ describe('Socket Manager service', () => {
             }
         });
     });
+    it('should update points qrl', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+
+        const spy = sinon.spy(mockRoom.answerVerifier, 'calculatePointsQRL');
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        clientSocket.emit('update-points-QRL');
+
+        gameServiceStub.restore();
+
+        done();
+        sinon.assert.called(spy);
+    });
+    it('should pause timer', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+        const spy = sinon.spy(mockRoom.countdownTimer, 'handleTimerPause');
+
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+
+        clientSocket.emit('pause-timer');
+        gameServiceStub.restore();
+
+        done();
+        sinon.assert.called(spy);
+    });
+    it('should enable panic mode', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+        const spy = sinon.spy(mockRoom.countdownTimer, 'handlePanicMode');
+
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        clientSocket.emit('enable-panic-mode');
+
+        gameServiceStub.restore();
+
+        done();
+        sinon.assert.called(spy);
+    });
+    it('should send-answer', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+        const spy = sinon.spy(mockRoom.answerVerifier, 'verifyAnswers');
+
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+
+        clientSocket.emit('send-answers');
+
+        gameServiceStub.restore();
+
+        done();
+        sinon.assert.called(spy);
+    });
+    it('should update histogram', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
+        const spy = sinon.spy(mockRoom, 'handleInputModification');
+
+        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
+
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        rooms.get(serverSocket.id).playerList.set(clientSocket.id, mockPlayer as IPlayer);
+
+        clientSocket.emit('update-histogram');
+
+        gameServiceStub.restore();
+
+        done();
+        sinon.assert.called(spy);
+    });
 
     it('should update player status to Confirmed and handle early answers when send-locked-answers event is triggered', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
