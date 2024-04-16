@@ -393,12 +393,8 @@ describe('Socket Manager service', () => {
     });
 
     it('should set room ', () => {
-        // Restore all stubs to test the actual implementation
         sinon.restore();
-
         const result = socketManager.setRoom(mockRoom, serverSocket);
-
-        // After testing, you can re-stub the methods for the remaining tests
         sinon.stub(socketManager, 'getRoom').callsFake((socket) => {
             return socket ? (mockRoom as Room) : undefined;
         });
@@ -454,12 +450,39 @@ describe('Socket Manager service', () => {
         }, 100);
     });
 
-    it('should emit live-answers', (done) => {
+    it('should push when reset false live-answers', (done) => {
         clientSocket.emit('send-live-answers', 'answer1', mockPlayer as IPlayer, false);
         clientSocket.on('live-answers', (answer, player, isCorrect) => {
             expect(answer).to.equal('answer1');
             expect(player).to.eql(mockPlayer);
             expect(isCorrect).to.equal(false);
+            expect(mockRoom.inputModifications.length).to.equal(1);
+            done();
+        });
+        done();
+    });
+
+    it('should not push when reset true', (done) => {
+        clientSocket.emit('send-live-answers', 'answer1', mockPlayer as IPlayer, true);
+        clientSocket.on('live-answers', (answer, player, isCorrect) => {
+            expect(answer).to.equal('answer1');
+            expect(player).to.eql(mockPlayer);
+            expect(isCorrect).to.equal(true);
+            expect(mockRoom.inputModifications.length).to.equal(0);
+            done();
+        });
+        done();
+    });
+
+    it('should emit ', (done) => {
+        mockRoom.playerList.set(clientSocket.id, mockPlayer as IPlayer);
+        clientSocket.emit('send-live-answers', [1, 0], mockPlayer as IPlayer, true);
+        clientSocket.on('send-live-answers', (answer, player, isCorrect) => {
+            expect(answer).to.equal([1, 0]);
+            expect(answer.length).to.equal(2);
+            expect(player).to.eql(mockPlayer);
+            expect(isCorrect).to.equal(true);
+            expect(mockRoom.inputModifications.length).to.equal(0);
             done();
         });
         done();
