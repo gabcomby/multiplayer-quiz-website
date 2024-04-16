@@ -430,4 +430,22 @@ describe('Socket Manager service', () => {
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
         }, 100);
     });
+    it('should handle socket start-game', (done) => {
+        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as IGame);
+        socketManager.setRoom(mockRoom as Room, serverSocket);
+        const cbSpy = sinon.spy();
+        serverSocket.on('start-game', () => {
+            cbSpy();
+            expect(mockRoom.roomState).to.equal(RoomState.PLAYING);
+
+            gameServiceStub.restore();
+            done();
+        });
+        clientSocket.emit('start-game');
+        setTimeout(() => {
+            gameServiceStub.restore();
+            done();
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- need it for the test
+        }, 100);
+    });
 });
