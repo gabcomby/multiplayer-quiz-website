@@ -101,6 +101,8 @@ $base-font-size: 16;
     margin-top: px-to-em(50);
     grid-area: score;
     margin-bottom: 15px;
+    min-width: 300px;
+    width: 110%;
 }
 
 .timer {
@@ -113,5 +115,9 @@ $base-font-size: 16;
     margin-top: px-to-em(30);
 }
 #container-right{
-    margin-right: 100px;
+    margin-right: 60px;
+    position: absolute; /* Ou 'fixed' si vous voulez qu'elle reste en place lors du défilement */
+    right: 0; /* Collez à droite */
+    top: 100px; /* Ajustez selon le besoin pour la position verticale */
+    width: 300px; 
 }
