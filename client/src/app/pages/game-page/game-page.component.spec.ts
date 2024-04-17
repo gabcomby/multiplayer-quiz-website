@@ -48,7 +48,6 @@ describe('GamePageComponent', () => {
     let fixture: ComponentFixture<GamePageComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let routerSpy: jasmine.SpyObj<Router>;
-    // let localStorageSpy: jasmine.SpyObj<Storage>;
 
     beforeEach(async () => {
         const mockActivatedRoute = {
@@ -90,7 +89,6 @@ describe('GamePageComponent', () => {
         spyOn(localStorage, 'clear').and.callFake(mockLocalStorage.clear);
 
         const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
-        // localStorageSpy = jasmine.createSpyObj('LocalStorage', ['getItem', 'removeItem', 'setItem']);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -105,7 +103,6 @@ describe('GamePageComponent', () => {
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: Router, useValue: routerSpyObj },
-                //{ provide: Storage, useValue: localStorageSpy },
                 { provide: API_BASE_URL, useValue: 'http://localhost:3000' },
             ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
@@ -218,5 +215,4 @@ describe('GamePageComponent', () => {
         expect(gameServiceSpy.leaveRoom).toHaveBeenCalled();
         expect(localStorage.setItem).toHaveBeenCalledWith('refreshedPage', '/home');
     });
-    
 });

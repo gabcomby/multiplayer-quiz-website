@@ -126,26 +126,6 @@ describe('Socket Manager service', () => {
         expect(result).to.eql(mockRoom);
     });
 
-    /* it('should create a room test and emit room-test-created event', (done) => {
-        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
-
-        clientSocket.emit('create-room-test', mockGame.id);
-        clientSocket.on('room-test-created', (title, players) => {
-            expect(title).to.equal('Test Game');
-            expect(players).to.have.property('length', 1);
-            const room = socketManager.getRoom(clientSocket as unknown as ServerSocket);
-            expect(room).to.have.property('gameType', 1);
-            expect(room).to.have.property('game', mockGame);
-            expect(room.hostId).to.equal(clientSocket.id);
-            expect(room.playerList.size).to.equal(1);
-            expect(room.playerHasAnswered.get(clientSocket.id)).to.equal(false);
-            expect(room.livePlayerAnswers.get(clientSocket.id).length).to.eql(0);
-            clientSocket.emit('leave-room');
-            gameServiceStub.restore();
-            done();
-        });
-    }); */
-
     it('should allow a player to join a room and receive appropriate events', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
         socketManager.setRoom(mockRoom as Room, clientSocketHost as unknown as ServerSocket);
@@ -191,25 +171,6 @@ describe('Socket Manager service', () => {
             done();
         });
     });
-
-    /* it('should start the game and emit relevant events when initiated by the host with gameType 2', (done) => {
-        const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);
-
-        socketManager.setRoom(mockRoom as Room, serverSocket as unknown as ServerSocket);
-        rooms.get(serverSocket.id).gameType = 2;
-        rooms.get(serverSocket.id).playerList = new Map();
-
-        clientSocket.emit('start-game');
-
-        clientSocket.on('game-started', (duration, numQuestions) => {
-            const room = socketManager.getRoom(serverSocket as unknown as ServerSocket);
-            expect(duration).to.equal(mockGame.duration);
-            expect(numQuestions).to.equal(mockGame.questions.length);
-            expect(room.playerList.size).to.equal(0);
-            gameServiceStub.restore();
-            done();
-        });
-    }); */
 
     it('should set all players to inactive and emit player-status-changed events when host triggers next-question', (done) => {
         const gameServiceStub = stub(GameService.prototype, 'getGame').resolves(mockGame as unknown as IGame);

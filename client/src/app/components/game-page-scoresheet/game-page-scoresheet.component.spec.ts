@@ -1,12 +1,12 @@
 import { SimpleChanges } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Player, PlayerStatus } from '@app/interfaces/match';
 import { SocketService } from '@app/services/socket/socket.service';
 import { GamePageScoresheetComponent } from './game-page-scoresheet.component';
-import { MatCardModule } from '@angular/material/card';
 
 describe('GamePageScoresheetComponent', () => {
     let component: GamePageScoresheetComponent;
@@ -35,7 +35,6 @@ describe('GamePageScoresheetComponent', () => {
         expect(component.dataSource.sort).toEqual(component.sort);
     });
 
-    // Example for testing socket integration (adjust as necessary)
     it('should update player status when notified by the socket service', () => {
         const initialPlayerList = [
             { id: 'p1', name: 'Player One', score: 100, status: 1, bonus: 0 },

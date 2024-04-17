@@ -91,14 +91,6 @@ describe('GameValidationService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('should add error to array error if game has the same name and description of another one with validateDuplicateGame', async () => {
-    //     apiServiceSpy.getGames.and.returnValue(Promise.resolve(defaultGame));
-    //     const errors: string[] = [];
-    //     const game = { ...defaultGame[0], id: 'different' };
-
-    //     await service.validateDuplicationGame(game, errors);
-    //     expect(errors.length).toBe(2);
-    // });
     it('should add error to array error if game has the same name of another one with validateDuplicateGame', async () => {
         apiServiceSpy.getGames.and.returnValue(Promise.resolve(defaultGame));
         const errors: string[] = [];

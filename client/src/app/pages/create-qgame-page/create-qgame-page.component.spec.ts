@@ -186,8 +186,6 @@ describe('CreateQGamePageComponent', () => {
         spyOn<any>(component, 'insertIfExist');
 
         await component.ngOnInit();
-        // expect(component.getGame).toHaveBeenCalled();
-        // expect(component.insertIfExist).toHaveBeenCalled();
         expect(component.dataReady).toBeTrue();
     });
     it('ngOnInit should throw error if error thrown', async () => {
@@ -201,7 +199,6 @@ describe('CreateQGamePageComponent', () => {
         component.games = defaultGame;
         const privateSpy = spyOn<any>(component, 'getGame').and.callThrough();
         privateSpy.call(component, '123');
-        // component.getGame('123');
         expect(component.gameModified).toEqual({
             id: '123',
             title: 'allo',

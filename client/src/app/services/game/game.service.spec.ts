@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-// /* eslint-disable max-lines */
 
 import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -296,12 +295,6 @@ describe('GameService', () => {
         expect(socketServiceSpy.updatePointsQRL).toHaveBeenCalled();
     });
     it('should set answer index', () => {
-        // const player: Player = {
-        //     id: '111',
-        //     bonus: 1,
-        //     score: 2,
-        //     name: 'test',
-        // };
         const answerIndex = [1, 2, 3];
         service.answerIndexSetter = answerIndex;
         expect(service['answerIndex']).toBe(answerIndex);

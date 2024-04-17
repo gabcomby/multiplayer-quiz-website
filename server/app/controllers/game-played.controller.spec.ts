@@ -11,7 +11,6 @@ describe('GamePlayedController', () => {
     let gamePlayedService: SinonStubbedInstance<GamePlayedService>;
     let expressApp: Express.Application;
 
-    // Mock game played data
     const mockGamePlayedData = [
         {
             id: 'game123',

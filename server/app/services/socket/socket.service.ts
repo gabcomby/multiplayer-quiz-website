@@ -39,7 +39,6 @@ export class SocketManager {
                 const gameService = new GameService();
                 const questionService = new QuestionsService();
                 let room: Room;
-                // let player: IPlayer;
                 if (gameId === 'randomModeGame') {
                     const randomQuestions = await questionService.getFiveRandomQuestions();
                     if (randomQuestions.length === 0) {

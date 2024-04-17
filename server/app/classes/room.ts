@@ -128,7 +128,6 @@ export class Room {
             this.countdownTimer.timerDurationValue = this.game.duration;
             this.countdownTimer.currentQuestionIsQRLValue = false;
         }
-        // Reset question logic variables
         this.resetQuestionVariable();
     }
 

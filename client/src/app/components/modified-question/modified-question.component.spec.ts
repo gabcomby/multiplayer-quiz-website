@@ -24,7 +24,6 @@ describe('ModifiedQuestionComponent', () => {
     let questionServiceSpy: SpyObj<QuestionService>;
     let snackbarServiceMock: SpyObj<SnackbarService>;
     let routerSpy: SpyObj<Router>;
-    // const router = Router;
     let component: ModifiedQuestionComponent;
     let fixture: ComponentFixture<ModifiedQuestionComponent>;
     let questionValidationSpy: SpyObj<QuestionValidationService>;
