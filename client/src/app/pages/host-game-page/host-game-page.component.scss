@@ -116,8 +116,8 @@ $base-font-size: 16;
 }
 #container-right{
     margin-right: 60px;
-    position: absolute; /* Ou 'fixed' si vous voulez qu'elle reste en place lors du défilement */
-    right: 0; /* Collez à droite */
-    top: 100px; /* Ajustez selon le besoin pour la position verticale */
+    position: absolute; 
+    right: 0;
+    top: 100px;
     width: 300px; 
 }
