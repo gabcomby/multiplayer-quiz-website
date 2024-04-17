@@ -138,7 +138,7 @@ export class SocketManager {
                 const room = this.getRoom(socket);
                 if (this.roomExists(room.roomId) && socket.id === room.hostId) {
                     room.bannedNames.push(name.toLowerCase());
-                    // eslint-disable-next-line -- we do not use key in the find function
+                    // eslint-disable-next-line -- we do not use key in the find function but we need it to get the player id
                     const playerToBan = [...room.playerList.entries()].find(([key, value]) => value.name === name)?.[0];
                     this.io.to(playerToBan).emit('banned-from-game');
                 }

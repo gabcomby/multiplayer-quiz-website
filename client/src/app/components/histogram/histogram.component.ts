@@ -95,7 +95,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     private countQuestionChoices(question: Question): number[] {
         if (question.choices) {
             const questionChoices = new Array(question.choices.length).fill(0);
-            // eslint-disable-next-line -- Disabled since it's unused here but used in another function under this one
+            // eslint-disable-next-line no-unused-vars -- The playerId isn't used in the forEach loop but is necessary for the logic
             this.answersPlayer.forEach(([playerId, answerIdx]) => {
                 if (typeof answerIdx !== 'string') {
                     answerIdx.forEach((idx) => {

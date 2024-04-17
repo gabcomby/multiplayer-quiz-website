@@ -1,4 +1,5 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-lines -- Was refactored, most of the code space is used up by getters and setters
+which are obligatory since we were asked to use private attributes  */
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '@app/app.module';
