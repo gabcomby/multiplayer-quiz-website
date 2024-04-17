@@ -1,8 +1,9 @@
-<div>
-    <mat-card>
+<div >
+    <mat-card id="container">
         <mat-card-header>
             <mat-card-title>Scores de la partie</mat-card-title>
         </mat-card-header>
+        <div id="score">
         <mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!isHost">Nom</mat-header-cell>
@@ -26,6 +27,7 @@
             <mat-header-row *matHeaderRowDef="isHost === true ? ['name', 'score', 'chatPermission', 'status'] : ['name', 'score']"></mat-header-row>
             <mat-row *matRowDef="let row; columns: isHost === true ? ['name', 'score', 'chatPermission', 'status'] : ['name', 'score']"></mat-row>
         </mat-table>
+    </div>
         <div *ngIf="isHost">
             <mat-card-content style="text-decoration: line-through" *ngFor="let player of playerLeftList"> {{ player.name }} </mat-card-content>
         </div>

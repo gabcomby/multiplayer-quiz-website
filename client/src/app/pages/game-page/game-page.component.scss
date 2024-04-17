@@ -56,6 +56,7 @@ $base-font-size: 16;
 .score {
     margin-top: px-to-em(50);
     grid-area: score;
+    margin-right: 20px;
 }
 
 .timer {

@@ -22,9 +22,7 @@
             [totalTimer]="totalGameDuration"
         ></app-game-page-timer>
     </div>
-    <div class="score" *ngIf="!isLaunchTimer">
-        <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
-    </div>
+    
     <div class="button-game">
         <button class="pause-button" mat-raised-button color="primary" (click)="handlePauseTimer()" *ngIf="!isLaunchTimer && !timerStopped">
             <mat-icon>{{ gameTimerPaused ? 'play_arrow' : 'pause' }}</mat-icon>
@@ -40,7 +38,20 @@
             Mode panique
         </button>
     </div>
-
+    <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
+        <app-game-qrl-answer
+            style="max-width: 300px"
+            *ngIf="answersQRL && answersQRL.length > currentQRLIndexValue && answersQRL[currentQRLIndexValue][1]"
+            [answersQRL]="answersQRL[currentQRLIndexValue][1]"
+            [timerStopped]="timerStopped"
+            (selectedValuesEmitter)="setplayerPointsQRL($event)"
+        >
+        </app-game-qrl-answer>
+    </div>
+    <div id="container-right">
+    <div class="score" *ngIf="!isLaunchTimer">
+        <app-game-page-scoresheet [isHost]="true" [playerList]="playerList" [playerLeftList]="playerLeftList"></app-game-page-scoresheet>
+    </div>
     <div class="game-control">
         <button
             mat-raised-button
@@ -69,17 +80,8 @@
             [mark]="currentQuestion.points || 0"
         ></app-game-page-questions>
     </div>
+</div>
 
-    <div class="QRL" *ngIf="!isLaunchTimer && currentQuestion?.type === 'QRL' && answersQRL">
-        <app-game-qrl-answer
-            style="max-width: 300px"
-            *ngIf="answersQRL && answersQRL.length > currentQRLIndexValue && answersQRL[currentQRLIndexValue][1]"
-            [answersQRL]="answersQRL[currentQRLIndexValue][1]"
-            [timerStopped]="timerStopped"
-            (selectedValuesEmitter)="setplayerPointsQRL($event)"
-        >
-        </app-game-qrl-answer>
-    </div>
     <div class="histogram" *ngIf="!isLaunchTimer">
         <app-histogram
             *ngIf="currentQuestion?.type === 'QCM'"
