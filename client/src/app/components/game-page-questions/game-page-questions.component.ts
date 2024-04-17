@@ -22,7 +22,6 @@ export class GamePageQuestionsComponent implements OnInit, OnChanges {
     @Output() answerText = new EventEmitter<string>();
 
     selectedChoices: number[];
-    answerGivenIsCorrect: boolean;
     answerIsLocked: boolean = false;
     answerQrl: string = '';
 
