@@ -7,9 +7,9 @@ Creating a website that enables a large number of players to create, share and p
 - [@gabcomby](https://github.com/gabcomby)
 - [@Maxsavy](https://github.com/Maxsavy)
 - [@chapsag](https://github.com/chapsag)
-- @juliannedaoust
-- @juliebergeron
-- @alexanedion
+- [@judaoc](https://github.com/judaoc)
+- [@Jubergie](https://github.com/Jubergie)
+- [@alexanedion](https://github.com/Alexane123)
 
 ## Created For
 
