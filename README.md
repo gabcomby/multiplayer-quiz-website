@@ -9,7 +9,7 @@ Creating a website that enables a large number of players to create, share and p
 - [@chapsag](https://github.com/chapsag)
 - [@judaoc](https://github.com/judaoc)
 - [@Jubergie](https://github.com/Jubergie)
-- [@alexanedion](https://github.com/Alexane123)
+- [@Alexane123](https://github.com/Alexane123)
 
 ## Created For
 
