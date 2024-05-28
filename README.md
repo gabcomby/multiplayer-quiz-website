@@ -52,3 +52,15 @@ The following programs are required to use this project:
 ```
 7. If a web page doesn't automatically open, visit http://localhost:4200/#/home
 8. The password for managing games is 'log2990-102'
+
+## Academic Integrity Notice
+
+This project is shared publicly on GitHub for educational purposes only. The code and accompanying resources are provided under the MIT License, which allows for the use, modification, and distribution of this software, subject to the conditions specified in the license.
+
+However, using this project, in part or in full, to complete a school assignment, coursework, or any other academic task WITHOUT proper attribution or consent is STRICTLY PROHIBITED. By using this project, you agree to respect the principles of academic integrity and avoid any form of plagiarism.
+
+If you are a student and wish to use or reference this project in your academic work, please ensure that you properly cite the source, giving credit to the original author. Consult your institution's guidelines on citation and attribution to ensure compliance with academic integrity policies.
+
+Failure to comply with this notice and the principles of academic integrity may result in disciplinary action from your educational institution, up to and including expulsion.
+
+If you have any questions or concerns regarding the use of this project, please contact the original author.
